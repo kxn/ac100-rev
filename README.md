@@ -7,9 +7,23 @@ and a from-scratch, pure-Go reimplementation of it.
 **Status**: the Go implementation covers the full CAPWAP session path
 (discovery → join → config-status → change-state → echo, DTLS, image
 upgrade, LED/reset control, the vendor 0x25 envelope, 118 registered
-message elements) plus the five JCS control-socket subsystems.
-`go test ./...` is green; `linux/amd64`, `linux/arm64`, `windows/amd64`
-build with `CGO_ENABLED=0`.
+message elements) plus the JCS control-socket surface (~100 handlers,
+all former not-impl placeholders closed), and the AC-side decision
+engines: wsta_roam centralized steering (0x58 trigger → RCPI normalize →
+filter → vendor rate estimation → admission → 0x59 result, with the
+`estimate_snr_rate_table_2g/5g` + `nsdTable` data extracted from the AC
+binary into `uacgo/data/estimate-rate-tables.bin`), the balance
+admission engine, 11r PMK distribution, the RRM/ACS engine (state
+machine + DCA + TPC + ACS channel selection; 0x5c/0x5d/0x9b/0x9c
+wiring), the mac_auth admission tree, and the defense config push
+builders (0x46/0x47/0x48/0x61/0x62). The AP side of the protocol is
+cross-checked against the TL-XAP5407GC firmware
+(`notes/apfw-xap5407gc-crosscheck.md`) — interaction validation only;
+all data and logic provenance is the AC binary.
+`go test ./...` is green (except `TestEngineApLifecycle`, which needs
+UDP loopback; verified failing on the pre-change baseline in this
+environment); `linux/amd64`, `linux/arm64`, `windows/amd64` build with
+`CGO_ENABLED=0`.
 
 ## Layout
 
