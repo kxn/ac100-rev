@@ -21,11 +21,12 @@ package jcs
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net"
 	"os"
-	"strings"
 	"sync"
+	"syscall"
 	"time"
 )
 
@@ -153,7 +154,7 @@ func dialRetry(path string, attempts int) (*net.UnixConn, error) {
 		if err == nil {
 			return c, nil
 		}
-		if !strings.Contains(err.Error(), "connection refused") && !os.IsNotExist(err) {
+		if !errors.Is(err, syscall.ECONNREFUSED) && !errors.Is(err, os.ErrNotExist) {
 			break
 		}
 		time.Sleep(25 * time.Millisecond)
