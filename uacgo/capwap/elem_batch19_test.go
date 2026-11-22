@@ -18,22 +18,41 @@ func TestBatch19Roundtrips(t *testing.T) {
 		t.Fatalf("fail station: %v", err)
 	}
 
-	// 0x58: 26 bytes {u8×3, u32, mac1, u8×4, mac2, u8×3}
-	rt := PrivRoamingTrigger{A: 1, B: 2, C: 3, W: 42,
-		MAC1: [6]byte{1, 2, 3, 4, 5, 6}, U8a: 7,
-		MAC2: [6]byte{8, 9, 10, 11, 12, 13}, Tail: [3]uint8{14, 15, 16}}
+	// 0x58: header 7B {radio, chload, nf, BE32 cnt} + per-sta 10B
+	// {mac6, wlan, rssi, band, neigh_cnt} + 9B neighbors
+	rt := PrivRoamingTrigger{RadioID: 1, ChannelLoad: 40, NoiseFloor: -95,
+		Stations: []RoamingTriggerSta{{
+			MAC: [6]byte{1, 2, 3, 4, 5, 6}, WLANID: 2, RSSI: -70, BandMode: 3,
+			Neighbors: []RoamingTriggerNeighbor{{
+				BSSID: [6]byte{8, 9, 10, 11, 12, 13}, RCPI: 220, RSNI: 60, Channel: 36,
+			}},
+		}}}
 	wire = rt.AssembleValue()
-	if len(wire) != 26 {
+	if len(wire) != 7+10+9 {
 		t.Fatalf("roaming trigger wire = %d bytes, want 26", len(wire))
 	}
 	v, err := ParsePrivRoamingTrigger(wire)
-	if err != nil || v.W != 42 || v.U8a != 7 || v.Tail[0] != 14 ||
-		!bytes.Equal(v.MAC2[:], rt.MAC2[:]) {
+	if err != nil || v.NoiseFloor != -95 || v.Stations[0].RSSI != -70 ||
+		v.Stations[0].Neighbors[0].RCPI != 220 ||
+		!bytes.Equal(v.Stations[0].Neighbors[0].BSSID[:], rt.Stations[0].Neighbors[0].BSSID[:]) {
 		t.Fatalf("roaming trigger: %v %+v", err, v)
 	}
 
-	rcr := PrivRoamingCalcResult{A: 1, B: 2, Data: []byte{9, 8, 7}}
-	if v, err := ParsePrivRoamingCalcResult(rcr.AssembleValue()); err != nil || v.B != 2 {
+	// 0x59: header 10B + union macs + per-sta {mac6, bitmap16, cnt} + 10B radios
+	rcr := PrivRoamingCalcResult{CurrentAP: 1, RadioID: 1,
+		APUnion: [][6]byte{{1, 2, 3, 4, 5, 6}},
+		Stations: []RoamingCalcSta{{
+			MAC: [6]byte{9, 9, 9, 9, 9, 9},
+			Radios: []RoamingCalcRadioEntry{{
+				APIndex: 0, RadioID: 1, WLANID: 2,
+				BSSID: [6]byte{1, 2, 3, 4, 5, 6}, Channel: 36,
+			}},
+		}}}
+	if len(rcr.AssembleValue()) != 10+6+23+10 {
+		t.Fatalf("roaming calc wire = %d bytes", len(rcr.AssembleValue()))
+	}
+	if v, err := ParsePrivRoamingCalcResult(rcr.AssembleValue()); err != nil ||
+		v.Stations[0].Radios[0].Channel != 36 || v.APUnion[0] != [6]byte{1, 2, 3, 4, 5, 6} {
 		t.Fatalf("roaming calc: %v", err)
 	}
 	if v, err := ParsePrivApMloSwitch(PrivApMloSwitch(1).AssembleValue()); err != nil || v != 1 {

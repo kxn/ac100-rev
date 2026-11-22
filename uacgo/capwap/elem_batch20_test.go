@@ -17,12 +17,23 @@ func TestBatch20Roundtrips(t *testing.T) {
 		t.Fatalf("ndp para: %v", err)
 	}
 
-	rl := PrivRrmNeighsList{A: 1, B: 2, Count: 1}
-	rl.Neighs = append(rl.Neighs, RrmNeigh{})
-	rl.Neighs[0].MAC[5] = 0x66
-	rl.Neighs[0].U8[4] = 9
-	if v, err := ParsePrivRrmNeighsList(rl.AssembleValue()); err != nil || v.Count != 1 || v.Neighs[0].U8[4] != 9 {
-		t.Fatalf("rrm neighs: %v", err)
+	rl := PrivRrmNeighsList{RadioID: 1, B: 2}
+	rl.Neighs = append(rl.Neighs, RrmNeigh{
+		MAC:  [6]byte{0, 0, 0, 0, 0, 0x66},
+		Flag: 7,
+		Samples: []RrmNeighRSSI{
+			{Radio: 1, Channel: 36, RSSI: -55},
+			{Radio: 2, Channel: 149, RSSI: -70},
+		},
+	})
+	if v, err := ParsePrivRrmNeighsList(rl.AssembleValue()); err != nil || v.Count != 1 ||
+		v.Neighs[0].MAC[5] != 0x66 || len(v.Neighs[0].Samples) != 2 ||
+		v.Neighs[0].Samples[0].RSSI != -55 || v.Neighs[0].Samples[1].Channel != 149 {
+		t.Fatalf("rrm neighs: %v %+v", err, v)
+	}
+	// header guards: radio id ≤ 0x1f, count ≤ 0x20
+	if _, err := ParsePrivRrmNeighsList([]byte{0x20, 0, 0, 0}); err == nil {
+		t.Fatal("radio id guard")
 	}
 
 	al := PrivApLog{W: 1, A: 2, B: 3, W2: 4, Rest: []byte{5}}

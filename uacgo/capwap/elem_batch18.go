@@ -59,55 +59,55 @@ func ParsePrivArpDefend(v []byte) (*PrivArpDefend, error) {
 		Tail: append([]byte(nil), v[10:]...)}, nil
 }
 
-// PrivStaPMKReq is 0x49 (min=max=0x65=101):
-// u8 radio + u8 wlan_id + u8 + u8 + BE32 + 0x11B + 0x10B + 6B MAC.
-// (cw_priv_sta_pmk_req_parse.)
+// PrivStaPMKReq is 0x49 (min=max=0x65=101) "private station pmk
+// request" — the 11r fast-roaming key exchange (cw_priv_sta_pmk_req_parse
+// @0x5c7288 retrieve r8 r8 r8 r8 r32 rbytes rbytes rbytes rbytes rbytes
+// rbytes; field map from cw_priv_sta_pmk_req_dump):
+//
+//	u8 type, u8 result, u8 radio, u8 wlan, BE32 pairwise,
+//	iface[17], nonce[16], sta_mac[6], ap_mac[6], pmk_r0[32], pmk_r0_name[16]
 type PrivStaPMKReq struct {
-	Radio      uint8
-	WlanID     uint8
-	U8a        uint8
-	U8b        uint8
-	W          uint32
-	Data       [0x11]byte
-	Salt       [0x10]byte
-	MAC        [6]byte
-	VendorTail []byte
+	Type      uint8
+	Result    uint8
+	Radio     uint8
+	WlanID    uint8
+	Pairwise  uint32
+	IfaceName [17]byte // NUL-terminated interface name
+	Nonce     [16]byte
+	STAMAC    [6]byte
+	APMAC     [6]byte
+	PMKR0     [32]byte
+	PMKR0Name [16]byte
 }
 
 // AssembleValue writes the 0x65-byte value.
 func (p PrivStaPMKReq) AssembleValue() []byte {
-	b := []byte{p.Radio, p.WlanID, p.U8a, p.U8b}
-	b = AppendUint32BE(b, p.W)
-	b = append(b, p.Data[:]...)
-	b = append(b, p.Salt[:]...)
-	b = append(b, p.MAC[:]...)
-	b = append(b, p.VendorTail...)
+	b := []byte{p.Type, p.Result, p.Radio, p.WlanID}
+	b = AppendUint32BE(b, p.Pairwise)
+	b = append(b, p.IfaceName[:]...)
+	b = append(b, p.Nonce[:]...)
+	b = append(b, p.STAMAC[:]...)
+	b = append(b, p.APMAC[:]...)
+	b = append(b, p.PMKR0[:]...)
+	b = append(b, p.PMKR0Name[:]...)
 	return b
 }
 
 // ParsePrivStaPMKReq decodes the 0x65-byte value.
 func ParsePrivStaPMKReq(v []byte) (*PrivStaPMKReq, error) {
-	if len(v) < 8 {
+	if len(v) != 0x65 {
 		return nil, ErrShortPacket
 	}
 	p := &PrivStaPMKReq{
-		Radio: v[0], WlanID: v[1], U8a: v[2], U8b: v[3], W: Uint32BE(v[4:])}
-	// data block: 17 bytes starting at +8
-	if len(v) >= 8+0x11 {
-		copy(p.Data[:], v[8:8+0x11])
+		Type: v[0], Result: v[1], Radio: v[2], WlanID: v[3],
+		Pairwise: Uint32BE(v[4:]),
 	}
-	// salt block: 16 bytes after data
-	if len(v) >= 8+0x11+0x10 {
-		copy(p.Salt[:], v[8+0x11:8+0x11+0x10])
-	}
-	// mac block: 6 bytes after salt
-	if len(v) >= 8+0x11+0x10+6 {
-		copy(p.MAC[:], v[8+0x11+0x10:8+0x11+0x10+6])
-	}
-	// carry vendor tail verbatim
-	if len(v) > 8+0x11+0x10+6 {
-		p.VendorTail = append([]byte(nil), v[8+0x11+0x10+6:]...)
-	}
+	copy(p.IfaceName[:], v[8:8+17])
+	copy(p.Nonce[:], v[25:25+16])
+	copy(p.STAMAC[:], v[41:41+6])
+	copy(p.APMAC[:], v[47:47+6])
+	copy(p.PMKR0[:], v[53:53+32])
+	copy(p.PMKR0Name[:], v[85:85+16])
 	return p, nil
 }
 

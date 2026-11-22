@@ -81,45 +81,78 @@ func TestEngineApLifecycle(t *testing.T) {
 	e.RegisterAttachHandlers(fixtureIdentity{})
 	go func() { _ = e.Run() }()
 
-	c, err := net.DialUDP("udp", nil, &net.UDPAddr{IP: net.IPv4(127, 0, 0, 1), Port: e.LocalPort()})
-	if err != nil {
-		t.Fatal(err)
+	// Transport abstraction: real UDP when the loopback path carries the
+	// large vendor fixtures (~2.4KB), otherwise an in-memory transport
+	// (some sandboxes drop IP fragments / >1500B IP packets on the
+	// loopback path — the fixture frames themselves are unaffected).
+	var tp lifecycleTransport
+	if largeUDPWorks() {
+		c, err := net.DialUDP("udp", nil, &net.UDPAddr{IP: net.IPv4(127, 0, 0, 1), Port: e.LocalPort()})
+		if err != nil {
+			t.Fatal(err)
+		}
+		defer c.Close()
+		tp = lifecycleTransport{
+			peerKey: c.LocalAddr().String(),
+			write:   func(b []byte) error { _, err := c.Write(b); return err },
+			read: func(d time.Duration) ([]byte, error) {
+				buf := make([]byte, capwap.MaxUdpPayload)
+				c.SetReadDeadline(time.Now().Add(d))
+				n, err := c.Read(buf)
+				return buf[:n], err
+			},
+		}
+	} else {
+		t.Log("large UDP loopback unavailable — running the lifecycle over the in-memory transport")
+		peer := &net.UDPAddr{IP: net.IPv4(127, 0, 0, 1), Port: 40000}
+		rx := make(chan []byte, 16)
+		e.sendToForTest = func(_ *net.UDPAddr, b []byte) error {
+			rx <- append([]byte(nil), b...)
+			return nil
+		}
+		tp = lifecycleTransport{
+			peerKey: peer.String(),
+			write:   func(b []byte) error { e.handleDatagram(b, peer); return nil },
+			read: func(d time.Duration) ([]byte, error) {
+				select {
+				case b := <-rx:
+					return b, nil
+				case <-time.After(d):
+					return nil, os.ErrDeadlineExceeded
+				}
+			},
+		}
 	}
-	defer c.Close()
 	read := func(t *testing.T) []byte {
 		t.Helper()
-		buf := make([]byte, capwap.MaxUdpPayload)
-		c.SetReadDeadline(time.Now().Add(2 * time.Second))
-		n, err := c.Read(buf)
+		b, err := tp.read(2 * time.Second)
 		if err != nil {
 			t.Fatalf("no response: %v", err)
 		}
-		return buf[:n]
+		return b
 	}
 	expectNoReply := func(t *testing.T) {
 		t.Helper()
-		buf := make([]byte, capwap.MaxUdpPayload)
-		c.SetReadDeadline(time.Now().Add(300 * time.Millisecond))
-		if n, err := c.Read(buf); err == nil {
-			t.Fatalf("expected no reply, got %d bytes", n)
+		if b, err := tp.read(300 * time.Millisecond); err == nil {
+			t.Fatalf("expected no reply, got %d bytes", len(b))
 		}
 	}
 
 	// --- discovery: no session, response carries the identity elements ---
-	c.Write(mustFixture(t, "cw_dis_req_0074f340.bin"))
+	tp.write(mustFixture(t, "cw_dis_req_0074f340.bin"))
 	rsp, err := capwap.ParsePacket(read(t))
 	if err != nil || rsp.Control.MsgType != capwap.MsgDiscoveryResponse {
 		t.Fatalf("bad discovery response: %v", err)
 	}
 
 	// --- join (seq 2): creates session, IDLE→JOIN_WAIT→(PASSED)→JOIN_FINISH ---
-	c.Write(withSeq(t, "cw_join_req_0074f150.bin", 2))
+	tp.write(withSeq(t, "cw_join_req_0074f150.bin", 2))
 	rsp, err = capwap.ParsePacket(read(t))
 	if err != nil || rsp.Control.MsgType != capwap.MsgJoinResponse || rsp.Control.SeqNum != 2 {
 		t.Fatalf("bad join response: %v", err)
 	}
 	e.mu.Lock()
-	s := e.sessions[c.LocalAddr().String()]
+	s := e.sessions[tp.peerKey]
 	st := s.State
 	e.mu.Unlock()
 	if s == nil || st != StateJoinFinish {
@@ -128,11 +161,11 @@ func TestEngineApLifecycle(t *testing.T) {
 
 	// retransmitted join in JOIN_FINISH: the binary's gate
 	// (join_finish_recv_pkt_check @0x59f328 accepts only {15,5}) drops it.
-	c.Write(withSeq(t, "cw_join_req_0074f150.bin", 2))
+	tp.write(withSeq(t, "cw_join_req_0074f150.bin", 2))
 	expectNoReply(t)
 
 	// --- config status (seq 3): JOIN_FINISH→CONFIGURE ---
-	c.Write(withSeq(t, "cw_cfg_req_0074ef5c.bin", 3))
+	tp.write(withSeq(t, "cw_cfg_req_0074ef5c.bin", 3))
 	rsp, err = capwap.ParsePacket(read(t))
 	if err != nil || rsp.Control.MsgType != capwap.MsgConfigurationStatusResponse {
 		t.Fatalf("bad cfg status response: %v", err)
@@ -144,7 +177,7 @@ func TestEngineApLifecycle(t *testing.T) {
 	// --- change state event (seq 4): CONFIGURE→RUN + ent-1 listeners fired ---
 	ran := make(chan struct{}, 1)
 	e.OnEntRun = func(x *Session) error { ran <- struct{}{}; return nil }
-	c.Write(withSeq(t, "cw_cse_req_0074ee9c.bin", 4))
+	tp.write(withSeq(t, "cw_cse_req_0074ee9c.bin", 4))
 	rsp, err = capwap.ParsePacket(read(t))
 	if err != nil || rsp.Control.MsgType != capwap.MsgChangeStateEventResponse {
 		t.Fatalf("bad cse response: %v", err)
@@ -159,7 +192,7 @@ func TestEngineApLifecycle(t *testing.T) {
 	}
 
 	// --- echo (seq 5): RUN keep-alive, empty response (msg 14) ---
-	c.Write(synthMsg(t, cwengMsgEcho, 5))
+	tp.write(synthMsg(t, cwengMsgEcho, 5))
 	rsp, err = capwap.ParsePacket(read(t))
 	if err != nil || rsp.Control.MsgType != 14 {
 		t.Fatalf("bad echo response: %v", err)
@@ -170,16 +203,86 @@ func TestEngineApLifecycle(t *testing.T) {
 
 	// --- duplicate echo (same seq 5): stored response re-sent
 	// (ac_msg_handle same-seq branch: "send last send response") ---
-	c.Write(synthMsg(t, cwengMsgEcho, 5))
+	tp.write(synthMsg(t, cwengMsgEcho, 5))
 	rsp2, err := capwap.ParsePacket(read(t))
 	if err != nil || rsp2.Control.MsgType != 14 || rsp2.Control.SeqNum != 5 {
 		t.Fatalf("bad duplicate echo response: %v", err)
 	}
 
 	// --- old-seq echo (seq 4 < 5): ac_msg_pretreat window drops it ---
-	c.Write(synthMsg(t, cwengMsgEcho, 4))
+	tp.write(synthMsg(t, cwengMsgEcho, 4))
 	expectNoReply(t)
 }
 
 // cwengMsgEcho — capwap package doesn't re-export 13 under this name.
 const cwengMsgEcho = 13
+
+// lifecycleTransport abstracts the client side of TestEngineApLifecycle.
+type lifecycleTransport struct {
+	peerKey string // the engine's session map key for this client
+	write   func([]byte) error
+	read    func(time.Duration) ([]byte, error)
+}
+
+// largeUDPWorks reports whether the loopback path carries IP packets
+// above the 1500-byte Ethernet MTU (needed for the ~2.4KB vendor
+// fixtures; some sandboxes drop the fragments).
+func largeUDPWorks() bool {
+	srv, err := net.ListenUDP("udp", &net.UDPAddr{IP: net.IPv4(127, 0, 0, 1), Port: 0})
+	if err != nil {
+		return false
+	}
+	defer srv.Close()
+	cli, err := net.DialUDP("udp", nil, srv.LocalAddr().(*net.UDPAddr))
+	if err != nil {
+		return false
+	}
+	defer cli.Close()
+	go func() {
+		buf := make([]byte, 4096)
+		if n, addr, err := srv.ReadFromUDP(buf); err == nil && n == 2000 {
+			srv.WriteToUDP([]byte{1}, addr)
+		}
+	}()
+	if _, err := cli.Write(make([]byte, 2000)); err != nil {
+		return false
+	}
+	cli.SetReadDeadline(time.Now().Add(500 * time.Millisecond))
+	buf := make([]byte, 1)
+	n, err := cli.Read(buf)
+	return err == nil && n == 1
+}
+
+// TestEngineDiscoveryRealUDP exercises the engine over real UDP with a
+// compact synthesized discovery request (fits any loopback MTU).
+func TestEngineDiscoveryRealUDP(t *testing.T) {
+	e, err := NewEngine(0)
+	if err != nil {
+		t.Fatal(err)
+	}
+	e.RegisterAttachHandlers(fixtureIdentity{})
+	go func() { _ = e.Run() }()
+	defer e.conn.Close()
+
+	c, err := net.DialUDP("udp", nil, &net.UDPAddr{IP: net.IPv4(127, 0, 0, 1), Port: e.LocalPort()})
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer c.Close()
+	// minimal valid discovery request: the fixture preamble + control
+	// header {type 1, seq 1, MEL 3 (=0 elements + 3), flags 0}
+	req := []byte{0x00, 0x10, 0x43, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 3, 0}
+	if _, err := c.Write(req); err != nil {
+		t.Fatal(err)
+	}
+	buf := make([]byte, capwap.MaxUdpPayload)
+	c.SetReadDeadline(time.Now().Add(2 * time.Second))
+	n, err := c.Read(buf)
+	if err != nil {
+		t.Fatalf("no response over real UDP: %v", err)
+	}
+	rsp, err := capwap.ParsePacket(buf[:n])
+	if err != nil || rsp.Control.MsgType != capwap.MsgDiscoveryResponse {
+		t.Fatalf("bad discovery response: %v", err)
+	}
+}

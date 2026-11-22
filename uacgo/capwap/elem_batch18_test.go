@@ -15,16 +15,20 @@ func TestBatch18Roundtrips(t *testing.T) {
 		t.Fatalf("arp defend: %v", err)
 	}
 
-	pm := PrivStaPMKReq{Radio: 1, WlanID: 2, W: 42}
-	pm.Data[0] = 1
-	pm.Salt[0] = 2
-	pm.MAC[0] = 3
+	pm := PrivStaPMKReq{Type: 1, Result: 0, Radio: 1, WlanID: 2, Pairwise: 42}
+	pm.Nonce[0] = 2
+	pm.STAMAC[0] = 3
+	pm.PMKR0[31] = 9
+	pm.PMKR0Name[15] = 7
 	w := pm.AssembleValue()
-	if len(w) == 0 {
-		t.Fatalf("pmk wire = %d", len(w))
+	if len(w) != 0x65 {
+		t.Fatalf("pmk wire = %d, want 101", len(w))
 	}
-	if v, err := ParsePrivStaPMKReq(w); err != nil || v.Radio != 1 || v.W != 42 {
-		t.Logf("pmk parse note: %v", err)
+	if v, err := ParsePrivStaPMKReq(w); err != nil || *v != pm {
+		t.Fatalf("pmk roundtrip: %v %+v", err, v)
+	}
+	if _, err := ParsePrivStaPMKReq(w[:100]); err == nil {
+		t.Fatal("pmk must require exactly 101 bytes")
 	}
 
 	var ldp PrivLLDP

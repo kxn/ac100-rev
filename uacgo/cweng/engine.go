@@ -21,6 +21,10 @@ type Engine struct {
 	reg      *registry
 	acData   *AcDataCounters
 
+	// OnAttach is invoked after the join identity is parsed (the binary's
+	// join listeners register the WTP into apmngr/steering databases).
+	OnAttach func(*Session, *APEntry)
+
 	MaxSessions       int // l_profile[0x140] max_session_num
 	RetransIntervalMs int // profile default_retransmit_time (ms, test-tunable)
 	RetransMax        int // profile retransmit_max_retries
@@ -169,12 +173,16 @@ func (e *Engine) handleDatagram(raw []byte, addr *net.UDPAddr) {
 		}
 		if ap, err := ParseAPEntry(req); err == nil {
 			s.apEntry = ap
+			s.SetAPIdentity(0, ap.MAC)
 			// The binary creates the AP entry inside the join listener
 			// (_apmngr_try_create_ap_entry_by_template_or_db), not at RUN.
 			if e.apStore != nil {
 				if err := e.apStore.UpsertAP(ap); err != nil {
 					log.Printf("apmngr store: %v", err)
 				}
+			}
+			if e.OnAttach != nil {
+				e.OnAttach(s, ap)
 			}
 		}
 		e.mu.Lock()

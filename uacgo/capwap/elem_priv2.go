@@ -88,12 +88,48 @@ func ParsePrivStatisticsControl(v []byte) (*PrivStatisticsControl, error) {
 	}, nil
 }
 
-// PrivRoamingControl is private element 0x57 (min=max=36): 36 raw bytes.
-// cw_priv_roaming_control_assemble @0x5bcb9c.
-type PrivRoamingControl [36]byte
+// PrivRoamingControl is private element 0x57 (min=max=36).
+// cw_priv_roaming_control_assemble @0x5bcb9c; field list from the AC's
+// cw_priv_roaming_control_dump (labels from the AC string table
+// "_2g_rssi_kick_switch" etc.). Wire fields were cross-checked for
+// consistency against the AP implementation (校验 only —
+// notes/apfw-xap5407gc-crosscheck.md §4):
+//
+//	21 typed bytes + 15 reserved raw bytes.
+type RoamingControlBand struct {
+	TriggerType       uint8 // trigger type bitmask
+	RssiTriggerThresh int8  // rssi trigger threshold
+	RssiKickEnable    uint8 // rssi kick switch
+	RssiKickThresh    int8  // rssi kick threshold
+	RateTriggerThresh uint8 // rate trigger threshold
+	RateKickEnable    uint8 // rate kick switch
+	RateKickThresh    uint8 // rate kick threshold
+}
+
+// PrivRoamingControl carries the AC's roaming parameter push.
+type PrivRoamingControl struct {
+	Switch11K, Switch11V, Switch11R uint8
+	Band2G                          RoamingControlBand // bytes 3..9
+	Band5G                          RoamingControlBand // bytes 10..16
+	ThresholdCheckInterval          uint8              // byte 17
+	RoamingDif                      uint8              // byte 18 (hysteresis)
+	BlacklistRestrictTime           uint8              // byte 19
+	RoamingStrategy                 uint8              // byte 20: 0 distributed / 1 centralized / 2 both
+	Reserved                        [15]byte           // bytes 21..35
+}
 
 // AssembleValue returns the 36 bytes.
-func (p PrivRoamingControl) AssembleValue() []byte { return append([]byte(nil), p[:]...) }
+func (p PrivRoamingControl) AssembleValue() []byte {
+	b := []byte{p.Switch11K, p.Switch11V, p.Switch11R}
+	for _, band := range []RoamingControlBand{p.Band2G, p.Band5G} {
+		b = append(b, band.TriggerType, byte(band.RssiTriggerThresh),
+			band.RssiKickEnable, byte(band.RssiKickThresh),
+			band.RateTriggerThresh, band.RateKickEnable, band.RateKickThresh)
+	}
+	b = append(b, p.ThresholdCheckInterval, p.RoamingDif,
+		p.BlacklistRestrictTime, p.RoamingStrategy)
+	return append(b, p.Reserved[:]...)
+}
 
 // ParsePrivRoamingControl decodes the 36 bytes.
 func ParsePrivRoamingControl(v []byte) (PrivRoamingControl, error) {
@@ -101,7 +137,21 @@ func ParsePrivRoamingControl(v []byte) (PrivRoamingControl, error) {
 	if len(v) != 36 {
 		return out, ErrShortPacket
 	}
-	copy(out[:], v)
+	out.Switch11K, out.Switch11V, out.Switch11R = v[0], v[1], v[2]
+	parseBand := func(off int) RoamingControlBand {
+		return RoamingControlBand{
+			TriggerType: v[off], RssiTriggerThresh: int8(v[off+1]),
+			RssiKickEnable: v[off+2], RssiKickThresh: int8(v[off+3]),
+			RateTriggerThresh: v[off+4], RateKickEnable: v[off+5], RateKickThresh: v[off+6],
+		}
+	}
+	out.Band2G = parseBand(3)
+	out.Band5G = parseBand(10)
+	out.ThresholdCheckInterval = v[17]
+	out.RoamingDif = v[18]
+	out.BlacklistRestrictTime = v[19]
+	out.RoamingStrategy = v[20]
+	copy(out.Reserved[:], v[21:36])
 	return out, nil
 }
 

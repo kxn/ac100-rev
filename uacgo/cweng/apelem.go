@@ -68,6 +68,7 @@ func WTPName(v []byte) string { return string(v) }
 // APEntry is the AP identity derived from a Join Request — the input record
 // for the AP management table (the vendor's _apmngr_try_create_ap_entry...).
 type APEntry struct {
+	MAC        [6]byte // board-data sub-element 4 (vendor join fixture)
 	Name       string
 	ModelID    uint32
 	Serial     string
@@ -93,6 +94,11 @@ func ParseAPEntry(req *capwap.ParsedPacket) (*APEntry, error) {
 				e.ModelID = id
 			}
 			e.Serial = SerialNumber(subs)
+			for _, s := range subs {
+				if s.Type == 4 && len(s.Value) == 6 {
+					copy(e.MAC[:], s.Value) // WTP MAC ("Get dev mac" pairing)
+				}
+			}
 		case 0x002d:
 			e.Name = WTPName(el.Value)
 		case 0x001e:

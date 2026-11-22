@@ -59,7 +59,7 @@ func TestPrivCtrl(t *testing.T) {
 	}
 
 	var rc capwap.PrivRoamingControl
-	rc[35] = 9
+	rc.Reserved[14] = 9
 	if err := e.SendRoamingControl(s, rc); err != nil {
 		t.Fatal(err)
 	}

@@ -25,6 +25,10 @@ type RuntimeState struct {
 	MeshStatus  string // init / scanning / finished
 	MeshAutoAdd bool
 	DI          DeepInspectionStatus
+
+	// OnBalanceUpdate, when set, is invoked after every ac_balance.set so
+	// the live admission engine can track the config.
+	OnBalanceUpdate func(BalanceCfg)
 }
 
 // BalanceCfg mirrors balance_config_get_from_json keys.
@@ -61,11 +65,22 @@ func NewRuntimeState(db *sql.DB) *RuntimeState {
 func (rs *RuntimeState) SetBalance(db *sql.DB, cfg BalanceCfg) error {
 	rs.mu.Lock()
 	rs.Balance = cfg
+	hook := rs.OnBalanceUpdate
 	rs.mu.Unlock()
+	if hook != nil {
+		hook(cfg)
+	}
 	if db == nil {
 		return nil
 	}
 	return syscfgSet(db, "balance", cfg)
+}
+
+// GetBalance returns the current balance config.
+func (rs *RuntimeState) GetBalance() BalanceCfg {
+	rs.mu.Lock()
+	defer rs.mu.Unlock()
+	return rs.Balance
 }
 
 // SetMeshDiscoverStatus advances the discovery state machine

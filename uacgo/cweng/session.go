@@ -73,6 +73,11 @@ type Session struct {
 
 	apEntry *APEntry // parsed join identity (for the apmngr store)
 
+	// AP identity in the AC's AP registry (apmngr_db_entry_get_by_mac);
+	// populated by SetAPIdentity when the WTP is known.
+	APID  uint16
+	APMAC [6]byte
+
 	// timers: id → deadline
 	timers map[uint]*time.Timer
 	dead   bool
@@ -98,6 +103,13 @@ func newSession(addr *net.UDPAddr, acData *AcDataCounters) *Session {
 }
 
 func (s *Session) setState(st uint32) { s.State = st }
+
+// SetAPIdentity records the registry id/MAC of the session's WTP.
+func (s *Session) SetAPIdentity(id uint16, mac [6]byte) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.APID, s.APMAC = id, mac
+}
 
 // setTimer mirrors cw_fsm_ac_timer_set @0x59cb34: restart the given FSM timer
 // with its default timeout (session-sourced for ECHO_INTERVAL).

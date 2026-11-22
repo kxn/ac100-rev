@@ -70,45 +70,76 @@ func ParsePrivNdpPara(v []byte) (*PrivNdpPara, error) {
 	return p, nil
 }
 
-// RrmNeigh is one neighbour row of 0x5d (loop body rbytes(6) + 5×r8).
-type RrmNeigh struct {
-	MAC [6]byte
-	U8  [5]uint8
+// RrmNeighRSSI is one 3-byte measurement triple of a 0x5d neighbour
+// ("rssi list(n):[<%u,%u,%d>]" — radio, channel, signed rssi).
+type RrmNeighRSSI struct {
+	Radio   uint8
+	Channel uint8
+	RSSI    int8
 }
 
-// PrivRrmNeighsList is 0x5d (min 4): r8 r8 r16 + per-neighbour rows
-// (cw_priv_rrm_neighs_list_parse @0x5be944).
+// RrmNeigh is one neighbour row of 0x5d (variable length):
+// mac6 + u8 flag + u8 sample-count + count × 3-byte triples
+// (cw_priv_rrm_neighs_list_parse @0x5be944: rows are allocated at
+// 0xC each with the triple list at +8).
+type RrmNeigh struct {
+	MAC     [6]byte
+	Flag    uint8
+	Samples []RrmNeighRSSI
+}
+
+// PrivRrmNeighsList is 0x5d (min 4): r8 radio_id(≤0x1f) + r8 + u16
+// count(≤0x20) + variable neighbour rows.
 type PrivRrmNeighsList struct {
-	A      uint8
-	B      uint8
-	Count  uint16
-	Neighs []RrmNeigh
+	RadioID uint8
+	B       uint8
+	Count   uint16
+	Neighs  []RrmNeigh
 }
 
 // AssembleValue writes header + rows.
 func (p PrivRrmNeighsList) AssembleValue() []byte {
-	b := []byte{p.A, p.B}
-	b = AppendUint16BE(b, p.Count)
+	b := []byte{p.RadioID, p.B}
+	b = AppendUint16BE(b, uint16(len(p.Neighs)))
 	for _, n := range p.Neighs {
 		b = append(b, n.MAC[:]...)
-		b = append(b, n.U8[:]...)
+		b = append(b, n.Flag, byte(len(n.Samples)))
+		for _, s := range n.Samples {
+			b = append(b, s.Radio, s.Channel, byte(s.RSSI))
+		}
 	}
 	return b
 }
 
-// ParsePrivRrmNeighsList decodes header + 11-byte neighbour rows.
+// ParsePrivRrmNeighsList decodes header + variable neighbour rows.
 func ParsePrivRrmNeighsList(v []byte) (*PrivRrmNeighsList, error) {
 	if len(v) < 4 {
 		return nil, ErrShortPacket
 	}
-	p := &PrivRrmNeighsList{A: v[0], B: v[1], Count: Uint16BE(v[2:])}
+	p := &PrivRrmNeighsList{RadioID: v[0], B: v[1], Count: Uint16BE(v[2:])}
+	if p.RadioID > 0x1f || p.Count > 0x20 {
+		return nil, ErrShortPacket
+	}
 	off := 4
-	for off+11 <= len(v) {
+	for i := 0; i < int(p.Count); i++ {
+		if off+8 > len(v) {
+			return nil, ErrShortPacket
+		}
 		var n RrmNeigh
 		copy(n.MAC[:], v[off:off+6])
-		copy(n.U8[:], v[off+6:off+11])
+		n.Flag = v[off+6]
+		cnt := int(v[off+7])
+		off += 8
+		for j := 0; j < cnt; j++ {
+			if off+3 > len(v) {
+				return nil, ErrShortPacket
+			}
+			n.Samples = append(n.Samples, RrmNeighRSSI{
+				Radio: v[off], Channel: v[off+1], RSSI: int8(v[off+2]),
+			})
+			off += 3
+		}
 		p.Neighs = append(p.Neighs, n)
-		off += 11
 	}
 	if off != len(v) {
 		return nil, ErrShortPacket

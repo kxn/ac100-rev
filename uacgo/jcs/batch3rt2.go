@@ -3,7 +3,9 @@ package jcs
 import (
 	"encoding/json"
 	"os"
+	"strconv"
 	"sync"
+	"sync/atomic"
 	"time"
 )
 
@@ -19,13 +21,34 @@ import (
 //   deep checkup pkt lists (ssid/bssid/sta): chnl/name/percent/ssid_id
 //   ac_manualrrm set     : manual RRM trigger (timestamp persisted)
 
-// WipsEvent is one intrusion-event record.
+// WipsEvent is one intrusion-event record (wips_entry 0xB0B).
 type WipsEvent struct {
-	EntryName string `json:"entry_name"`
-	Sensor    string `json:"sensor"`
-	Type      string `json:"type"` // normal / slight / severe / dos…
-	DevMAC    string `json:"dev_mac"`
-	Time      int64  `json:"discover_time"`
+	ID            int    `json:"id"`
+	EntryName     string `json:"entry_name"`
+	Sensor        string `json:"sensor"`
+	Type          string `json:"type"` // normal / slight / severe / dos…
+	ThreatClass   int    `json:"wips_threat_class_id"`
+	ThreatName    string `json:"wips_threat_classname"`
+	GroupID       string `json:"group_id"`
+	DevMAC        string `json:"dev_mac"`
+	Rssi          string `json:"rssi"`
+	Time          int64  `json:"discover_time"`
+	CounterStatus int    `json:"counter_status"` // 0 none / 1 counter / 2 discounter
+	Whitelisted   bool   `json:"-"`              // whitelist_entry state (+0xa8==2)
+	Details       []WipsDetail
+}
+
+// WipsDetail is one detection sample inside an event (entry+0x9c detail
+// list; wips_detail_to_json @0x4c62c0 fields).
+type WipsDetail struct {
+	DiscoveryTime string `json:"discovery_time"`
+	LastTime      string `json:"last_time"`
+	Duration      string `json:"duration"`
+	ThreatType    string `json:"wips_threat_type"`
+	ThreatName    string `json:"wips_threat_name"`
+	Rssi          string `json:"rssi"`
+	EntryName     string `json:"entry_name"`
+	GroupID       string `json:"group_id"`
 }
 
 // RuntimeTables extends RuntimeState with queryable lists.
@@ -90,6 +113,14 @@ func page[T any](list []T, start, size int) ([]T, int) {
 		out = out[:size]
 	}
 	return out, len(list)
+}
+
+// checkupFileSeq numbers the /tmp/deep_checkup_result_<n> files
+// (the vendor uses a process-local counter).
+var checkupFileSeq int64
+
+func nextCheckupFile() string {
+	return "/tmp/deep_checkup_result_" + strconv.FormatInt(atomic.AddInt64(&checkupFileSeq, 1), 10)
 }
 
 // RegisterRuntimeQueryHandlers installs the query/trigger handlers
@@ -211,21 +242,55 @@ func (t *RuntimeTables) RegisterRuntimeQueryHandlers(s *Server) {
 		return map[string]any{"error_code": 0, "file_name": MeshDiscoverListFile,
 			"total_num": total}, nil
 	})
-	// deep checkup pkt lists
+	// deep checkup pkt lists — the vendor file contract
+	// (jcs_deep_checkup_pkt_ssid_list @0x4d44b0 / _bssid_list @0x4d87c0 /
+	// _sta_list @0x4d7d88): results serialized to
+	// /tmp/deep_checkup_result_<counter>, answered as {file_name, ret}
+	// plus the list count; bssid/sta take {start,end} windows, ssid takes
+	// {entry_id, chnl}.
 	for kind, key := range map[string]string{
 		"ssid":  "deep_checkup_pkt_ssid_list.get",
 		"bssid": "deep_checkup_pkt_bssid_list.get",
 		"sta":   "deep_checkup_pkt_sta_list.get",
 	} {
 		kind, key := kind, key
-		s.replaceNotImpl(key, func(json.RawMessage) (any, error) {
+		s.replaceNotImpl(key, func(req json.RawMessage) (any, error) {
+			var q struct {
+				Start int `json:"start"`
+				End   int `json:"end"`
+				Chnl  int `json:"chnl"`
+			}
+			if len(req) > 0 {
+				if err := json.Unmarshal(req, &q); err != nil {
+					return nil, err
+				}
+			}
 			t.mu.Lock()
 			list := t.checkup[kind]
 			t.mu.Unlock()
 			if list == nil {
 				list = []map[string]any{}
 			}
-			return map[string]any{"error_code": 0, kind + "_list": list}, nil
+			windowed := list
+			if kind != "ssid" {
+				start, end := clampWindow(q.Start, q.End, len(list))
+				windowed = list[start:end]
+			}
+			file := nextCheckupFile()
+			body, _ := json.Marshal(map[string]any{
+				"deep_checkup_pkt_" + kind + "_list": windowed,
+			})
+			if err := os.WriteFile(file, body, 0644); err != nil {
+				return jerr(err), nil
+			}
+			resp := map[string]any{"error_code": 0, "file_name": file, "ret": 0}
+			if kind == "bssid" {
+				resp["bssid_list_cnt"] = len(list)
+			}
+			if kind == "sta" {
+				resp["sta_list_cnt"] = len(list)
+			}
+			return resp, nil
 		})
 	}
 	// ac_manualrrm set: trigger + timestamp persist

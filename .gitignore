@@ -6,3 +6,6 @@ uacgo/acd.exe
 uacgo/data/dbs/
 # python
 __pycache__/
+# vendor firmware images (analysis material, not source)
+/*.bin
+*:Zone.Identifier

@@ -24,7 +24,9 @@ import (
 	"fmt"
 	"net"
 	"os"
+	"strings"
 	"sync"
+	"time"
 )
 
 // ServicePath returns the service endpoint for a process name.
@@ -122,9 +124,9 @@ func writeErr(c *net.UnixConn, msg string) {
 
 // Call sends one request to a remote endpoint and reads the response.
 func Call(path, method, module, keyword string, params any) (json.RawMessage, error) {
-	c, err := net.DialUnix("unix", nil, &net.UnixAddr{Name: path, Net: "unix"})
+	c, err := dialRetry(path, 20)
 	if err != nil {
-		return nil, fmt.Errorf("jcs dial %s: %w", path, err)
+		return nil, err
 	}
 	defer c.Close()
 	req, _ := json.Marshal(map[string]any{
@@ -138,6 +140,25 @@ func Call(path, method, module, keyword string, params any) (json.RawMessage, er
 		return nil, err
 	}
 	return json.RawMessage(buf[:n]), nil
+}
+
+// dialRetry tolerates an endpoint that is still binding its socket
+// (Serve runs in a goroutine right after the bind; local-socket startup
+// window).
+func dialRetry(path string, attempts int) (*net.UnixConn, error) {
+	var err error
+	for i := 0; i < attempts; i++ {
+		var c *net.UnixConn
+		c, err = net.DialUnix("unix", nil, &net.UnixAddr{Name: path, Net: "unix"})
+		if err == nil {
+			return c, nil
+		}
+		if !strings.Contains(err.Error(), "connection refused") && !os.IsNotExist(err) {
+			break
+		}
+		time.Sleep(25 * time.Millisecond)
+	}
+	return nil, fmt.Errorf("jcs dial %s: %w", path, err)
 }
 
 // Close shuts every listener down.

@@ -1,6 +1,8 @@
 package jcs
 
 import (
+	"encoding/json"
+	"os"
 	"path/filepath"
 	"testing"
 	"time"
@@ -90,11 +92,22 @@ func TestRuntimeQueryHandlers(t *testing.T) {
 		t.Fatalf("discover list = %s", resp)
 	}
 
-	// checkup lists
+	// checkup lists: vendor file contract — rows land in
+	// /tmp/deep_checkup_result_<n>, response carries {file_name, ret}
 	tables.SetCheckupList("ssid", []map[string]any{{"ssid_id": 1, "name": "n", "percent": 42}})
 	resp = call("deep_checkup_pkt_ssid_list", "get", "get", nil)
-	if indexOfStr(resp, "percent") < 0 {
+	if indexOfStr(resp, "file_name") < 0 || indexOfStr(resp, `"ret":0`) < 0 {
 		t.Fatalf("checkup ssid = %s", resp)
+	}
+	var chk struct {
+		FileName string `json:"file_name"`
+	}
+	if err := json.Unmarshal([]byte(resp), &chk); err != nil || chk.FileName == "" {
+		t.Fatalf("checkup file name: %v %s", err, resp)
+	}
+	if body, err := os.ReadFile(chk.FileName); err != nil ||
+		indexOfStr(string(body), "percent") < 0 {
+		t.Fatalf("checkup file body: %v %s", err, body)
 	}
 
 	// manual rrm trigger

@@ -54,12 +54,25 @@ func TestPrivBatch2Roundtrips(t *testing.T) {
 		t.Fatalf("stats control: %v %+v", err, v)
 	}
 
-	var rc PrivRoamingControl
-	for i := range rc {
-		rc[i] = byte(i)
+	rc := PrivRoamingControl{
+		Switch11K: 1, Switch11V: 1, Switch11R: 0,
+		Band2G: RoamingControlBand{TriggerType: 3, RssiTriggerThresh: -75,
+			RssiKickEnable: 1, RssiKickThresh: -80, RateTriggerThresh: 10,
+			RateKickEnable: 1, RateKickThresh: 5},
+		Band5G: RoamingControlBand{TriggerType: 1, RssiTriggerThresh: -70,
+			RssiKickEnable: 1, RssiKickThresh: -75},
+		ThresholdCheckInterval: 30, RoamingDif: 10,
+		BlacklistRestrictTime: 60, RoamingStrategy: 1,
+	}
+	rc.Reserved[14] = 0x5a
+	if w := rc.AssembleValue(); len(w) != 36 {
+		t.Fatalf("roaming control wire = %d bytes, want 36", len(w))
 	}
 	if v, err := ParsePrivRoamingControl(rc.AssembleValue()); err != nil || v != rc {
-		t.Fatalf("roaming control: %v", err)
+		t.Fatalf("roaming control: %v %+v", err, v)
+	}
+	if v, err := ParsePrivRoamingControl(rc.AssembleValue()[:35]); err == nil {
+		t.Fatalf("roaming control must be exactly 36 bytes: %+v", v)
 	}
 
 	sp := PrivStatPrd{A: 60, B: 300}
