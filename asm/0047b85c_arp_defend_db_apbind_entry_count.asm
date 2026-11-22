@@ -1,0 +1,19 @@
+; func arp_defend_db_apbind_entry_count @ 0x0047b85c size=0x48
+  47b85c:	27bdffd8 	addiu	sp,sp,-40
+  47b860:	2405ffff 	li	a1,-1
+  47b864:	afb0001c 	sw	s0,28(sp)
+  47b868:	3c100076 	lui	s0,0x76
+  47b86c:	afbf0024 	sw	ra,36(sp)
+  47b870:	261070f4 	addiu	s0,s0,28916
+  47b874:	afb10020 	sw	s1,32(sp)
+  47b878:	0c1020b4 	jal	0x4082d0
+  47b87c:	8e040004 	lw	a0,4(s0)
+  47b880:	8e040004 	lw	a0,4(s0)
+  47b884:	0c101fcc 	jal	0x407f30
+  47b888:	8e110014 	lw	s1,20(s0)
+  47b88c:	8fbf0024 	lw	ra,36(sp)
+  47b890:	02201021 	move	v0,s1
+  47b894:	8fb10020 	lw	s1,32(sp)
+  47b898:	8fb0001c 	lw	s0,28(sp)
+  47b89c:	03e00008 	jr	ra
+  47b8a0:	27bd0028 	addiu	sp,sp,40

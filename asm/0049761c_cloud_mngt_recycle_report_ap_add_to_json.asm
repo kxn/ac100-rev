@@ -1,0 +1,36 @@
+; func cloud_mngt_recycle_report_ap_add_to_json @ 0x0049761c size=0x8c
+  49761c:	27bdffd8 	addiu	sp,sp,-40
+  497620:	afb10020 	sw	s1,32(sp)
+  497624:	00a08821 	move	s1,a1
+  497628:	afb0001c 	sw	s0,28(sp)
+  49762c:	00808021 	move	s0,a0
+  497630:	1080000a 	beqz	a0,0x49765c
+  497634:	afbf0024 	sw	ra,36(sp)
+  497638:	808201c5 	lb	v0,453(a0)
+  49763c:	14400008 	bnez	v0,0x497660
+  497640:	8fbf0024 	lw	ra,36(sp)
+  497644:	8c82003c 	lw	v0,60(a0)
+  497648:	10400006 	beqz	v0,0x497664
+  49764c:	00001021 	move	v0,zero
+  497650:	8c82000c 	lw	v0,12(a0)
+  497654:	14400007 	bnez	v0,0x497674
+  497658:	00000000 	nop
+  49765c:	8fbf0024 	lw	ra,36(sp)
+  497660:	00001021 	move	v0,zero
+  497664:	8fb10020 	lw	s1,32(sp)
+  497668:	8fb0001c 	lw	s0,28(sp)
+  49766c:	03e00008 	jr	ra
+  497670:	27bd0028 	addiu	sp,sp,40
+  497674:	0c101f9c 	jal	0x407e70
+  497678:	00000000 	nop
+  49767c:	8e020284 	lw	v0,644(s0)
+  497680:	00621823 	subu	v1,v1,v0
+  497684:	2c630015 	sltiu	v1,v1,21
+  497688:	1460fff5 	bnez	v1,0x497660
+  49768c:	8fbf0024 	lw	ra,36(sp)
+  497690:	02002021 	move	a0,s0
+  497694:	02202821 	move	a1,s1
+  497698:	8fb0001c 	lw	s0,28(sp)
+  49769c:	8fb10020 	lw	s1,32(sp)
+  4976a0:	08124861 	j	0x492184
+  4976a4:	27bd0028 	addiu	sp,sp,40

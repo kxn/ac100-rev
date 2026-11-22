@@ -1,0 +1,22 @@
+; func sensor_cb_hash_obj @ 0x004eae9c size=0x54
+  4eae9c:	27bdffe0 	addiu	sp,sp,-32
+  4eaea0:	10800004 	beqz	a0,0x4eaeb4
+  4eaea4:	afbf001c 	sw	ra,28(sp)
+  4eaea8:	8fbf001c 	lw	ra,28(sp)
+  4eaeac:	0813ab7d 	j	0x4eadf4
+  4eaeb0:	27bd0020 	addiu	sp,sp,32
+  4eaeb4:	3c020073 	lui	v0,0x73
+  4eaeb8:	80421ab0 	lb	v0,6832(v0)
+  4eaebc:	14400005 	bnez	v0,0x4eaed4
+  4eaec0:	3c04006a 	lui	a0,0x6a
+  4eaec4:	8fbf001c 	lw	ra,28(sp)
+  4eaec8:	00001021 	move	v0,zero
+  4eaecc:	03e00008 	jr	ra
+  4eaed0:	27bd0020 	addiu	sp,sp,32
+  4eaed4:	3c05006b 	lui	a1,0x6b
+  4eaed8:	24846cb0 	addiu	a0,a0,27824
+  4eaedc:	24a5289c 	addiu	a1,a1,10396
+  4eaee0:	0c101b74 	jal	0x406dd0
+  4eaee4:	24060099 	li	a2,153
+  4eaee8:	0813abb2 	j	0x4eaec8
+  4eaeec:	8fbf001c 	lw	ra,28(sp)

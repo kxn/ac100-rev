@@ -1,0 +1,19 @@
+; func cw_80211_direct_sequence_control_len_get @ 0x005651f0 size=0x48
+  5651f0:	10800007 	beqz	a0,0x565210
+  5651f4:	00001021 	move	v0,zero
+  5651f8:	8c850008 	lw	a1,8(a0)
+  5651fc:	3c03ff00 	lui	v1,0xff00
+  565200:	3463ffff 	ori	v1,v1,0xffff
+  565204:	00a32824 	and	a1,a1,v1
+  565208:	10a30003 	beq	a1,v1,0x565218
+  56520c:	24020013 	li	v0,19
+  565210:	03e00008 	jr	ra
+  565214:	00000000 	nop
+  565218:	8c85000c 	lw	a1,12(a0)
+  56521c:	2403ffff 	li	v1,-1
+  565220:	14a3fffb 	bne	a1,v1,0x565210
+  565224:	24030008 	li	v1,8
+  565228:	8c840010 	lw	a0,16(a0)
+  56522c:	00042027 	nor	a0,zero,a0
+  565230:	03e00008 	jr	ra
+  565234:	0064100a 	movz	v0,v1,a0

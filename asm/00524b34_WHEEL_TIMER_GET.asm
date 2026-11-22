@@ -1,0 +1,27 @@
+; func WHEEL_TIMER_GET @ 0x00524b34 size=0x68
+  524b34:	3c1c0024 	lui	gp,0x24
+  524b38:	279cc5cc 	addiu	gp,gp,-14900
+  524b3c:	0399e021 	addu	gp,gp,t9
+  524b40:	27bdffe0 	addiu	sp,sp,-32
+  524b44:	8f9982f8 	lw	t9,-32008(gp)
+  524b48:	afbc0010 	sw	gp,16(sp)
+  524b4c:	afb00018 	sw	s0,24(sp)
+  524b50:	27394abc 	addiu	t9,t9,19132
+  524b54:	00808021 	move	s0,a0
+  524b58:	afbf001c 	sw	ra,28(sp)
+  524b5c:	0411ffd7 	bal	0x524abc
+  524b60:	7c849800 	ext	a0,a0,0x0,0x14
+  524b64:	1040000a 	beqz	v0,0x524b90
+  524b68:	8fbf001c 	lw	ra,28(sp)
+  524b6c:	90430054 	lbu	v1,84(v0)
+  524b70:	30630001 	andi	v1,v1,0x1
+  524b74:	50600006 	beqzl	v1,0x524b90
+  524b78:	00001021 	move	v0,zero
+  524b7c:	8c43000c 	lw	v1,12(v0)
+  524b80:	00708026 	xor	s0,v1,s0
+  524b84:	00108502 	srl	s0,s0,0x14
+  524b88:	0010100b 	movn	v0,zero,s0
+  524b8c:	8fbf001c 	lw	ra,28(sp)
+  524b90:	8fb00018 	lw	s0,24(sp)
+  524b94:	03e00008 	jr	ra
+  524b98:	27bd0020 	addiu	sp,sp,32

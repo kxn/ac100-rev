@@ -1,0 +1,24 @@
+; func _aut_sort_func @ 0x0042c88c size=0x5c
+  42c88c:	8c82000c 	lw	v0,12(a0)
+  42c890:	54400007 	bnezl	v0,0x42c8b0
+  42c894:	8ca2000c 	lw	v0,12(a1)
+  42c898:	8c820010 	lw	v0,16(a0)
+  42c89c:	3c03ffff 	lui	v1,0xffff
+  42c8a0:	00621024 	and	v0,v1,v0
+  42c8a4:	5040000d 	beqzl	v0,0x42c8dc
+  42c8a8:	24840058 	addiu	a0,a0,88
+  42c8ac:	8ca2000c 	lw	v0,12(a1)
+  42c8b0:	54400007 	bnezl	v0,0x42c8d0
+  42c8b4:	2484000c 	addiu	a0,a0,12
+  42c8b8:	8ca20010 	lw	v0,16(a1)
+  42c8bc:	3c03ffff 	lui	v1,0xffff
+  42c8c0:	00621024 	and	v0,v1,v0
+  42c8c4:	50400005 	beqzl	v0,0x42c8dc
+  42c8c8:	24840058 	addiu	a0,a0,88
+  42c8cc:	2484000c 	addiu	a0,a0,12
+  42c8d0:	24a5000c 	addiu	a1,a1,12
+  42c8d4:	08101e4c 	j	0x407930
+  42c8d8:	24060006 	li	a2,6
+  42c8dc:	24a50058 	addiu	a1,a1,88
+  42c8e0:	08101c04 	j	0x407010
+  42c8e4:	24060028 	li	a2,40

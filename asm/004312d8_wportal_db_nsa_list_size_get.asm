@@ -1,0 +1,21 @@
+; func wportal_db_nsa_list_size_get @ 0x004312d8 size=0x50
+  4312d8:	27bdffd8 	addiu	sp,sp,-40
+  4312dc:	2405ffff 	li	a1,-1
+  4312e0:	afb10020 	sw	s1,32(sp)
+  4312e4:	3c110076 	lui	s1,0x76
+  4312e8:	afbf0024 	sw	ra,36(sp)
+  4312ec:	afb0001c 	sw	s0,28(sp)
+  4312f0:	0c1020b4 	jal	0x4082d0
+  4312f4:	8e24a154 	lw	a0,-24236(s1)
+  4312f8:	3c020076 	lui	v0,0x76
+  4312fc:	0c101ff8 	jal	0x407fe0
+  431300:	8c44a15c 	lw	a0,-24228(v0)
+  431304:	8e24a154 	lw	a0,-24236(s1)
+  431308:	0c101fcc 	jal	0x407f30
+  43130c:	00408021 	move	s0,v0
+  431310:	02001021 	move	v0,s0
+  431314:	8fbf0024 	lw	ra,36(sp)
+  431318:	8fb10020 	lw	s1,32(sp)
+  43131c:	8fb0001c 	lw	s0,28(sp)
+  431320:	03e00008 	jr	ra
+  431324:	27bd0028 	addiu	sp,sp,40

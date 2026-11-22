@@ -1,0 +1,25 @@
+; func _sensor_di_sta_hash_obj @ 0x004dcc00 size=0x60
+  4dcc00:	27bdffe0 	addiu	sp,sp,-32
+  4dcc04:	10800007 	beqz	a0,0x4dcc24
+  4dcc08:	afbf001c 	sw	ra,28(sp)
+  4dcc0c:	8fbf001c 	lw	ra,28(sp)
+  4dcc10:	2484000c 	addiu	a0,a0,12
+  4dcc14:	24050006 	li	a1,6
+  4dcc18:	00003021 	move	a2,zero
+  4dcc1c:	081020f4 	j	0x4083d0
+  4dcc20:	27bd0020 	addiu	sp,sp,32
+  4dcc24:	3c020073 	lui	v0,0x73
+  4dcc28:	8c421ad0 	lw	v0,6864(v0)
+  4dcc2c:	14400005 	bnez	v0,0x4dcc44
+  4dcc30:	3c04006b 	lui	a0,0x6b
+  4dcc34:	8fbf001c 	lw	ra,28(sp)
+  4dcc38:	00001021 	move	v0,zero
+  4dcc3c:	03e00008 	jr	ra
+  4dcc40:	27bd0020 	addiu	sp,sp,32
+  4dcc44:	3c05006b 	lui	a1,0x6b
+  4dcc48:	2484a204 	addiu	a0,a0,-24060
+  4dcc4c:	24a5f784 	addiu	a1,a1,-2172
+  4dcc50:	0c101b74 	jal	0x406dd0
+  4dcc54:	240601d6 	li	a2,470
+  4dcc58:	0813730e 	j	0x4dcc38
+  4dcc5c:	8fbf001c 	lw	ra,28(sp)

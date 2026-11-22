@@ -1,0 +1,19 @@
+; func wportal_debug_show_nginx_auth_entry @ 0x0043599c size=0x48
+  43599c:	27bdfee0 	addiu	sp,sp,-288
+  4359a0:	24060100 	li	a2,256
+  4359a4:	27a40018 	addiu	a0,sp,24
+  4359a8:	afbf011c 	sw	ra,284(sp)
+  4359ac:	0c101cf0 	jal	0x4073c0
+  4359b0:	00002821 	move	a1,zero
+  4359b4:	3c050068 	lui	a1,0x68
+  4359b8:	27a40018 	addiu	a0,sp,24
+  4359bc:	0c101d5c 	jal	0x407570
+  4359c0:	24a5f968 	addiu	a1,a1,-1688
+  4359c4:	3c040068 	lui	a0,0x68
+  4359c8:	0c101dd4 	jal	0x407750
+  4359cc:	2484f984 	addiu	a0,a0,-1660
+  4359d0:	0c10d568 	jal	0x4355a0
+  4359d4:	27a40018 	addiu	a0,sp,24
+  4359d8:	8fbf011c 	lw	ra,284(sp)
+  4359dc:	03e00008 	jr	ra
+  4359e0:	27bd0120 	addiu	sp,sp,288

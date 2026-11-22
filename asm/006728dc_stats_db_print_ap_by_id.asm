@@ -1,0 +1,22 @@
+; func stats_db_print_ap_by_id @ 0x006728dc size=0x54
+  6728dc:	27bdffd8 	addiu	sp,sp,-40
+  6728e0:	afb1001c 	sw	s1,28(sp)
+  6728e4:	3c11007d 	lui	s1,0x7d
+  6728e8:	afb00018 	sw	s0,24(sp)
+  6728ec:	3090ffff 	andi	s0,a0,0xffff
+  6728f0:	afb20020 	sw	s2,32(sp)
+  6728f4:	00a09021 	move	s2,a1
+  6728f8:	afbf0024 	sw	ra,36(sp)
+  6728fc:	2405ffff 	li	a1,-1
+  672900:	0c1020b4 	jal	0x4082d0
+  672904:	8e24c8d8 	lw	a0,-14120(s1)
+  672908:	02002021 	move	a0,s0
+  67290c:	0c19c64a 	jal	0x671928
+  672910:	02402821 	move	a1,s2
+  672914:	8e24c8d8 	lw	a0,-14120(s1)
+  672918:	8fbf0024 	lw	ra,36(sp)
+  67291c:	8fb20020 	lw	s2,32(sp)
+  672920:	8fb1001c 	lw	s1,28(sp)
+  672924:	8fb00018 	lw	s0,24(sp)
+  672928:	08101fcc 	j	0x407f30
+  67292c:	27bd0028 	addiu	sp,sp,40

@@ -1,0 +1,19 @@
+; func _uac_dhcpdef_packet_bind_svr_get @ 0x00460ae8 size=0x48
+  460ae8:	27bdffe0 	addiu	sp,sp,-32
+  460aec:	afbf001c 	sw	ra,28(sp)
+  460af0:	90a3009b 	lbu	v1,155(a1)
+  460af4:	2c670002 	sltiu	a3,v1,2
+  460af8:	10e0000a 	beqz	a3,0x460b24
+  460afc:	2402ffff 	li	v0,-1
+  460b00:	24020007 	li	v0,7
+  460b04:	24a5009c 	addiu	a1,a1,156
+  460b08:	70822002 	mul	a0,a0,v0
+  460b0c:	00c42021 	addu	a0,a2,a0
+  460b10:	24060006 	li	a2,6
+  460b14:	a0830000 	sb	v1,0(a0)
+  460b18:	0c101c8c 	jal	0x407230
+  460b1c:	24840001 	addiu	a0,a0,1
+  460b20:	00001021 	move	v0,zero
+  460b24:	8fbf001c 	lw	ra,28(sp)
+  460b28:	03e00008 	jr	ra
+  460b2c:	27bd0020 	addiu	sp,sp,32

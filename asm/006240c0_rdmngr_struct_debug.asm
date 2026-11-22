@@ -1,0 +1,7 @@
+; func rdmngr_struct_debug @ 0x006240c0 size=0x18
+  6240c0:	3c040071 	lui	a0,0x71
+  6240c4:	24050054 	li	a1,84
+  6240c8:	2484a73c 	addiu	a0,a0,-22724
+  6240cc:	24060048 	li	a2,72
+  6240d0:	08101b74 	j	0x406dd0
+  6240d4:	24070005 	li	a3,5

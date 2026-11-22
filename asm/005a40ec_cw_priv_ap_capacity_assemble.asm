@@ -1,0 +1,25 @@
+; func cw_priv_ap_capacity_assemble @ 0x005a40ec size=0x60
+  5a40ec:	27bdffd8 	addiu	sp,sp,-40
+  5a40f0:	afbf0024 	sw	ra,36(sp)
+  5a40f4:	afb20020 	sw	s2,32(sp)
+  5a40f8:	afb1001c 	sw	s1,28(sp)
+  5a40fc:	00a08821 	move	s1,a1
+  5a4100:	afb00018 	sw	s0,24(sp)
+  5a4104:	00808021 	move	s0,a0
+  5a4108:	8ca20010 	lw	v0,16(a1)
+  5a410c:	94920004 	lhu	s2,4(a0)
+  5a4110:	0c15c7ea 	jal	0x571fa8
+  5a4114:	8c450000 	lw	a1,0(v0)
+  5a4118:	96020004 	lhu	v0,4(s0)
+  5a411c:	9623000e 	lhu	v1,14(s1)
+  5a4120:	8fbf0024 	lw	ra,36(sp)
+  5a4124:	00529023 	subu	s2,v0,s2
+  5a4128:	8fb1001c 	lw	s1,28(sp)
+  5a412c:	8fb00018 	lw	s0,24(sp)
+  5a4130:	02431026 	xor	v0,s2,v1
+  5a4134:	8fb20020 	lw	s2,32(sp)
+  5a4138:	2403ffff 	li	v1,-1
+  5a413c:	27bd0028 	addiu	sp,sp,40
+  5a4140:	0002180a 	movz	v1,zero,v0
+  5a4144:	03e00008 	jr	ra
+  5a4148:	00601021 	move	v0,v1

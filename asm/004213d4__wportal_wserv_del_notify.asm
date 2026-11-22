@@ -1,0 +1,32 @@
+; func _wportal_wserv_del_notify @ 0x004213d4 size=0x7c
+  4213d4:	3c020076 	lui	v0,0x76
+  4213d8:	27bdffe0 	addiu	sp,sp,-32
+  4213dc:	8c42a0b8 	lw	v0,-24392(v0)
+  4213e0:	afb00018 	sw	s0,24(sp)
+  4213e4:	00808021 	move	s0,a0
+  4213e8:	1440000c 	bnez	v0,0x42141c
+  4213ec:	afbf001c 	sw	ra,28(sp)
+  4213f0:	3c020076 	lui	v0,0x76
+  4213f4:	8c429f50 	lw	v0,-24752(v0)
+  4213f8:	14400004 	bnez	v0,0x42140c
+  4213fc:	8fbf001c 	lw	ra,28(sp)
+  421400:	0c1084b2 	jal	0x4212c8
+  421404:	02002021 	move	a0,s0
+  421408:	8fbf001c 	lw	ra,28(sp)
+  42140c:	00001021 	move	v0,zero
+  421410:	8fb00018 	lw	s0,24(sp)
+  421414:	03e00008 	jr	ra
+  421418:	27bd0020 	addiu	sp,sp,32
+  42141c:	0c16276a 	jal	0x589da8
+  421420:	00000000 	nop
+  421424:	5040fff3 	beqzl	v0,0x4213f4
+  421428:	3c020076 	lui	v0,0x76
+  42142c:	3c040068 	lui	a0,0x68
+  421430:	3c050068 	lui	a1,0x68
+  421434:	24849884 	addiu	a0,a0,-26492
+  421438:	24a5c024 	addiu	a1,a1,-16348
+  42143c:	24062e75 	li	a2,11893
+  421440:	0c101b74 	jal	0x406dd0
+  421444:	02003821 	move	a3,s0
+  421448:	081084fd 	j	0x4213f4
+  42144c:	3c020076 	lui	v0,0x76

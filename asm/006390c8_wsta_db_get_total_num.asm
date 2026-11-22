@@ -1,0 +1,19 @@
+; func wsta_db_get_total_num @ 0x006390c8 size=0x48
+  6390c8:	27bdffd8 	addiu	sp,sp,-40
+  6390cc:	2405ffff 	li	a1,-1
+  6390d0:	afb0001c 	sw	s0,28(sp)
+  6390d4:	3c10007d 	lui	s0,0x7d
+  6390d8:	afbf0024 	sw	ra,36(sp)
+  6390dc:	2610c6b8 	addiu	s0,s0,-14664
+  6390e0:	afb10020 	sw	s1,32(sp)
+  6390e4:	0c1020b4 	jal	0x4082d0
+  6390e8:	8e040004 	lw	a0,4(s0)
+  6390ec:	8e040004 	lw	a0,4(s0)
+  6390f0:	0c101fcc 	jal	0x407f30
+  6390f4:	8e110028 	lw	s1,40(s0)
+  6390f8:	8fbf0024 	lw	ra,36(sp)
+  6390fc:	02201021 	move	v0,s1
+  639100:	8fb10020 	lw	s1,32(sp)
+  639104:	8fb0001c 	lw	s0,28(sp)
+  639108:	03e00008 	jr	ra
+  63910c:	27bd0028 	addiu	sp,sp,40

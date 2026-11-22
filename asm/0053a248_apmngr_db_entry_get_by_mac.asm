@@ -1,0 +1,51 @@
+; func apmngr_db_entry_get_by_mac @ 0x0053a248 size=0xc8
+  53a248:	27bdffd8 	addiu	sp,sp,-40
+  53a24c:	afb1001c 	sw	s1,28(sp)
+  53a250:	00a08821 	move	s1,a1
+  53a254:	afb00018 	sw	s0,24(sp)
+  53a258:	00808021 	move	s0,a0
+  53a25c:	afbf0024 	sw	ra,36(sp)
+  53a260:	1080001b 	beqz	a0,0x53a2d0
+  53a264:	afb20020 	sw	s2,32(sp)
+  53a268:	3c12007c 	lui	s2,0x7c
+  53a26c:	2405ffff 	li	a1,-1
+  53a270:	0c1020b4 	jal	0x4082d0
+  53a274:	8e445874 	lw	a0,22644(s2)
+  53a278:	3c02007c 	lui	v0,0x7c
+  53a27c:	02002821 	move	a1,s0
+  53a280:	2410ffff 	li	s0,-1
+  53a284:	0c101fe8 	jal	0x407fa0
+  53a288:	8c4458a4 	lw	a0,22692(v0)
+  53a28c:	10400007 	beqz	v0,0x53a2ac
+  53a290:	00000000 	nop
+  53a294:	12200005 	beqz	s1,0x53a2ac
+  53a298:	00008021 	move	s0,zero
+  53a29c:	240602d8 	li	a2,728
+  53a2a0:	02202021 	move	a0,s1
+  53a2a4:	0c101c8c 	jal	0x407230
+  53a2a8:	00402821 	move	a1,v0
+  53a2ac:	0c101fcc 	jal	0x407f30
+  53a2b0:	8e445874 	lw	a0,22644(s2)
+  53a2b4:	8fbf0024 	lw	ra,36(sp)
+  53a2b8:	02001021 	move	v0,s0
+  53a2bc:	8fb20020 	lw	s2,32(sp)
+  53a2c0:	8fb1001c 	lw	s1,28(sp)
+  53a2c4:	8fb00018 	lw	s0,24(sp)
+  53a2c8:	03e00008 	jr	ra
+  53a2cc:	27bd0028 	addiu	sp,sp,40
+  53a2d0:	3c020075 	lui	v0,0x75
+  53a2d4:	8042bea4 	lb	v0,-16732(v0)
+  53a2d8:	1040fff6 	beqz	v0,0x53a2b4
+  53a2dc:	2410ffff 	li	s0,-1
+  53a2e0:	0c16276a 	jal	0x589da8
+  53a2e4:	00000000 	nop
+  53a2e8:	1040fff3 	beqz	v0,0x53a2b8
+  53a2ec:	8fbf0024 	lw	ra,36(sp)
+  53a2f0:	3c04006d 	lui	a0,0x6d
+  53a2f4:	3c05006d 	lui	a1,0x6d
+  53a2f8:	24848b50 	addiu	a0,a0,-29872
+  53a2fc:	24a59fe0 	addiu	a1,a1,-24608
+  53a300:	0c101b74 	jal	0x406dd0
+  53a304:	240606d6 	li	a2,1750
+  53a308:	0814e8ad 	j	0x53a2b4
+  53a30c:	00000000 	nop

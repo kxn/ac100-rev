@@ -1,0 +1,37 @@
+; func cw_protocol_retrieve8 @ 0x005716c0 size=0x90
+  5716c0:	27bdffe0 	addiu	sp,sp,-32
+  5716c4:	afbf001c 	sw	ra,28(sp)
+  5716c8:	10800011 	beqz	a0,0x571710
+  5716cc:	afb00018 	sw	s0,24(sp)
+  5716d0:	8c830000 	lw	v1,0(a0)
+  5716d4:	1060000f 	beqz	v1,0x571714
+  5716d8:	3c020075 	lui	v0,0x75
+  5716dc:	94820006 	lhu	v0,6(a0)
+  5716e0:	94850004 	lhu	a1,4(a0)
+  5716e4:	50a2000b 	beql	a1,v0,0x571714
+  5716e8:	3c020075 	lui	v0,0x75
+  5716ec:	00621821 	addu	v1,v1,v0
+  5716f0:	24420001 	addiu	v0,v0,1
+  5716f4:	90700000 	lbu	s0,0(v1)
+  5716f8:	a4820006 	sh	v0,6(a0)
+  5716fc:	8fbf001c 	lw	ra,28(sp)
+  571700:	02001021 	move	v0,s0
+  571704:	8fb00018 	lw	s0,24(sp)
+  571708:	03e00008 	jr	ra
+  57170c:	27bd0020 	addiu	sp,sp,32
+  571710:	3c020075 	lui	v0,0x75
+  571714:	8c42cf58 	lw	v0,-12456(v0)
+  571718:	1040fff8 	beqz	v0,0x5716fc
+  57171c:	00008021 	move	s0,zero
+  571720:	0c16276a 	jal	0x589da8
+  571724:	00000000 	nop
+  571728:	5040fff5 	beqzl	v0,0x571700
+  57172c:	8fbf001c 	lw	ra,28(sp)
+  571730:	3c04006d 	lui	a0,0x6d
+  571734:	3c05006d 	lui	a1,0x6d
+  571738:	24847cb0 	addiu	a0,a0,31920
+  57173c:	24a57d10 	addiu	a1,a1,32016
+  571740:	0c101b74 	jal	0x406dd0
+  571744:	24060043 	li	a2,67
+  571748:	0815c5c0 	j	0x571700
+  57174c:	8fbf001c 	lw	ra,28(sp)

@@ -1,0 +1,19 @@
+; func rate_db_dump @ 0x0055d52c size=0x48
+  55d52c:	27bdffe0 	addiu	sp,sp,-32
+  55d530:	2405ffff 	li	a1,-1
+  55d534:	afb00018 	sw	s0,24(sp)
+  55d538:	3c10007c 	lui	s0,0x7c
+  55d53c:	afbf001c 	sw	ra,28(sp)
+  55d540:	0c1020b4 	jal	0x4082d0
+  55d544:	8e045930 	lw	a0,22832(s0)
+  55d548:	3c02007c 	lui	v0,0x7c
+  55d54c:	0c157a18 	jal	0x55e860
+  55d550:	8c445934 	lw	a0,22836(v0)
+  55d554:	3c02007c 	lui	v0,0x7c
+  55d558:	0c157a86 	jal	0x55ea18
+  55d55c:	8c445938 	lw	a0,22840(v0)
+  55d560:	8e045930 	lw	a0,22832(s0)
+  55d564:	8fbf001c 	lw	ra,28(sp)
+  55d568:	8fb00018 	lw	s0,24(sp)
+  55d56c:	08101fcc 	j	0x407f30
+  55d570:	27bd0020 	addiu	sp,sp,32

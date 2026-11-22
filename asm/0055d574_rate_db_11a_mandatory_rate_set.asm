@@ -1,0 +1,27 @@
+; func rate_db_11a_mandatory_rate_set @ 0x0055d574 size=0x68
+  55d574:	27bdffd8 	addiu	sp,sp,-40
+  55d578:	afb20020 	sw	s2,32(sp)
+  55d57c:	3c12007c 	lui	s2,0x7c
+  55d580:	afb00018 	sw	s0,24(sp)
+  55d584:	00808021 	move	s0,a0
+  55d588:	afb1001c 	sw	s1,28(sp)
+  55d58c:	00a08821 	move	s1,a1
+  55d590:	afbf0024 	sw	ra,36(sp)
+  55d594:	2405ffff 	li	a1,-1
+  55d598:	0c1020b4 	jal	0x4082d0
+  55d59c:	8e445930 	lw	a0,22832(s2)
+  55d5a0:	3c02007c 	lui	v0,0x7c
+  55d5a4:	02002821 	move	a1,s0
+  55d5a8:	02203021 	move	a2,s1
+  55d5ac:	0c157afa 	jal	0x55ebe8
+  55d5b0:	8c445934 	lw	a0,22836(v0)
+  55d5b4:	8e445930 	lw	a0,22832(s2)
+  55d5b8:	0c101fcc 	jal	0x407f30
+  55d5bc:	00408021 	move	s0,v0
+  55d5c0:	02001021 	move	v0,s0
+  55d5c4:	8fbf0024 	lw	ra,36(sp)
+  55d5c8:	8fb20020 	lw	s2,32(sp)
+  55d5cc:	8fb1001c 	lw	s1,28(sp)
+  55d5d0:	8fb00018 	lw	s0,24(sp)
+  55d5d4:	03e00008 	jr	ra
+  55d5d8:	27bd0028 	addiu	sp,sp,40

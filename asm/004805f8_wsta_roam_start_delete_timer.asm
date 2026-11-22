@@ -1,0 +1,25 @@
+; func wsta_roam_start_delete_timer @ 0x004805f8 size=0x60
+  4805f8:	27bdffe0 	addiu	sp,sp,-32
+  4805fc:	afbf001c 	sw	ra,28(sp)
+  480600:	10800009 	beqz	a0,0x480628
+  480604:	afb00018 	sw	s0,24(sp)
+  480608:	24840068 	addiu	a0,a0,104
+  48060c:	0c12087d 	jal	0x4821f4
+  480610:	00008021 	move	s0,zero
+  480614:	8fbf001c 	lw	ra,28(sp)
+  480618:	02001021 	move	v0,s0
+  48061c:	8fb00018 	lw	s0,24(sp)
+  480620:	03e00008 	jr	ra
+  480624:	27bd0020 	addiu	sp,sp,32
+  480628:	3c020073 	lui	v0,0x73
+  48062c:	804214d0 	lb	v0,5328(v0)
+  480630:	1040fff8 	beqz	v0,0x480614
+  480634:	2410ffff 	li	s0,-1
+  480638:	3c040069 	lui	a0,0x69
+  48063c:	3c050069 	lui	a1,0x69
+  480640:	248434b0 	addiu	a0,a0,13488
+  480644:	24a53f70 	addiu	a1,a1,16240
+  480648:	0c101b74 	jal	0x406dd0
+  48064c:	2406015f 	li	a2,351
+  480650:	08120186 	j	0x480618
+  480654:	8fbf001c 	lw	ra,28(sp)

@@ -1,0 +1,26 @@
+; func apupd_db_remove_group_in_model_hash @ 0x006584d8 size=0x64
+  6584d8:	27bdffd0 	addiu	sp,sp,-48
+  6584dc:	afb00024 	sw	s0,36(sp)
+  6584e0:	3c10007d 	lui	s0,0x7d
+  6584e4:	afbf002c 	sw	ra,44(sp)
+  6584e8:	afb10028 	sw	s1,40(sp)
+  6584ec:	8e02c788 	lw	v0,-14456(s0)
+  6584f0:	1040000d 	beqz	v0,0x658528
+  6584f4:	3c11007d 	lui	s1,0x7d
+  6584f8:	afa40018 	sw	a0,24(sp)
+  6584fc:	afa5001c 	sw	a1,28(sp)
+  658500:	2405ffff 	li	a1,-1
+  658504:	0c1020b4 	jal	0x4082d0
+  658508:	8e24c778 	lw	a0,-14472(s1)
+  65850c:	3c050065 	lui	a1,0x65
+  658510:	8e04c788 	lw	a0,-14456(s0)
+  658514:	27a60018 	addiu	a2,sp,24
+  658518:	0c10215c 	jal	0x408570
+  65851c:	24a5c088 	addiu	a1,a1,-16248
+  658520:	0c101fcc 	jal	0x407f30
+  658524:	8e24c778 	lw	a0,-14472(s1)
+  658528:	8fbf002c 	lw	ra,44(sp)
+  65852c:	8fb10028 	lw	s1,40(sp)
+  658530:	8fb00024 	lw	s0,36(sp)
+  658534:	03e00008 	jr	ra
+  658538:	27bd0030 	addiu	sp,sp,48

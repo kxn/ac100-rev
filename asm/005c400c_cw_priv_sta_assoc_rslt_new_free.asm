@@ -1,0 +1,19 @@
+; func cw_priv_sta_assoc_rslt_new_free @ 0x005c400c size=0x48
+  5c400c:	27bdffd8 	addiu	sp,sp,-40
+  5c4010:	afb10020 	sw	s1,32(sp)
+  5c4014:	afbf0024 	sw	ra,36(sp)
+  5c4018:	afb0001c 	sw	s0,28(sp)
+  5c401c:	8c900010 	lw	s0,16(a0)
+  5c4020:	12000006 	beqz	s0,0x5c403c
+  5c4024:	00808821 	move	s1,a0
+  5c4028:	0c170fdb 	jal	0x5c3f6c
+  5c402c:	02002021 	move	a0,s0
+  5c4030:	0c101f7c 	jal	0x407df0
+  5c4034:	02002021 	move	a0,s0
+  5c4038:	ae200010 	sw	zero,16(s1)
+  5c403c:	8fbf0024 	lw	ra,36(sp)
+  5c4040:	00001021 	move	v0,zero
+  5c4044:	8fb10020 	lw	s1,32(sp)
+  5c4048:	8fb0001c 	lw	s0,28(sp)
+  5c404c:	03e00008 	jr	ra
+  5c4050:	27bd0028 	addiu	sp,sp,40

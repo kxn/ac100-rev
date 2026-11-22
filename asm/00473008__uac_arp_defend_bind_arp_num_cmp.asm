@@ -1,0 +1,32 @@
+; func _uac_arp_defend_bind_arp_num_cmp @ 0x00473008 size=0x7c
+  473008:	27bdffc8 	addiu	sp,sp,-56
+  47300c:	afb1002c 	sw	s1,44(sp)
+  473010:	24110001 	li	s1,1
+  473014:	afb00028 	sw	s0,40(sp)
+  473018:	00808021 	move	s0,a0
+  47301c:	afbf0034 	sw	ra,52(sp)
+  473020:	00a02021 	move	a0,a1
+  473024:	afb20030 	sw	s2,48(sp)
+  473028:	afa00018 	sw	zero,24(sp)
+  47302c:	afa0001c 	sw	zero,28(sp)
+  473030:	afa00020 	sw	zero,32(sp)
+  473034:	10a0000c 	beqz	a1,0x473068
+  473038:	afa00024 	sw	zero,36(sp)
+  47303c:	0c101db4 	jal	0x4076d0
+  473040:	00000000 	nop
+  473044:	27a50018 	addiu	a1,sp,24
+  473048:	02002021 	move	a0,s0
+  47304c:	0c11f1df 	jal	0x47c77c
+  473050:	00409021 	move	s2,v0
+  473054:	14400005 	bnez	v0,0x47306c
+  473058:	8fbf0034 	lw	ra,52(sp)
+  47305c:	8fb10020 	lw	s1,32(sp)
+  473060:	02328826 	xor	s1,s1,s2
+  473064:	0011882b 	sltu	s1,zero,s1
+  473068:	8fbf0034 	lw	ra,52(sp)
+  47306c:	02201021 	move	v0,s1
+  473070:	8fb20030 	lw	s2,48(sp)
+  473074:	8fb1002c 	lw	s1,44(sp)
+  473078:	8fb00028 	lw	s0,40(sp)
+  47307c:	03e00008 	jr	ra
+  473080:	27bd0038 	addiu	sp,sp,56

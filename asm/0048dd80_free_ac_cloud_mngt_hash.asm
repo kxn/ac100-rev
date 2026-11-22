@@ -1,0 +1,24 @@
+; func free_ac_cloud_mngt_hash @ 0x0048dd80 size=0x5c
+  48dd80:	27bdffe0 	addiu	sp,sp,-32
+  48dd84:	afb00018 	sw	s0,24(sp)
+  48dd88:	00808021 	move	s0,a0
+  48dd8c:	1080000d 	beqz	a0,0x48ddc4
+  48dd90:	afbf001c 	sw	ra,28(sp)
+  48dd94:	8c840000 	lw	a0,0(a0)
+  48dd98:	1080000a 	beqz	a0,0x48ddc4
+  48dd9c:	24020001 	li	v0,1
+  48dda0:	10a2000c 	beq	a1,v0,0x48ddd4
+  48dda4:	3c050049 	lui	a1,0x49
+  48dda8:	3c050049 	lui	a1,0x49
+  48ddac:	24a5be38 	addiu	a1,a1,-16840
+  48ddb0:	0c10215c 	jal	0x408570
+  48ddb4:	00003021 	move	a2,zero
+  48ddb8:	0c1020c4 	jal	0x408310
+  48ddbc:	8e040000 	lw	a0,0(s0)
+  48ddc0:	ae000000 	sw	zero,0(s0)
+  48ddc4:	8fbf001c 	lw	ra,28(sp)
+  48ddc8:	8fb00018 	lw	s0,24(sp)
+  48ddcc:	03e00008 	jr	ra
+  48ddd0:	27bd0020 	addiu	sp,sp,32
+  48ddd4:	0812376c 	j	0x48ddb0
+  48ddd8:	24a5bf58 	addiu	a1,a1,-16552

@@ -1,0 +1,35 @@
+; func wportal_db_nsa_first_get @ 0x00430bc8 size=0x88
+  430bc8:	27bdffd8 	addiu	sp,sp,-40
+  430bcc:	afb20020 	sw	s2,32(sp)
+  430bd0:	2412ffff 	li	s2,-1
+  430bd4:	afb00018 	sw	s0,24(sp)
+  430bd8:	00808021 	move	s0,a0
+  430bdc:	afbf0024 	sw	ra,36(sp)
+  430be0:	10800010 	beqz	a0,0x430c24
+  430be4:	afb1001c 	sw	s1,28(sp)
+  430be8:	3c110076 	lui	s1,0x76
+  430bec:	2405ffff 	li	a1,-1
+  430bf0:	0c1020b4 	jal	0x4082d0
+  430bf4:	8e24a154 	lw	a0,-24236(s1)
+  430bf8:	3c020076 	lui	v0,0x76
+  430bfc:	0c10206c 	jal	0x4081b0
+  430c00:	8c44a15c 	lw	a0,-24228(v0)
+  430c04:	1040000e 	beqz	v0,0x430c40
+  430c08:	00000000 	nop
+  430c0c:	02002021 	move	a0,s0
+  430c10:	0c10ad9f 	jal	0x42b67c
+  430c14:	00402821 	move	a1,v0
+  430c18:	00009021 	move	s2,zero
+  430c1c:	0c101fcc 	jal	0x407f30
+  430c20:	8e24a154 	lw	a0,-24236(s1)
+  430c24:	8fbf0024 	lw	ra,36(sp)
+  430c28:	02401021 	move	v0,s2
+  430c2c:	8fb20020 	lw	s2,32(sp)
+  430c30:	8fb1001c 	lw	s1,28(sp)
+  430c34:	8fb00018 	lw	s0,24(sp)
+  430c38:	03e00008 	jr	ra
+  430c3c:	27bd0028 	addiu	sp,sp,40
+  430c40:	0c101fcc 	jal	0x407f30
+  430c44:	8e24a154 	lw	a0,-24236(s1)
+  430c48:	0810c30a 	j	0x430c28
+  430c4c:	8fbf0024 	lw	ra,36(sp)

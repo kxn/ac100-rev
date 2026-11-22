@@ -1,0 +1,20 @@
+; func band_navigation_debug_help @ 0x0055f918 size=0x4c
+  55f918:	3c040068 	lui	a0,0x68
+  55f91c:	27bdffe0 	addiu	sp,sp,-32
+  55f920:	afbf001c 	sw	ra,28(sp)
+  55f924:	0c101dd4 	jal	0x407750
+  55f928:	248454e0 	addiu	a0,a0,21728
+  55f92c:	3c04006d 	lui	a0,0x6d
+  55f930:	0c101dd4 	jal	0x407750
+  55f934:	24841c94 	addiu	a0,a0,7316
+  55f938:	3c040068 	lui	a0,0x68
+  55f93c:	0c101dd4 	jal	0x407750
+  55f940:	24845628 	addiu	a0,a0,22056
+  55f944:	3c04006d 	lui	a0,0x6d
+  55f948:	0c101dd4 	jal	0x407750
+  55f94c:	24841cd4 	addiu	a0,a0,7380
+  55f950:	3c04006d 	lui	a0,0x6d
+  55f954:	8fbf001c 	lw	ra,28(sp)
+  55f958:	27bd0020 	addiu	sp,sp,32
+  55f95c:	08101dd4 	j	0x407750
+  55f960:	24841d08 	addiu	a0,a0,7432

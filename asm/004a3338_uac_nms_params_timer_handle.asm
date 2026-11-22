@@ -1,0 +1,44 @@
+; func uac_nms_params_timer_handle @ 0x004a3338 size=0xac
+  4a3338:	27bdffe0 	addiu	sp,sp,-32
+  4a333c:	afbf001c 	sw	ra,28(sp)
+  4a3340:	0c127d88 	jal	0x49f620
+  4a3344:	afb00018 	sw	s0,24(sp)
+  4a3348:	10400005 	beqz	v0,0x4a3360
+  4a334c:	00000000 	nop
+  4a3350:	8fbf001c 	lw	ra,28(sp)
+  4a3354:	8fb00018 	lw	s0,24(sp)
+  4a3358:	03e00008 	jr	ra
+  4a335c:	27bd0020 	addiu	sp,sp,32
+  4a3360:	0c101f9c 	jal	0x407e70
+  4a3364:	00000000 	nop
+  4a3368:	3c020076 	lui	v0,0x76
+  4a336c:	8c427af4 	lw	v0,31476(v0)
+  4a3370:	00621823 	subu	v1,v1,v0
+  4a3374:	2863003d 	slti	v1,v1,61
+  4a3378:	1460fff5 	bnez	v1,0x4a3350
+  4a337c:	3c020076 	lui	v0,0x76
+  4a3380:	80427892 	lb	v0,30866(v0)
+  4a3384:	1440000f 	bnez	v0,0x4a33c4
+  4a3388:	3c100076 	lui	s0,0x76
+  4a338c:	2405ffff 	li	a1,-1
+  4a3390:	0c1020b4 	jal	0x4082d0
+  4a3394:	8e047b1c 	lw	a0,31516(s0)
+  4a3398:	3c020076 	lui	v0,0x76
+  4a339c:	24030001 	li	v1,1
+  4a33a0:	ac437b28 	sw	v1,31528(v0)
+  4a33a4:	3c020076 	lui	v0,0x76
+  4a33a8:	0c10212c 	jal	0x4084b0
+  4a33ac:	8c447b20 	lw	a0,31520(v0)
+  4a33b0:	8e047b1c 	lw	a0,31516(s0)
+  4a33b4:	8fbf001c 	lw	ra,28(sp)
+  4a33b8:	8fb00018 	lw	s0,24(sp)
+  4a33bc:	08101fcc 	j	0x407f30
+  4a33c0:	27bd0020 	addiu	sp,sp,32
+  4a33c4:	3c04006a 	lui	a0,0x6a
+  4a33c8:	3c05006a 	lui	a1,0x6a
+  4a33cc:	2484d928 	addiu	a0,a0,-9944
+  4a33d0:	24a5daa4 	addiu	a1,a1,-9564
+  4a33d4:	0c101b74 	jal	0x406dd0
+  4a33d8:	2406018b 	li	a2,395
+  4a33dc:	08128ce3 	j	0x4a338c
+  4a33e0:	3c100076 	lui	s0,0x76

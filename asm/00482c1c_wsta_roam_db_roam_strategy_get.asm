@@ -1,0 +1,19 @@
+; func wsta_roam_db_roam_strategy_get @ 0x00482c1c size=0x48
+  482c1c:	27bdffd8 	addiu	sp,sp,-40
+  482c20:	2405ffff 	li	a1,-1
+  482c24:	afb0001c 	sw	s0,28(sp)
+  482c28:	3c100076 	lui	s0,0x76
+  482c2c:	afbf0024 	sw	ra,36(sp)
+  482c30:	afb10020 	sw	s1,32(sp)
+  482c34:	0c1020b4 	jal	0x4082d0
+  482c38:	8e047540 	lw	a0,30016(s0)
+  482c3c:	3c020073 	lui	v0,0x73
+  482c40:	8e047540 	lw	a0,30016(s0)
+  482c44:	0c101fcc 	jal	0x407f30
+  482c48:	8c5114e8 	lw	s1,5352(v0)
+  482c4c:	8fbf0024 	lw	ra,36(sp)
+  482c50:	02201021 	move	v0,s1
+  482c54:	8fb0001c 	lw	s0,28(sp)
+  482c58:	8fb10020 	lw	s1,32(sp)
+  482c5c:	03e00008 	jr	ra
+  482c60:	27bd0028 	addiu	sp,sp,40

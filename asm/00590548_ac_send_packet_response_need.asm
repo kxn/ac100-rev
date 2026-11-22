@@ -1,0 +1,19 @@
+; func ac_send_packet_response_need @ 0x00590548 size=0x48
+  590548:	27bdffe0 	addiu	sp,sp,-32
+  59054c:	10800006 	beqz	a0,0x590568
+  590550:	afbf001c 	sw	ra,28(sp)
+  590554:	8c820000 	lw	v0,0(a0)
+  590558:	0002102b 	sltu	v0,zero,v0
+  59055c:	8fbf001c 	lw	ra,28(sp)
+  590560:	03e00008 	jr	ra
+  590564:	27bd0020 	addiu	sp,sp,32
+  590568:	3c040069 	lui	a0,0x69
+  59056c:	3c05006e 	lui	a1,0x6e
+  590570:	3c07006e 	lui	a3,0x6e
+  590574:	2484d3ac 	addiu	a0,a0,-11348
+  590578:	24a52378 	addiu	a1,a1,9080
+  59057c:	24060088 	li	a2,136
+  590580:	0c101b74 	jal	0x406dd0
+  590584:	24e715c0 	addiu	a3,a3,5568
+  590588:	08164157 	j	0x59055c
+  59058c:	00001021 	move	v0,zero

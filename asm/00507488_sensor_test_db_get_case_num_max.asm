@@ -1,0 +1,19 @@
+; func sensor_test_db_get_case_num_max @ 0x00507488 size=0x48
+  507488:	27bdffd8 	addiu	sp,sp,-40
+  50748c:	2405ffff 	li	a1,-1
+  507490:	afb0001c 	sw	s0,28(sp)
+  507494:	3c100077 	lui	s0,0x77
+  507498:	afbf0024 	sw	ra,36(sp)
+  50749c:	afb10020 	sw	s1,32(sp)
+  5074a0:	0c1020b4 	jal	0x4082d0
+  5074a4:	8e0488a8 	lw	a0,-30552(s0)
+  5074a8:	3c020077 	lui	v0,0x77
+  5074ac:	8e0488a8 	lw	a0,-30552(s0)
+  5074b0:	0c101fcc 	jal	0x407f30
+  5074b4:	8c5188a0 	lw	s1,-30560(v0)
+  5074b8:	8fbf0024 	lw	ra,36(sp)
+  5074bc:	02201021 	move	v0,s1
+  5074c0:	8fb0001c 	lw	s0,28(sp)
+  5074c4:	8fb10020 	lw	s1,32(sp)
+  5074c8:	03e00008 	jr	ra
+  5074cc:	27bd0028 	addiu	sp,sp,40

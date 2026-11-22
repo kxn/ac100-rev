@@ -1,0 +1,21 @@
+; func dhcpdef_str2iptype @ 0x00467068 size=0x50
+  467068:	27bdffe0 	addiu	sp,sp,-32
+  46706c:	2405002e 	li	a1,46
+  467070:	afb00018 	sw	s0,24(sp)
+  467074:	afbf001c 	sw	ra,28(sp)
+  467078:	0c101bf8 	jal	0x406fe0
+  46707c:	00808021 	move	s0,a0
+  467080:	10400006 	beqz	v0,0x46709c
+  467084:	00001821 	move	v1,zero
+  467088:	8fbf001c 	lw	ra,28(sp)
+  46708c:	00601021 	move	v0,v1
+  467090:	8fb00018 	lw	s0,24(sp)
+  467094:	03e00008 	jr	ra
+  467098:	27bd0020 	addiu	sp,sp,32
+  46709c:	2405003a 	li	a1,58
+  4670a0:	0c101bf8 	jal	0x406fe0
+  4670a4:	02002021 	move	a0,s0
+  4670a8:	24030002 	li	v1,2
+  4670ac:	2404ffff 	li	a0,-1
+  4670b0:	08119c22 	j	0x467088
+  4670b4:	0082180a 	movz	v1,a0,v0

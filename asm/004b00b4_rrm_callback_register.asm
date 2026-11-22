@@ -1,0 +1,44 @@
+; func rrm_callback_register @ 0x004b00b4 size=0xa8
+  4b00b4:	27bdffd8 	addiu	sp,sp,-40
+  4b00b8:	24050bbe 	li	a1,3006
+  4b00bc:	afb0001c 	sw	s0,28(sp)
+  4b00c0:	00808021 	move	s0,a0
+  4b00c4:	afb10020 	sw	s1,32(sp)
+  4b00c8:	afbf0024 	sw	ra,36(sp)
+  4b00cc:	0c102114 	jal	0x408450
+  4b00d0:	2404001c 	li	a0,28
+  4b00d4:	00408821 	move	s1,v0
+  4b00d8:	12200017 	beqz	s1,0x4b0138
+  4b00dc:	2402ffff 	li	v0,-1
+  4b00e0:	02002821 	move	a1,s0
+  4b00e4:	2406001c 	li	a2,28
+  4b00e8:	3c100076 	lui	s0,0x76
+  4b00ec:	0c101c8c 	jal	0x407230
+  4b00f0:	02202021 	move	a0,s1
+  4b00f4:	0c10206c 	jal	0x4081b0
+  4b00f8:	26047c04 	addiu	a0,s0,31748
+  4b00fc:	5040000b 	beqzl	v0,0x4b012c
+  4b0100:	26047c04 	addiu	a0,s0,31748
+  4b0104:	8c440018 	lw	a0,24(v0)
+  4b0108:	8e230018 	lw	v1,24(s1)
+  4b010c:	0083182a 	slt	v1,a0,v1
+  4b0110:	1460000e 	bnez	v1,0x4b014c
+  4b0114:	00402021 	move	a0,v0
+  4b0118:	0c1021a0 	jal	0x408680
+  4b011c:	00000000 	nop
+  4b0120:	5440fff9 	bnezl	v0,0x4b0108
+  4b0124:	8c440018 	lw	a0,24(v0)
+  4b0128:	26047c04 	addiu	a0,s0,31748
+  4b012c:	0c1021ac 	jal	0x4086b0
+  4b0130:	02202821 	move	a1,s1
+  4b0134:	00001021 	move	v0,zero
+  4b0138:	8fbf0024 	lw	ra,36(sp)
+  4b013c:	8fb10020 	lw	s1,32(sp)
+  4b0140:	8fb0001c 	lw	s0,28(sp)
+  4b0144:	03e00008 	jr	ra
+  4b0148:	27bd0028 	addiu	sp,sp,40
+  4b014c:	0c10205c 	jal	0x408170
+  4b0150:	02202821 	move	a1,s1
+  4b0154:	0812c04e 	j	0x4b0138
+  4b0158:	00001021 	move	v0,zero
+  4b015c:	00000000 	nop

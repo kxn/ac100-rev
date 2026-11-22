@@ -1,0 +1,24 @@
+; func _dhcpdef_db_svr_entry_init @ 0x00466620 size=0x5c
+  466620:	27bdffd8 	addiu	sp,sp,-40
+  466624:	00002821 	move	a1,zero
+  466628:	24060097 	li	a2,151
+  46662c:	afb10020 	sw	s1,32(sp)
+  466630:	2411ffff 	li	s1,-1
+  466634:	afbf0024 	sw	ra,36(sp)
+  466638:	afb0001c 	sw	s0,28(sp)
+  46663c:	00808021 	move	s0,a0
+  466640:	a8910000 	swl	s1,0(a0)
+  466644:	b8910003 	swr	s1,3(a0)
+  466648:	0c101cf0 	jal	0x4073c0
+  46664c:	24840004 	addiu	a0,a0,4
+  466650:	2604009c 	addiu	a0,s0,156
+  466654:	00002821 	move	a1,zero
+  466658:	a211009b 	sb	s1,155(s0)
+  46665c:	0c101cf0 	jal	0x4073c0
+  466660:	24060010 	li	a2,16
+  466664:	00001021 	move	v0,zero
+  466668:	8fbf0024 	lw	ra,36(sp)
+  46666c:	8fb10020 	lw	s1,32(sp)
+  466670:	8fb0001c 	lw	s0,28(sp)
+  466674:	03e00008 	jr	ra
+  466678:	27bd0028 	addiu	sp,sp,40

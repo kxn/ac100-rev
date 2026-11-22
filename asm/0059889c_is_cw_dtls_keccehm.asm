@@ -1,0 +1,24 @@
+; func is_cw_dtls_keccehm @ 0x0059889c size=0x5c
+  59889c:	27bdffd8 	addiu	sp,sp,-40
+  5988a0:	24050005 	li	a1,5
+  5988a4:	afb10020 	sw	s1,32(sp)
+  5988a8:	00808821 	move	s1,a0
+  5988ac:	afb0001c 	sw	s0,28(sp)
+  5988b0:	afbf0024 	sw	ra,36(sp)
+  5988b4:	0c16620a 	jal	0x598828
+  5988b8:	00008021 	move	s0,zero
+  5988bc:	10400008 	beqz	v0,0x5988e0
+  5988c0:	24050006 	li	a1,6
+  5988c4:	0c16620a 	jal	0x598828
+  5988c8:	02202021 	move	a0,s1
+  5988cc:	10400004 	beqz	v0,0x5988e0
+  5988d0:	24050007 	li	a1,7
+  5988d4:	0c16620a 	jal	0x598828
+  5988d8:	02202021 	move	a0,s1
+  5988dc:	0002802b 	sltu	s0,zero,v0
+  5988e0:	8fbf0024 	lw	ra,36(sp)
+  5988e4:	02001021 	move	v0,s0
+  5988e8:	8fb10020 	lw	s1,32(sp)
+  5988ec:	8fb0001c 	lw	s0,28(sp)
+  5988f0:	03e00008 	jr	ra
+  5988f4:	27bd0028 	addiu	sp,sp,40

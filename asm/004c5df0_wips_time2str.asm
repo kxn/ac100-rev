@@ -1,0 +1,19 @@
+; func wips_time2str @ 0x004c5df0 size=0x48
+  4c5df0:	27bdffb0 	addiu	sp,sp,-80
+  4c5df4:	afb00048 	sw	s0,72(sp)
+  4c5df8:	00a08021 	move	s0,a1
+  4c5dfc:	afa40050 	sw	a0,80(sp)
+  4c5e00:	27a50018 	addiu	a1,sp,24
+  4c5e04:	afbf004c 	sw	ra,76(sp)
+  4c5e08:	0c101f20 	jal	0x407c80
+  4c5e0c:	27a40050 	addiu	a0,sp,80
+  4c5e10:	3c06006a 	lui	a2,0x6a
+  4c5e14:	27a70018 	addiu	a3,sp,24
+  4c5e18:	24050019 	li	a1,25
+  4c5e1c:	24c66900 	addiu	a2,a2,26880
+  4c5e20:	0c101dc0 	jal	0x407700
+  4c5e24:	02002021 	move	a0,s0
+  4c5e28:	8fbf004c 	lw	ra,76(sp)
+  4c5e2c:	8fb00048 	lw	s0,72(sp)
+  4c5e30:	03e00008 	jr	ra
+  4c5e34:	27bd0050 	addiu	sp,sp,80

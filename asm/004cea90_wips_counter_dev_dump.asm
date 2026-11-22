@@ -1,0 +1,32 @@
+; func wips_counter_dev_dump @ 0x004cea90 size=0x7c
+  4cea90:	27bdffd8 	addiu	sp,sp,-40
+  4cea94:	afb10020 	sw	s1,32(sp)
+  4cea98:	3c11006b 	lui	s1,0x6b
+  4cea9c:	afbf0024 	sw	ra,36(sp)
+  4ceaa0:	26247368 	addiu	a0,s1,29544
+  4ceaa4:	afb0001c 	sw	s0,28(sp)
+  4ceaa8:	0c101dd4 	jal	0x407750
+  4ceaac:	3c100077 	lui	s0,0x77
+  4ceab0:	0c13172c 	jal	0x4c5cb0
+  4ceab4:	00000000 	nop
+  4ceab8:	3c04006a 	lui	a0,0x6a
+  4ceabc:	00402821 	move	a1,v0
+  4ceac0:	0c101b74 	jal	0x406dd0
+  4ceac4:	24847d68 	addiu	a0,a0,32104
+  4ceac8:	2405ffff 	li	a1,-1
+  4ceacc:	0c1020b4 	jal	0x4082d0
+  4cead0:	8e048074 	lw	a0,-32652(s0)
+  4cead4:	3c020077 	lui	v0,0x77
+  4cead8:	3c05004c 	lui	a1,0x4c
+  4ceadc:	00003021 	move	a2,zero
+  4ceae0:	8c448070 	lw	a0,-32656(v0)
+  4ceae4:	0c10215c 	jal	0x408570
+  4ceae8:	24a57f38 	addiu	a1,a1,32568
+  4ceaec:	0c101fcc 	jal	0x407f30
+  4ceaf0:	8e048074 	lw	a0,-32652(s0)
+  4ceaf4:	26247368 	addiu	a0,s1,29544
+  4ceaf8:	8fbf0024 	lw	ra,36(sp)
+  4ceafc:	8fb10020 	lw	s1,32(sp)
+  4ceb00:	8fb0001c 	lw	s0,28(sp)
+  4ceb04:	08101dd4 	j	0x407750
+  4ceb08:	27bd0028 	addiu	sp,sp,40

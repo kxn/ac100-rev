@@ -1,0 +1,23 @@
+; func band_navigation_db_max_failure_get @ 0x00560004 size=0x58
+  560004:	27bdffd8 	addiu	sp,sp,-40
+  560008:	2405ffff 	li	a1,-1
+  56000c:	afb10020 	sw	s1,32(sp)
+  560010:	3c11007c 	lui	s1,0x7c
+  560014:	afb0001c 	sw	s0,28(sp)
+  560018:	00808021 	move	s0,a0
+  56001c:	afbf0024 	sw	ra,36(sp)
+  560020:	0c1020b4 	jal	0x4082d0
+  560024:	8e245950 	lw	a0,22864(s1)
+  560028:	3c02007c 	lui	v0,0x7c
+  56002c:	02002821 	move	a1,s0
+  560030:	0c1580ec 	jal	0x5603b0
+  560034:	8c445954 	lw	a0,22868(v0)
+  560038:	8e245950 	lw	a0,22864(s1)
+  56003c:	0c101fcc 	jal	0x407f30
+  560040:	00408021 	move	s0,v0
+  560044:	02001021 	move	v0,s0
+  560048:	8fbf0024 	lw	ra,36(sp)
+  56004c:	8fb10020 	lw	s1,32(sp)
+  560050:	8fb0001c 	lw	s0,28(sp)
+  560054:	03e00008 	jr	ra
+  560058:	27bd0028 	addiu	sp,sp,40

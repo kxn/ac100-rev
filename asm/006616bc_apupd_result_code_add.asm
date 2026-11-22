@@ -1,0 +1,50 @@
+; func apupd_result_code_add @ 0x006616bc size=0xc4
+  6616bc:	27bdffd8 	addiu	sp,sp,-40
+  6616c0:	afbf0024 	sw	ra,36(sp)
+  6616c4:	afb00020 	sw	s0,32(sp)
+  6616c8:	1080001c 	beqz	a0,0x66173c
+  6616cc:	afa00018 	sw	zero,24(sp)
+  6616d0:	afa50018 	sw	a1,24(sp)
+  6616d4:	27a60018 	addiu	a2,sp,24
+  6616d8:	24050021 	li	a1,33
+  6616dc:	00003821 	move	a3,zero
+  6616e0:	0c1621be 	jal	0x5886f8
+  6616e4:	00008021 	move	s0,zero
+  6616e8:	2403ffff 	li	v1,-1
+  6616ec:	10430006 	beq	v0,v1,0x661708
+  6616f0:	3c020076 	lui	v0,0x76
+  6616f4:	8fbf0024 	lw	ra,36(sp)
+  6616f8:	02001021 	move	v0,s0
+  6616fc:	8fb00020 	lw	s0,32(sp)
+  661700:	03e00008 	jr	ra
+  661704:	27bd0028 	addiu	sp,sp,40
+  661708:	8c428c08 	lw	v0,-29688(v0)
+  66170c:	1040fff9 	beqz	v0,0x6616f4
+  661710:	2410ffff 	li	s0,-1
+  661714:	0c16276a 	jal	0x589da8
+  661718:	00000000 	nop
+  66171c:	5040fff6 	beqzl	v0,0x6616f8
+  661720:	8fbf0024 	lw	ra,36(sp)
+  661724:	3c040071 	lui	a0,0x71
+  661728:	3c050072 	lui	a1,0x72
+  66172c:	2484182c 	addiu	a0,a0,6188
+  661730:	24a5b288 	addiu	a1,a1,-19832
+  661734:	081985dc 	j	0x661770
+  661738:	24060129 	li	a2,297
+  66173c:	3c020076 	lui	v0,0x76
+  661740:	8c428c08 	lw	v0,-29688(v0)
+  661744:	1040ffeb 	beqz	v0,0x6616f4
+  661748:	2410ffff 	li	s0,-1
+  66174c:	0c16276a 	jal	0x589da8
+  661750:	00000000 	nop
+  661754:	5040ffe8 	beqzl	v0,0x6616f8
+  661758:	8fbf0024 	lw	ra,36(sp)
+  66175c:	3c040071 	lui	a0,0x71
+  661760:	3c050072 	lui	a1,0x72
+  661764:	24840720 	addiu	a0,a0,1824
+  661768:	24a5b288 	addiu	a1,a1,-19832
+  66176c:	2406011e 	li	a2,286
+  661770:	0c101b74 	jal	0x406dd0
+  661774:	00000000 	nop
+  661778:	081985be 	j	0x6616f8
+  66177c:	8fbf0024 	lw	ra,36(sp)

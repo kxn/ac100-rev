@@ -1,0 +1,40 @@
+; func apmngr_evt_notify @ 0x0052acdc size=0x9c
+  52acdc:	3c02007c 	lui	v0,0x7c
+  52ace0:	27bdffd8 	addiu	sp,sp,-40
+  52ace4:	80425482 	lb	v0,21634(v0)
+  52ace8:	afb10020 	sw	s1,32(sp)
+  52acec:	00a08821 	move	s1,a1
+  52acf0:	afb0001c 	sw	s0,28(sp)
+  52acf4:	00808021 	move	s0,a0
+  52acf8:	14400009 	bnez	v0,0x52ad20
+  52acfc:	afbf0024 	sw	ra,36(sp)
+  52ad00:	12200017 	beqz	s1,0x52ad60
+  52ad04:	02002021 	move	a0,s0
+  52ad08:	8fbf0024 	lw	ra,36(sp)
+  52ad0c:	02202821 	move	a1,s1
+  52ad10:	8fb0001c 	lw	s0,28(sp)
+  52ad14:	8fb10020 	lw	s1,32(sp)
+  52ad18:	0814a941 	j	0x52a504
+  52ad1c:	27bd0028 	addiu	sp,sp,40
+  52ad20:	0c16276a 	jal	0x589da8
+  52ad24:	00000000 	nop
+  52ad28:	1040fff5 	beqz	v0,0x52ad00
+  52ad2c:	3c020075 	lui	v0,0x75
+  52ad30:	00101880 	sll	v1,s0,0x2
+  52ad34:	2442beb0 	addiu	v0,v0,-16720
+  52ad38:	3c04006c 	lui	a0,0x6c
+  52ad3c:	00621021 	addu	v0,v1,v0
+  52ad40:	3c05006c 	lui	a1,0x6c
+  52ad44:	248456c4 	addiu	a0,a0,22212
+  52ad48:	8c470000 	lw	a3,0(v0)
+  52ad4c:	24a57894 	addiu	a1,a1,30868
+  52ad50:	0c101b74 	jal	0x406dd0
+  52ad54:	240601da 	li	a2,474
+  52ad58:	0814ab40 	j	0x52ad00
+  52ad5c:	00000000 	nop
+  52ad60:	8fbf0024 	lw	ra,36(sp)
+  52ad64:	2402ffff 	li	v0,-1
+  52ad68:	8fb10020 	lw	s1,32(sp)
+  52ad6c:	8fb0001c 	lw	s0,28(sp)
+  52ad70:	03e00008 	jr	ra
+  52ad74:	27bd0028 	addiu	sp,sp,40

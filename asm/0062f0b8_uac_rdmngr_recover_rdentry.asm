@@ -1,0 +1,40 @@
+; func uac_rdmngr_recover_rdentry @ 0x0062f0b8 size=0x9c
+  62f0b8:	27bdffd8 	addiu	sp,sp,-40
+  62f0bc:	3c050062 	lui	a1,0x62
+  62f0c0:	2404ffff 	li	a0,-1
+  62f0c4:	24a54518 	addiu	a1,a1,17688
+  62f0c8:	afbf0024 	sw	ra,36(sp)
+  62f0cc:	27a60018 	addiu	a2,sp,24
+  62f0d0:	afb00020 	sw	s0,32(sp)
+  62f0d4:	0c14e0b9 	jal	0x5382e4
+  62f0d8:	afa00018 	sw	zero,24(sp)
+  62f0dc:	24030001 	li	v1,1
+  62f0e0:	1043000d 	beq	v0,v1,0x62f118
+  62f0e4:	3c020075 	lui	v0,0x75
+  62f0e8:	8fa20018 	lw	v0,24(sp)
+  62f0ec:	14400006 	bnez	v0,0x62f108
+  62f0f0:	00008021 	move	s0,zero
+  62f0f4:	8fbf0024 	lw	ra,36(sp)
+  62f0f8:	02001021 	move	v0,s0
+  62f0fc:	8fb00020 	lw	s0,32(sp)
+  62f100:	03e00008 	jr	ra
+  62f104:	27bd0028 	addiu	sp,sp,40
+  62f108:	0c102100 	jal	0x408400
+  62f10c:	00000000 	nop
+  62f110:	0818bc3e 	j	0x62f0f8
+  62f114:	8fbf0024 	lw	ra,36(sp)
+  62f118:	8c42feb4 	lw	v0,-332(v0)
+  62f11c:	1040fff5 	beqz	v0,0x62f0f4
+  62f120:	2410ffff 	li	s0,-1
+  62f124:	0c16276a 	jal	0x589da8
+  62f128:	00000000 	nop
+  62f12c:	5040fff2 	beqzl	v0,0x62f0f8
+  62f130:	8fbf0024 	lw	ra,36(sp)
+  62f134:	3c040071 	lui	a0,0x71
+  62f138:	3c050071 	lui	a1,0x71
+  62f13c:	2484c564 	addiu	a0,a0,-15004
+  62f140:	24a5cb2c 	addiu	a1,a1,-13524
+  62f144:	0c101b74 	jal	0x406dd0
+  62f148:	24060a5b 	li	a2,2651
+  62f14c:	0818bc3e 	j	0x62f0f8
+  62f150:	8fbf0024 	lw	ra,36(sp)

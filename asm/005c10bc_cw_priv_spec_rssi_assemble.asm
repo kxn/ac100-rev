@@ -1,0 +1,25 @@
+; func cw_priv_spec_rssi_assemble @ 0x005c10bc size=0x60
+  5c10bc:	27bdffd8 	addiu	sp,sp,-40
+  5c10c0:	afbf0024 	sw	ra,36(sp)
+  5c10c4:	afb20020 	sw	s2,32(sp)
+  5c10c8:	afb1001c 	sw	s1,28(sp)
+  5c10cc:	00a08821 	move	s1,a1
+  5c10d0:	afb00018 	sw	s0,24(sp)
+  5c10d4:	00808021 	move	s0,a0
+  5c10d8:	8ca20010 	lw	v0,16(a1)
+  5c10dc:	94920004 	lhu	s2,4(a0)
+  5c10e0:	0c15c7ea 	jal	0x571fa8
+  5c10e4:	8c450000 	lw	a1,0(v0)
+  5c10e8:	96020004 	lhu	v0,4(s0)
+  5c10ec:	9623000e 	lhu	v1,14(s1)
+  5c10f0:	8fbf0024 	lw	ra,36(sp)
+  5c10f4:	00529023 	subu	s2,v0,s2
+  5c10f8:	8fb1001c 	lw	s1,28(sp)
+  5c10fc:	8fb00018 	lw	s0,24(sp)
+  5c1100:	02431026 	xor	v0,s2,v1
+  5c1104:	8fb20020 	lw	s2,32(sp)
+  5c1108:	2403ffff 	li	v1,-1
+  5c110c:	27bd0028 	addiu	sp,sp,40
+  5c1110:	0002180a 	movz	v1,zero,v0
+  5c1114:	03e00008 	jr	ra
+  5c1118:	00601021 	move	v0,v1

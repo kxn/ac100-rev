@@ -1,0 +1,23 @@
+; func cw_ac_stat_reset @ 0x0058d13c size=0x58
+  58d13c:	27bdffd8 	addiu	sp,sp,-40
+  58d140:	afb10020 	sw	s1,32(sp)
+  58d144:	3c11007c 	lui	s1,0x7c
+  58d148:	afb0001c 	sw	s0,28(sp)
+  58d14c:	afbf0024 	sw	ra,36(sp)
+  58d150:	8e22599c 	lw	v0,22940(s1)
+  58d154:	14400006 	bnez	v0,0x58d170
+  58d158:	00008021 	move	s0,zero
+  58d15c:	08163461 	j	0x58d184
+  58d160:	8fbf0024 	lw	ra,36(sp)
+  58d164:	0c163327 	jal	0x58cc9c
+  58d168:	26100001 	addiu	s0,s0,1
+  58d16c:	8e22599c 	lw	v0,22940(s1)
+  58d170:	8c420018 	lw	v0,24(v0)
+  58d174:	0202102b 	sltu	v0,s0,v0
+  58d178:	1440fffa 	bnez	v0,0x58d164
+  58d17c:	02002021 	move	a0,s0
+  58d180:	8fbf0024 	lw	ra,36(sp)
+  58d184:	8fb10020 	lw	s1,32(sp)
+  58d188:	8fb0001c 	lw	s0,28(sp)
+  58d18c:	03e00008 	jr	ra
+  58d190:	27bd0028 	addiu	sp,sp,40

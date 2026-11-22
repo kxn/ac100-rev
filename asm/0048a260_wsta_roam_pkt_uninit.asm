@@ -1,0 +1,27 @@
+; func wsta_roam_pkt_uninit @ 0x0048a260 size=0x68
+  48a260:	3c060049 	lui	a2,0x49
+  48a264:	27bdffe0 	addiu	sp,sp,-32
+  48a268:	24040009 	li	a0,9
+  48a26c:	2405005a 	li	a1,90
+  48a270:	afb00018 	sw	s0,24(sp)
+  48a274:	afbf001c 	sw	ra,28(sp)
+  48a278:	0c1666f8 	jal	0x599be0
+  48a27c:	24c69380 	addiu	a2,a2,-27776
+  48a280:	10400005 	beqz	v0,0x48a298
+  48a284:	00408021 	move	s0,v0
+  48a288:	3c020073 	lui	v0,0x73
+  48a28c:	804214d0 	lb	v0,5328(v0)
+  48a290:	14400006 	bnez	v0,0x48a2ac
+  48a294:	3c040069 	lui	a0,0x69
+  48a298:	8fbf001c 	lw	ra,28(sp)
+  48a29c:	02001021 	move	v0,s0
+  48a2a0:	8fb00018 	lw	s0,24(sp)
+  48a2a4:	03e00008 	jr	ra
+  48a2a8:	27bd0020 	addiu	sp,sp,32
+  48a2ac:	3c050069 	lui	a1,0x69
+  48a2b0:	24846b6c 	addiu	a0,a0,27500
+  48a2b4:	24a573d8 	addiu	a1,a1,29656
+  48a2b8:	0c101b74 	jal	0x406dd0
+  48a2bc:	24060e63 	li	a2,3683
+  48a2c0:	081228a7 	j	0x48a29c
+  48a2c4:	8fbf001c 	lw	ra,28(sp)

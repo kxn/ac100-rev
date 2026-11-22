@@ -1,0 +1,25 @@
+; func _stats_sta_deassoc_cb @ 0x00672f44 size=0x60
+  672f44:	27bdffe0 	addiu	sp,sp,-32
+  672f48:	afbf001c 	sw	ra,28(sp)
+  672f4c:	10800009 	beqz	a0,0x672f74
+  672f50:	afb00018 	sw	s0,24(sp)
+  672f54:	24840068 	addiu	a0,a0,104
+  672f58:	0c19b534 	jal	0x66d4d0
+  672f5c:	00008021 	move	s0,zero
+  672f60:	8fbf001c 	lw	ra,28(sp)
+  672f64:	02001021 	move	v0,s0
+  672f68:	8fb00018 	lw	s0,24(sp)
+  672f6c:	03e00008 	jr	ra
+  672f70:	27bd0020 	addiu	sp,sp,32
+  672f74:	3c020076 	lui	v0,0x76
+  672f78:	80428cd0 	lb	v0,-29488(v0)
+  672f7c:	1040fff8 	beqz	v0,0x672f60
+  672f80:	2410ffff 	li	s0,-1
+  672f84:	3c040072 	lui	a0,0x72
+  672f88:	3c050072 	lui	a1,0x72
+  672f8c:	248402a0 	addiu	a0,a0,672
+  672f90:	24a50a50 	addiu	a1,a1,2640
+  672f94:	0c101b74 	jal	0x406dd0
+  672f98:	24060057 	li	a2,87
+  672f9c:	0819cbd9 	j	0x672f64
+  672fa0:	8fbf001c 	lw	ra,28(sp)

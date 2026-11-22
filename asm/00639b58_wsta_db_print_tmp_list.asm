@@ -1,0 +1,47 @@
+; func wsta_db_print_tmp_list @ 0x00639b58 size=0xb8
+  639b58:	27bdffd0 	addiu	sp,sp,-48
+  639b5c:	afb10020 	sw	s1,32(sp)
+  639b60:	00808821 	move	s1,a0
+  639b64:	3c040067 	lui	a0,0x67
+  639b68:	afb0001c 	sw	s0,28(sp)
+  639b6c:	3c10007d 	lui	s0,0x7d
+  639b70:	afbf002c 	sw	ra,44(sp)
+  639b74:	24846b8c 	addiu	a0,a0,27532
+  639b78:	afb30028 	sw	s3,40(sp)
+  639b7c:	afb20024 	sw	s2,36(sp)
+  639b80:	0c101dd4 	jal	0x407750
+  639b84:	02009821 	move	s3,s0
+  639b88:	2602c6b8 	addiu	v0,s0,-14664
+  639b8c:	2405ffff 	li	a1,-1
+  639b90:	3c12007d 	lui	s2,0x7d
+  639b94:	0c1020b4 	jal	0x4082d0
+  639b98:	8c440004 	lw	a0,4(v0)
+  639b9c:	16200010 	bnez	s1,0x639be0
+  639ba0:	00000000 	nop
+  639ba4:	2644c71c 	addiu	a0,s2,-14564
+  639ba8:	0c101ff8 	jal	0x407fe0
+  639bac:	2673c6b8 	addiu	s3,s3,-14664
+  639bb0:	3c040071 	lui	a0,0x71
+  639bb4:	00402821 	move	a1,v0
+  639bb8:	0c101b74 	jal	0x406dd0
+  639bbc:	2484f254 	addiu	a0,a0,-3500
+  639bc0:	8e640004 	lw	a0,4(s3)
+  639bc4:	8fbf002c 	lw	ra,44(sp)
+  639bc8:	8fb30028 	lw	s3,40(sp)
+  639bcc:	8fb20024 	lw	s2,36(sp)
+  639bd0:	8fb10020 	lw	s1,32(sp)
+  639bd4:	8fb0001c 	lw	s0,28(sp)
+  639bd8:	08101fcc 	j	0x407f30
+  639bdc:	27bd0030 	addiu	sp,sp,48
+  639be0:	0c10206c 	jal	0x4081b0
+  639be4:	2644c71c 	addiu	a0,s2,-14564
+  639be8:	0818e700 	j	0x639c00
+  639bec:	00000000 	nop
+  639bf0:	0c18db93 	jal	0x636e4c
+  639bf4:	2604fff4 	addiu	a0,s0,-12
+  639bf8:	0c1021a0 	jal	0x408680
+  639bfc:	02002021 	move	a0,s0
+  639c00:	1440fffb 	bnez	v0,0x639bf0
+  639c04:	00408021 	move	s0,v0
+  639c08:	0818e6ea 	j	0x639ba8
+  639c0c:	2644c71c 	addiu	a0,s2,-14564

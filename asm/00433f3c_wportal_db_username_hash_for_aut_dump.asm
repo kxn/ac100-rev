@@ -1,0 +1,24 @@
+; func wportal_db_username_hash_for_aut_dump @ 0x00433f3c size=0x5c
+  433f3c:	27bdffe0 	addiu	sp,sp,-32
+  433f40:	3c040068 	lui	a0,0x68
+  433f44:	afb00018 	sw	s0,24(sp)
+  433f48:	3c100076 	lui	s0,0x76
+  433f4c:	afbf001c 	sw	ra,28(sp)
+  433f50:	0c101dd4 	jal	0x407750
+  433f54:	2484e2e8 	addiu	a0,a0,-7448
+  433f58:	2405ffff 	li	a1,-1
+  433f5c:	0c1020b4 	jal	0x4082d0
+  433f60:	8e04a150 	lw	a0,-24240(s0)
+  433f64:	3c020076 	lui	v0,0x76
+  433f68:	3c050043 	lui	a1,0x43
+  433f6c:	00003021 	move	a2,zero
+  433f70:	8c44a11c 	lw	a0,-24292(v0)
+  433f74:	0c10215c 	jal	0x408570
+  433f78:	24a5b418 	addiu	a1,a1,-19432
+  433f7c:	0c101fcc 	jal	0x407f30
+  433f80:	8e04a150 	lw	a0,-24240(s0)
+  433f84:	2404000a 	li	a0,10
+  433f88:	8fbf001c 	lw	ra,28(sp)
+  433f8c:	8fb00018 	lw	s0,24(sp)
+  433f90:	08101ce4 	j	0x407390
+  433f94:	27bd0020 	addiu	sp,sp,32

@@ -1,0 +1,19 @@
+; func wsta_roam_db_pmk_get_total @ 0x00481ee4 size=0x48
+  481ee4:	27bdffd8 	addiu	sp,sp,-40
+  481ee8:	2405ffff 	li	a1,-1
+  481eec:	afb0001c 	sw	s0,28(sp)
+  481ef0:	3c100076 	lui	s0,0x76
+  481ef4:	afbf0024 	sw	ra,36(sp)
+  481ef8:	afb10020 	sw	s1,32(sp)
+  481efc:	0c1020b4 	jal	0x4082d0
+  481f00:	8e047540 	lw	a0,30016(s0)
+  481f04:	26027540 	addiu	v0,s0,30016
+  481f08:	8e047540 	lw	a0,30016(s0)
+  481f0c:	0c101fcc 	jal	0x407f30
+  481f10:	8c510010 	lw	s1,16(v0)
+  481f14:	8fbf0024 	lw	ra,36(sp)
+  481f18:	02201021 	move	v0,s1
+  481f1c:	8fb0001c 	lw	s0,28(sp)
+  481f20:	8fb10020 	lw	s1,32(sp)
+  481f24:	03e00008 	jr	ra
+  481f28:	27bd0028 	addiu	sp,sp,40

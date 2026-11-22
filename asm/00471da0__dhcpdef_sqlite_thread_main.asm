@@ -1,0 +1,115 @@
+; func _dhcpdef_sqlite_thread_main @ 0x00471da0 size=0x1c8
+  471da0:	3c020076 	lui	v0,0x76
+  471da4:	27bdffc0 	addiu	sp,sp,-64
+  471da8:	8c427080 	lw	v0,28800(v0)
+  471dac:	afbf003c 	sw	ra,60(sp)
+  471db0:	afb60038 	sw	s6,56(sp)
+  471db4:	afb50034 	sw	s5,52(sp)
+  471db8:	afb40030 	sw	s4,48(sp)
+  471dbc:	afb3002c 	sw	s3,44(sp)
+  471dc0:	afb20028 	sw	s2,40(sp)
+  471dc4:	afb10024 	sw	s1,36(sp)
+  471dc8:	14400058 	bnez	v0,0x471f2c
+  471dcc:	afb00020 	sw	s0,32(sp)
+  471dd0:	3c140076 	lui	s4,0x76
+  471dd4:	3c150069 	lui	s5,0x69
+  471dd8:	3c160069 	lui	s6,0x69
+  471ddc:	3c130076 	lui	s3,0x76
+  471de0:	269470bc 	addiu	s4,s4,28860
+  471de4:	3c120073 	lui	s2,0x73
+  471de8:	26b5efc8 	addiu	s5,s5,-4152
+  471dec:	26d6ba60 	addiu	s6,s6,-17824
+  471df0:	266270b8 	addiu	v0,s3,28856
+  471df4:	2405ffff 	li	a1,-1
+  471df8:	3c110076 	lui	s1,0x76
+  471dfc:	0c1020b4 	jal	0x4082d0
+  471e00:	8c440010 	lw	a0,16(v0)
+  471e04:	0811c788 	j	0x471e20
+  471e08:	00000000 	nop
+  471e0c:	262270b8 	addiu	v0,s1,28856
+  471e10:	2406ffff 	li	a2,-1
+  471e14:	8c440014 	lw	a0,20(v0)
+  471e18:	0c1021b0 	jal	0x4086c0
+  471e1c:	8c450010 	lw	a1,16(v0)
+  471e20:	0c10206c 	jal	0x4081b0
+  471e24:	02802021 	move	a0,s4
+  471e28:	1040fff8 	beqz	v0,0x471e0c
+  471e2c:	00408021 	move	s0,v0
+  471e30:	263170b8 	addiu	s1,s1,28856
+  471e34:	0c102140 	jal	0x408500
+  471e38:	00402021 	move	a0,v0
+  471e3c:	0c101fcc 	jal	0x407f30
+  471e40:	8e240010 	lw	a0,16(s1)
+  471e44:	8e040010 	lw	a0,16(s0)
+  471e48:	10800016 	beqz	a0,0x471ea4
+  471e4c:	8e421480 	lw	v0,5248(s2)
+  471e50:	8e02000c 	lw	v0,12(s0)
+  471e54:	24030001 	li	v1,1
+  471e58:	1043002a 	beq	v0,v1,0x471f04
+  471e5c:	28430002 	slti	v1,v0,2
+  471e60:	1460002c 	bnez	v1,0x471f14
+  471e64:	00000000 	nop
+  471e68:	24030002 	li	v1,2
+  471e6c:	10430021 	beq	v0,v1,0x471ef4
+  471e70:	24030003 	li	v1,3
+  471e74:	1043001b 	beq	v0,v1,0x471ee4
+  471e78:	00000000 	nop
+  471e7c:	8e040010 	lw	a0,16(s0)
+  471e80:	10800004 	beqz	a0,0x471e94
+  471e84:	00000000 	nop
+  471e88:	0c101f7c 	jal	0x407df0
+  471e8c:	00000000 	nop
+  471e90:	ae000010 	sw	zero,16(s0)
+  471e94:	0c101f7c 	jal	0x407df0
+  471e98:	02002021 	move	a0,s0
+  471e9c:	0811c77d 	j	0x471df4
+  471ea0:	266270b8 	addiu	v0,s3,28856
+  471ea4:	5040fff6 	beqzl	v0,0x471e80
+  471ea8:	8e040010 	lw	a0,16(s0)
+  471eac:	0c16276a 	jal	0x589da8
+  471eb0:	00000000 	nop
+  471eb4:	5040fff2 	beqzl	v0,0x471e80
+  471eb8:	8e040010 	lw	a0,16(s0)
+  471ebc:	3c050069 	lui	a1,0x69
+  471ec0:	afb50010 	sw	s5,16(sp)
+  471ec4:	3c060069 	lui	a2,0x69
+  471ec8:	24a5ba54 	addiu	a1,a1,-17836
+  471ecc:	24c6f70c 	addiu	a2,a2,-2292
+  471ed0:	240702c5 	li	a3,709
+  471ed4:	0c101b74 	jal	0x406dd0
+  471ed8:	02c02021 	move	a0,s6
+  471edc:	0811c7a0 	j	0x471e80
+  471ee0:	8e040010 	lw	a0,16(s0)
+  471ee4:	0c11c6ce 	jal	0x471b38
+  471ee8:	00000000 	nop
+  471eec:	0811c7a0 	j	0x471e80
+  471ef0:	8e040010 	lw	a0,16(s0)
+  471ef4:	0c11c60c 	jal	0x471830
+  471ef8:	00000000 	nop
+  471efc:	0811c7a0 	j	0x471e80
+  471f00:	8e040010 	lw	a0,16(s0)
+  471f04:	0c11c503 	jal	0x47140c
+  471f08:	00000000 	nop
+  471f0c:	0811c7a0 	j	0x471e80
+  471f10:	8e040010 	lw	a0,16(s0)
+  471f14:	5440ffda 	bnezl	v0,0x471e80
+  471f18:	8e040010 	lw	a0,16(s0)
+  471f1c:	0c11c563 	jal	0x47158c
+  471f20:	00000000 	nop
+  471f24:	0811c7a0 	j	0x471e80
+  471f28:	8e040010 	lw	a0,16(s0)
+  471f2c:	0c16276a 	jal	0x589da8
+  471f30:	00000000 	nop
+  471f34:	5040ffa7 	beqzl	v0,0x471dd4
+  471f38:	3c140076 	lui	s4,0x76
+  471f3c:	3c060069 	lui	a2,0x69
+  471f40:	3c040069 	lui	a0,0x69
+  471f44:	3c050069 	lui	a1,0x69
+  471f48:	24c6f6f0 	addiu	a2,a2,-2320
+  471f4c:	2484efac 	addiu	a0,a0,-4180
+  471f50:	24a5ba54 	addiu	a1,a1,-17836
+  471f54:	afa60010 	sw	a2,16(sp)
+  471f58:	0c101b74 	jal	0x406dd0
+  471f5c:	240702ef 	li	a3,751
+  471f60:	0811c775 	j	0x471dd4
+  471f64:	3c140076 	lui	s4,0x76

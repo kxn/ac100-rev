@@ -1,0 +1,20 @@
+; func uci_lookup_option_string @ 0x0064be40 size=0x4c
+  64be40:	27bdffd8 	addiu	sp,sp,-40
+  64be44:	00c03821 	move	a3,a2
+  64be48:	24a60010 	addiu	a2,a1,16
+  64be4c:	27a50018 	addiu	a1,sp,24
+  64be50:	afbf0024 	sw	ra,36(sp)
+  64be54:	0c101f08 	jal	0x407c20
+  64be58:	afa00018 	sw	zero,24(sp)
+  64be5c:	14400007 	bnez	v0,0x64be7c
+  64be60:	00001821 	move	v1,zero
+  64be64:	8fa20018 	lw	v0,24(sp)
+  64be68:	10400005 	beqz	v0,0x64be80
+  64be6c:	8fbf0024 	lw	ra,36(sp)
+  64be70:	8c440014 	lw	a0,20(v0)
+  64be74:	50800002 	beqzl	a0,0x64be80
+  64be78:	8c430018 	lw	v1,24(v0)
+  64be7c:	8fbf0024 	lw	ra,36(sp)
+  64be80:	00601021 	move	v0,v1
+  64be84:	03e00008 	jr	ra
+  64be88:	27bd0028 	addiu	sp,sp,40

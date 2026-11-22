@@ -1,0 +1,43 @@
+; func wportal_db_aut_foreach @ 0x004304bc size=0xa8
+  4304bc:	27bdffd0 	addiu	sp,sp,-48
+  4304c0:	afb40028 	sw	s4,40(sp)
+  4304c4:	00a0a021 	move	s4,a1
+  4304c8:	afb20020 	sw	s2,32(sp)
+  4304cc:	00809021 	move	s2,a0
+  4304d0:	afbf002c 	sw	ra,44(sp)
+  4304d4:	afb30024 	sw	s3,36(sp)
+  4304d8:	afb1001c 	sw	s1,28(sp)
+  4304dc:	10800018 	beqz	a0,0x430540
+  4304e0:	afb00018 	sw	s0,24(sp)
+  4304e4:	3c110076 	lui	s1,0x76
+  4304e8:	2405ffff 	li	a1,-1
+  4304ec:	02209821 	move	s3,s1
+  4304f0:	0c1020b4 	jal	0x4082d0
+  4304f4:	8e24a150 	lw	a0,-24240(s1)
+  4304f8:	3c020076 	lui	v0,0x76
+  4304fc:	0c10206c 	jal	0x4081b0
+  430500:	8c44a158 	lw	a0,-24232(v0)
+  430504:	00408021 	move	s0,v0
+  430508:	1200000b 	beqz	s0,0x430538
+  43050c:	00000000 	nop
+  430510:	0c1021a0 	jal	0x408680
+  430514:	02002021 	move	a0,s0
+  430518:	02002021 	move	a0,s0
+  43051c:	00408821 	move	s1,v0
+  430520:	02802821 	move	a1,s4
+  430524:	0240c821 	move	t9,s2
+  430528:	0320f809 	jalr	t9
+  43052c:	02208021 	move	s0,s1
+  430530:	1600fff7 	bnez	s0,0x430510
+  430534:	00000000 	nop
+  430538:	0c101fcc 	jal	0x407f30
+  43053c:	8e64a150 	lw	a0,-24240(s3)
+  430540:	8fbf002c 	lw	ra,44(sp)
+  430544:	00001021 	move	v0,zero
+  430548:	8fb40028 	lw	s4,40(sp)
+  43054c:	8fb30024 	lw	s3,36(sp)
+  430550:	8fb20020 	lw	s2,32(sp)
+  430554:	8fb1001c 	lw	s1,28(sp)
+  430558:	8fb00018 	lw	s0,24(sp)
+  43055c:	03e00008 	jr	ra
+  430560:	27bd0030 	addiu	sp,sp,48

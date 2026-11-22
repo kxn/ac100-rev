@@ -1,0 +1,27 @@
+; func ac_packet_debug_is_open @ 0x005903d0 size=0x68
+  5903d0:	2482ffff 	addiu	v0,a0,-1
+  5903d4:	2c43001a 	sltiu	v1,v0,26
+  5903d8:	14600011 	bnez	v1,0x590420
+  5903dc:	24030001 	li	v1,1
+  5903e0:	3c03ffcc 	lui	v1,0xffcc
+  5903e4:	246322ff 	addiu	v1,v1,8959
+  5903e8:	00831821 	addu	v1,a0,v1
+  5903ec:	2c630002 	sltiu	v1,v1,2
+  5903f0:	14600003 	bnez	v1,0x590400
+  5903f4:	00001021 	move	v0,zero
+  5903f8:	03e00008 	jr	ra
+  5903fc:	00000000 	nop
+  590400:	3c030075 	lui	v1,0x75
+  590404:	24840019 	addiu	a0,a0,25
+  590408:	24020001 	li	v0,1
+  59040c:	8c63cf50 	lw	v1,-12464(v1)
+  590410:	00821004 	sllv	v0,v0,a0
+  590414:	00431024 	and	v0,v0,v1
+  590418:	03e00008 	jr	ra
+  59041c:	0002102b 	sltu	v0,zero,v0
+  590420:	00431004 	sllv	v0,v1,v0
+  590424:	3c030075 	lui	v1,0x75
+  590428:	8c63cf50 	lw	v1,-12464(v1)
+  59042c:	00431024 	and	v0,v0,v1
+  590430:	03e00008 	jr	ra
+  590434:	0002102b 	sltu	v0,zero,v0

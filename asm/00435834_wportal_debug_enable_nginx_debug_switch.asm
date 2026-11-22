@@ -1,0 +1,19 @@
+; func wportal_debug_enable_nginx_debug_switch @ 0x00435834 size=0x48
+  435834:	27bdfee0 	addiu	sp,sp,-288
+  435838:	24060100 	li	a2,256
+  43583c:	27a40018 	addiu	a0,sp,24
+  435840:	afbf011c 	sw	ra,284(sp)
+  435844:	0c101cf0 	jal	0x4073c0
+  435848:	00002821 	move	a1,zero
+  43584c:	3c050068 	lui	a1,0x68
+  435850:	27a40018 	addiu	a0,sp,24
+  435854:	0c101d5c 	jal	0x407570
+  435858:	24a5f87c 	addiu	a1,a1,-1924
+  43585c:	3c040068 	lui	a0,0x68
+  435860:	0c101dd4 	jal	0x407750
+  435864:	2484f898 	addiu	a0,a0,-1896
+  435868:	0c10d568 	jal	0x4355a0
+  43586c:	27a40018 	addiu	a0,sp,24
+  435870:	8fbf011c 	lw	ra,284(sp)
+  435874:	03e00008 	jr	ra
+  435878:	27bd0120 	addiu	sp,sp,288

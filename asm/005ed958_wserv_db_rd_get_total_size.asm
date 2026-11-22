@@ -1,0 +1,19 @@
+; func wserv_db_rd_get_total_size @ 0x005ed958 size=0x48
+  5ed958:	27bdffd8 	addiu	sp,sp,-40
+  5ed95c:	2405ffff 	li	a1,-1
+  5ed960:	afb0001c 	sw	s0,28(sp)
+  5ed964:	3c10007d 	lui	s0,0x7d
+  5ed968:	afbf0024 	sw	ra,36(sp)
+  5ed96c:	2610beec 	addiu	s0,s0,-16660
+  5ed970:	afb10020 	sw	s1,32(sp)
+  5ed974:	0c1020b4 	jal	0x4082d0
+  5ed978:	8e040004 	lw	a0,4(s0)
+  5ed97c:	8e040004 	lw	a0,4(s0)
+  5ed980:	0c101fcc 	jal	0x407f30
+  5ed984:	8e110014 	lw	s1,20(s0)
+  5ed988:	8fbf0024 	lw	ra,36(sp)
+  5ed98c:	02201021 	move	v0,s1
+  5ed990:	8fb10020 	lw	s1,32(sp)
+  5ed994:	8fb0001c 	lw	s0,28(sp)
+  5ed998:	03e00008 	jr	ra
+  5ed99c:	27bd0028 	addiu	sp,sp,40

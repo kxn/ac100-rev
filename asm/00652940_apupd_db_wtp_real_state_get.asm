@@ -1,0 +1,53 @@
+; func apupd_db_wtp_real_state_get @ 0x00652940 size=0xd0
+  652940:	27bdffe0 	addiu	sp,sp,-32
+  652944:	afbf001c 	sw	ra,28(sp)
+  652948:	10800023 	beqz	a0,0x6529d8
+  65294c:	afb00018 	sw	s0,24(sp)
+  652950:	10a00022 	beqz	a1,0x6529dc
+  652954:	3c020076 	lui	v0,0x76
+  652958:	8ca20000 	lw	v0,0(a1)
+  65295c:	24030001 	li	v1,1
+  652960:	50430008 	beql	v0,v1,0x652984
+  652964:	8c900048 	lw	s0,72(a0)
+  652968:	1440000b 	bnez	v0,0x652998
+  65296c:	3c020076 	lui	v0,0x76
+  652970:	8c820048 	lw	v0,72(a0)
+  652974:	2410000b 	li	s0,11
+  652978:	2443ffff 	addiu	v1,v0,-1
+  65297c:	2c630002 	sltiu	v1,v1,2
+  652980:	0043800a 	movz	s0,v0,v1
+  652984:	8fbf001c 	lw	ra,28(sp)
+  652988:	02001021 	move	v0,s0
+  65298c:	8fb00018 	lw	s0,24(sp)
+  652990:	03e00008 	jr	ra
+  652994:	27bd0020 	addiu	sp,sp,32
+  652998:	8c428c08 	lw	v0,-29688(v0)
+  65299c:	1040fff9 	beqz	v0,0x652984
+  6529a0:	2410ffff 	li	s0,-1
+  6529a4:	0c16276a 	jal	0x589da8
+  6529a8:	00000000 	nop
+  6529ac:	5040fff6 	beqzl	v0,0x652988
+  6529b0:	8fbf001c 	lw	ra,28(sp)
+  6529b4:	3c040071 	lui	a0,0x71
+  6529b8:	3c050072 	lui	a1,0x72
+  6529bc:	24846ae8 	addiu	a0,a0,27368
+  6529c0:	24a5a254 	addiu	a1,a1,-23980
+  6529c4:	24061af7 	li	a2,6903
+  6529c8:	0c101b74 	jal	0x406dd0
+  6529cc:	00000000 	nop
+  6529d0:	08194a62 	j	0x652988
+  6529d4:	8fbf001c 	lw	ra,28(sp)
+  6529d8:	3c020076 	lui	v0,0x76
+  6529dc:	8c428c08 	lw	v0,-29688(v0)
+  6529e0:	1040ffe8 	beqz	v0,0x652984
+  6529e4:	2410ffff 	li	s0,-1
+  6529e8:	0c16276a 	jal	0x589da8
+  6529ec:	00000000 	nop
+  6529f0:	5040ffe5 	beqzl	v0,0x652988
+  6529f4:	8fbf001c 	lw	ra,28(sp)
+  6529f8:	3c040071 	lui	a0,0x71
+  6529fc:	3c050072 	lui	a1,0x72
+  652a00:	24846abc 	addiu	a0,a0,27324
+  652a04:	24a5a254 	addiu	a1,a1,-23980
+  652a08:	08194a72 	j	0x6529c8
+  652a0c:	24061ae2 	li	a2,6882

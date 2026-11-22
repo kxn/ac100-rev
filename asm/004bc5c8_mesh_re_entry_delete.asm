@@ -1,0 +1,27 @@
+; func mesh_re_entry_delete @ 0x004bc5c8 size=0x68
+  4bc5c8:	3c020076 	lui	v0,0x76
+  4bc5cc:	27bdffd8 	addiu	sp,sp,-40
+  4bc5d0:	80427fbd 	lb	v0,32701(v0)
+  4bc5d4:	afbf0024 	sw	ra,36(sp)
+  4bc5d8:	10400008 	beqz	v0,0x4bc5fc
+  4bc5dc:	a7a40028 	sh	a0,40(sp)
+  4bc5e0:	3c04006a 	lui	a0,0x6a
+  4bc5e4:	97a70028 	lhu	a3,40(sp)
+  4bc5e8:	3c05006a 	lui	a1,0x6a
+  4bc5ec:	24843dc8 	addiu	a0,a0,15816
+  4bc5f0:	24a54d54 	addiu	a1,a1,19796
+  4bc5f4:	0c101b74 	jal	0x406dd0
+  4bc5f8:	240602fc 	li	a2,764
+  4bc5fc:	27a40028 	addiu	a0,sp,40
+  4bc600:	24050001 	li	a1,1
+  4bc604:	00003021 	move	a2,zero
+  4bc608:	00003821 	move	a3,zero
+  4bc60c:	24020001 	li	v0,1
+  4bc610:	0c14b9f6 	jal	0x52e7d8
+  4bc614:	afa20010 	sw	v0,16(sp)
+  4bc618:	0c12dd88 	jal	0x4b7620
+  4bc61c:	97a40028 	lhu	a0,40(sp)
+  4bc620:	00001021 	move	v0,zero
+  4bc624:	8fbf0024 	lw	ra,36(sp)
+  4bc628:	03e00008 	jr	ra
+  4bc62c:	27bd0028 	addiu	sp,sp,40

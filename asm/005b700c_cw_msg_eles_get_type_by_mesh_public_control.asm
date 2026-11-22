@@ -1,0 +1,42 @@
+; func cw_msg_eles_get_type_by_mesh_public_control @ 0x005b700c size=0xa4
+  5b700c:	27bdffd0 	addiu	sp,sp,-48
+  5b7010:	afb20024 	sw	s2,36(sp)
+  5b7014:	00a09021 	move	s2,a1
+  5b7018:	afb10020 	sw	s1,32(sp)
+  5b701c:	00808821 	move	s1,a0
+  5b7020:	afbf002c 	sw	ra,44(sp)
+  5b7024:	afb30028 	sw	s3,40(sp)
+  5b7028:	10800015 	beqz	a0,0x5b7080
+  5b702c:	afb0001c 	sw	s0,28(sp)
+  5b7030:	10a00014 	beqz	a1,0x5b7084
+  5b7034:	8fbf002c 	lw	ra,44(sp)
+  5b7038:	10c00013 	beqz	a2,0x5b7088
+  5b703c:	8fb30028 	lw	s3,40(sp)
+  5b7040:	24c4000c 	addiu	a0,a2,12
+  5b7044:	0c10206c 	jal	0x4081b0
+  5b7048:	24130025 	li	s3,37
+  5b704c:	00408021 	move	s0,v0
+  5b7050:	1200000c 	beqz	s0,0x5b7084
+  5b7054:	8fbf002c 	lw	ra,44(sp)
+  5b7058:	9605000c 	lhu	a1,12(s0)
+  5b705c:	10b3000f 	beq	a1,s3,0x5b709c
+  5b7060:	02202021 	move	a0,s1
+  5b7064:	0c165286 	jal	0x594a18
+  5b7068:	00000000 	nop
+  5b706c:	0c1021a0 	jal	0x408680
+  5b7070:	02002021 	move	a0,s0
+  5b7074:	00408021 	move	s0,v0
+  5b7078:	5600fff8 	bnezl	s0,0x5b705c
+  5b707c:	9605000c 	lhu	a1,12(s0)
+  5b7080:	8fbf002c 	lw	ra,44(sp)
+  5b7084:	8fb30028 	lw	s3,40(sp)
+  5b7088:	8fb20024 	lw	s2,36(sp)
+  5b708c:	8fb10020 	lw	s1,32(sp)
+  5b7090:	8fb0001c 	lw	s0,28(sp)
+  5b7094:	03e00008 	jr	ra
+  5b7098:	27bd0030 	addiu	sp,sp,48
+  5b709c:	8e060010 	lw	a2,16(s0)
+  5b70a0:	0c160c54 	jal	0x583150
+  5b70a4:	02402821 	move	a1,s2
+  5b70a8:	0816dc1b 	j	0x5b706c
+  5b70ac:	00000000 	nop

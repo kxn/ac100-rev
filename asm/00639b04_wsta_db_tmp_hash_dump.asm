@@ -1,0 +1,22 @@
+; func wsta_db_tmp_hash_dump @ 0x00639b04 size=0x54
+  639b04:	27bdffe0 	addiu	sp,sp,-32
+  639b08:	3c040071 	lui	a0,0x71
+  639b0c:	afb00018 	sw	s0,24(sp)
+  639b10:	3c10007d 	lui	s0,0x7d
+  639b14:	2484f238 	addiu	a0,a0,-3528
+  639b18:	afbf001c 	sw	ra,28(sp)
+  639b1c:	0c101dd4 	jal	0x407750
+  639b20:	2610c6b8 	addiu	s0,s0,-14664
+  639b24:	2405ffff 	li	a1,-1
+  639b28:	0c1020b4 	jal	0x4082d0
+  639b2c:	8e040004 	lw	a0,4(s0)
+  639b30:	3c050063 	lui	a1,0x63
+  639b34:	8e040060 	lw	a0,96(s0)
+  639b38:	00003021 	move	a2,zero
+  639b3c:	0c10215c 	jal	0x408570
+  639b40:	24a56990 	addiu	a1,a1,27024
+  639b44:	8e040004 	lw	a0,4(s0)
+  639b48:	8fbf001c 	lw	ra,28(sp)
+  639b4c:	8fb00018 	lw	s0,24(sp)
+  639b50:	08101fcc 	j	0x407f30
+  639b54:	27bd0020 	addiu	sp,sp,32

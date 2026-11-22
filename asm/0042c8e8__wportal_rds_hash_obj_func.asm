@@ -1,0 +1,15 @@
+; func _wportal_rds_hash_obj_func @ 0x0042c8e8 size=0x38
+  42c8e8:	90820120 	lbu	v0,288(a0)
+  42c8ec:	24030001 	li	v1,1
+  42c8f0:	50430009 	beql	v0,v1,0x42c918
+  42c8f4:	24840124 	addiu	a0,a0,292
+  42c8f8:	24030002 	li	v1,2
+  42c8fc:	50430003 	beql	v0,v1,0x42c90c
+  42c900:	24840124 	addiu	a0,a0,292
+  42c904:	03e00008 	jr	ra
+  42c908:	00001021 	move	v0,zero
+  42c90c:	24050010 	li	a1,16
+  42c910:	081020f4 	j	0x4083d0
+  42c914:	00003021 	move	a2,zero
+  42c918:	0810b244 	j	0x42c910
+  42c91c:	24050004 	li	a1,4

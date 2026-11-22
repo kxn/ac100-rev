@@ -1,0 +1,50 @@
+; func _apmngr_local_ipv4_add @ 0x00555c18 size=0xc4
+  555c18:	27bdffd8 	addiu	sp,sp,-40
+  555c1c:	afbf0024 	sw	ra,36(sp)
+  555c20:	afb00020 	sw	s0,32(sp)
+  555c24:	1080001c 	beqz	a0,0x555c98
+  555c28:	afa00018 	sw	zero,24(sp)
+  555c2c:	afa50018 	sw	a1,24(sp)
+  555c30:	27a60018 	addiu	a2,sp,24
+  555c34:	2405001e 	li	a1,30
+  555c38:	00003821 	move	a3,zero
+  555c3c:	0c1621be 	jal	0x5886f8
+  555c40:	00008021 	move	s0,zero
+  555c44:	2403ffff 	li	v1,-1
+  555c48:	10430006 	beq	v0,v1,0x555c64
+  555c4c:	3c020075 	lui	v0,0x75
+  555c50:	8fbf0024 	lw	ra,36(sp)
+  555c54:	02001021 	move	v0,s0
+  555c58:	8fb00020 	lw	s0,32(sp)
+  555c5c:	03e00008 	jr	ra
+  555c60:	27bd0028 	addiu	sp,sp,40
+  555c64:	8042bea4 	lb	v0,-16732(v0)
+  555c68:	1040fff9 	beqz	v0,0x555c50
+  555c6c:	2410ffff 	li	s0,-1
+  555c70:	0c16276a 	jal	0x589da8
+  555c74:	00000000 	nop
+  555c78:	5040fff6 	beqzl	v0,0x555c54
+  555c7c:	8fbf0024 	lw	ra,36(sp)
+  555c80:	3c04006d 	lui	a0,0x6d
+  555c84:	3c05006d 	lui	a1,0x6d
+  555c88:	2484f5b4 	addiu	a0,a0,-2636
+  555c8c:	24a51090 	addiu	a1,a1,4240
+  555c90:	08155733 	j	0x555ccc
+  555c94:	2406085f 	li	a2,2143
+  555c98:	3c020075 	lui	v0,0x75
+  555c9c:	8042bea4 	lb	v0,-16732(v0)
+  555ca0:	1040ffeb 	beqz	v0,0x555c50
+  555ca4:	2410ffff 	li	s0,-1
+  555ca8:	0c16276a 	jal	0x589da8
+  555cac:	00000000 	nop
+  555cb0:	5040ffe8 	beqzl	v0,0x555c54
+  555cb4:	8fbf0024 	lw	ra,36(sp)
+  555cb8:	3c04006d 	lui	a0,0x6d
+  555cbc:	3c05006d 	lui	a1,0x6d
+  555cc0:	2484f58c 	addiu	a0,a0,-2676
+  555cc4:	24a51090 	addiu	a1,a1,4240
+  555cc8:	24060858 	li	a2,2136
+  555ccc:	0c101b74 	jal	0x406dd0
+  555cd0:	00000000 	nop
+  555cd4:	08155715 	j	0x555c54
+  555cd8:	8fbf0024 	lw	ra,36(sp)

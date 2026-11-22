@@ -1,0 +1,46 @@
+; func wportal_db_cmcc_data_deInit @ 0x0043313c size=0xb4
+  43313c:	27bdffe0 	addiu	sp,sp,-32
+  433140:	afb00018 	sw	s0,24(sp)
+  433144:	3c100076 	lui	s0,0x76
+  433148:	afbf001c 	sw	ra,28(sp)
+  43314c:	8e04a19c 	lw	a0,-24164(s0)
+  433150:	50800005 	beqzl	a0,0x433168
+  433154:	3c100076 	lui	s0,0x76
+  433158:	0c101f7c 	jal	0x407df0
+  43315c:	00000000 	nop
+  433160:	ae00a19c 	sw	zero,-24164(s0)
+  433164:	3c100076 	lui	s0,0x76
+  433168:	8e04a198 	lw	a0,-24168(s0)
+  43316c:	50800005 	beqzl	a0,0x433184
+  433170:	3c100076 	lui	s0,0x76
+  433174:	0c1020dc 	jal	0x408370
+  433178:	00000000 	nop
+  43317c:	ae00a198 	sw	zero,-24168(s0)
+  433180:	3c100076 	lui	s0,0x76
+  433184:	8e04a194 	lw	a0,-24172(s0)
+  433188:	50800005 	beqzl	a0,0x4331a0
+  43318c:	3c100076 	lui	s0,0x76
+  433190:	0c1020d8 	jal	0x408360
+  433194:	00000000 	nop
+  433198:	ae00a194 	sw	zero,-24172(s0)
+  43319c:	3c100076 	lui	s0,0x76
+  4331a0:	3c020076 	lui	v0,0x76
+  4331a4:	8e04a1a8 	lw	a0,-24152(s0)
+  4331a8:	10800004 	beqz	a0,0x4331bc
+  4331ac:	ac40a1a0 	sw	zero,-24160(v0)
+  4331b0:	0c1020dc 	jal	0x408370
+  4331b4:	00000000 	nop
+  4331b8:	ae00a1a8 	sw	zero,-24152(s0)
+  4331bc:	3c100076 	lui	s0,0x76
+  4331c0:	8e04a1a4 	lw	a0,-24156(s0)
+  4331c4:	10800005 	beqz	a0,0x4331dc
+  4331c8:	3c020076 	lui	v0,0x76
+  4331cc:	0c1020d8 	jal	0x408360
+  4331d0:	00000000 	nop
+  4331d4:	ae00a1a4 	sw	zero,-24156(s0)
+  4331d8:	3c020076 	lui	v0,0x76
+  4331dc:	8fbf001c 	lw	ra,28(sp)
+  4331e0:	8fb00018 	lw	s0,24(sp)
+  4331e4:	27bd0020 	addiu	sp,sp,32
+  4331e8:	03e00008 	jr	ra
+  4331ec:	ac40a1ac 	sw	zero,-24148(v0)

@@ -1,0 +1,24 @@
+; func apmngr_db_debug_help_print @ 0x00543204 size=0x58
+  543204:	3c04006d 	lui	a0,0x6d
+  543208:	27bdffe0 	addiu	sp,sp,-32
+  54320c:	afbf001c 	sw	ra,28(sp)
+  543210:	0c101dd4 	jal	0x407750
+  543214:	24849a3c 	addiu	a0,a0,-26052
+  543218:	3c04006d 	lui	a0,0x6d
+  54321c:	0c101dd4 	jal	0x407750
+  543220:	24849a88 	addiu	a0,a0,-25976
+  543224:	3c04006d 	lui	a0,0x6d
+  543228:	0c101dd4 	jal	0x407750
+  54322c:	24849adc 	addiu	a0,a0,-25892
+  543230:	3c04006d 	lui	a0,0x6d
+  543234:	0c101dd4 	jal	0x407750
+  543238:	24849b34 	addiu	a0,a0,-25804
+  54323c:	3c04006d 	lui	a0,0x6d
+  543240:	0c101dd4 	jal	0x407750
+  543244:	24849b88 	addiu	a0,a0,-25720
+  543248:	3c04006d 	lui	a0,0x6d
+  54324c:	8fbf001c 	lw	ra,28(sp)
+  543250:	27bd0020 	addiu	sp,sp,32
+  543254:	08101dd4 	j	0x407750
+  543258:	24849be4 	addiu	a0,a0,-25628
+  54325c:	00000000 	nop

@@ -1,0 +1,69 @@
+; func _uac_wserv_packet_type_get_by_wlan_id @ 0x005d61cc size=0x110
+  5d61cc:	27bdffd0 	addiu	sp,sp,-48
+  5d61d0:	afb30028 	sw	s3,40(sp)
+  5d61d4:	00e09821 	move	s3,a3
+  5d61d8:	afb20024 	sw	s2,36(sp)
+  5d61dc:	00809021 	move	s2,a0
+  5d61e0:	afb10020 	sw	s1,32(sp)
+  5d61e4:	00a08821 	move	s1,a1
+  5d61e8:	afb0001c 	sw	s0,28(sp)
+  5d61ec:	00c08021 	move	s0,a2
+  5d61f0:	04800006 	bltz	a0,0x5d620c
+  5d61f4:	afbf002c 	sw	ra,44(sp)
+  5d61f8:	0c1506a9 	jal	0x541aa4
+  5d61fc:	00000000 	nop
+  5d6200:	0242102a 	slt	v0,s2,v0
+  5d6204:	14400011 	bnez	v0,0x5d624c
+  5d6208:	00000000 	nop
+  5d620c:	3c02007d 	lui	v0,0x7d
+  5d6210:	8c42bee4 	lw	v0,-16668(v0)
+  5d6214:	10400005 	beqz	v0,0x5d622c
+  5d6218:	2411ffff 	li	s1,-1
+  5d621c:	0c16276a 	jal	0x589da8
+  5d6220:	00000000 	nop
+  5d6224:	14400025 	bnez	v0,0x5d62bc
+  5d6228:	3c04006f 	lui	a0,0x6f
+  5d622c:	8fbf002c 	lw	ra,44(sp)
+  5d6230:	02201021 	move	v0,s1
+  5d6234:	8fb30028 	lw	s3,40(sp)
+  5d6238:	8fb20024 	lw	s2,36(sp)
+  5d623c:	8fb10020 	lw	s1,32(sp)
+  5d6240:	8fb0001c 	lw	s0,28(sp)
+  5d6244:	03e00008 	jr	ra
+  5d6248:	27bd0030 	addiu	sp,sp,48
+  5d624c:	0620fff0 	bltz	s1,0x5d6210
+  5d6250:	3c02007d 	lui	v0,0x7d
+  5d6254:	0c1868f4 	jal	0x61a3d0
+  5d6258:	00000000 	nop
+  5d625c:	0222102b 	sltu	v0,s1,v0
+  5d6260:	1040ffeb 	beqz	v0,0x5d6210
+  5d6264:	3c02007d 	lui	v0,0x7d
+  5d6268:	0c1868f7 	jal	0x61a3dc
+  5d626c:	00000000 	nop
+  5d6270:	0202102b 	sltu	v0,s0,v0
+  5d6274:	1040ffe6 	beqz	v0,0x5d6210
+  5d6278:	3c02007d 	lui	v0,0x7d
+  5d627c:	1260ffe5 	beqz	s3,0x5d6214
+  5d6280:	8c42bee4 	lw	v0,-16668(v0)
+  5d6284:	2403000c 	li	v1,12
+  5d6288:	3c020076 	lui	v0,0x76
+  5d628c:	72439002 	mul	s2,s2,v1
+  5d6290:	00118880 	sll	s1,s1,0x2
+  5d6294:	8c4298e8 	lw	v0,-26392(v0)
+  5d6298:	00529021 	addu	s2,v0,s2
+  5d629c:	8e420008 	lw	v0,8(s2)
+  5d62a0:	00518821 	addu	s1,v0,s1
+  5d62a4:	8e220000 	lw	v0,0(s1)
+  5d62a8:	00008821 	move	s1,zero
+  5d62ac:	00508021 	addu	s0,v0,s0
+  5d62b0:	92020000 	lbu	v0,0(s0)
+  5d62b4:	0817588b 	j	0x5d622c
+  5d62b8:	a2620000 	sb	v0,0(s3)
+  5d62bc:	3c05006f 	lui	a1,0x6f
+  5d62c0:	24843648 	addiu	a0,a0,13896
+  5d62c4:	24a56b7c 	addiu	a1,a1,27516
+  5d62c8:	240600af 	li	a2,175
+  5d62cc:	0c101b74 	jal	0x406dd0
+  5d62d0:	02003821 	move	a3,s0
+  5d62d4:	0817588c 	j	0x5d6230
+  5d62d8:	8fbf002c 	lw	ra,44(sp)

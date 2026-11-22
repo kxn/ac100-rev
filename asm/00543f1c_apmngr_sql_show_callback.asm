@@ -1,0 +1,35 @@
+; func apmngr_sql_show_callback @ 0x00543f1c size=0x88
+  543f1c:	27bdffd0 	addiu	sp,sp,-48
+  543f20:	afb30028 	sw	s3,40(sp)
+  543f24:	3c130068 	lui	s3,0x68
+  543f28:	afb20024 	sw	s2,36(sp)
+  543f2c:	00a09021 	move	s2,a1
+  543f30:	afb10020 	sw	s1,32(sp)
+  543f34:	267315f0 	addiu	s3,s3,5616
+  543f38:	afb0001c 	sw	s0,28(sp)
+  543f3c:	00c08821 	move	s1,a2
+  543f40:	afbf002c 	sw	ra,44(sp)
+  543f44:	08150fdc 	j	0x543f70
+  543f48:	00008021 	move	s0,zero
+  543f4c:	5a000004 	blezl	s0,0x543f60
+  543f50:	8e250000 	lw	a1,0(s1)
+  543f54:	0c101ce4 	jal	0x407390
+  543f58:	2404007c 	li	a0,124
+  543f5c:	8e250000 	lw	a1,0(s1)
+  543f60:	26100001 	addiu	s0,s0,1
+  543f64:	26310004 	addiu	s1,s1,4
+  543f68:	0c101b74 	jal	0x406dd0
+  543f6c:	02602021 	move	a0,s3
+  543f70:	0212102a 	slt	v0,s0,s2
+  543f74:	1440fff5 	bnez	v0,0x543f4c
+  543f78:	00000000 	nop
+  543f7c:	0c101ce4 	jal	0x407390
+  543f80:	2404000a 	li	a0,10
+  543f84:	00001021 	move	v0,zero
+  543f88:	8fbf002c 	lw	ra,44(sp)
+  543f8c:	8fb30028 	lw	s3,40(sp)
+  543f90:	8fb20024 	lw	s2,36(sp)
+  543f94:	8fb10020 	lw	s1,32(sp)
+  543f98:	8fb0001c 	lw	s0,28(sp)
+  543f9c:	03e00008 	jr	ra
+  543fa0:	27bd0030 	addiu	sp,sp,48

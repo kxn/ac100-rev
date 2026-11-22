@@ -1,0 +1,25 @@
+; func _apdb_jcs_callback_get_unsupport_ap @ 0x005fac58 size=0x60
+  5fac58:	27bdffd8 	addiu	sp,sp,-40
+  5fac5c:	afb0001c 	sw	s0,28(sp)
+  5fac60:	3c10007d 	lui	s0,0x7d
+  5fac64:	afb10020 	sw	s1,32(sp)
+  5fac68:	00a08821 	move	s1,a1
+  5fac6c:	2405ffff 	li	a1,-1
+  5fac70:	afbf0024 	sw	ra,36(sp)
+  5fac74:	0c1020b4 	jal	0x4082d0
+  5fac78:	8e04c288 	lw	a0,-15736(s0)
+  5fac7c:	0c184731 	jal	0x611cc4
+  5fac80:	00002021 	move	a0,zero
+  5fac84:	0c101fcc 	jal	0x407f30
+  5fac88:	8e04c288 	lw	a0,-15736(s0)
+  5fac8c:	0c101d34 	jal	0x4074d0
+  5fac90:	2404ffff 	li	a0,-1
+  5fac94:	3c050067 	lui	a1,0x67
+  5fac98:	02202021 	move	a0,s1
+  5fac9c:	8fbf0024 	lw	ra,36(sp)
+  5faca0:	8fb10020 	lw	s1,32(sp)
+  5faca4:	24a56a24 	addiu	a1,a1,27172
+  5faca8:	8fb0001c 	lw	s0,28(sp)
+  5facac:	27bd0028 	addiu	sp,sp,40
+  5facb0:	08101d78 	j	0x4075e0
+  5facb4:	00403021 	move	a2,v0

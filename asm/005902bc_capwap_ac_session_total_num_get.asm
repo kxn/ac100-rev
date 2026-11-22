@@ -1,0 +1,19 @@
+; func capwap_ac_session_total_num_get @ 0x005902bc size=0x48
+  5902bc:	27bdffd8 	addiu	sp,sp,-40
+  5902c0:	2405ffff 	li	a1,-1
+  5902c4:	afb0001c 	sw	s0,28(sp)
+  5902c8:	3c10007c 	lui	s0,0x7c
+  5902cc:	afbf0024 	sw	ra,36(sp)
+  5902d0:	afb10020 	sw	s1,32(sp)
+  5902d4:	0c1020b4 	jal	0x4082d0
+  5902d8:	8e0459a0 	lw	a0,22944(s0)
+  5902dc:	3c02007c 	lui	v0,0x7c
+  5902e0:	8e0459a0 	lw	a0,22944(s0)
+  5902e4:	0c101fcc 	jal	0x407f30
+  5902e8:	8c5159a4 	lw	s1,22948(v0)
+  5902ec:	8fbf0024 	lw	ra,36(sp)
+  5902f0:	02201021 	move	v0,s1
+  5902f4:	8fb0001c 	lw	s0,28(sp)
+  5902f8:	8fb10020 	lw	s1,32(sp)
+  5902fc:	03e00008 	jr	ra
+  590300:	27bd0028 	addiu	sp,sp,40

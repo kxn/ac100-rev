@@ -1,0 +1,20 @@
+; func mesh_db_re_auto_switch_set @ 0x004b90b8 size=0x4c
+  4b90b8:	27bdffd8 	addiu	sp,sp,-40
+  4b90bc:	2405ffff 	li	a1,-1
+  4b90c0:	afb0001c 	sw	s0,28(sp)
+  4b90c4:	3c100076 	lui	s0,0x76
+  4b90c8:	afb10020 	sw	s1,32(sp)
+  4b90cc:	00808821 	move	s1,a0
+  4b90d0:	26107eb0 	addiu	s0,s0,32432
+  4b90d4:	afbf0024 	sw	ra,36(sp)
+  4b90d8:	0c1020b4 	jal	0x4082d0
+  4b90dc:	8e040004 	lw	a0,4(s0)
+  4b90e0:	8e040004 	lw	a0,4(s0)
+  4b90e4:	0c101fcc 	jal	0x407f30
+  4b90e8:	ae110090 	sw	s1,144(s0)
+  4b90ec:	00001021 	move	v0,zero
+  4b90f0:	8fbf0024 	lw	ra,36(sp)
+  4b90f4:	8fb10020 	lw	s1,32(sp)
+  4b90f8:	8fb0001c 	lw	s0,28(sp)
+  4b90fc:	03e00008 	jr	ra
+  4b9100:	27bd0028 	addiu	sp,sp,40

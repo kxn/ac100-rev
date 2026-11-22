@@ -1,0 +1,14 @@
+// func cw_image_identifier_len_get @ 00576e00 size=28
+
+short cw_image_identifier_len_get(int param_1)
+
+{
+  short sVar1;
+  
+  sVar1 = 0;
+  if (param_1 != 0) {
+    sVar1 = *(short *)(param_1 + 4) + 4;
+  }
+  return sVar1;
+}
+

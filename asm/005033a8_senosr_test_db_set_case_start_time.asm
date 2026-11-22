@@ -1,0 +1,44 @@
+; func senosr_test_db_set_case_start_time @ 0x005033a8 size=0xac
+  5033a8:	27bdffd8 	addiu	sp,sp,-40
+  5033ac:	2402ffff 	li	v0,-1
+  5033b0:	afb20020 	sw	s2,32(sp)
+  5033b4:	00a09021 	move	s2,a1
+  5033b8:	afb00018 	sw	s0,24(sp)
+  5033bc:	00808021 	move	s0,a0
+  5033c0:	afbf0024 	sw	ra,36(sp)
+  5033c4:	04800019 	bltz	a0,0x50342c
+  5033c8:	afb1001c 	sw	s1,28(sp)
+  5033cc:	3c030077 	lui	v1,0x77
+  5033d0:	8c6388a0 	lw	v1,-30560(v1)
+  5033d4:	0064182b 	sltu	v1,v1,a0
+  5033d8:	14600014 	bnez	v1,0x50342c
+  5033dc:	3c110077 	lui	s1,0x77
+  5033e0:	2405ffff 	li	a1,-1
+  5033e4:	00108080 	sll	s0,s0,0x2
+  5033e8:	0c1020b4 	jal	0x4082d0
+  5033ec:	8e2488a8 	lw	a0,-30552(s1)
+  5033f0:	3c020077 	lui	v0,0x77
+  5033f4:	8c4288ac 	lw	v0,-30548(v0)
+  5033f8:	00508021 	addu	s0,v0,s0
+  5033fc:	8e020000 	lw	v0,0(s0)
+  503400:	10400010 	beqz	v0,0x503444
+  503404:	00000000 	nop
+  503408:	8c420004 	lw	v0,4(v0)
+  50340c:	1040000d 	beqz	v0,0x503444
+  503410:	00000000 	nop
+  503414:	84430000 	lh	v1,0(v0)
+  503418:	50600001 	beqzl	v1,0x503420
+  50341c:	ac520004 	sw	s2,4(v0)
+  503420:	0c101fcc 	jal	0x407f30
+  503424:	8e2488a8 	lw	a0,-30552(s1)
+  503428:	00001021 	move	v0,zero
+  50342c:	8fbf0024 	lw	ra,36(sp)
+  503430:	8fb20020 	lw	s2,32(sp)
+  503434:	8fb1001c 	lw	s1,28(sp)
+  503438:	8fb00018 	lw	s0,24(sp)
+  50343c:	03e00008 	jr	ra
+  503440:	27bd0028 	addiu	sp,sp,40
+  503444:	0c101fcc 	jal	0x407f30
+  503448:	8e2488a8 	lw	a0,-30552(s1)
+  50344c:	08140d0b 	j	0x50342c
+  503450:	2402ffff 	li	v0,-1

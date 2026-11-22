@@ -1,0 +1,36 @@
+; func apupd_db_model_list_dump @ 0x00658250 size=0x8c
+  658250:	27bdffd8 	addiu	sp,sp,-40
+  658254:	afb0001c 	sw	s0,28(sp)
+  658258:	3c10007d 	lui	s0,0x7d
+  65825c:	afbf0024 	sw	ra,36(sp)
+  658260:	afb10020 	sw	s1,32(sp)
+  658264:	8e02c794 	lw	v0,-14444(s0)
+  658268:	10400017 	beqz	v0,0x6582c8
+  65826c:	3c11007d 	lui	s1,0x7d
+  658270:	2405ffff 	li	a1,-1
+  658274:	0c1020b4 	jal	0x4082d0
+  658278:	8e24c778 	lw	a0,-14472(s1)
+  65827c:	3c040071 	lui	a0,0x71
+  658280:	0c101dd4 	jal	0x407750
+  658284:	24847e4c 	addiu	a0,a0,32332
+  658288:	0c10206c 	jal	0x4081b0
+  65828c:	8e04c794 	lw	a0,-14444(s0)
+  658290:	081960aa 	j	0x6582a8
+  658294:	00000000 	nop
+  658298:	0c1928d7 	jal	0x64a35c
+  65829c:	02002021 	move	a0,s0
+  6582a0:	0c1021a0 	jal	0x408680
+  6582a4:	02002021 	move	a0,s0
+  6582a8:	1440fffb 	bnez	v0,0x658298
+  6582ac:	00408021 	move	s0,v0
+  6582b0:	8e24c778 	lw	a0,-14472(s1)
+  6582b4:	8fbf0024 	lw	ra,36(sp)
+  6582b8:	8fb10020 	lw	s1,32(sp)
+  6582bc:	8fb0001c 	lw	s0,28(sp)
+  6582c0:	08101fcc 	j	0x407f30
+  6582c4:	27bd0028 	addiu	sp,sp,40
+  6582c8:	8fbf0024 	lw	ra,36(sp)
+  6582cc:	8fb10020 	lw	s1,32(sp)
+  6582d0:	8fb0001c 	lw	s0,28(sp)
+  6582d4:	03e00008 	jr	ra
+  6582d8:	27bd0028 	addiu	sp,sp,40

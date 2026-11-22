@@ -1,0 +1,25 @@
+; func wsta_db_print_roam_all @ 0x00639aa4 size=0x60
+  639aa4:	27bdffd8 	addiu	sp,sp,-40
+  639aa8:	afb20020 	sw	s2,32(sp)
+  639aac:	3c12007d 	lui	s2,0x7d
+  639ab0:	afb1001c 	sw	s1,28(sp)
+  639ab4:	3c11007d 	lui	s1,0x7d
+  639ab8:	afb00018 	sw	s0,24(sp)
+  639abc:	00008021 	move	s0,zero
+  639ac0:	0818e6b7 	j	0x639adc
+  639ac4:	afbf0024 	sw	ra,36(sp)
+  639ac8:	001011c0 	sll	v0,s0,0x7
+  639acc:	26100001 	addiu	s0,s0,1
+  639ad0:	8c640010 	lw	a0,16(v1)
+  639ad4:	0c18e61f 	jal	0x63987c
+  639ad8:	00822021 	addu	a0,a0,v0
+  639adc:	8e22c6a8 	lw	v0,-14680(s1)
+  639ae0:	0202102b 	sltu	v0,s0,v0
+  639ae4:	1440fff8 	bnez	v0,0x639ac8
+  639ae8:	2643c6b8 	addiu	v1,s2,-14664
+  639aec:	8fbf0024 	lw	ra,36(sp)
+  639af0:	8fb20020 	lw	s2,32(sp)
+  639af4:	8fb1001c 	lw	s1,28(sp)
+  639af8:	8fb00018 	lw	s0,24(sp)
+  639afc:	03e00008 	jr	ra
+  639b00:	27bd0028 	addiu	sp,sp,40

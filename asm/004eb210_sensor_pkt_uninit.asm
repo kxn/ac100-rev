@@ -1,0 +1,37 @@
+; func sensor_pkt_uninit @ 0x004eb210 size=0x8c
+  4eb210:	3c04004f 	lui	a0,0x4f
+  4eb214:	27bdffe0 	addiu	sp,sp,-32
+  4eb218:	2484ad3c 	addiu	a0,a0,-21188
+  4eb21c:	24050001 	li	a1,1
+  4eb220:	afbf001c 	sw	ra,28(sp)
+  4eb224:	afb00018 	sw	s0,24(sp)
+  4eb228:	0c143262 	jal	0x50c988
+  4eb22c:	3c100077 	lui	s0,0x77
+  4eb230:	3c04004f 	lui	a0,0x4f
+  4eb234:	24050004 	li	a1,4
+  4eb238:	0c143262 	jal	0x50c988
+  4eb23c:	2484ad30 	addiu	a0,a0,-21200
+  4eb240:	3c06004f 	lui	a2,0x4f
+  4eb244:	24040009 	li	a0,9
+  4eb248:	24050078 	li	a1,120
+  4eb24c:	0c1666f8 	jal	0x599be0
+  4eb250:	24c6a218 	addiu	a2,a2,-24040
+  4eb254:	3c06004f 	lui	a2,0x4f
+  4eb258:	24040003 	li	a0,3
+  4eb25c:	24050032 	li	a1,50
+  4eb260:	0c1666f8 	jal	0x599be0
+  4eb264:	24c6a070 	addiu	a2,a2,-24464
+  4eb268:	8e048694 	lw	a0,-31084(s0)
+  4eb26c:	10800007 	beqz	a0,0x4eb28c
+  4eb270:	3c05004f 	lui	a1,0x4f
+  4eb274:	00003021 	move	a2,zero
+  4eb278:	0c10215c 	jal	0x408570
+  4eb27c:	24a5a55c 	addiu	a1,a1,-23204
+  4eb280:	0c1020c4 	jal	0x408310
+  4eb284:	8e048694 	lw	a0,-31084(s0)
+  4eb288:	ae008694 	sw	zero,-31084(s0)
+  4eb28c:	8fbf001c 	lw	ra,28(sp)
+  4eb290:	8fb00018 	lw	s0,24(sp)
+  4eb294:	03e00008 	jr	ra
+  4eb298:	27bd0020 	addiu	sp,sp,32
+  4eb29c:	00000000 	nop

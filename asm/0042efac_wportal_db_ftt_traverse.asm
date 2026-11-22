@@ -1,0 +1,26 @@
+; func wportal_db_ftt_traverse @ 0x0042efac size=0x64
+  42efac:	27bdffd8 	addiu	sp,sp,-40
+  42efb0:	afb00018 	sw	s0,24(sp)
+  42efb4:	3c100076 	lui	s0,0x76
+  42efb8:	afb1001c 	sw	s1,28(sp)
+  42efbc:	00808821 	move	s1,a0
+  42efc0:	afb20020 	sw	s2,32(sp)
+  42efc4:	00a09021 	move	s2,a1
+  42efc8:	afbf0024 	sw	ra,36(sp)
+  42efcc:	2405ffff 	li	a1,-1
+  42efd0:	0c1020b4 	jal	0x4082d0
+  42efd4:	8e04a148 	lw	a0,-24248(s0)
+  42efd8:	3c020076 	lui	v0,0x76
+  42efdc:	02202821 	move	a1,s1
+  42efe0:	02403021 	move	a2,s2
+  42efe4:	0c1020f0 	jal	0x4083c0
+  42efe8:	8c44a14c 	lw	a0,-24244(v0)
+  42efec:	0c101fcc 	jal	0x407f30
+  42eff0:	8e04a148 	lw	a0,-24248(s0)
+  42eff4:	00001021 	move	v0,zero
+  42eff8:	8fbf0024 	lw	ra,36(sp)
+  42effc:	8fb20020 	lw	s2,32(sp)
+  42f000:	8fb1001c 	lw	s1,28(sp)
+  42f004:	8fb00018 	lw	s0,24(sp)
+  42f008:	03e00008 	jr	ra
+  42f00c:	27bd0028 	addiu	sp,sp,40

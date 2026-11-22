@@ -1,0 +1,29 @@
+; func cw_control_header_seq_num_set @ 0x005a2050 size=0x70
+  5a2050:	27bdffd8 	addiu	sp,sp,-40
+  5a2054:	afb10020 	sw	s1,32(sp)
+  5a2058:	30b100ff 	andi	s1,a1,0xff
+  5a205c:	afb0001c 	sw	s0,28(sp)
+  5a2060:	00808021 	move	s0,a0
+  5a2064:	1080000a 	beqz	a0,0x5a2090
+  5a2068:	afbf0024 	sw	ra,36(sp)
+  5a206c:	0c1685ef 	jal	0x5a17bc
+  5a2070:	00000000 	nop
+  5a2074:	02021021 	addu	v0,s0,v0
+  5a2078:	a0510004 	sb	s1,4(v0)
+  5a207c:	8fbf0024 	lw	ra,36(sp)
+  5a2080:	8fb10020 	lw	s1,32(sp)
+  5a2084:	8fb0001c 	lw	s0,28(sp)
+  5a2088:	03e00008 	jr	ra
+  5a208c:	27bd0028 	addiu	sp,sp,40
+  5a2090:	3c040069 	lui	a0,0x69
+  5a2094:	8fbf0024 	lw	ra,36(sp)
+  5a2098:	3c05006e 	lui	a1,0x6e
+  5a209c:	8fb10020 	lw	s1,32(sp)
+  5a20a0:	3c07006e 	lui	a3,0x6e
+  5a20a4:	8fb0001c 	lw	s0,28(sp)
+  5a20a8:	2484d3ac 	addiu	a0,a0,-11348
+  5a20ac:	24a5663c 	addiu	a1,a1,26172
+  5a20b0:	240603c2 	li	a2,962
+  5a20b4:	24e7608c 	addiu	a3,a3,24716
+  5a20b8:	08101b74 	j	0x406dd0
+  5a20bc:	27bd0028 	addiu	sp,sp,40

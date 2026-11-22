@@ -1,0 +1,39 @@
+; func arp_defend_str2ip @ 0x00479718 size=0x98
+  479718:	27bdffc8 	addiu	sp,sp,-56
+  47971c:	afb00030 	sw	s0,48(sp)
+  479720:	00808021 	move	s0,a0
+  479724:	afbf0034 	sw	ra,52(sp)
+  479728:	00a02021 	move	a0,a1
+  47972c:	afa00018 	sw	zero,24(sp)
+  479730:	afa0001c 	sw	zero,28(sp)
+  479734:	afa00020 	sw	zero,32(sp)
+  479738:	afa00024 	sw	zero,36(sp)
+  47973c:	10a0000c 	beqz	a1,0x479770
+  479740:	afa00028 	sw	zero,40(sp)
+  479744:	0c1469ea 	jal	0x51a7a8
+  479748:	27a50018 	addiu	a1,sp,24
+  47974c:	27a50018 	addiu	a1,sp,24
+  479750:	24060014 	li	a2,20
+  479754:	0c101c8c 	jal	0x407230
+  479758:	02002021 	move	a0,s0
+  47975c:	02001021 	move	v0,s0
+  479760:	8fbf0034 	lw	ra,52(sp)
+  479764:	8fb00030 	lw	s0,48(sp)
+  479768:	03e00008 	jr	ra
+  47976c:	27bd0038 	addiu	sp,sp,56
+  479770:	3c020073 	lui	v0,0x73
+  479774:	8c4214c0 	lw	v0,5312(v0)
+  479778:	1040fff5 	beqz	v0,0x479750
+  47977c:	27a50018 	addiu	a1,sp,24
+  479780:	0c16276a 	jal	0x589da8
+  479784:	00000000 	nop
+  479788:	1040fff1 	beqz	v0,0x479750
+  47978c:	27a50018 	addiu	a1,sp,24
+  479790:	3c040069 	lui	a0,0x69
+  479794:	3c050069 	lui	a1,0x69
+  479798:	248402c4 	addiu	a0,a0,708
+  47979c:	24a52fe0 	addiu	a1,a1,12256
+  4797a0:	0c101b74 	jal	0x406dd0
+  4797a4:	2406031e 	li	a2,798
+  4797a8:	0811e5d3 	j	0x47974c
+  4797ac:	00000000 	nop

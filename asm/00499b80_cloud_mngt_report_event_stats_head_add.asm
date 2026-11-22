@@ -1,0 +1,24 @@
+; func cloud_mngt_report_event_stats_head_add @ 0x00499b80 size=0x5c
+  499b80:	27bdffe0 	addiu	sp,sp,-32
+  499b84:	afb00018 	sw	s0,24(sp)
+  499b88:	00808021 	move	s0,a0
+  499b8c:	3c040076 	lui	a0,0x76
+  499b90:	afbf001c 	sw	ra,28(sp)
+  499b94:	0c101c2c 	jal	0x4070b0
+  499b98:	24847804 	addiu	a0,a0,30724
+  499b9c:	3c05006a 	lui	a1,0x6a
+  499ba0:	02002021 	move	a0,s0
+  499ba4:	24a58738 	addiu	a1,a1,-30920
+  499ba8:	0c101d78 	jal	0x4075e0
+  499bac:	00403021 	move	a2,v0
+  499bb0:	3c040076 	lui	a0,0x76
+  499bb4:	0c101c2c 	jal	0x4070b0
+  499bb8:	2484786c 	addiu	a0,a0,30828
+  499bbc:	3c050067 	lui	a1,0x67
+  499bc0:	02002021 	move	a0,s0
+  499bc4:	8fbf001c 	lw	ra,28(sp)
+  499bc8:	8fb00018 	lw	s0,24(sp)
+  499bcc:	24a57798 	addiu	a1,a1,30616
+  499bd0:	27bd0020 	addiu	sp,sp,32
+  499bd4:	08101d78 	j	0x4075e0
+  499bd8:	00403021 	move	a2,v0

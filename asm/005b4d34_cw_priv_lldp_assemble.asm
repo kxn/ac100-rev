@@ -1,0 +1,25 @@
+; func cw_priv_lldp_assemble @ 0x005b4d34 size=0x60
+  5b4d34:	27bdffd8 	addiu	sp,sp,-40
+  5b4d38:	24060004 	li	a2,4
+  5b4d3c:	afbf0024 	sw	ra,36(sp)
+  5b4d40:	afb20020 	sw	s2,32(sp)
+  5b4d44:	afb1001c 	sw	s1,28(sp)
+  5b4d48:	00a08821 	move	s1,a1
+  5b4d4c:	afb00018 	sw	s0,24(sp)
+  5b4d50:	00808021 	move	s0,a0
+  5b4d54:	8ca50010 	lw	a1,16(a1)
+  5b4d58:	0c15c856 	jal	0x572158
+  5b4d5c:	94920004 	lhu	s2,4(a0)
+  5b4d60:	96020004 	lhu	v0,4(s0)
+  5b4d64:	9623000e 	lhu	v1,14(s1)
+  5b4d68:	8fbf0024 	lw	ra,36(sp)
+  5b4d6c:	00529023 	subu	s2,v0,s2
+  5b4d70:	8fb1001c 	lw	s1,28(sp)
+  5b4d74:	8fb00018 	lw	s0,24(sp)
+  5b4d78:	02431026 	xor	v0,s2,v1
+  5b4d7c:	8fb20020 	lw	s2,32(sp)
+  5b4d80:	2403ffff 	li	v1,-1
+  5b4d84:	27bd0028 	addiu	sp,sp,40
+  5b4d88:	0002180a 	movz	v1,zero,v0
+  5b4d8c:	03e00008 	jr	ra
+  5b4d90:	00601021 	move	v0,v1

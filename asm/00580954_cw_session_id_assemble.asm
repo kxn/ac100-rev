@@ -1,0 +1,25 @@
+; func cw_session_id_assemble @ 0x00580954 size=0x60
+  580954:	27bdffd8 	addiu	sp,sp,-40
+  580958:	afb1001c 	sw	s1,28(sp)
+  58095c:	00a08821 	move	s1,a1
+  580960:	afbf0024 	sw	ra,36(sp)
+  580964:	afb20020 	sw	s2,32(sp)
+  580968:	afb00018 	sw	s0,24(sp)
+  58096c:	00808021 	move	s0,a0
+  580970:	9626000e 	lhu	a2,14(s1)
+  580974:	8ca50010 	lw	a1,16(a1)
+  580978:	0c15c856 	jal	0x572158
+  58097c:	94920004 	lhu	s2,4(a0)
+  580980:	96020004 	lhu	v0,4(s0)
+  580984:	9623000e 	lhu	v1,14(s1)
+  580988:	8fbf0024 	lw	ra,36(sp)
+  58098c:	00529023 	subu	s2,v0,s2
+  580990:	8fb1001c 	lw	s1,28(sp)
+  580994:	8fb00018 	lw	s0,24(sp)
+  580998:	02431026 	xor	v0,s2,v1
+  58099c:	8fb20020 	lw	s2,32(sp)
+  5809a0:	2403ffff 	li	v1,-1
+  5809a4:	27bd0028 	addiu	sp,sp,40
+  5809a8:	0002180a 	movz	v1,zero,v0
+  5809ac:	03e00008 	jr	ra
+  5809b0:	00601021 	move	v0,v1

@@ -1,0 +1,20 @@
+; func wips_profile_dump @ 0x004ceb0c size=0x4c
+  4ceb0c:	3c020073 	lui	v0,0x73
+  4ceb10:	3c04006a 	lui	a0,0x6a
+  4ceb14:	27bdffe0 	addiu	sp,sp,-32
+  4ceb18:	8c451aa0 	lw	a1,6816(v0)
+  4ceb1c:	afbf001c 	sw	ra,28(sp)
+  4ceb20:	0c101b74 	jal	0x406dd0
+  4ceb24:	24847d94 	addiu	a0,a0,32148
+  4ceb28:	3c020077 	lui	v0,0x77
+  4ceb2c:	3c04006a 	lui	a0,0x6a
+  4ceb30:	94458098 	lhu	a1,-32616(v0)
+  4ceb34:	0c101b74 	jal	0x406dd0
+  4ceb38:	24847da8 	addiu	a0,a0,32168
+  4ceb3c:	3c020077 	lui	v0,0x77
+  4ceb40:	3c04006a 	lui	a0,0x6a
+  4ceb44:	8fbf001c 	lw	ra,28(sp)
+  4ceb48:	27bd0020 	addiu	sp,sp,32
+  4ceb4c:	9445809a 	lhu	a1,-32614(v0)
+  4ceb50:	08101b74 	j	0x406dd0
+  4ceb54:	24847dc0 	addiu	a0,a0,32192

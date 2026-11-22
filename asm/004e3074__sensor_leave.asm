@@ -1,0 +1,23 @@
+; func _sensor_leave @ 0x004e3074 size=0x58
+  4e3074:	27bdffe0 	addiu	sp,sp,-32
+  4e3078:	24020007 	li	v0,7
+  4e307c:	afb00018 	sw	s0,24(sp)
+  4e3080:	afbf001c 	sw	ra,28(sp)
+  4e3084:	8c830014 	lw	v1,20(a0)
+  4e3088:	10620006 	beq	v1,v0,0x4e30a4
+  4e308c:	00808021 	move	s0,a0
+  4e3090:	8fbf001c 	lw	ra,28(sp)
+  4e3094:	00001021 	move	v0,zero
+  4e3098:	8fb00018 	lw	s0,24(sp)
+  4e309c:	03e00008 	jr	ra
+  4e30a0:	27bd0020 	addiu	sp,sp,32
+  4e30a4:	94840010 	lhu	a0,16(a0)
+  4e30a8:	00002821 	move	a1,zero
+  4e30ac:	0c1343b9 	jal	0x4d0ee4
+  4e30b0:	00003021 	move	a2,zero
+  4e30b4:	00002821 	move	a1,zero
+  4e30b8:	96040010 	lhu	a0,16(s0)
+  4e30bc:	0c13442f 	jal	0x4d10bc
+  4e30c0:	00003021 	move	a2,zero
+  4e30c4:	08138c25 	j	0x4e3094
+  4e30c8:	8fbf001c 	lw	ra,28(sp)

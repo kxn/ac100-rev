@@ -1,0 +1,14 @@
+; func wips_counter_status2str @ 0x004c9218 size=0x34
+  4c9218:	24020001 	li	v0,1
+  4c921c:	10820007 	beq	a0,v0,0x4c923c
+  4c9220:	3c02006e 	lui	v0,0x6e
+  4c9224:	24020002 	li	v0,2
+  4c9228:	50820006 	beql	a0,v0,0x4c9244
+  4c922c:	3c02006e 	lui	v0,0x6e
+  4c9230:	3c02006c 	lui	v0,0x6c
+  4c9234:	03e00008 	jr	ra
+  4c9238:	2442b290 	addiu	v0,v0,-19824
+  4c923c:	03e00008 	jr	ra
+  4c9240:	24429470 	addiu	v0,v0,-27536
+  4c9244:	03e00008 	jr	ra
+  4c9248:	24429478 	addiu	v0,v0,-27528

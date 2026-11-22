@@ -1,0 +1,24 @@
+; func _wsta_db_tmp_hash_show_cb @ 0x00636990 size=0x5c
+  636990:	27bdffd0 	addiu	sp,sp,-48
+  636994:	afbf002c 	sw	ra,44(sp)
+  636998:	afb00028 	sw	s0,40(sp)
+  63699c:	00808021 	move	s0,a0
+  6369a0:	9082006b 	lbu	v0,107(a0)
+  6369a4:	90850068 	lbu	a1,104(a0)
+  6369a8:	90860069 	lbu	a2,105(a0)
+  6369ac:	9087006a 	lbu	a3,106(a0)
+  6369b0:	afa20010 	sw	v0,16(sp)
+  6369b4:	9082006c 	lbu	v0,108(a0)
+  6369b8:	afa20014 	sw	v0,20(sp)
+  6369bc:	9082006d 	lbu	v0,109(a0)
+  6369c0:	3c040068 	lui	a0,0x68
+  6369c4:	2484ff6c 	addiu	a0,a0,-148
+  6369c8:	0c101b74 	jal	0x406dd0
+  6369cc:	afa20018 	sw	v0,24(sp)
+  6369d0:	3c040071 	lui	a0,0x71
+  6369d4:	8e050030 	lw	a1,48(s0)
+  6369d8:	8fbf002c 	lw	ra,44(sp)
+  6369dc:	2484ec14 	addiu	a0,a0,-5100
+  6369e0:	8fb00028 	lw	s0,40(sp)
+  6369e4:	08101b74 	j	0x406dd0
+  6369e8:	27bd0030 	addiu	sp,sp,48

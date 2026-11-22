@@ -1,0 +1,45 @@
+; func _sensor_di_db_check_sensor_exists_in_cached_list @ 0x004dca04 size=0xb0
+  4dca04:	27bdffd8 	addiu	sp,sp,-40
+  4dca08:	afb10020 	sw	s1,32(sp)
+  4dca0c:	00808821 	move	s1,a0
+  4dca10:	3c040077 	lui	a0,0x77
+  4dca14:	afbf0024 	sw	ra,36(sp)
+  4dca18:	afb0001c 	sw	s0,28(sp)
+  4dca1c:	0c10206c 	jal	0x4081b0
+  4dca20:	24848600 	addiu	a0,a0,-31232
+  4dca24:	08137290 	j	0x4dca40
+  4dca28:	00000000 	nop
+  4dca2c:	8e02000c 	lw	v0,12(s0)
+  4dca30:	1222000f 	beq	s1,v0,0x4dca70
+  4dca34:	3c020077 	lui	v0,0x77
+  4dca38:	0c1021a0 	jal	0x408680
+  4dca3c:	02002021 	move	a0,s0
+  4dca40:	1440fffa 	bnez	v0,0x4dca2c
+  4dca44:	00408021 	move	s0,v0
+  4dca48:	3c020077 	lui	v0,0x77
+  4dca4c:	8c4285f4 	lw	v0,-31244(v0)
+  4dca50:	54400010 	bnezl	v0,0x4dca94
+  4dca54:	3c04006b 	lui	a0,0x6b
+  4dca58:	8fbf0024 	lw	ra,36(sp)
+  4dca5c:	02001021 	move	v0,s0
+  4dca60:	8fb10020 	lw	s1,32(sp)
+  4dca64:	8fb0001c 	lw	s0,28(sp)
+  4dca68:	03e00008 	jr	ra
+  4dca6c:	27bd0028 	addiu	sp,sp,40
+  4dca70:	8c4285f4 	lw	v0,-31244(v0)
+  4dca74:	5040fff9 	beqzl	v0,0x4dca5c
+  4dca78:	8fbf0024 	lw	ra,36(sp)
+  4dca7c:	3c04006b 	lui	a0,0x6b
+  4dca80:	3c05006b 	lui	a1,0x6b
+  4dca84:	2484d5ec 	addiu	a0,a0,-10772
+  4dca88:	24a5f6f8 	addiu	a1,a1,-2312
+  4dca8c:	081372a9 	j	0x4dcaa4
+  4dca90:	240606ab 	li	a2,1707
+  4dca94:	3c05006b 	lui	a1,0x6b
+  4dca98:	2484d630 	addiu	a0,a0,-10704
+  4dca9c:	24a5f6f8 	addiu	a1,a1,-2312
+  4dcaa0:	240606af 	li	a2,1711
+  4dcaa4:	0c101b74 	jal	0x406dd0
+  4dcaa8:	00000000 	nop
+  4dcaac:	08137297 	j	0x4dca5c
+  4dcab0:	8fbf0024 	lw	ra,36(sp)

@@ -1,0 +1,33 @@
+; func cw_control_header_msg_type_set @ 0x005a1f74 size=0x80
+  5a1f74:	27bdffd0 	addiu	sp,sp,-48
+  5a1f78:	afb10028 	sw	s1,40(sp)
+  5a1f7c:	00a08821 	move	s1,a1
+  5a1f80:	afb00024 	sw	s0,36(sp)
+  5a1f84:	00808021 	move	s0,a0
+  5a1f88:	afbf002c 	sw	ra,44(sp)
+  5a1f8c:	1080000d 	beqz	a0,0x5a1fc4
+  5a1f90:	afa00018 	sw	zero,24(sp)
+  5a1f94:	0c1685ef 	jal	0x5a17bc
+  5a1f98:	00000000 	nop
+  5a1f9c:	27a50018 	addiu	a1,sp,24
+  5a1fa0:	02022021 	addu	a0,s0,v0
+  5a1fa4:	afb10018 	sw	s1,24(sp)
+  5a1fa8:	0c101c8c 	jal	0x407230
+  5a1fac:	24060004 	li	a2,4
+  5a1fb0:	8fbf002c 	lw	ra,44(sp)
+  5a1fb4:	8fb10028 	lw	s1,40(sp)
+  5a1fb8:	8fb00024 	lw	s0,36(sp)
+  5a1fbc:	03e00008 	jr	ra
+  5a1fc0:	27bd0030 	addiu	sp,sp,48
+  5a1fc4:	3c040069 	lui	a0,0x69
+  5a1fc8:	8fbf002c 	lw	ra,44(sp)
+  5a1fcc:	3c05006e 	lui	a1,0x6e
+  5a1fd0:	8fb10028 	lw	s1,40(sp)
+  5a1fd4:	3c07006e 	lui	a3,0x6e
+  5a1fd8:	8fb00024 	lw	s0,36(sp)
+  5a1fdc:	2484d3ac 	addiu	a0,a0,-11348
+  5a1fe0:	24a565fc 	addiu	a1,a1,26108
+  5a1fe4:	2406039b 	li	a2,923
+  5a1fe8:	24e7608c 	addiu	a3,a3,24716
+  5a1fec:	08101b74 	j	0x406dd0
+  5a1ff0:	27bd0030 	addiu	sp,sp,48

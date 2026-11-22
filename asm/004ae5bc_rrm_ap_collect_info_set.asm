@@ -1,0 +1,21 @@
+; func rrm_ap_collect_info_set @ 0x004ae5bc size=0x50
+  4ae5bc:	3084ffff 	andi	a0,a0,0xffff
+  4ae5c0:	30a5ffff 	andi	a1,a1,0xffff
+  4ae5c4:	7c063420 	seb	a2,a2
+  4ae5c8:	30e7ffff 	andi	a3,a3,0xffff
+  4ae5cc:	14800003 	bnez	a0,0x4ae5dc
+  4ae5d0:	3c020073 	lui	v0,0x73
+  4ae5d4:	24431904 	addiu	v1,v0,6404
+  4ae5d8:	9464000a 	lhu	a0,10(v1)
+  4ae5dc:	24421904 	addiu	v0,v0,6404
+  4ae5e0:	94430008 	lhu	v1,8(v0)
+  4ae5e4:	a444000a 	sh	a0,10(v0)
+  4ae5e8:	0065280a 	movz	a1,v1,a1
+  4ae5ec:	9443000c 	lhu	v1,12(v0)
+  4ae5f0:	a4450008 	sh	a1,8(v0)
+  4ae5f4:	0067380a 	movz	a3,v1,a3
+  4ae5f8:	80430006 	lb	v1,6(v0)
+  4ae5fc:	a447000c 	sh	a3,12(v0)
+  4ae600:	0066300a 	movz	a2,v1,a2
+  4ae604:	03e00008 	jr	ra
+  4ae608:	a0460006 	sb	a2,6(v0)

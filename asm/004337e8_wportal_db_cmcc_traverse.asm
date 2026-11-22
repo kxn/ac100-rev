@@ -1,0 +1,25 @@
+; func wportal_db_cmcc_traverse @ 0x004337e8 size=0x60
+  4337e8:	27bdffd8 	addiu	sp,sp,-40
+  4337ec:	3c040068 	lui	a0,0x68
+  4337f0:	afb00020 	sw	s0,32(sp)
+  4337f4:	3c100076 	lui	s0,0x76
+  4337f8:	2484e1e0 	addiu	a0,a0,-7712
+  4337fc:	afbf0024 	sw	ra,36(sp)
+  433800:	0c101dd4 	jal	0x407750
+  433804:	afa00018 	sw	zero,24(sp)
+  433808:	2405ffff 	li	a1,-1
+  43380c:	0c1020b4 	jal	0x4082d0
+  433810:	8e04a1a4 	lw	a0,-24156(s0)
+  433814:	3c020076 	lui	v0,0x76
+  433818:	3c050043 	lui	a1,0x43
+  43381c:	27a60018 	addiu	a2,sp,24
+  433820:	8c44a1a8 	lw	a0,-24152(v0)
+  433824:	0c1020f0 	jal	0x4083c0
+  433828:	24a5b768 	addiu	a1,a1,-18584
+  43382c:	0c101fcc 	jal	0x407f30
+  433830:	8e04a1a4 	lw	a0,-24156(s0)
+  433834:	00001021 	move	v0,zero
+  433838:	8fbf0024 	lw	ra,36(sp)
+  43383c:	8fb00020 	lw	s0,32(sp)
+  433840:	03e00008 	jr	ra
+  433844:	27bd0028 	addiu	sp,sp,40

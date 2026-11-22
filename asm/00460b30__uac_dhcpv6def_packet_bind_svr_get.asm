@@ -1,0 +1,23 @@
+; func _uac_dhcpv6def_packet_bind_svr_get @ 0x00460b30 size=0x58
+  460b30:	27bdffe0 	addiu	sp,sp,-32
+  460b34:	afbf001c 	sw	ra,28(sp)
+  460b38:	80a7009b 	lb	a3,155(a1)
+  460b3c:	30e300ff 	andi	v1,a3,0xff
+  460b40:	2468ffff 	addiu	t0,v1,-1
+  460b44:	2d080002 	sltiu	t0,t0,2
+  460b48:	1100000c 	beqz	t0,0x460b7c
+  460b4c:	2402ffff 	li	v0,-1
+  460b50:	24020011 	li	v0,17
+  460b54:	38e70002 	xori	a3,a3,0x2
+  460b58:	70822002 	mul	a0,a0,v0
+  460b5c:	0007180a 	movz	v1,zero,a3
+  460b60:	24a5009c 	addiu	a1,a1,156
+  460b64:	00c42021 	addu	a0,a2,a0
+  460b68:	24060010 	li	a2,16
+  460b6c:	a0830000 	sb	v1,0(a0)
+  460b70:	0c101c8c 	jal	0x407230
+  460b74:	24840001 	addiu	a0,a0,1
+  460b78:	00001021 	move	v0,zero
+  460b7c:	8fbf001c 	lw	ra,28(sp)
+  460b80:	03e00008 	jr	ra
+  460b84:	27bd0020 	addiu	sp,sp,32

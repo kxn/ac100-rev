@@ -1,0 +1,25 @@
+; func cw_priv_ap_wire_vlan_assemble @ 0x005aa5dc size=0x60
+  5aa5dc:	27bdffd8 	addiu	sp,sp,-40
+  5aa5e0:	afbf0024 	sw	ra,36(sp)
+  5aa5e4:	afb20020 	sw	s2,32(sp)
+  5aa5e8:	afb1001c 	sw	s1,28(sp)
+  5aa5ec:	00a08821 	move	s1,a1
+  5aa5f0:	afb00018 	sw	s0,24(sp)
+  5aa5f4:	00808021 	move	s0,a0
+  5aa5f8:	8ca20010 	lw	v0,16(a1)
+  5aa5fc:	94920004 	lhu	s2,4(a0)
+  5aa600:	0c15c7ea 	jal	0x571fa8
+  5aa604:	8c450000 	lw	a1,0(v0)
+  5aa608:	96020004 	lhu	v0,4(s0)
+  5aa60c:	9623000e 	lhu	v1,14(s1)
+  5aa610:	8fbf0024 	lw	ra,36(sp)
+  5aa614:	00529023 	subu	s2,v0,s2
+  5aa618:	8fb1001c 	lw	s1,28(sp)
+  5aa61c:	8fb00018 	lw	s0,24(sp)
+  5aa620:	02431026 	xor	v0,s2,v1
+  5aa624:	8fb20020 	lw	s2,32(sp)
+  5aa628:	2403ffff 	li	v1,-1
+  5aa62c:	27bd0028 	addiu	sp,sp,40
+  5aa630:	0002180a 	movz	v1,zero,v0
+  5aa634:	03e00008 	jr	ra
+  5aa638:	00601021 	move	v0,v1

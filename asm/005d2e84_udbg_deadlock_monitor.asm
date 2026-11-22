@@ -1,0 +1,32 @@
+; func udbg_deadlock_monitor @ 0x005d2e84 size=0x7c
+  5d2e84:	27bdffd0 	addiu	sp,sp,-48
+  5d2e88:	afb30024 	sw	s3,36(sp)
+  5d2e8c:	3c13006f 	lui	s3,0x6f
+  5d2e90:	afb20020 	sw	s2,32(sp)
+  5d2e94:	3c12005d 	lui	s2,0x5d
+  5d2e98:	afb1001c 	sw	s1,28(sp)
+  5d2e9c:	3c11007d 	lui	s1,0x7d
+  5d2ea0:	afb40028 	sw	s4,40(sp)
+  5d2ea4:	2652367c 	addiu	s2,s2,13948
+  5d2ea8:	afb00018 	sw	s0,24(sp)
+  5d2eac:	2631bc68 	addiu	s1,s1,-17304
+  5d2eb0:	3c10007d 	lui	s0,0x7d
+  5d2eb4:	afbf002c 	sw	ra,44(sp)
+  5d2eb8:	26732740 	addiu	s3,s3,10048
+  5d2ebc:	3c140075 	lui	s4,0x75
+  5d2ec0:	00002821 	move	a1,zero
+  5d2ec4:	24060200 	li	a2,512
+  5d2ec8:	0c101cf0 	jal	0x4073c0
+  5d2ecc:	02202021 	move	a0,s1
+  5d2ed0:	02402021 	move	a0,s2
+  5d2ed4:	0c101fb8 	jal	0x407ee0
+  5d2ed8:	ae00be68 	sw	zero,-16792(s0)
+  5d2edc:	8e02be68 	lw	v0,-16792(s0)
+  5d2ee0:	18400003 	blez	v0,0x5d2ef0
+  5d2ee4:	00000000 	nop
+  5d2ee8:	0c101dd4 	jal	0x407750
+  5d2eec:	02602021 	move	a0,s3
+  5d2ef0:	0c101ec4 	jal	0x407b10
+  5d2ef4:	8e84fca0 	lw	a0,-864(s4)
+  5d2ef8:	08174bb1 	j	0x5d2ec4
+  5d2efc:	00002821 	move	a1,zero

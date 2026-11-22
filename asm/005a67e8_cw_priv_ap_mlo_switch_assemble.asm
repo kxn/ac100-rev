@@ -1,0 +1,25 @@
+; func cw_priv_ap_mlo_switch_assemble @ 0x005a67e8 size=0x60
+  5a67e8:	27bdffd8 	addiu	sp,sp,-40
+  5a67ec:	afbf0024 	sw	ra,36(sp)
+  5a67f0:	afb20020 	sw	s2,32(sp)
+  5a67f4:	afb1001c 	sw	s1,28(sp)
+  5a67f8:	00a08821 	move	s1,a1
+  5a67fc:	afb00018 	sw	s0,24(sp)
+  5a6800:	00808021 	move	s0,a0
+  5a6804:	8ca20010 	lw	v0,16(a1)
+  5a6808:	94920004 	lhu	s2,4(a0)
+  5a680c:	0c15c799 	jal	0x571e64
+  5a6810:	90450000 	lbu	a1,0(v0)
+  5a6814:	96020004 	lhu	v0,4(s0)
+  5a6818:	9623000e 	lhu	v1,14(s1)
+  5a681c:	8fbf0024 	lw	ra,36(sp)
+  5a6820:	00529023 	subu	s2,v0,s2
+  5a6824:	8fb1001c 	lw	s1,28(sp)
+  5a6828:	8fb00018 	lw	s0,24(sp)
+  5a682c:	02431026 	xor	v0,s2,v1
+  5a6830:	8fb20020 	lw	s2,32(sp)
+  5a6834:	2403ffff 	li	v1,-1
+  5a6838:	27bd0028 	addiu	sp,sp,40
+  5a683c:	0002180a 	movz	v1,zero,v0
+  5a6840:	03e00008 	jr	ra
+  5a6844:	00601021 	move	v0,v1

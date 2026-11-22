@@ -1,0 +1,51 @@
+; func apupd_update_model_entry_delete_by_id @ 0x0064f2b0 size=0xc8
+  64f2b0:	27bdffe0 	addiu	sp,sp,-32
+  64f2b4:	3c02007d 	lui	v0,0x7d
+  64f2b8:	27a50020 	addiu	a1,sp,32
+  64f2bc:	afa40020 	sw	a0,32(sp)
+  64f2c0:	afbf001c 	sw	ra,28(sp)
+  64f2c4:	afb00018 	sw	s0,24(sp)
+  64f2c8:	0c101fe8 	jal	0x407fa0
+  64f2cc:	8c44c774 	lw	a0,-14476(v0)
+  64f2d0:	5040001c 	beqzl	v0,0x64f344
+  64f2d4:	3c02007d 	lui	v0,0x7d
+  64f2d8:	0c19329a 	jal	0x64ca68
+  64f2dc:	00402021 	move	a0,v0
+  64f2e0:	2403ffff 	li	v1,-1
+  64f2e4:	10430006 	beq	v0,v1,0x64f300
+  64f2e8:	00008021 	move	s0,zero
+  64f2ec:	8fbf001c 	lw	ra,28(sp)
+  64f2f0:	02001021 	move	v0,s0
+  64f2f4:	8fb00018 	lw	s0,24(sp)
+  64f2f8:	03e00008 	jr	ra
+  64f2fc:	27bd0020 	addiu	sp,sp,32
+  64f300:	3c020076 	lui	v0,0x76
+  64f304:	8c428c08 	lw	v0,-29688(v0)
+  64f308:	1040fff8 	beqz	v0,0x64f2ec
+  64f30c:	2410ffff 	li	s0,-1
+  64f310:	0c16276a 	jal	0x589da8
+  64f314:	00000000 	nop
+  64f318:	5040fff5 	beqzl	v0,0x64f2f0
+  64f31c:	8fbf001c 	lw	ra,28(sp)
+  64f320:	3c040071 	lui	a0,0x71
+  64f324:	3c050072 	lui	a1,0x72
+  64f328:	24844fd0 	addiu	a0,a0,20432
+  64f32c:	24a5a534 	addiu	a1,a1,-23244
+  64f330:	24060662 	li	a2,1634
+  64f334:	0c101b74 	jal	0x406dd0
+  64f338:	00000000 	nop
+  64f33c:	08193cbc 	j	0x64f2f0
+  64f340:	8fbf001c 	lw	ra,28(sp)
+  64f344:	8c42c758 	lw	v0,-14504(v0)
+  64f348:	1040ffe8 	beqz	v0,0x64f2ec
+  64f34c:	00008021 	move	s0,zero
+  64f350:	0c16276a 	jal	0x589da8
+  64f354:	00000000 	nop
+  64f358:	5040ffe5 	beqzl	v0,0x64f2f0
+  64f35c:	8fbf001c 	lw	ra,28(sp)
+  64f360:	3c040071 	lui	a0,0x71
+  64f364:	3c050072 	lui	a1,0x72
+  64f368:	24845a6c 	addiu	a0,a0,23148
+  64f36c:	24a5a534 	addiu	a1,a1,-23244
+  64f370:	08193ccd 	j	0x64f334
+  64f374:	2406065b 	li	a2,1627

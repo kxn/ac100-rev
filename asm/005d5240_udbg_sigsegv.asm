@@ -1,0 +1,65 @@
+; func udbg_sigsegv @ 0x005d5240 size=0x100
+  5d5240:	27bdffa8 	addiu	sp,sp,-88
+  5d5244:	00002821 	move	a1,zero
+  5d5248:	27a40020 	addiu	a0,sp,32
+  5d524c:	afb10048 	sw	s1,72(sp)
+  5d5250:	3c11006f 	lui	s1,0x6f
+  5d5254:	afb00044 	sw	s0,68(sp)
+  5d5258:	00c08021 	move	s0,a2
+  5d525c:	24060020 	li	a2,32
+  5d5260:	afbf0054 	sw	ra,84(sp)
+  5d5264:	afb30050 	sw	s3,80(sp)
+  5d5268:	afb2004c 	sw	s2,76(sp)
+  5d526c:	0c101cf0 	jal	0x4073c0
+  5d5270:	3c12006f 	lui	s2,0x6f
+  5d5274:	0c101dd4 	jal	0x407750
+  5d5278:	26243018 	addiu	a0,s1,12312
+  5d527c:	27a50020 	addiu	a1,sp,32
+  5d5280:	00003021 	move	a2,zero
+  5d5284:	afa00010 	sw	zero,16(sp)
+  5d5288:	00003821 	move	a3,zero
+  5d528c:	0c101cd0 	jal	0x407340
+  5d5290:	24040010 	li	a0,16
+  5d5294:	0c101bf4 	jal	0x406fd0
+  5d5298:	00000000 	nop
+  5d529c:	2404107e 	li	a0,4222
+  5d52a0:	0c101e70 	jal	0x4079c0
+  5d52a4:	00409821 	move	s3,v0
+  5d52a8:	26442fdc 	addiu	a0,s2,12252
+  5d52ac:	27a50020 	addiu	a1,sp,32
+  5d52b0:	02603021 	move	a2,s3
+  5d52b4:	0c101b74 	jal	0x406dd0
+  5d52b8:	00403821 	move	a3,v0
+  5d52bc:	3c04006f 	lui	a0,0x6f
+  5d52c0:	8e050024 	lw	a1,36(s0)
+  5d52c4:	0c101b74 	jal	0x406dd0
+  5d52c8:	2484300c 	addiu	a0,a0,12300
+  5d52cc:	0c174f9b 	jal	0x5d3e6c
+  5d52d0:	02002021 	move	a0,s0
+  5d52d4:	3c020075 	lui	v0,0x75
+  5d52d8:	8c42fca4 	lw	v0,-860(v0)
+  5d52dc:	14400003 	bnez	v0,0x5d52ec
+  5d52e0:	00000000 	nop
+  5d52e4:	0c101b78 	jal	0x406de0
+  5d52e8:	00002021 	move	a0,zero
+  5d52ec:	0c175437 	jal	0x5d50dc
+  5d52f0:	00000000 	nop
+  5d52f4:	0c101dd4 	jal	0x407750
+  5d52f8:	26243018 	addiu	a0,s1,12312
+  5d52fc:	27a50020 	addiu	a1,sp,32
+  5d5300:	00003021 	move	a2,zero
+  5d5304:	afa00010 	sw	zero,16(sp)
+  5d5308:	00003821 	move	a3,zero
+  5d530c:	0c101cd0 	jal	0x407340
+  5d5310:	24040010 	li	a0,16
+  5d5314:	0c101e70 	jal	0x4079c0
+  5d5318:	2404107e 	li	a0,4222
+  5d531c:	26442fdc 	addiu	a0,s2,12252
+  5d5320:	27a50020 	addiu	a1,sp,32
+  5d5324:	02603021 	move	a2,s3
+  5d5328:	0c101b74 	jal	0x406dd0
+  5d532c:	00403821 	move	a3,v0
+  5d5330:	0c174f9b 	jal	0x5d3e6c
+  5d5334:	02002021 	move	a0,s0
+  5d5338:	081754b9 	j	0x5d52e4
+  5d533c:	00000000 	nop

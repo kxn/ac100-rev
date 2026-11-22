@@ -1,0 +1,26 @@
+; func sensor_test_db_case_id_cost @ 0x004feedc size=0x64
+  4feedc:	27bdffd8 	addiu	sp,sp,-40
+  4feee0:	afb0001c 	sw	s0,28(sp)
+  4feee4:	00808021 	move	s0,a0
+  4feee8:	afbf0024 	sw	ra,36(sp)
+  4feeec:	0480000f 	bltz	a0,0x4fef2c
+  4feef0:	afb10020 	sw	s1,32(sp)
+  4feef4:	3c110077 	lui	s1,0x77
+  4feef8:	2405ffff 	li	a1,-1
+  4feefc:	0c1020b4 	jal	0x4082d0
+  4fef00:	8e2488a8 	lw	a0,-30552(s1)
+  4fef04:	3c020077 	lui	v0,0x77
+  4fef08:	02002821 	move	a1,s0
+  4fef0c:	0c102110 	jal	0x408440
+  4fef10:	8c4488b8 	lw	a0,-30536(v0)
+  4fef14:	8e2488a8 	lw	a0,-30552(s1)
+  4fef18:	8fbf0024 	lw	ra,36(sp)
+  4fef1c:	8fb10020 	lw	s1,32(sp)
+  4fef20:	8fb0001c 	lw	s0,28(sp)
+  4fef24:	08101fcc 	j	0x407f30
+  4fef28:	27bd0028 	addiu	sp,sp,40
+  4fef2c:	8fbf0024 	lw	ra,36(sp)
+  4fef30:	8fb10020 	lw	s1,32(sp)
+  4fef34:	8fb0001c 	lw	s0,28(sp)
+  4fef38:	03e00008 	jr	ra
+  4fef3c:	27bd0028 	addiu	sp,sp,40

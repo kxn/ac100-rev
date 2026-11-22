@@ -1,0 +1,19 @@
+; func cw_priv_sta_assoc_req_new_free @ 0x005c24b4 size=0x48
+  5c24b4:	27bdffd8 	addiu	sp,sp,-40
+  5c24b8:	afb10020 	sw	s1,32(sp)
+  5c24bc:	afbf0024 	sw	ra,36(sp)
+  5c24c0:	afb0001c 	sw	s0,28(sp)
+  5c24c4:	8c900010 	lw	s0,16(a0)
+  5c24c8:	12000006 	beqz	s0,0x5c24e4
+  5c24cc:	00808821 	move	s1,a0
+  5c24d0:	0c1708fe 	jal	0x5c23f8
+  5c24d4:	02002021 	move	a0,s0
+  5c24d8:	0c101f7c 	jal	0x407df0
+  5c24dc:	02002021 	move	a0,s0
+  5c24e0:	ae200010 	sw	zero,16(s1)
+  5c24e4:	8fbf0024 	lw	ra,36(sp)
+  5c24e8:	00001021 	move	v0,zero
+  5c24ec:	8fb10020 	lw	s1,32(sp)
+  5c24f0:	8fb0001c 	lw	s0,28(sp)
+  5c24f4:	03e00008 	jr	ra
+  5c24f8:	27bd0028 	addiu	sp,sp,40

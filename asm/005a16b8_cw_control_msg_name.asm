@@ -1,0 +1,24 @@
+; func cw_control_msg_name @ 0x005a16b8 size=0x5c
+  5a16b8:	2482ffff 	addiu	v0,a0,-1
+  5a16bc:	2c43001a 	sltiu	v1,v0,26
+  5a16c0:	1460000f 	bnez	v1,0x5a1700
+  5a16c4:	3c03006e 	lui	v1,0x6e
+  5a16c8:	3c02ffcc 	lui	v0,0xffcc
+  5a16cc:	244222ff 	addiu	v0,v0,8959
+  5a16d0:	00822021 	addu	a0,a0,v0
+  5a16d4:	2c820002 	sltiu	v0,a0,2
+  5a16d8:	54400004 	bnezl	v0,0x5a16ec
+  5a16dc:	3c02006e 	lui	v0,0x6e
+  5a16e0:	3c02006e 	lui	v0,0x6e
+  5a16e4:	03e00008 	jr	ra
+  5a16e8:	24426064 	addiu	v0,v0,24676
+  5a16ec:	00042080 	sll	a0,a0,0x2
+  5a16f0:	24426420 	addiu	v0,v0,25632
+  5a16f4:	00822021 	addu	a0,a0,v0
+  5a16f8:	03e00008 	jr	ra
+  5a16fc:	8c820000 	lw	v0,0(a0)
+  5a1700:	00021080 	sll	v0,v0,0x2
+  5a1704:	246363b8 	addiu	v1,v1,25528
+  5a1708:	00431021 	addu	v0,v0,v1
+  5a170c:	03e00008 	jr	ra
+  5a1710:	8c420000 	lw	v0,0(v0)

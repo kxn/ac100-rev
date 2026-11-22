@@ -1,0 +1,22 @@
+; func sensor_db_entry_free @ 0x004d0cf4 size=0x54
+  4d0cf4:	27bdffe0 	addiu	sp,sp,-32
+  4d0cf8:	afb00018 	sw	s0,24(sp)
+  4d0cfc:	00808021 	move	s0,a0
+  4d0d00:	1080000d 	beqz	a0,0x4d0d38
+  4d0d04:	afbf001c 	sw	ra,28(sp)
+  4d0d08:	8c840010 	lw	a0,16(a0)
+  4d0d0c:	50800005 	beqzl	a0,0x4d0d24
+  4d0d10:	8e040014 	lw	a0,20(s0)
+  4d0d14:	0c101f7c 	jal	0x407df0
+  4d0d18:	a600000c 	sh	zero,12(s0)
+  4d0d1c:	ae000010 	sw	zero,16(s0)
+  4d0d20:	8e040014 	lw	a0,20(s0)
+  4d0d24:	10800005 	beqz	a0,0x4d0d3c
+  4d0d28:	8fbf001c 	lw	ra,28(sp)
+  4d0d2c:	0c101f7c 	jal	0x407df0
+  4d0d30:	a600000e 	sh	zero,14(s0)
+  4d0d34:	ae000014 	sw	zero,20(s0)
+  4d0d38:	8fbf001c 	lw	ra,28(sp)
+  4d0d3c:	8fb00018 	lw	s0,24(sp)
+  4d0d40:	03e00008 	jr	ra
+  4d0d44:	27bd0020 	addiu	sp,sp,32

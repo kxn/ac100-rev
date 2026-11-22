@@ -1,0 +1,33 @@
+; func _wserv_sqlite_open @ 0x005f78c4 size=0x80
+  5f78c4:	3c060051 	lui	a2,0x51
+  5f78c8:	27bdffd8 	addiu	sp,sp,-40
+  5f78cc:	24c6329c 	addiu	a2,a2,12956
+  5f78d0:	afb10020 	sw	s1,32(sp)
+  5f78d4:	00808821 	move	s1,a0
+  5f78d8:	afb0001c 	sw	s0,28(sp)
+  5f78dc:	afbf0024 	sw	ra,36(sp)
+  5f78e0:	0c10204c 	jal	0x408130
+  5f78e4:	00008021 	move	s0,zero
+  5f78e8:	10400008 	beqz	v0,0x5f790c
+  5f78ec:	3c020075 	lui	v0,0x75
+  5f78f0:	8c42fe70 	lw	v0,-400(v0)
+  5f78f4:	10400005 	beqz	v0,0x5f790c
+  5f78f8:	2410ffff 	li	s0,-1
+  5f78fc:	0c16276a 	jal	0x589da8
+  5f7900:	00000000 	nop
+  5f7904:	14400007 	bnez	v0,0x5f7924
+  5f7908:	3c040070 	lui	a0,0x70
+  5f790c:	8fbf0024 	lw	ra,36(sp)
+  5f7910:	02001021 	move	v0,s0
+  5f7914:	8fb10020 	lw	s1,32(sp)
+  5f7918:	8fb0001c 	lw	s0,28(sp)
+  5f791c:	03e00008 	jr	ra
+  5f7920:	27bd0028 	addiu	sp,sp,40
+  5f7924:	3c050070 	lui	a1,0x70
+  5f7928:	2484ada4 	addiu	a0,a0,-21084
+  5f792c:	24a5badc 	addiu	a1,a1,-17700
+  5f7930:	240601fa 	li	a2,506
+  5f7934:	0c101b74 	jal	0x406dd0
+  5f7938:	02203821 	move	a3,s1
+  5f793c:	0817de44 	j	0x5f7910
+  5f7940:	8fbf0024 	lw	ra,36(sp)

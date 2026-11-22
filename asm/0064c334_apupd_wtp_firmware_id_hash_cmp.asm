@@ -1,0 +1,32 @@
+; func apupd_wtp_firmware_id_hash_cmp @ 0x0064c334 size=0x7c
+  64c334:	27bdffe0 	addiu	sp,sp,-32
+  64c338:	afbf001c 	sw	ra,28(sp)
+  64c33c:	1080000c 	beqz	a0,0x64c370
+  64c340:	afb00018 	sw	s0,24(sp)
+  64c344:	10a0000b 	beqz	a1,0x64c374
+  64c348:	3c020076 	lui	v0,0x76
+  64c34c:	24840018 	addiu	a0,a0,24
+  64c350:	0c101e4c 	jal	0x407930
+  64c354:	24060010 	li	a2,16
+  64c358:	2c500001 	sltiu	s0,v0,1
+  64c35c:	8fbf001c 	lw	ra,28(sp)
+  64c360:	02001021 	move	v0,s0
+  64c364:	8fb00018 	lw	s0,24(sp)
+  64c368:	03e00008 	jr	ra
+  64c36c:	27bd0020 	addiu	sp,sp,32
+  64c370:	3c020076 	lui	v0,0x76
+  64c374:	8c428c08 	lw	v0,-29688(v0)
+  64c378:	1040fff8 	beqz	v0,0x64c35c
+  64c37c:	00008021 	move	s0,zero
+  64c380:	0c16276a 	jal	0x589da8
+  64c384:	00000000 	nop
+  64c388:	5040fff5 	beqzl	v0,0x64c360
+  64c38c:	8fbf001c 	lw	ra,28(sp)
+  64c390:	3c040071 	lui	a0,0x71
+  64c394:	3c050072 	lui	a1,0x72
+  64c398:	24840720 	addiu	a0,a0,1824
+  64c39c:	24a59f7c 	addiu	a1,a1,-24708
+  64c3a0:	0c101b74 	jal	0x406dd0
+  64c3a4:	24060347 	li	a2,839
+  64c3a8:	081930d8 	j	0x64c360
+  64c3ac:	8fbf001c 	lw	ra,28(sp)

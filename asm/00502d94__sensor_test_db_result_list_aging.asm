@@ -1,0 +1,34 @@
+; func _sensor_test_db_result_list_aging @ 0x00502d94 size=0x84
+  502d94:	27bdffd8 	addiu	sp,sp,-40
+  502d98:	2402ffff 	li	v0,-1
+  502d9c:	afb20020 	sw	s2,32(sp)
+  502da0:	00a09021 	move	s2,a1
+  502da4:	afbf0024 	sw	ra,36(sp)
+  502da8:	afb1001c 	sw	s1,28(sp)
+  502dac:	10800014 	beqz	a0,0x502e00
+  502db0:	afb00018 	sw	s0,24(sp)
+  502db4:	0c10206c 	jal	0x4081b0
+  502db8:	00000000 	nop
+  502dbc:	00408021 	move	s0,v0
+  502dc0:	1200000f 	beqz	s0,0x502e00
+  502dc4:	00001021 	move	v0,zero
+  502dc8:	0c1021a0 	jal	0x408680
+  502dcc:	02002021 	move	a0,s0
+  502dd0:	00408821 	move	s1,v0
+  502dd4:	8e02002c 	lw	v0,44(s0)
+  502dd8:	0052102b 	sltu	v0,v0,s2
+  502ddc:	10400008 	beqz	v0,0x502e00
+  502de0:	00001021 	move	v0,zero
+  502de4:	0c102140 	jal	0x408500
+  502de8:	02002021 	move	a0,s0
+  502dec:	02002021 	move	a0,s0
+  502df0:	0c140b4f 	jal	0x502d3c
+  502df4:	02208021 	move	s0,s1
+  502df8:	1600fff3 	bnez	s0,0x502dc8
+  502dfc:	00001021 	move	v0,zero
+  502e00:	8fbf0024 	lw	ra,36(sp)
+  502e04:	8fb20020 	lw	s2,32(sp)
+  502e08:	8fb1001c 	lw	s1,28(sp)
+  502e0c:	8fb00018 	lw	s0,24(sp)
+  502e10:	03e00008 	jr	ra
+  502e14:	27bd0028 	addiu	sp,sp,40

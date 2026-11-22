@@ -1,0 +1,30 @@
+; func apmngr_hdap_get_direct_by_name @ 0x005481f0 size=0x74
+  5481f0:	27bdffe0 	addiu	sp,sp,-32
+  5481f4:	00001821 	move	v1,zero
+  5481f8:	afb00018 	sw	s0,24(sp)
+  5481fc:	00808021 	move	s0,a0
+  548200:	10800013 	beqz	a0,0x548250
+  548204:	afbf001c 	sw	ra,28(sp)
+  548208:	0c101ee4 	jal	0x407b90
+  54820c:	00000000 	nop
+  548210:	3c05006d 	lui	a1,0x6d
+  548214:	2442fffd 	addiu	v0,v0,-3
+  548218:	24a5d69c 	addiu	a1,a1,-10596
+  54821c:	02028021 	addu	s0,s0,v0
+  548220:	24060003 	li	a2,3
+  548224:	0c101e4c 	jal	0x407930
+  548228:	02002021 	move	a0,s0
+  54822c:	10400008 	beqz	v0,0x548250
+  548230:	24030001 	li	v1,1
+  548234:	3c05006d 	lui	a1,0x6d
+  548238:	24060003 	li	a2,3
+  54823c:	24a5d6a0 	addiu	a1,a1,-10592
+  548240:	0c101e4c 	jal	0x407930
+  548244:	02002021 	move	a0,s0
+  548248:	24030002 	li	v1,2
+  54824c:	0002180b 	movn	v1,zero,v0
+  548250:	8fbf001c 	lw	ra,28(sp)
+  548254:	00601021 	move	v0,v1
+  548258:	8fb00018 	lw	s0,24(sp)
+  54825c:	03e00008 	jr	ra
+  548260:	27bd0020 	addiu	sp,sp,32

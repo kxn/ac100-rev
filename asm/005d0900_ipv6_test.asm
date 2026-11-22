@@ -1,0 +1,25 @@
+; func ipv6_test @ 0x005d0900 size=0x60
+  5d0900:	27bdffa0 	addiu	sp,sp,-96
+  5d0904:	3c05006f 	lui	a1,0x6f
+  5d0908:	27a40018 	addiu	a0,sp,24
+  5d090c:	24a525b0 	addiu	a1,a1,9648
+  5d0910:	afbf005c 	sw	ra,92(sp)
+  5d0914:	0c101c8c 	jal	0x407230
+  5d0918:	24060010 	li	a2,16
+  5d091c:	27a40028 	addiu	a0,sp,40
+  5d0920:	00002821 	move	a1,zero
+  5d0924:	0c101cf0 	jal	0x4073c0
+  5d0928:	2406002e 	li	a2,46
+  5d092c:	2404000a 	li	a0,10
+  5d0930:	27a50018 	addiu	a1,sp,24
+  5d0934:	27a60028 	addiu	a2,sp,40
+  5d0938:	0c101e64 	jal	0x407990
+  5d093c:	2407002e 	li	a3,46
+  5d0940:	10400004 	beqz	v0,0x5d0954
+  5d0944:	27a50028 	addiu	a1,sp,40
+  5d0948:	3c04006f 	lui	a0,0x6f
+  5d094c:	0c101b74 	jal	0x406dd0
+  5d0950:	24842110 	addiu	a0,a0,8464
+  5d0954:	8fbf005c 	lw	ra,92(sp)
+  5d0958:	03e00008 	jr	ra
+  5d095c:	27bd0060 	addiu	sp,sp,96

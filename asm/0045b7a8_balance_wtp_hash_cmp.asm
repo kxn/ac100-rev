@@ -1,0 +1,32 @@
+; func balance_wtp_hash_cmp @ 0x0045b7a8 size=0x7c
+  45b7a8:	27bdffe0 	addiu	sp,sp,-32
+  45b7ac:	afbf001c 	sw	ra,28(sp)
+  45b7b0:	1080000c 	beqz	a0,0x45b7e4
+  45b7b4:	afb00018 	sw	s0,24(sp)
+  45b7b8:	10a0000b 	beqz	a1,0x45b7e8
+  45b7bc:	3c020073 	lui	v0,0x73
+  45b7c0:	24840008 	addiu	a0,a0,8
+  45b7c4:	0c101e4c 	jal	0x407930
+  45b7c8:	24060006 	li	a2,6
+  45b7cc:	2c500001 	sltiu	s0,v0,1
+  45b7d0:	8fbf001c 	lw	ra,28(sp)
+  45b7d4:	02001021 	move	v0,s0
+  45b7d8:	8fb00018 	lw	s0,24(sp)
+  45b7dc:	03e00008 	jr	ra
+  45b7e0:	27bd0020 	addiu	sp,sp,32
+  45b7e4:	3c020073 	lui	v0,0x73
+  45b7e8:	8c4213e0 	lw	v0,5088(v0)
+  45b7ec:	1040fff8 	beqz	v0,0x45b7d0
+  45b7f0:	00008021 	move	s0,zero
+  45b7f4:	0c16276a 	jal	0x589da8
+  45b7f8:	00000000 	nop
+  45b7fc:	5040fff5 	beqzl	v0,0x45b7d4
+  45b800:	8fbf001c 	lw	ra,28(sp)
+  45b804:	3c040068 	lui	a0,0x68
+  45b808:	3c050069 	lui	a1,0x69
+  45b80c:	24847440 	addiu	a0,a0,29760
+  45b810:	24a5a7ac 	addiu	a1,a1,-22612
+  45b814:	0c101b74 	jal	0x406dd0
+  45b818:	24060093 	li	a2,147
+  45b81c:	08116df5 	j	0x45b7d4
+  45b820:	8fbf001c 	lw	ra,28(sp)

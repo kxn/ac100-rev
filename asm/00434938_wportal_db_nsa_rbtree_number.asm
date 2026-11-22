@@ -1,0 +1,25 @@
+; func wportal_db_nsa_rbtree_number @ 0x00434938 size=0x60
+  434938:	27bdffd8 	addiu	sp,sp,-40
+  43493c:	2405ffff 	li	a1,-1
+  434940:	afb00020 	sw	s0,32(sp)
+  434944:	3c100076 	lui	s0,0x76
+  434948:	afbf0024 	sw	ra,36(sp)
+  43494c:	afa00018 	sw	zero,24(sp)
+  434950:	0c1020b4 	jal	0x4082d0
+  434954:	8e04a154 	lw	a0,-24236(s0)
+  434958:	3c020076 	lui	v0,0x76
+  43495c:	3c050043 	lui	a1,0x43
+  434960:	27a60018 	addiu	a2,sp,24
+  434964:	8c44a164 	lw	a0,-24220(v0)
+  434968:	0c1020f0 	jal	0x4083c0
+  43496c:	24a5afd8 	addiu	a1,a1,-20520
+  434970:	0c101fcc 	jal	0x407f30
+  434974:	8e04a154 	lw	a0,-24236(s0)
+  434978:	3c040068 	lui	a0,0x68
+  43497c:	8fa50018 	lw	a1,24(sp)
+  434980:	0c101b74 	jal	0x406dd0
+  434984:	2484e620 	addiu	a0,a0,-6624
+  434988:	8fbf0024 	lw	ra,36(sp)
+  43498c:	8fb00020 	lw	s0,32(sp)
+  434990:	03e00008 	jr	ra
+  434994:	27bd0028 	addiu	sp,sp,40

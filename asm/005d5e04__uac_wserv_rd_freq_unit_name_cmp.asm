@@ -1,0 +1,34 @@
+; func _uac_wserv_rd_freq_unit_name_cmp @ 0x005d5e04 size=0x84
+  5d5e04:	27bdffd8 	addiu	sp,sp,-40
+  5d5e08:	00a02021 	move	a0,a1
+  5d5e0c:	24030001 	li	v1,1
+  5d5e10:	afb0001c 	sw	s0,28(sp)
+  5d5e14:	00c08021 	move	s0,a2
+  5d5e18:	afbf0024 	sw	ra,36(sp)
+  5d5e1c:	10c0000c 	beqz	a2,0x5d5e50
+  5d5e20:	afb10020 	sw	s1,32(sp)
+  5d5e24:	0c18755b 	jal	0x61d56c
+  5d5e28:	00000000 	nop
+  5d5e2c:	3c05006f 	lui	a1,0x6f
+  5d5e30:	02002021 	move	a0,s0
+  5d5e34:	24a534a0 	addiu	a1,a1,13472
+  5d5e38:	0c101e14 	jal	0x407850
+  5d5e3c:	305100ff 	andi	s1,v0,0xff
+  5d5e40:	14400009 	bnez	v0,0x5d5e68
+  5d5e44:	3c05006f 	lui	a1,0x6f
+  5d5e48:	16200007 	bnez	s1,0x5d5e68
+  5d5e4c:	00001821 	move	v1,zero
+  5d5e50:	8fbf0024 	lw	ra,36(sp)
+  5d5e54:	00601021 	move	v0,v1
+  5d5e58:	8fb10020 	lw	s1,32(sp)
+  5d5e5c:	8fb0001c 	lw	s0,28(sp)
+  5d5e60:	03e00008 	jr	ra
+  5d5e64:	27bd0028 	addiu	sp,sp,40
+  5d5e68:	02002021 	move	a0,s0
+  5d5e6c:	0c101e14 	jal	0x407850
+  5d5e70:	24a534a8 	addiu	a1,a1,13480
+  5d5e74:	1440fff6 	bnez	v0,0x5d5e50
+  5d5e78:	24030001 	li	v1,1
+  5d5e7c:	3a310001 	xori	s1,s1,0x1
+  5d5e80:	08175794 	j	0x5d5e50
+  5d5e84:	0011182b 	sltu	v1,zero,s1

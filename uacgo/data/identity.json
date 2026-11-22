@@ -1,0 +1,13 @@
+{
+  "ac_name": "TL-AC1000",
+  "ac_version": "v1.0",
+  "ac_firmware": "1.0.1 Build 20140919 Rel.59746",
+  "vendor_id": "0x12345678",
+  "control_ipv4": "192.168.1.253",
+  "control_port": 5246,
+  "radios": [
+    {"radio_id": 1, "type_mask": 0},
+    {"radio_id": 2, "type_mask": 0}
+  ],
+  "_evidence": "values match the vendor's own .data fixtures cw_dis_rsp/cw_join_rsp (uac 0x74f254/0x74efe8); runtime values live in the device config store"
+}

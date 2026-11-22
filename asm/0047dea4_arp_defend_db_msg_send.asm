@@ -1,0 +1,45 @@
+; func arp_defend_db_msg_send @ 0x0047dea4 size=0xb0
+  47dea4:	27bdffc8 	addiu	sp,sp,-56
+  47dea8:	afbf0034 	sw	ra,52(sp)
+  47deac:	afb10030 	sw	s1,48(sp)
+  47deb0:	10a00016 	beqz	a1,0x47df0c
+  47deb4:	afb0002c 	sw	s0,44(sp)
+  47deb8:	3c100069 	lui	s0,0x69
+  47debc:	afa40020 	sw	a0,32(sp)
+  47dec0:	afa50024 	sw	a1,36(sp)
+  47dec4:	0c101fa0 	jal	0x407e80
+  47dec8:	260432ec 	addiu	a0,s0,13036
+  47decc:	3c020073 	lui	v0,0x73
+  47ded0:	27a50020 	addiu	a1,sp,32
+  47ded4:	24060008 	li	a2,8
+  47ded8:	8c4414c4 	lw	a0,5316(v0)
+  47dedc:	240700c8 	li	a3,200
+  47dee0:	24022710 	li	v0,10000
+  47dee4:	0c101f50 	jal	0x407d40
+  47dee8:	afa20010 	sw	v0,16(sp)
+  47deec:	24040001 	li	a0,1
+  47def0:	260532ec 	addiu	a1,s0,13036
+  47def4:	0c1020ac 	jal	0x4082b0
+  47def8:	00408821 	move	s1,v0
+  47defc:	3c020076 	lui	v0,0x76
+  47df00:	8c4270e8 	lw	v0,28904(v0)
+  47df04:	14400007 	bnez	v0,0x47df24
+  47df08:	00000000 	nop
+  47df0c:	8fbf0034 	lw	ra,52(sp)
+  47df10:	00001021 	move	v0,zero
+  47df14:	8fb10030 	lw	s1,48(sp)
+  47df18:	8fb0002c 	lw	s0,44(sp)
+  47df1c:	03e00008 	jr	ra
+  47df20:	27bd0038 	addiu	sp,sp,56
+  47df24:	0c16276a 	jal	0x589da8
+  47df28:	00000000 	nop
+  47df2c:	5040fff8 	beqzl	v0,0x47df10
+  47df30:	8fbf0034 	lw	ra,52(sp)
+  47df34:	3c040069 	lui	a0,0x69
+  47df38:	260532ec 	addiu	a1,s0,13036
+  47df3c:	24842a00 	addiu	a0,a0,10752
+  47df40:	240608ba 	li	a2,2234
+  47df44:	0c101b74 	jal	0x406dd0
+  47df48:	02203821 	move	a3,s1
+  47df4c:	0811f7c4 	j	0x47df10
+  47df50:	8fbf0034 	lw	ra,52(sp)

@@ -1,0 +1,54 @@
+; func cw_priv_radio_role_table_length @ 0x005b98f4 size=0xd4
+  5b98f4:	27bdffd8 	addiu	sp,sp,-40
+  5b98f8:	afb20020 	sw	s2,32(sp)
+  5b98fc:	3c12007c 	lui	s2,0x7c
+  5b9900:	afb00018 	sw	s0,24(sp)
+  5b9904:	afbf0024 	sw	ra,36(sp)
+  5b9908:	afb1001c 	sw	s1,28(sp)
+  5b990c:	8e425988 	lw	v0,22920(s2)
+  5b9910:	1440001e 	bnez	v0,0x5b998c
+  5b9914:	00808021 	move	s0,a0
+  5b9918:	12000008 	beqz	s0,0x5b993c
+  5b991c:	00008821 	move	s1,zero
+  5b9920:	92030000 	lbu	v1,0(s0)
+  5b9924:	14600024 	bnez	v1,0x5b99b8
+  5b9928:	00001021 	move	v0,zero
+  5b992c:	24510001 	addiu	s1,v0,1
+  5b9930:	8e425988 	lw	v0,22920(s2)
+  5b9934:	14400008 	bnez	v0,0x5b9958
+  5b9938:	3231ffff 	andi	s1,s1,0xffff
+  5b993c:	8fbf0024 	lw	ra,36(sp)
+  5b9940:	02201021 	move	v0,s1
+  5b9944:	8fb20020 	lw	s2,32(sp)
+  5b9948:	8fb1001c 	lw	s1,28(sp)
+  5b994c:	8fb00018 	lw	s0,24(sp)
+  5b9950:	03e00008 	jr	ra
+  5b9954:	27bd0028 	addiu	sp,sp,40
+  5b9958:	0c16276a 	jal	0x589da8
+  5b995c:	00000000 	nop
+  5b9960:	5040fff7 	beqzl	v0,0x5b9940
+  5b9964:	8fbf0024 	lw	ra,36(sp)
+  5b9968:	3c04006f 	lui	a0,0x6f
+  5b996c:	3c05006f 	lui	a1,0x6f
+  5b9970:	2484d31c 	addiu	a0,a0,-11492
+  5b9974:	24a5d3a0 	addiu	a1,a1,-11360
+  5b9978:	240600b1 	li	a2,177
+  5b997c:	0c101b74 	jal	0x406dd0
+  5b9980:	02203821 	move	a3,s1
+  5b9984:	0816e650 	j	0x5b9940
+  5b9988:	8fbf0024 	lw	ra,36(sp)
+  5b998c:	0c16276a 	jal	0x589da8
+  5b9990:	00000000 	nop
+  5b9994:	1040ffe0 	beqz	v0,0x5b9918
+  5b9998:	3c05006f 	lui	a1,0x6f
+  5b999c:	3c04006f 	lui	a0,0x6f
+  5b99a0:	2484d2e0 	addiu	a0,a0,-11552
+  5b99a4:	24a5d3a0 	addiu	a1,a1,-11360
+  5b99a8:	0c101b74 	jal	0x406dd0
+  5b99ac:	240600a8 	li	a2,168
+  5b99b0:	0816e646 	j	0x5b9918
+  5b99b4:	00000000 	nop
+  5b99b8:	0c16e621 	jal	0x5b9884
+  5b99bc:	02002021 	move	a0,s0
+  5b99c0:	0816e64c 	j	0x5b9930
+  5b99c4:	24510001 	addiu	s1,v0,1

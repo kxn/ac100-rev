@@ -1,0 +1,25 @@
+; func wportal_db_rds_srv_hash_traverse @ 0x0042f788 size=0x60
+  42f788:	27bdffe0 	addiu	sp,sp,-32
+  42f78c:	afb00018 	sw	s0,24(sp)
+  42f790:	3c100076 	lui	s0,0x76
+  42f794:	afa40020 	sw	a0,32(sp)
+  42f798:	afa50024 	sw	a1,36(sp)
+  42f79c:	2405ffff 	li	a1,-1
+  42f7a0:	afbf001c 	sw	ra,28(sp)
+  42f7a4:	afa60028 	sw	a2,40(sp)
+  42f7a8:	afa7002c 	sw	a3,44(sp)
+  42f7ac:	0c1020b4 	jal	0x4082d0
+  42f7b0:	8e04a174 	lw	a0,-24204(s0)
+  42f7b4:	3c020076 	lui	v0,0x76
+  42f7b8:	8fa60034 	lw	a2,52(sp)
+  42f7bc:	27a50020 	addiu	a1,sp,32
+  42f7c0:	8fa70038 	lw	a3,56(sp)
+  42f7c4:	0c102034 	jal	0x4080d0
+  42f7c8:	8c44a17c 	lw	a0,-24196(v0)
+  42f7cc:	0c101fcc 	jal	0x407f30
+  42f7d0:	8e04a174 	lw	a0,-24204(s0)
+  42f7d4:	00001021 	move	v0,zero
+  42f7d8:	8fbf001c 	lw	ra,28(sp)
+  42f7dc:	8fb00018 	lw	s0,24(sp)
+  42f7e0:	03e00008 	jr	ra
+  42f7e4:	27bd0020 	addiu	sp,sp,32

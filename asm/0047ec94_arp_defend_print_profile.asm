@@ -1,0 +1,24 @@
+; func arp_defend_print_profile @ 0x0047ec94 size=0x5c
+  47ec94:	27bdffd8 	addiu	sp,sp,-40
+  47ec98:	afb10020 	sw	s1,32(sp)
+  47ec9c:	3c110071 	lui	s1,0x71
+  47eca0:	afb0001c 	sw	s0,28(sp)
+  47eca4:	3c100076 	lui	s0,0x76
+  47eca8:	afbf0024 	sw	ra,36(sp)
+  47ecac:	0c101dd4 	jal	0x407750
+  47ecb0:	2624f394 	addiu	a0,s1,-3180
+  47ecb4:	3c040069 	lui	a0,0x69
+  47ecb8:	8e0570ec 	lw	a1,28908(s0)
+  47ecbc:	261070ec 	addiu	s0,s0,28908
+  47ecc0:	0c101b74 	jal	0x406dd0
+  47ecc4:	24842e24 	addiu	a0,a0,11812
+  47ecc8:	3c040069 	lui	a0,0x69
+  47eccc:	8e050004 	lw	a1,4(s0)
+  47ecd0:	0c101b74 	jal	0x406dd0
+  47ecd4:	24842e50 	addiu	a0,a0,11856
+  47ecd8:	2624f394 	addiu	a0,s1,-3180
+  47ecdc:	8fbf0024 	lw	ra,36(sp)
+  47ece0:	8fb10020 	lw	s1,32(sp)
+  47ece4:	8fb0001c 	lw	s0,28(sp)
+  47ece8:	08101dd4 	j	0x407750
+  47ecec:	27bd0028 	addiu	sp,sp,40

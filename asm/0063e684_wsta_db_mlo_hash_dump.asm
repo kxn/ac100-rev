@@ -1,0 +1,31 @@
+; func wsta_db_mlo_hash_dump @ 0x0063e684 size=0x74
+  63e684:	27bdffe0 	addiu	sp,sp,-32
+  63e688:	3c040071 	lui	a0,0x71
+  63e68c:	afb00018 	sw	s0,24(sp)
+  63e690:	3c10007d 	lui	s0,0x7d
+  63e694:	24840388 	addiu	a0,a0,904
+  63e698:	afbf001c 	sw	ra,28(sp)
+  63e69c:	0c101dd4 	jal	0x407750
+  63e6a0:	2610c6b8 	addiu	s0,s0,-14664
+  63e6a4:	2405ffff 	li	a1,-1
+  63e6a8:	0c1020b4 	jal	0x4082d0
+  63e6ac:	8e040004 	lw	a0,4(s0)
+  63e6b0:	3c050063 	lui	a1,0x63
+  63e6b4:	8e040070 	lw	a0,112(s0)
+  63e6b8:	00003021 	move	a2,zero
+  63e6bc:	0c10215c 	jal	0x408570
+  63e6c0:	24a568bc 	addiu	a1,a1,26812
+  63e6c4:	3c040071 	lui	a0,0x71
+  63e6c8:	0c101dd4 	jal	0x407750
+  63e6cc:	248403a8 	addiu	a0,a0,936
+  63e6d0:	3c050063 	lui	a1,0x63
+  63e6d4:	8e040074 	lw	a0,116(s0)
+  63e6d8:	00003021 	move	a2,zero
+  63e6dc:	0c10215c 	jal	0x408570
+  63e6e0:	24a56830 	addiu	a1,a1,26672
+  63e6e4:	8e040004 	lw	a0,4(s0)
+  63e6e8:	8fbf001c 	lw	ra,28(sp)
+  63e6ec:	8fb00018 	lw	s0,24(sp)
+  63e6f0:	08101fcc 	j	0x407f30
+  63e6f4:	27bd0020 	addiu	sp,sp,32
+	...

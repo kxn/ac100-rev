@@ -1,0 +1,21 @@
+; func _apdb_print_ap_head @ 0x005f9794 size=0x50
+  5f9794:	3c02006a 	lui	v0,0x6a
+  5f9798:	27bdffd8 	addiu	sp,sp,-40
+  5f979c:	244284e8 	addiu	v0,v0,-31512
+  5f97a0:	3c040070 	lui	a0,0x70
+  5f97a4:	afa20010 	sw	v0,16(sp)
+  5f97a8:	3c05006e 	lui	a1,0x6e
+  5f97ac:	3c020070 	lui	v0,0x70
+  5f97b0:	afbf0024 	sw	ra,36(sp)
+  5f97b4:	3c06006a 	lui	a2,0x6a
+  5f97b8:	3c070070 	lui	a3,0x70
+  5f97bc:	2442bd34 	addiu	v0,v0,-17100
+  5f97c0:	2484bd08 	addiu	a0,a0,-17144
+  5f97c4:	24a5bba8 	addiu	a1,a1,-17496
+  5f97c8:	afa20014 	sw	v0,20(sp)
+  5f97cc:	24c684cc 	addiu	a2,a2,-31540
+  5f97d0:	0c101b74 	jal	0x406dd0
+  5f97d4:	24e7bd28 	addiu	a3,a3,-17112
+  5f97d8:	8fbf0024 	lw	ra,36(sp)
+  5f97dc:	03e00008 	jr	ra
+  5f97e0:	27bd0028 	addiu	sp,sp,40

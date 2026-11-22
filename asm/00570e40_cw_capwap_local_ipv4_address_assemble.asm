@@ -1,0 +1,25 @@
+; func cw_capwap_local_ipv4_address_assemble @ 0x00570e40 size=0x60
+  570e40:	27bdffd8 	addiu	sp,sp,-40
+  570e44:	afbf0024 	sw	ra,36(sp)
+  570e48:	afb20020 	sw	s2,32(sp)
+  570e4c:	afb1001c 	sw	s1,28(sp)
+  570e50:	00a08821 	move	s1,a1
+  570e54:	afb00018 	sw	s0,24(sp)
+  570e58:	00808021 	move	s0,a0
+  570e5c:	8ca20010 	lw	v0,16(a1)
+  570e60:	94920004 	lhu	s2,4(a0)
+  570e64:	0c15c7ea 	jal	0x571fa8
+  570e68:	8c450000 	lw	a1,0(v0)
+  570e6c:	96020004 	lhu	v0,4(s0)
+  570e70:	9623000e 	lhu	v1,14(s1)
+  570e74:	8fbf0024 	lw	ra,36(sp)
+  570e78:	00529023 	subu	s2,v0,s2
+  570e7c:	8fb1001c 	lw	s1,28(sp)
+  570e80:	8fb00018 	lw	s0,24(sp)
+  570e84:	02431026 	xor	v0,s2,v1
+  570e88:	8fb20020 	lw	s2,32(sp)
+  570e8c:	2403ffff 	li	v1,-1
+  570e90:	27bd0028 	addiu	sp,sp,40
+  570e94:	0002180a 	movz	v1,zero,v0
+  570e98:	03e00008 	jr	ra
+  570e9c:	00601021 	move	v0,v1

@@ -1,0 +1,25 @@
+; func cw_priv_ap_led_status_assemble @ 0x005a55c4 size=0x60
+  5a55c4:	27bdffd8 	addiu	sp,sp,-40
+  5a55c8:	afbf0024 	sw	ra,36(sp)
+  5a55cc:	afb20020 	sw	s2,32(sp)
+  5a55d0:	afb1001c 	sw	s1,28(sp)
+  5a55d4:	00a08821 	move	s1,a1
+  5a55d8:	afb00018 	sw	s0,24(sp)
+  5a55dc:	00808021 	move	s0,a0
+  5a55e0:	8ca20010 	lw	v0,16(a1)
+  5a55e4:	94920004 	lhu	s2,4(a0)
+  5a55e8:	0c15c7ea 	jal	0x571fa8
+  5a55ec:	8c450000 	lw	a1,0(v0)
+  5a55f0:	96020004 	lhu	v0,4(s0)
+  5a55f4:	9623000e 	lhu	v1,14(s1)
+  5a55f8:	8fbf0024 	lw	ra,36(sp)
+  5a55fc:	00529023 	subu	s2,v0,s2
+  5a5600:	8fb1001c 	lw	s1,28(sp)
+  5a5604:	8fb00018 	lw	s0,24(sp)
+  5a5608:	02431026 	xor	v0,s2,v1
+  5a560c:	8fb20020 	lw	s2,32(sp)
+  5a5610:	2403ffff 	li	v1,-1
+  5a5614:	27bd0028 	addiu	sp,sp,40
+  5a5618:	0002180a 	movz	v1,zero,v0
+  5a561c:	03e00008 	jr	ra
+  5a5620:	00601021 	move	v0,v1

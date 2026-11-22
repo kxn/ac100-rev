@@ -1,0 +1,26 @@
+; func cw_priv_lldp_report_dump @ 0x005b4f6c size=0x64
+  5b4f6c:	27bdffe0 	addiu	sp,sp,-32
+  5b4f70:	afbf001c 	sw	ra,28(sp)
+  5b4f74:	afb00018 	sw	s0,24(sp)
+  5b4f78:	8c900010 	lw	s0,16(a0)
+  5b4f7c:	3c04006f 	lui	a0,0x6f
+  5b4f80:	2484c1a0 	addiu	a0,a0,-15968
+  5b4f84:	0c101b74 	jal	0x406dd0
+  5b4f88:	8e050000 	lw	a1,0(s0)
+  5b4f8c:	8e050004 	lw	a1,4(s0)
+  5b4f90:	10a00004 	beqz	a1,0x5b4fa4
+  5b4f94:	3c04006f 	lui	a0,0x6f
+  5b4f98:	8e020000 	lw	v0,0(s0)
+  5b4f9c:	54400008 	bnezl	v0,0x5b4fc0
+  5b4fa0:	3c04006f 	lui	a0,0x6f
+  5b4fa4:	0c101dd4 	jal	0x407750
+  5b4fa8:	2484c1c0 	addiu	a0,a0,-15936
+  5b4fac:	8fbf001c 	lw	ra,28(sp)
+  5b4fb0:	00001021 	move	v0,zero
+  5b4fb4:	8fb00018 	lw	s0,24(sp)
+  5b4fb8:	03e00008 	jr	ra
+  5b4fbc:	27bd0020 	addiu	sp,sp,32
+  5b4fc0:	0c101b74 	jal	0x406dd0
+  5b4fc4:	2484c1b0 	addiu	a0,a0,-15952
+  5b4fc8:	0816d3ec 	j	0x5b4fb0
+  5b4fcc:	8fbf001c 	lw	ra,28(sp)

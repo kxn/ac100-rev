@@ -1,0 +1,20 @@
+; func _sensor_test_delete_sensor_alloc_hash_cb @ 0x004eb508 size=0x4c
+  4eb508:	27bdffe0 	addiu	sp,sp,-32
+  4eb50c:	afb00018 	sw	s0,24(sp)
+  4eb510:	00808021 	move	s0,a0
+  4eb514:	afbf001c 	sw	ra,28(sp)
+  4eb518:	1200000a 	beqz	s0,0x4eb544
+  4eb51c:	00a02021 	move	a0,a1
+  4eb520:	10a00009 	beqz	a1,0x4eb548
+  4eb524:	8fbf001c 	lw	ra,28(sp)
+  4eb528:	0c101fd0 	jal	0x407f40
+  4eb52c:	02002821 	move	a1,s0
+  4eb530:	02002021 	move	a0,s0
+  4eb534:	8fbf001c 	lw	ra,28(sp)
+  4eb538:	8fb00018 	lw	s0,24(sp)
+  4eb53c:	08101f7c 	j	0x407df0
+  4eb540:	27bd0020 	addiu	sp,sp,32
+  4eb544:	8fbf001c 	lw	ra,28(sp)
+  4eb548:	8fb00018 	lw	s0,24(sp)
+  4eb54c:	03e00008 	jr	ra
+  4eb550:	27bd0020 	addiu	sp,sp,32

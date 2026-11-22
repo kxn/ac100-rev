@@ -1,0 +1,25 @@
+; func cw_priv_reset_mask_assemble @ 0x005baf8c size=0x60
+  5baf8c:	27bdffd8 	addiu	sp,sp,-40
+  5baf90:	afbf0024 	sw	ra,36(sp)
+  5baf94:	afb20020 	sw	s2,32(sp)
+  5baf98:	afb1001c 	sw	s1,28(sp)
+  5baf9c:	00a08821 	move	s1,a1
+  5bafa0:	afb00018 	sw	s0,24(sp)
+  5bafa4:	00808021 	move	s0,a0
+  5bafa8:	8ca20010 	lw	v0,16(a1)
+  5bafac:	94920004 	lhu	s2,4(a0)
+  5bafb0:	0c15c7ea 	jal	0x571fa8
+  5bafb4:	8c450000 	lw	a1,0(v0)
+  5bafb8:	96020004 	lhu	v0,4(s0)
+  5bafbc:	9623000e 	lhu	v1,14(s1)
+  5bafc0:	8fbf0024 	lw	ra,36(sp)
+  5bafc4:	00529023 	subu	s2,v0,s2
+  5bafc8:	8fb1001c 	lw	s1,28(sp)
+  5bafcc:	8fb00018 	lw	s0,24(sp)
+  5bafd0:	02431026 	xor	v0,s2,v1
+  5bafd4:	8fb20020 	lw	s2,32(sp)
+  5bafd8:	2403ffff 	li	v1,-1
+  5bafdc:	27bd0028 	addiu	sp,sp,40
+  5bafe0:	0002180a 	movz	v1,zero,v0
+  5bafe4:	03e00008 	jr	ra
+  5bafe8:	00601021 	move	v0,v1

@@ -1,0 +1,23 @@
+; func MD4Init @ 0x0044befc size=0x58
+  44befc:	3c026745 	lui	v0,0x6745
+  44bf00:	a0800010 	sb	zero,16(a0)
+  44bf04:	a0800011 	sb	zero,17(a0)
+  44bf08:	24422301 	addiu	v0,v0,8961
+  44bf0c:	a0800012 	sb	zero,18(a0)
+  44bf10:	a0800013 	sb	zero,19(a0)
+  44bf14:	ac820000 	sw	v0,0(a0)
+  44bf18:	3c02efcd 	lui	v0,0xefcd
+  44bf1c:	a0800014 	sb	zero,20(a0)
+  44bf20:	3442ab89 	ori	v0,v0,0xab89
+  44bf24:	a0800015 	sb	zero,21(a0)
+  44bf28:	ac820004 	sw	v0,4(a0)
+  44bf2c:	3c0298ba 	lui	v0,0x98ba
+  44bf30:	a0800016 	sb	zero,22(a0)
+  44bf34:	3442dcfe 	ori	v0,v0,0xdcfe
+  44bf38:	a0800017 	sb	zero,23(a0)
+  44bf3c:	ac820008 	sw	v0,8(a0)
+  44bf40:	3c021032 	lui	v0,0x1032
+  44bf44:	ac800018 	sw	zero,24(a0)
+  44bf48:	24425476 	addiu	v0,v0,21622
+  44bf4c:	03e00008 	jr	ra
+  44bf50:	ac82000c 	sw	v0,12(a0)

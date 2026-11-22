@@ -1,0 +1,24 @@
+; func client_handle_hash_obj @ 0x00497740 size=0x5c
+  497740:	27bdffe0 	addiu	sp,sp,-32
+  497744:	10800006 	beqz	a0,0x497760
+  497748:	afbf001c 	sw	ra,28(sp)
+  49774c:	8fbf001c 	lw	ra,28(sp)
+  497750:	24050006 	li	a1,6
+  497754:	00003021 	move	a2,zero
+  497758:	081020f4 	j	0x4083d0
+  49775c:	27bd0020 	addiu	sp,sp,32
+  497760:	3c020073 	lui	v0,0x73
+  497764:	80421825 	lb	v0,6181(v0)
+  497768:	14400005 	bnez	v0,0x497780
+  49776c:	3c04006a 	lui	a0,0x6a
+  497770:	8fbf001c 	lw	ra,28(sp)
+  497774:	00001021 	move	v0,zero
+  497778:	03e00008 	jr	ra
+  49777c:	27bd0020 	addiu	sp,sp,32
+  497780:	3c05006a 	lui	a1,0x6a
+  497784:	24849984 	addiu	a0,a0,-26236
+  497788:	24a5b628 	addiu	a1,a1,-18904
+  49778c:	0c101b74 	jal	0x406dd0
+  497790:	240608e6 	li	a2,2278
+  497794:	08125ddd 	j	0x497774
+  497798:	8fbf001c 	lw	ra,28(sp)

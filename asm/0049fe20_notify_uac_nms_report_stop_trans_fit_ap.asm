@@ -1,0 +1,21 @@
+; func notify_uac_nms_report_stop_trans_fit_ap @ 0x0049fe20 size=0x50
+  49fe20:	27bdffe0 	addiu	sp,sp,-32
+  49fe24:	24040001 	li	a0,1
+  49fe28:	afbf001c 	sw	ra,28(sp)
+  49fe2c:	0c128832 	jal	0x4a20c8
+  49fe30:	00002821 	move	a1,zero
+  49fe34:	24040001 	li	a0,1
+  49fe38:	0c128cf9 	jal	0x4a33e4
+  49fe3c:	00002821 	move	a1,zero
+  49fe40:	24040001 	li	a0,1
+  49fe44:	0c128420 	jal	0x4a1080
+  49fe48:	00002821 	move	a1,zero
+  49fe4c:	3c020076 	lui	v0,0x76
+  49fe50:	8fbf001c 	lw	ra,28(sp)
+  49fe54:	00002021 	move	a0,zero
+  49fe58:	00002821 	move	a1,zero
+  49fe5c:	00003021 	move	a2,zero
+  49fe60:	ac4078fc 	sw	zero,30972(v0)
+  49fe64:	24070004 	li	a3,4
+  49fe68:	08127f2a 	j	0x49fca8
+  49fe6c:	27bd0020 	addiu	sp,sp,32

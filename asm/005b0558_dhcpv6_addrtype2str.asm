@@ -1,0 +1,20 @@
+; func dhcpv6_addrtype2str @ 0x005b0558 size=0x4c
+  5b0558:	7c042420 	seb	a0,a0
+  5b055c:	14800006 	bnez	a0,0x5b0578
+  5b0560:	24020001 	li	v0,1
+  5b0564:	3c06006f 	lui	a2,0x6f
+  5b0568:	00a02021 	move	a0,a1
+  5b056c:	24c6a8cc 	addiu	a2,a2,-22324
+  5b0570:	08101dec 	j	0x4077b0
+  5b0574:	24050010 	li	a1,16
+  5b0578:	10820006 	beq	a0,v0,0x5b0594
+  5b057c:	3c060069 	lui	a2,0x69
+  5b0580:	3c060069 	lui	a2,0x69
+  5b0584:	00a02021 	move	a0,a1
+  5b0588:	24c6d44c 	addiu	a2,a2,-11188
+  5b058c:	08101dec 	j	0x4077b0
+  5b0590:	24050010 	li	a1,16
+  5b0594:	00a02021 	move	a0,a1
+  5b0598:	24c6d448 	addiu	a2,a2,-11192
+  5b059c:	08101dec 	j	0x4077b0
+  5b05a0:	24050010 	li	a1,16

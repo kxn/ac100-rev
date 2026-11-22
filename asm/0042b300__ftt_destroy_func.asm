@@ -1,0 +1,7 @@
+; func _ftt_destroy_func @ 0x0042b300 size=0x18
+  42b300:	10800003 	beqz	a0,0x42b310
+  42b304:	00000000 	nop
+  42b308:	08101f7c 	j	0x407df0
+  42b30c:	00000000 	nop
+  42b310:	03e00008 	jr	ra
+  42b314:	00000000 	nop

@@ -1,0 +1,28 @@
+; func apupd_hwid_hash_key @ 0x00650008 size=0x6c
+  650008:	27bdffe0 	addiu	sp,sp,-32
+  65000c:	10800006 	beqz	a0,0x650028
+  650010:	afbf001c 	sw	ra,28(sp)
+  650014:	8fbf001c 	lw	ra,28(sp)
+  650018:	24050010 	li	a1,16
+  65001c:	00003021 	move	a2,zero
+  650020:	081020f4 	j	0x4083d0
+  650024:	27bd0020 	addiu	sp,sp,32
+  650028:	3c020076 	lui	v0,0x76
+  65002c:	8c428c08 	lw	v0,-29688(v0)
+  650030:	14400004 	bnez	v0,0x650044
+  650034:	8fbf001c 	lw	ra,28(sp)
+  650038:	00001021 	move	v0,zero
+  65003c:	03e00008 	jr	ra
+  650040:	27bd0020 	addiu	sp,sp,32
+  650044:	0c16276a 	jal	0x589da8
+  650048:	00000000 	nop
+  65004c:	5040fffa 	beqzl	v0,0x650038
+  650050:	8fbf001c 	lw	ra,28(sp)
+  650054:	3c040071 	lui	a0,0x71
+  650058:	3c050072 	lui	a1,0x72
+  65005c:	24840720 	addiu	a0,a0,1824
+  650060:	24a5a1a8 	addiu	a1,a1,-24152
+  650064:	0c101b74 	jal	0x406dd0
+  650068:	240601ff 	li	a2,511
+  65006c:	0819400e 	j	0x650038
+  650070:	8fbf001c 	lw	ra,28(sp)

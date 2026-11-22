@@ -1,0 +1,23 @@
+; func band_navigation_db_enable_get @ 0x0055fdf4 size=0x58
+  55fdf4:	27bdffd8 	addiu	sp,sp,-40
+  55fdf8:	2405ffff 	li	a1,-1
+  55fdfc:	afb10020 	sw	s1,32(sp)
+  55fe00:	3c11007c 	lui	s1,0x7c
+  55fe04:	afb0001c 	sw	s0,28(sp)
+  55fe08:	00808021 	move	s0,a0
+  55fe0c:	afbf0024 	sw	ra,36(sp)
+  55fe10:	0c1020b4 	jal	0x4082d0
+  55fe14:	8e245950 	lw	a0,22864(s1)
+  55fe18:	3c02007c 	lui	v0,0x7c
+  55fe1c:	02002821 	move	a1,s0
+  55fe20:	0c1580bf 	jal	0x5602fc
+  55fe24:	8c445954 	lw	a0,22868(v0)
+  55fe28:	8e245950 	lw	a0,22864(s1)
+  55fe2c:	0c101fcc 	jal	0x407f30
+  55fe30:	00408021 	move	s0,v0
+  55fe34:	02001021 	move	v0,s0
+  55fe38:	8fbf0024 	lw	ra,36(sp)
+  55fe3c:	8fb10020 	lw	s1,32(sp)
+  55fe40:	8fb0001c 	lw	s0,28(sp)
+  55fe44:	03e00008 	jr	ra
+  55fe48:	27bd0028 	addiu	sp,sp,40

@@ -1,0 +1,44 @@
+; func apupd_excute_cmd @ 0x0064c670 size=0xac
+  64c670:	27bdffe0 	addiu	sp,sp,-32
+  64c674:	1080000b 	beqz	a0,0x64c6a4
+  64c678:	afbf001c 	sw	ra,28(sp)
+  64c67c:	3c050069 	lui	a1,0x69
+  64c680:	0c101d2c 	jal	0x4074b0
+  64c684:	24a5056c 	addiu	a1,a1,1388
+  64c688:	50400017 	beqzl	v0,0x64c6e8
+  64c68c:	3c020076 	lui	v0,0x76
+  64c690:	0c101cb4 	jal	0x4072d0
+  64c694:	00402021 	move	a0,v0
+  64c698:	2403ffff 	li	v1,-1
+  64c69c:	10430004 	beq	v0,v1,0x64c6b0
+  64c6a0:	3c020076 	lui	v0,0x76
+  64c6a4:	8fbf001c 	lw	ra,28(sp)
+  64c6a8:	03e00008 	jr	ra
+  64c6ac:	27bd0020 	addiu	sp,sp,32
+  64c6b0:	8c428c08 	lw	v0,-29688(v0)
+  64c6b4:	1040fffc 	beqz	v0,0x64c6a8
+  64c6b8:	8fbf001c 	lw	ra,28(sp)
+  64c6bc:	0c16276a 	jal	0x589da8
+  64c6c0:	00000000 	nop
+  64c6c4:	1040fff8 	beqz	v0,0x64c6a8
+  64c6c8:	8fbf001c 	lw	ra,28(sp)
+  64c6cc:	3c040071 	lui	a0,0x71
+  64c6d0:	3c050072 	lui	a1,0x72
+  64c6d4:	24844c20 	addiu	a0,a0,19488
+  64c6d8:	24a59d18 	addiu	a1,a1,-25320
+  64c6dc:	24060101 	li	a2,257
+  64c6e0:	08101b74 	j	0x406dd0
+  64c6e4:	27bd0020 	addiu	sp,sp,32
+  64c6e8:	8c428c08 	lw	v0,-29688(v0)
+  64c6ec:	1040ffee 	beqz	v0,0x64c6a8
+  64c6f0:	8fbf001c 	lw	ra,28(sp)
+  64c6f4:	0c16276a 	jal	0x589da8
+  64c6f8:	00000000 	nop
+  64c6fc:	1040ffea 	beqz	v0,0x64c6a8
+  64c700:	8fbf001c 	lw	ra,28(sp)
+  64c704:	3c040071 	lui	a0,0x71
+  64c708:	3c050072 	lui	a1,0x72
+  64c70c:	24844bf4 	addiu	a0,a0,19444
+  64c710:	24a59d18 	addiu	a1,a1,-25320
+  64c714:	081931b8 	j	0x64c6e0
+  64c718:	240600fa 	li	a2,250

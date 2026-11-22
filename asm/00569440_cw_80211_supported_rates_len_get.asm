@@ -1,0 +1,7 @@
+; func cw_80211_supported_rates_len_get @ 0x00569440 size=0x18
+  569440:	10800003 	beqz	a0,0x569450
+  569444:	00001021 	move	v0,zero
+  569448:	90820001 	lbu	v0,1(a0)
+  56944c:	24420001 	addiu	v0,v0,1
+  569450:	03e00008 	jr	ra
+  569454:	00000000 	nop

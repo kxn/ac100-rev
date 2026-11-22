@@ -1,0 +1,46 @@
+; func _uac_arp_defend_ap_enable_cmp @ 0x00473084 size=0xb4
+  473084:	27bdffc8 	addiu	sp,sp,-56
+  473088:	24030001 	li	v1,1
+  47308c:	afb10030 	sw	s1,48(sp)
+  473090:	00808821 	move	s1,a0
+  473094:	afbf0034 	sw	ra,52(sp)
+  473098:	00a02021 	move	a0,a1
+  47309c:	afb0002c 	sw	s0,44(sp)
+  4730a0:	afa00018 	sw	zero,24(sp)
+  4730a4:	afa0001c 	sw	zero,28(sp)
+  4730a8:	afa00020 	sw	zero,32(sp)
+  4730ac:	10a0000f 	beqz	a1,0x4730ec
+  4730b0:	afa00024 	sw	zero,36(sp)
+  4730b4:	0c101db4 	jal	0x4076d0
+  4730b8:	00000000 	nop
+  4730bc:	00408021 	move	s0,v0
+  4730c0:	3c020076 	lui	v0,0x76
+  4730c4:	8c4270e8 	lw	v0,28904(v0)
+  4730c8:	1440000e 	bnez	v0,0x473104
+  4730cc:	27a50018 	addiu	a1,sp,24
+  4730d0:	0c11f1df 	jal	0x47c77c
+  4730d4:	02202021 	move	a0,s1
+  4730d8:	14400004 	bnez	v0,0x4730ec
+  4730dc:	24030001 	li	v1,1
+  4730e0:	93a3001c 	lbu	v1,28(sp)
+  4730e4:	00708026 	xor	s0,v1,s0
+  4730e8:	0010182b 	sltu	v1,zero,s0
+  4730ec:	8fbf0034 	lw	ra,52(sp)
+  4730f0:	00601021 	move	v0,v1
+  4730f4:	8fb10030 	lw	s1,48(sp)
+  4730f8:	8fb0002c 	lw	s0,44(sp)
+  4730fc:	03e00008 	jr	ra
+  473100:	27bd0038 	addiu	sp,sp,56
+  473104:	0c16276a 	jal	0x589da8
+  473108:	00000000 	nop
+  47310c:	5040fff0 	beqzl	v0,0x4730d0
+  473110:	27a50018 	addiu	a1,sp,24
+  473114:	3c040069 	lui	a0,0x69
+  473118:	3c050069 	lui	a1,0x69
+  47311c:	2484fbcc 	addiu	a0,a0,-1076
+  473120:	24a50888 	addiu	a1,a1,2184
+  473124:	240600d6 	li	a2,214
+  473128:	0c101b74 	jal	0x406dd0
+  47312c:	02003821 	move	a3,s0
+  473130:	0811cc34 	j	0x4730d0
+  473134:	27a50018 	addiu	a1,sp,24

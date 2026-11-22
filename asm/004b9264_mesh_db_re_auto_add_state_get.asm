@@ -1,0 +1,23 @@
+; func mesh_db_re_auto_add_state_get @ 0x004b9264 size=0x58
+  4b9264:	27bdffd8 	addiu	sp,sp,-40
+  4b9268:	2402ffff 	li	v0,-1
+  4b926c:	afb10020 	sw	s1,32(sp)
+  4b9270:	00808821 	move	s1,a0
+  4b9274:	afbf0024 	sw	ra,36(sp)
+  4b9278:	1080000b 	beqz	a0,0x4b92a8
+  4b927c:	afb0001c 	sw	s0,28(sp)
+  4b9280:	3c100076 	lui	s0,0x76
+  4b9284:	2405ffff 	li	a1,-1
+  4b9288:	26107eb0 	addiu	s0,s0,32432
+  4b928c:	0c1020b4 	jal	0x4082d0
+  4b9290:	8e040004 	lw	a0,4(s0)
+  4b9294:	8e020108 	lw	v0,264(s0)
+  4b9298:	ae220000 	sw	v0,0(s1)
+  4b929c:	0c101fcc 	jal	0x407f30
+  4b92a0:	8e040004 	lw	a0,4(s0)
+  4b92a4:	00001021 	move	v0,zero
+  4b92a8:	8fbf0024 	lw	ra,36(sp)
+  4b92ac:	8fb10020 	lw	s1,32(sp)
+  4b92b0:	8fb0001c 	lw	s0,28(sp)
+  4b92b4:	03e00008 	jr	ra
+  4b92b8:	27bd0028 	addiu	sp,sp,40

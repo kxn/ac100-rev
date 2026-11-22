@@ -1,0 +1,20 @@
+; func wips_mac2str @ 0x004c7eec size=0x4c
+  4c7eec:	27bdffd0 	addiu	sp,sp,-48
+  4c7ef0:	afbf002c 	sw	ra,44(sp)
+  4c7ef4:	90820002 	lbu	v0,2(a0)
+  4c7ef8:	90860000 	lbu	a2,0(a0)
+  4c7efc:	90870001 	lbu	a3,1(a0)
+  4c7f00:	afa20010 	sw	v0,16(sp)
+  4c7f04:	90820003 	lbu	v0,3(a0)
+  4c7f08:	afa20014 	sw	v0,20(sp)
+  4c7f0c:	90820004 	lbu	v0,4(a0)
+  4c7f10:	afa20018 	sw	v0,24(sp)
+  4c7f14:	90820005 	lbu	v0,5(a0)
+  4c7f18:	00a02021 	move	a0,a1
+  4c7f1c:	3c050067 	lui	a1,0x67
+  4c7f20:	24a57160 	addiu	a1,a1,29024
+  4c7f24:	0c101ebc 	jal	0x407af0
+  4c7f28:	afa2001c 	sw	v0,28(sp)
+  4c7f2c:	8fbf002c 	lw	ra,44(sp)
+  4c7f30:	03e00008 	jr	ra
+  4c7f34:	27bd0030 	addiu	sp,sp,48

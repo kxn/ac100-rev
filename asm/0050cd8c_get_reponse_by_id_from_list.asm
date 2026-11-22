@@ -1,0 +1,22 @@
+; func get_reponse_by_id_from_list @ 0x0050cd8c size=0x54
+  50cd8c:	27bdffe0 	addiu	sp,sp,-32
+  50cd90:	00001021 	move	v0,zero
+  50cd94:	afb00018 	sw	s0,24(sp)
+  50cd98:	00a08021 	move	s0,a1
+  50cd9c:	1080000c 	beqz	a0,0x50cdd0
+  50cda0:	afbf001c 	sw	ra,28(sp)
+  50cda4:	0c10206c 	jal	0x4081b0
+  50cda8:	24840004 	addiu	a0,a0,4
+  50cdac:	10400009 	beqz	v0,0x50cdd4
+  50cdb0:	8fbf001c 	lw	ra,28(sp)
+  50cdb4:	8c43000c 	lw	v1,12(v0)
+  50cdb8:	12030006 	beq	s0,v1,0x50cdd4
+  50cdbc:	8fbf001c 	lw	ra,28(sp)
+  50cdc0:	0c1021a0 	jal	0x408680
+  50cdc4:	00402021 	move	a0,v0
+  50cdc8:	5440fffb 	bnezl	v0,0x50cdb8
+  50cdcc:	8c43000c 	lw	v1,12(v0)
+  50cdd0:	8fbf001c 	lw	ra,28(sp)
+  50cdd4:	8fb00018 	lw	s0,24(sp)
+  50cdd8:	03e00008 	jr	ra
+  50cddc:	27bd0020 	addiu	sp,sp,32

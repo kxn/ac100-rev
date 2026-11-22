@@ -1,0 +1,29 @@
+; func cw_msg_eles_get_type_by_wtp_descriptor @ 0x00585010 size=0x70
+  585010:	27bdffd8 	addiu	sp,sp,-40
+  585014:	afb10020 	sw	s1,32(sp)
+  585018:	00808821 	move	s1,a0
+  58501c:	afbf0024 	sw	ra,36(sp)
+  585020:	10800012 	beqz	a0,0x58506c
+  585024:	afb0001c 	sw	s0,28(sp)
+  585028:	10a00011 	beqz	a1,0x585070
+  58502c:	8fbf0024 	lw	ra,36(sp)
+  585030:	0c10206c 	jal	0x4081b0
+  585034:	24a40010 	addiu	a0,a1,16
+  585038:	08161419 	j	0x585064
+  58503c:	00000000 	nop
+  585040:	96050010 	lhu	a1,16(s0)
+  585044:	2ca20004 	sltiu	v0,a1,4
+  585048:	10400009 	beqz	v0,0x585070
+  58504c:	8fbf0024 	lw	ra,36(sp)
+  585050:	02202021 	move	a0,s1
+  585054:	0c1652a1 	jal	0x594a84
+  585058:	7c052e20 	seh	a1,a1
+  58505c:	0c1021a0 	jal	0x408680
+  585060:	02002021 	move	a0,s0
+  585064:	1440fff6 	bnez	v0,0x585040
+  585068:	00408021 	move	s0,v0
+  58506c:	8fbf0024 	lw	ra,36(sp)
+  585070:	8fb10020 	lw	s1,32(sp)
+  585074:	8fb0001c 	lw	s0,28(sp)
+  585078:	03e00008 	jr	ra
+  58507c:	27bd0028 	addiu	sp,sp,40

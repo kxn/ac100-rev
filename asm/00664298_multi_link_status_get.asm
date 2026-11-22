@@ -1,0 +1,48 @@
+; func multi_link_status_get @ 0x00664298 size=0xbc
+  664298:	27bdffd8 	addiu	sp,sp,-40
+  66429c:	afb00018 	sw	s0,24(sp)
+  6642a0:	3090ffff 	andi	s0,a0,0xffff
+  6642a4:	afbf0024 	sw	ra,36(sp)
+  6642a8:	afb20020 	sw	s2,32(sp)
+  6642ac:	0c1506a9 	jal	0x541aa4
+  6642b0:	afb1001c 	sw	s1,28(sp)
+  6642b4:	0202102a 	slt	v0,s0,v0
+  6642b8:	14400018 	bnez	v0,0x66431c
+  6642bc:	3c02007d 	lui	v0,0x7d
+  6642c0:	3411c350 	li	s1,0xc350
+  6642c4:	0211102b 	sltu	v0,s0,s1
+  6642c8:	10400008 	beqz	v0,0x6642ec
+  6642cc:	00009021 	move	s2,zero
+  6642d0:	8fbf0024 	lw	ra,36(sp)
+  6642d4:	02401021 	move	v0,s2
+  6642d8:	8fb20020 	lw	s2,32(sp)
+  6642dc:	8fb1001c 	lw	s1,28(sp)
+  6642e0:	8fb00018 	lw	s0,24(sp)
+  6642e4:	03e00008 	jr	ra
+  6642e8:	27bd0028 	addiu	sp,sp,40
+  6642ec:	0c1506af 	jal	0x541abc
+  6642f0:	00000000 	nop
+  6642f4:	00511021 	addu	v0,v0,s1
+  6642f8:	0202102a 	slt	v0,s0,v0
+  6642fc:	14400007 	bnez	v0,0x66431c
+  664300:	3c02007d 	lui	v0,0x7d
+  664304:	0c1506af 	jal	0x541abc
+  664308:	00000000 	nop
+  66430c:	00518821 	addu	s1,v0,s1
+  664310:	0211882a 	slt	s1,s0,s1
+  664314:	1220ffee 	beqz	s1,0x6642d0
+  664318:	3c02007d 	lui	v0,0x7d
+  66431c:	3411c350 	li	s1,0xc350
+  664320:	8c52c814 	lw	s2,-14316(v0)
+  664324:	0211102b 	sltu	v0,s0,s1
+  664328:	10400004 	beqz	v0,0x66433c
+  66432c:	00000000 	nop
+  664330:	02508021 	addu	s0,s2,s0
+  664334:	081990b4 	j	0x6642d0
+  664338:	92120000 	lbu	s2,0(s0)
+  66433c:	0c1506a9 	jal	0x541aa4
+  664340:	02118023 	subu	s0,s0,s1
+  664344:	02028021 	addu	s0,s0,v0
+  664348:	02508021 	addu	s0,s2,s0
+  66434c:	081990b4 	j	0x6642d0
+  664350:	92120000 	lbu	s2,0(s0)

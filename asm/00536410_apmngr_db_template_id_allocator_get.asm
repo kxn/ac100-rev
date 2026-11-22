@@ -1,0 +1,21 @@
+; func apmngr_db_template_id_allocator_get @ 0x00536410 size=0x50
+  536410:	27bdffd8 	addiu	sp,sp,-40
+  536414:	2405ffff 	li	a1,-1
+  536418:	afb10020 	sw	s1,32(sp)
+  53641c:	3c11007c 	lui	s1,0x7c
+  536420:	afbf0024 	sw	ra,36(sp)
+  536424:	afb0001c 	sw	s0,28(sp)
+  536428:	0c1020b4 	jal	0x4082d0
+  53642c:	8e245874 	lw	a0,22644(s1)
+  536430:	3c02007c 	lui	v0,0x7c
+  536434:	0c1020bc 	jal	0x4082f0
+  536438:	8c445864 	lw	a0,22628(v0)
+  53643c:	8e245874 	lw	a0,22644(s1)
+  536440:	0c101fcc 	jal	0x407f30
+  536444:	00408021 	move	s0,v0
+  536448:	02001021 	move	v0,s0
+  53644c:	8fbf0024 	lw	ra,36(sp)
+  536450:	8fb10020 	lw	s1,32(sp)
+  536454:	8fb0001c 	lw	s0,28(sp)
+  536458:	03e00008 	jr	ra
+  53645c:	27bd0028 	addiu	sp,sp,40

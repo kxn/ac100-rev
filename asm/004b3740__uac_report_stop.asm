@@ -1,0 +1,31 @@
+; func _uac_report_stop @ 0x004b3740 size=0x78
+  4b3740:	3c020076 	lui	v0,0x76
+  4b3744:	27bdffe0 	addiu	sp,sp,-32
+  4b3748:	8c427c44 	lw	v0,31812(v0)
+  4b374c:	afbf001c 	sw	ra,28(sp)
+  4b3750:	10400007 	beqz	v0,0x4b3770
+  4b3754:	afb00018 	sw	s0,24(sp)
+  4b3758:	3c04006a 	lui	a0,0x6a
+  4b375c:	3c05006a 	lui	a1,0x6a
+  4b3760:	248419f0 	addiu	a0,a0,6640
+  4b3764:	24a52014 	addiu	a1,a1,8212
+  4b3768:	0c101b74 	jal	0x406dd0
+  4b376c:	24060359 	li	a2,857
+  4b3770:	3c100076 	lui	s0,0x76
+  4b3774:	2405ffff 	li	a1,-1
+  4b3778:	0c1020b4 	jal	0x4082d0
+  4b377c:	8e047c48 	lw	a0,31816(s0)
+  4b3780:	3c020076 	lui	v0,0x76
+  4b3784:	8e047c48 	lw	a0,31816(s0)
+  4b3788:	0c101fcc 	jal	0x407f30
+  4b378c:	ac407c50 	sw	zero,31824(v0)
+  4b3790:	3c020076 	lui	v0,0x76
+  4b3794:	0c102018 	jal	0x408060
+  4b3798:	8c447d64 	lw	a0,32100(v0)
+  4b379c:	0c12d9a3 	jal	0x4b668c
+  4b37a0:	00000000 	nop
+  4b37a4:	00001021 	move	v0,zero
+  4b37a8:	8fbf001c 	lw	ra,28(sp)
+  4b37ac:	8fb00018 	lw	s0,24(sp)
+  4b37b0:	03e00008 	jr	ra
+  4b37b4:	27bd0020 	addiu	sp,sp,32

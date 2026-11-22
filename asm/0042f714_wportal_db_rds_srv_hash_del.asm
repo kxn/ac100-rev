@@ -1,0 +1,30 @@
+; func wportal_db_rds_srv_hash_del @ 0x0042f714 size=0x74
+  42f714:	27bdffe0 	addiu	sp,sp,-32
+  42f718:	2405ffff 	li	a1,-1
+  42f71c:	afb00018 	sw	s0,24(sp)
+  42f720:	3c100076 	lui	s0,0x76
+  42f724:	afa40020 	sw	a0,32(sp)
+  42f728:	afbf001c 	sw	ra,28(sp)
+  42f72c:	0c1020b4 	jal	0x4082d0
+  42f730:	8e04a174 	lw	a0,-24204(s0)
+  42f734:	3c020076 	lui	v0,0x76
+  42f738:	27a50020 	addiu	a1,sp,32
+  42f73c:	0c102030 	jal	0x4080c0
+  42f740:	8c44a178 	lw	a0,-24200(v0)
+  42f744:	1040000c 	beqz	v0,0x42f778
+  42f748:	00000000 	nop
+  42f74c:	3c030076 	lui	v1,0x76
+  42f750:	00402821 	move	a1,v0
+  42f754:	0c101fd0 	jal	0x407f40
+  42f758:	8c64a17c 	lw	a0,-24196(v1)
+  42f75c:	0c101fcc 	jal	0x407f30
+  42f760:	8e04a174 	lw	a0,-24204(s0)
+  42f764:	00001021 	move	v0,zero
+  42f768:	8fbf001c 	lw	ra,28(sp)
+  42f76c:	8fb00018 	lw	s0,24(sp)
+  42f770:	03e00008 	jr	ra
+  42f774:	27bd0020 	addiu	sp,sp,32
+  42f778:	0c101fcc 	jal	0x407f30
+  42f77c:	8e04a174 	lw	a0,-24204(s0)
+  42f780:	0810bdda 	j	0x42f768
+  42f784:	2402ffff 	li	v0,-1

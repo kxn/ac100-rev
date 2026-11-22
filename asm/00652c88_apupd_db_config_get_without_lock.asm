@@ -1,0 +1,33 @@
+; func apupd_db_config_get_without_lock @ 0x00652c88 size=0x80
+  652c88:	27bdffe0 	addiu	sp,sp,-32
+  652c8c:	afbf001c 	sw	ra,28(sp)
+  652c90:	1080000d 	beqz	a0,0x652cc8
+  652c94:	afb00018 	sw	s0,24(sp)
+  652c98:	3c02007d 	lui	v0,0x7d
+  652c9c:	8c45c7b4 	lw	a1,-14412(v0)
+  652ca0:	10a0000a 	beqz	a1,0x652ccc
+  652ca4:	3c020076 	lui	v0,0x76
+  652ca8:	24060004 	li	a2,4
+  652cac:	0c101c8c 	jal	0x407230
+  652cb0:	00008021 	move	s0,zero
+  652cb4:	8fbf001c 	lw	ra,28(sp)
+  652cb8:	02001021 	move	v0,s0
+  652cbc:	8fb00018 	lw	s0,24(sp)
+  652cc0:	03e00008 	jr	ra
+  652cc4:	27bd0020 	addiu	sp,sp,32
+  652cc8:	3c020076 	lui	v0,0x76
+  652ccc:	8c428c08 	lw	v0,-29688(v0)
+  652cd0:	1040fff8 	beqz	v0,0x652cb4
+  652cd4:	2410ffff 	li	s0,-1
+  652cd8:	0c16276a 	jal	0x589da8
+  652cdc:	00000000 	nop
+  652ce0:	5040fff5 	beqzl	v0,0x652cb8
+  652ce4:	8fbf001c 	lw	ra,28(sp)
+  652ce8:	3c040071 	lui	a0,0x71
+  652cec:	3c050072 	lui	a1,0x72
+  652cf0:	24840720 	addiu	a0,a0,1824
+  652cf4:	24a5a2b8 	addiu	a1,a1,-23880
+  652cf8:	0c101b74 	jal	0x406dd0
+  652cfc:	24061b86 	li	a2,7046
+  652d00:	08194b2e 	j	0x652cb8
+  652d04:	8fbf001c 	lw	ra,28(sp)

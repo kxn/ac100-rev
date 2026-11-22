@@ -1,0 +1,23 @@
+; func apupd_db_software_number_max_check @ 0x00658178 size=0x58
+  658178:	27bdffd8 	addiu	sp,sp,-40
+  65817c:	2405ffff 	li	a1,-1
+  658180:	afb10020 	sw	s1,32(sp)
+  658184:	3c11007d 	lui	s1,0x7d
+  658188:	afbf0024 	sw	ra,36(sp)
+  65818c:	afb0001c 	sw	s0,28(sp)
+  658190:	0c1020b4 	jal	0x4082d0
+  658194:	8e24c778 	lw	a0,-14472(s1)
+  658198:	3c02007d 	lui	v0,0x7d
+  65819c:	8e24c778 	lw	a0,-14472(s1)
+  6581a0:	8c50c7dc 	lw	s0,-14372(v0)
+  6581a4:	3c020076 	lui	v0,0x76
+  6581a8:	8c428c20 	lw	v0,-29664(v0)
+  6581ac:	0c101fcc 	jal	0x407f30
+  6581b0:	0202802b 	sltu	s0,s0,v0
+  6581b4:	8fbf0024 	lw	ra,36(sp)
+  6581b8:	3a100001 	xori	s0,s0,0x1
+  6581bc:	02001021 	move	v0,s0
+  6581c0:	8fb10020 	lw	s1,32(sp)
+  6581c4:	8fb0001c 	lw	s0,28(sp)
+  6581c8:	03e00008 	jr	ra
+  6581cc:	27bd0028 	addiu	sp,sp,40

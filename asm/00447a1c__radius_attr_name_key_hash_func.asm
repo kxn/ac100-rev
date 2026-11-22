@@ -1,0 +1,20 @@
+; func _radius_attr_name_key_hash_func @ 0x00447a1c size=0x4c
+  447a1c:	3c1c0032 	lui	gp,0x32
+  447a20:	279c96e4 	addiu	gp,gp,-26908
+  447a24:	0399e021 	addu	gp,gp,t9
+  447a28:	27bdffe0 	addiu	sp,sp,-32
+  447a2c:	8f99851c 	lw	t9,-31460(gp)
+  447a30:	afbc0010 	sw	gp,16(sp)
+  447a34:	afbf001c 	sw	ra,28(sp)
+  447a38:	afb00018 	sw	s0,24(sp)
+  447a3c:	0320f809 	jalr	t9
+  447a40:	00808021 	move	s0,a0
+  447a44:	02002021 	move	a0,s0
+  447a48:	8fbc0010 	lw	gp,16(sp)
+  447a4c:	00003021 	move	a2,zero
+  447a50:	8fbf001c 	lw	ra,28(sp)
+  447a54:	00402821 	move	a1,v0
+  447a58:	8fb00018 	lw	s0,24(sp)
+  447a5c:	8f998178 	lw	t9,-32392(gp)
+  447a60:	03200008 	jr	t9
+  447a64:	27bd0020 	addiu	sp,sp,32

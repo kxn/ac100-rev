@@ -1,0 +1,24 @@
+; func apmngr_db_ap_id_allocator_set @ 0x00536308 size=0x5c
+  536308:	27bdffd8 	addiu	sp,sp,-40
+  53630c:	2402ffff 	li	v0,-1
+  536310:	afb10020 	sw	s1,32(sp)
+  536314:	00808821 	move	s1,a0
+  536318:	afbf0024 	sw	ra,36(sp)
+  53631c:	1080000c 	beqz	a0,0x536350
+  536320:	afb0001c 	sw	s0,28(sp)
+  536324:	3c10007c 	lui	s0,0x7c
+  536328:	2405ffff 	li	a1,-1
+  53632c:	0c1020b4 	jal	0x4082d0
+  536330:	8e045874 	lw	a0,22644(s0)
+  536334:	3c02007c 	lui	v0,0x7c
+  536338:	02202821 	move	a1,s1
+  53633c:	0c10201c 	jal	0x408070
+  536340:	8c445868 	lw	a0,22632(v0)
+  536344:	0c101fcc 	jal	0x407f30
+  536348:	8e045874 	lw	a0,22644(s0)
+  53634c:	00001021 	move	v0,zero
+  536350:	8fbf0024 	lw	ra,36(sp)
+  536354:	8fb10020 	lw	s1,32(sp)
+  536358:	8fb0001c 	lw	s0,28(sp)
+  53635c:	03e00008 	jr	ra
+  536360:	27bd0028 	addiu	sp,sp,40

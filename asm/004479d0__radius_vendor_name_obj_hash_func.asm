@@ -1,0 +1,20 @@
+; func _radius_vendor_name_obj_hash_func @ 0x004479d0 size=0x4c
+  4479d0:	3c1c0032 	lui	gp,0x32
+  4479d4:	279c9730 	addiu	gp,gp,-26832
+  4479d8:	0399e021 	addu	gp,gp,t9
+  4479dc:	27bdffe0 	addiu	sp,sp,-32
+  4479e0:	8f99851c 	lw	t9,-31460(gp)
+  4479e4:	afbc0010 	sw	gp,16(sp)
+  4479e8:	afbf001c 	sw	ra,28(sp)
+  4479ec:	afb00018 	sw	s0,24(sp)
+  4479f0:	0320f809 	jalr	t9
+  4479f4:	00808021 	move	s0,a0
+  4479f8:	02002021 	move	a0,s0
+  4479fc:	8fbc0010 	lw	gp,16(sp)
+  447a00:	00003021 	move	a2,zero
+  447a04:	8fbf001c 	lw	ra,28(sp)
+  447a08:	00402821 	move	a1,v0
+  447a0c:	8fb00018 	lw	s0,24(sp)
+  447a10:	8f998178 	lw	t9,-32392(gp)
+  447a14:	03200008 	jr	t9
+  447a18:	27bd0020 	addiu	sp,sp,32

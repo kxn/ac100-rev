@@ -1,0 +1,17 @@
+// func uac_nms_event_report_pkt_uninit @ 004a1d0c size=108
+
+undefined4 uac_nms_event_report_pkt_uninit(void)
+
+{
+  int iVar1;
+  undefined4 uVar2;
+  
+  uVar2 = 0;
+  iVar1 = unregister_sub_device_report_handle(_uac_nms_event_report_request,1);
+  if ((iVar1 == -1) && (uVar2 = 0xffffffff, cloud_mngt_err_switch != '\0')) {
+    printf("[CLOUD_MNGT_ERROR]%s()/%d unregister callback to listen join-req capwap message event failed.\n"
+           ,"uac_nms_event_report_pkt_uninit",0x13b);
+  }
+  return uVar2;
+}
+

@@ -1,0 +1,24 @@
+; func uac_mac_auth_uninit @ 0x00451324 size=0x5c
+  451324:	27bdffe0 	addiu	sp,sp,-32
+  451328:	afb00018 	sw	s0,24(sp)
+  45132c:	afbf001c 	sw	ra,28(sp)
+  451330:	0c115b69 	jal	0x456da4
+  451334:	00008021 	move	s0,zero
+  451338:	10400004 	beqz	v0,0x45134c
+  45133c:	3c020073 	lui	v0,0x73
+  451340:	8c4213d0 	lw	v0,5072(v0)
+  451344:	14400006 	bnez	v0,0x451360
+  451348:	2410ffff 	li	s0,-1
+  45134c:	8fbf001c 	lw	ra,28(sp)
+  451350:	02001021 	move	v0,s0
+  451354:	8fb00018 	lw	s0,24(sp)
+  451358:	03e00008 	jr	ra
+  45135c:	27bd0020 	addiu	sp,sp,32
+  451360:	3c040068 	lui	a0,0x68
+  451364:	3c050068 	lui	a1,0x68
+  451368:	24845118 	addiu	a0,a0,20760
+  45136c:	24a55408 	addiu	a1,a1,21512
+  451370:	0c101b74 	jal	0x406dd0
+  451374:	2406059d 	li	a2,1437
+  451378:	081144d4 	j	0x451350
+  45137c:	8fbf001c 	lw	ra,28(sp)

@@ -1,0 +1,32 @@
+; func cw_dtls_pkt_create @ 0x005981c8 size=0x7c
+  5981c8:	27bdffe0 	addiu	sp,sp,-32
+  5981cc:	24040010 	li	a0,16
+  5981d0:	afb00018 	sw	s0,24(sp)
+  5981d4:	afbf001c 	sw	ra,28(sp)
+  5981d8:	0c102114 	jal	0x408450
+  5981dc:	24050064 	li	a1,100
+  5981e0:	10400008 	beqz	v0,0x598204
+  5981e4:	00408021 	move	s0,v0
+  5981e8:	0c146b62 	jal	0x51ad88
+  5981ec:	24440004 	addiu	a0,v0,4
+  5981f0:	8fbf001c 	lw	ra,28(sp)
+  5981f4:	02001021 	move	v0,s0
+  5981f8:	8fb00018 	lw	s0,24(sp)
+  5981fc:	03e00008 	jr	ra
+  598200:	27bd0020 	addiu	sp,sp,32
+  598204:	3c020075 	lui	v0,0x75
+  598208:	8c42cf58 	lw	v0,-12456(v0)
+  59820c:	1040fff9 	beqz	v0,0x5981f4
+  598210:	8fbf001c 	lw	ra,28(sp)
+  598214:	0c16276a 	jal	0x589da8
+  598218:	00000000 	nop
+  59821c:	1040fff5 	beqz	v0,0x5981f4
+  598220:	8fbf001c 	lw	ra,28(sp)
+  598224:	3c04006e 	lui	a0,0x6e
+  598228:	3c05006e 	lui	a1,0x6e
+  59822c:	248433fc 	addiu	a0,a0,13308
+  598230:	24a53758 	addiu	a1,a1,14168
+  598234:	0c101b74 	jal	0x406dd0
+  598238:	24060066 	li	a2,102
+  59823c:	0816607c 	j	0x5981f0
+  598240:	00000000 	nop

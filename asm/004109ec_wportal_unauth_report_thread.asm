@@ -1,0 +1,76 @@
+; func wportal_unauth_report_thread @ 0x004109ec size=0x12c
+  4109ec:	27bdffb8 	addiu	sp,sp,-72
+  4109f0:	27a40018 	addiu	a0,sp,24
+  4109f4:	afb60040 	sw	s6,64(sp)
+  4109f8:	3c160068 	lui	s6,0x68
+  4109fc:	afb5003c 	sw	s5,60(sp)
+  410a00:	3c150067 	lui	s5,0x67
+  410a04:	afb1002c 	sw	s1,44(sp)
+  410a08:	3c110076 	lui	s1,0x76
+  410a0c:	afb40038 	sw	s4,56(sp)
+  410a10:	26b577a4 	addiu	s5,s5,30628
+  410a14:	afb30034 	sw	s3,52(sp)
+  410a18:	2631a0dc 	addiu	s1,s1,-24356
+  410a1c:	3c130076 	lui	s3,0x76
+  410a20:	afbf0044 	sw	ra,68(sp)
+  410a24:	3c140076 	lui	s4,0x76
+  410a28:	afb20030 	sw	s2,48(sp)
+  410a2c:	26d6cb08 	addiu	s6,s6,-13560
+  410a30:	afb00028 	sw	s0,40(sp)
+  410a34:	afa00018 	sw	zero,24(sp)
+  410a38:	afa0001c 	sw	zero,28(sp)
+  410a3c:	0c146b62 	jal	0x51ad88
+  410a40:	afa00020 	sw	zero,32(sp)
+  410a44:	8e64a0e8 	lw	a0,-24344(s3)
+  410a48:	2405ffff 	li	a1,-1
+  410a4c:	0c1020b4 	jal	0x4082d0
+  410a50:	3c120076 	lui	s2,0x76
+  410a54:	0810429a 	j	0x410a68
+  410a58:	00000000 	nop
+  410a5c:	2406ffff 	li	a2,-1
+  410a60:	0c1021b0 	jal	0x4086c0
+  410a64:	8e45a0e8 	lw	a1,-24344(s2)
+  410a68:	0c10206c 	jal	0x4081b0
+  410a6c:	02202021 	move	a0,s1
+  410a70:	1040fffa 	beqz	v0,0x410a5c
+  410a74:	8e84a0ec 	lw	a0,-24340(s4)
+  410a78:	0c101ff8 	jal	0x407fe0
+  410a7c:	02202021 	move	a0,s1
+  410a80:	27a40018 	addiu	a0,sp,24
+  410a84:	02202821 	move	a1,s1
+  410a88:	0c1020b0 	jal	0x4082c0
+  410a8c:	00408021 	move	s0,v0
+  410a90:	3c020076 	lui	v0,0x76
+  410a94:	8c439940 	lw	v1,-26304(v0)
+  410a98:	0070202a 	slt	a0,v1,s0
+  410a9c:	14800002 	bnez	a0,0x410aa8
+  410aa0:	00701823 	subu	v1,v1,s0
+  410aa4:	ac439940 	sw	v1,-26304(v0)
+  410aa8:	0c101fcc 	jal	0x407f30
+  410aac:	8e44a0e8 	lw	a0,-24344(s2)
+  410ab0:	3c020076 	lui	v0,0x76
+  410ab4:	8c42a0b4 	lw	v0,-24396(v0)
+  410ab8:	1440000d 	bnez	v0,0x410af0
+  410abc:	00000000 	nop
+  410ac0:	0c10206c 	jal	0x4081b0
+  410ac4:	27a40018 	addiu	a0,sp,24
+  410ac8:	1040ffde 	beqz	v0,0x410a44
+  410acc:	00408021 	move	s0,v0
+  410ad0:	0c102140 	jal	0x408500
+  410ad4:	02002021 	move	a0,s0
+  410ad8:	0c104207 	jal	0x41081c
+  410adc:	02002021 	move	a0,s0
+  410ae0:	0c101f7c 	jal	0x407df0
+  410ae4:	02002021 	move	a0,s0
+  410ae8:	081042b0 	j	0x410ac0
+  410aec:	00000000 	nop
+  410af0:	0c16276a 	jal	0x589da8
+  410af4:	00000000 	nop
+  410af8:	1040fff1 	beqz	v0,0x410ac0
+  410afc:	24063123 	li	a2,12579
+  410b00:	02a02021 	move	a0,s5
+  410b04:	02c02821 	move	a1,s6
+  410b08:	0c101b74 	jal	0x406dd0
+  410b0c:	02003821 	move	a3,s0
+  410b10:	081042b0 	j	0x410ac0
+  410b14:	00000000 	nop

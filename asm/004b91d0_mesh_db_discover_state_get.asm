@@ -1,0 +1,19 @@
+; func mesh_db_discover_state_get @ 0x004b91d0 size=0x48
+  4b91d0:	27bdffd8 	addiu	sp,sp,-40
+  4b91d4:	2405ffff 	li	a1,-1
+  4b91d8:	afb0001c 	sw	s0,28(sp)
+  4b91dc:	3c100076 	lui	s0,0x76
+  4b91e0:	afbf0024 	sw	ra,36(sp)
+  4b91e4:	26107eb0 	addiu	s0,s0,32432
+  4b91e8:	afb10020 	sw	s1,32(sp)
+  4b91ec:	0c1020b4 	jal	0x4082d0
+  4b91f0:	8e040004 	lw	a0,4(s0)
+  4b91f4:	8e040004 	lw	a0,4(s0)
+  4b91f8:	0c101fcc 	jal	0x407f30
+  4b91fc:	8e1100a8 	lw	s1,168(s0)
+  4b9200:	8fbf0024 	lw	ra,36(sp)
+  4b9204:	02201021 	move	v0,s1
+  4b9208:	8fb10020 	lw	s1,32(sp)
+  4b920c:	8fb0001c 	lw	s0,28(sp)
+  4b9210:	03e00008 	jr	ra
+  4b9214:	27bd0028 	addiu	sp,sp,40

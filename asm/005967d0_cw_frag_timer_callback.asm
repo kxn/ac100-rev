@@ -1,0 +1,37 @@
+; func cw_frag_timer_callback @ 0x005967d0 size=0x90
+  5967d0:	27bdffe0 	addiu	sp,sp,-32
+  5967d4:	afb00018 	sw	s0,24(sp)
+  5967d8:	00808021 	move	s0,a0
+  5967dc:	10800015 	beqz	a0,0x596834
+  5967e0:	afbf001c 	sw	ra,28(sp)
+  5967e4:	3c02007c 	lui	v0,0x7c
+  5967e8:	8c425988 	lw	v0,22920(v0)
+  5967ec:	14400005 	bnez	v0,0x596804
+  5967f0:	02002021 	move	a0,s0
+  5967f4:	8fbf001c 	lw	ra,28(sp)
+  5967f8:	8fb00018 	lw	s0,24(sp)
+  5967fc:	08165840 	j	0x596100
+  596800:	27bd0020 	addiu	sp,sp,32
+  596804:	0c16276a 	jal	0x589da8
+  596808:	00000000 	nop
+  59680c:	5040fff9 	beqzl	v0,0x5967f4
+  596810:	02002021 	move	a0,s0
+  596814:	3c04006e 	lui	a0,0x6e
+  596818:	3c05006e 	lui	a1,0x6e
+  59681c:	24842e68 	addiu	a0,a0,11880
+  596820:	24a53320 	addiu	a1,a1,13088
+  596824:	0c101b74 	jal	0x406dd0
+  596828:	240600ce 	li	a2,206
+  59682c:	081659fd 	j	0x5967f4
+  596830:	02002021 	move	a0,s0
+  596834:	3c040069 	lui	a0,0x69
+  596838:	8fbf001c 	lw	ra,28(sp)
+  59683c:	3c05006e 	lui	a1,0x6e
+  596840:	8fb00018 	lw	s0,24(sp)
+  596844:	3c07006e 	lui	a3,0x6e
+  596848:	2484d3ac 	addiu	a0,a0,-11348
+  59684c:	24a53320 	addiu	a1,a1,13088
+  596850:	240600cd 	li	a2,205
+  596854:	24e718dc 	addiu	a3,a3,6364
+  596858:	08101b74 	j	0x406dd0
+  59685c:	27bd0020 	addiu	sp,sp,32

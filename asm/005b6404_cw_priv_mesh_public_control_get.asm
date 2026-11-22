@@ -1,0 +1,22 @@
+; func cw_priv_mesh_public_control_get @ 0x005b6404 size=0x54
+  5b6404:	27bdffe0 	addiu	sp,sp,-32
+  5b6408:	00001021 	move	v0,zero
+  5b640c:	afb00018 	sw	s0,24(sp)
+  5b6410:	30b0ffff 	andi	s0,a1,0xffff
+  5b6414:	1080000c 	beqz	a0,0x5b6448
+  5b6418:	afbf001c 	sw	ra,28(sp)
+  5b641c:	0c10206c 	jal	0x4081b0
+  5b6420:	2484000c 	addiu	a0,a0,12
+  5b6424:	10400009 	beqz	v0,0x5b644c
+  5b6428:	8fbf001c 	lw	ra,28(sp)
+  5b642c:	9443000c 	lhu	v1,12(v0)
+  5b6430:	50700005 	beql	v1,s0,0x5b6448
+  5b6434:	8c420010 	lw	v0,16(v0)
+  5b6438:	0c1021a0 	jal	0x408680
+  5b643c:	00402021 	move	a0,v0
+  5b6440:	5440fffb 	bnezl	v0,0x5b6430
+  5b6444:	9443000c 	lhu	v1,12(v0)
+  5b6448:	8fbf001c 	lw	ra,28(sp)
+  5b644c:	8fb00018 	lw	s0,24(sp)
+  5b6450:	03e00008 	jr	ra
+  5b6454:	27bd0020 	addiu	sp,sp,32

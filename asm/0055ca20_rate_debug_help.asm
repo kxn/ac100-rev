@@ -1,0 +1,20 @@
+; func rate_debug_help @ 0x0055ca20 size=0x4c
+  55ca20:	3c040068 	lui	a0,0x68
+  55ca24:	27bdffe0 	addiu	sp,sp,-32
+  55ca28:	afbf001c 	sw	ra,28(sp)
+  55ca2c:	0c101dd4 	jal	0x407750
+  55ca30:	248454e0 	addiu	a0,a0,21728
+  55ca34:	3c04006d 	lui	a0,0x6d
+  55ca38:	0c101dd4 	jal	0x407750
+  55ca3c:	248413d8 	addiu	a0,a0,5080
+  55ca40:	3c040068 	lui	a0,0x68
+  55ca44:	0c101dd4 	jal	0x407750
+  55ca48:	24845628 	addiu	a0,a0,22056
+  55ca4c:	3c04006d 	lui	a0,0x6d
+  55ca50:	0c101dd4 	jal	0x407750
+  55ca54:	24841408 	addiu	a0,a0,5128
+  55ca58:	3c04006d 	lui	a0,0x6d
+  55ca5c:	8fbf001c 	lw	ra,28(sp)
+  55ca60:	27bd0020 	addiu	sp,sp,32
+  55ca64:	08101dd4 	j	0x407750
+  55ca68:	24841434 	addiu	a0,a0,5172

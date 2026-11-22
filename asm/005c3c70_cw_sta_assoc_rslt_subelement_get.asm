@@ -1,0 +1,22 @@
+; func cw_sta_assoc_rslt_subelement_get @ 0x005c3c70 size=0x54
+  5c3c70:	27bdffe0 	addiu	sp,sp,-32
+  5c3c74:	00001021 	move	v0,zero
+  5c3c78:	afb00018 	sw	s0,24(sp)
+  5c3c7c:	30b0ffff 	andi	s0,a1,0xffff
+  5c3c80:	1080000c 	beqz	a0,0x5c3cb4
+  5c3c84:	afbf001c 	sw	ra,28(sp)
+  5c3c88:	0c10206c 	jal	0x4081b0
+  5c3c8c:	24840014 	addiu	a0,a0,20
+  5c3c90:	10400009 	beqz	v0,0x5c3cb8
+  5c3c94:	8fbf001c 	lw	ra,28(sp)
+  5c3c98:	9443000c 	lhu	v1,12(v0)
+  5c3c9c:	50700005 	beql	v1,s0,0x5c3cb4
+  5c3ca0:	8c420010 	lw	v0,16(v0)
+  5c3ca4:	0c1021a0 	jal	0x408680
+  5c3ca8:	00402021 	move	a0,v0
+  5c3cac:	5440fffb 	bnezl	v0,0x5c3c9c
+  5c3cb0:	9443000c 	lhu	v1,12(v0)
+  5c3cb4:	8fbf001c 	lw	ra,28(sp)
+  5c3cb8:	8fb00018 	lw	s0,24(sp)
+  5c3cbc:	03e00008 	jr	ra
+  5c3cc0:	27bd0020 	addiu	sp,sp,32

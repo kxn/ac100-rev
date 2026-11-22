@@ -1,0 +1,16 @@
+; func _aut_compare_func @ 0x0042c850 size=0x3c
+  42c850:	8c82000c 	lw	v0,12(a0)
+  42c854:	54400007 	bnezl	v0,0x42c874
+  42c858:	2484000c 	addiu	a0,a0,12
+  42c85c:	8c820010 	lw	v0,16(a0)
+  42c860:	3c03ffff 	lui	v1,0xffff
+  42c864:	00621024 	and	v0,v1,v0
+  42c868:	50400005 	beqzl	v0,0x42c880
+  42c86c:	24840058 	addiu	a0,a0,88
+  42c870:	2484000c 	addiu	a0,a0,12
+  42c874:	24a5000c 	addiu	a1,a1,12
+  42c878:	08101e4c 	j	0x407930
+  42c87c:	24060006 	li	a2,6
+  42c880:	24a50058 	addiu	a1,a1,88
+  42c884:	08101c04 	j	0x407010
+  42c888:	24060028 	li	a2,40

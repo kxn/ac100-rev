@@ -1,0 +1,29 @@
+; func apupd_wtp_firmware_id_hash_obj @ 0x0064fde0 size=0x70
+  64fde0:	27bdffe0 	addiu	sp,sp,-32
+  64fde4:	10800007 	beqz	a0,0x64fe04
+  64fde8:	afbf001c 	sw	ra,28(sp)
+  64fdec:	8fbf001c 	lw	ra,28(sp)
+  64fdf0:	24840018 	addiu	a0,a0,24
+  64fdf4:	24050010 	li	a1,16
+  64fdf8:	00003021 	move	a2,zero
+  64fdfc:	081020f4 	j	0x4083d0
+  64fe00:	27bd0020 	addiu	sp,sp,32
+  64fe04:	3c020076 	lui	v0,0x76
+  64fe08:	8c428c08 	lw	v0,-29688(v0)
+  64fe0c:	14400004 	bnez	v0,0x64fe20
+  64fe10:	8fbf001c 	lw	ra,28(sp)
+  64fe14:	00001021 	move	v0,zero
+  64fe18:	03e00008 	jr	ra
+  64fe1c:	27bd0020 	addiu	sp,sp,32
+  64fe20:	0c16276a 	jal	0x589da8
+  64fe24:	00000000 	nop
+  64fe28:	5040fffa 	beqzl	v0,0x64fe14
+  64fe2c:	8fbf001c 	lw	ra,28(sp)
+  64fe30:	3c040071 	lui	a0,0x71
+  64fe34:	3c050072 	lui	a1,0x72
+  64fe38:	24840720 	addiu	a0,a0,1824
+  64fe3c:	24a59fbc 	addiu	a1,a1,-24644
+  64fe40:	0c101b74 	jal	0x406dd0
+  64fe44:	24060317 	li	a2,791
+  64fe48:	08193f85 	j	0x64fe14
+  64fe4c:	8fbf001c 	lw	ra,28(sp)

@@ -1,0 +1,23 @@
+; func band_navigation_db_differ_threshold_get @ 0x0055ff54 size=0x58
+  55ff54:	27bdffd8 	addiu	sp,sp,-40
+  55ff58:	2405ffff 	li	a1,-1
+  55ff5c:	afb10020 	sw	s1,32(sp)
+  55ff60:	3c11007c 	lui	s1,0x7c
+  55ff64:	afb0001c 	sw	s0,28(sp)
+  55ff68:	00808021 	move	s0,a0
+  55ff6c:	afbf0024 	sw	ra,36(sp)
+  55ff70:	0c1020b4 	jal	0x4082d0
+  55ff74:	8e245950 	lw	a0,22864(s1)
+  55ff78:	3c02007c 	lui	v0,0x7c
+  55ff7c:	02002821 	move	a1,s0
+  55ff80:	0c1580dd 	jal	0x560374
+  55ff84:	8c445954 	lw	a0,22868(v0)
+  55ff88:	8e245950 	lw	a0,22864(s1)
+  55ff8c:	0c101fcc 	jal	0x407f30
+  55ff90:	00408021 	move	s0,v0
+  55ff94:	02001021 	move	v0,s0
+  55ff98:	8fbf0024 	lw	ra,36(sp)
+  55ff9c:	8fb10020 	lw	s1,32(sp)
+  55ffa0:	8fb0001c 	lw	s0,28(sp)
+  55ffa4:	03e00008 	jr	ra
+  55ffa8:	27bd0028 	addiu	sp,sp,40

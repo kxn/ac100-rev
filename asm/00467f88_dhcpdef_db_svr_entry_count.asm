@@ -1,0 +1,19 @@
+; func dhcpdef_db_svr_entry_count @ 0x00467f88 size=0x48
+  467f88:	27bdffd8 	addiu	sp,sp,-40
+  467f8c:	2405ffff 	li	a1,-1
+  467f90:	afb0001c 	sw	s0,28(sp)
+  467f94:	3c100076 	lui	s0,0x76
+  467f98:	afbf0024 	sw	ra,36(sp)
+  467f9c:	26107090 	addiu	s0,s0,28816
+  467fa0:	afb10020 	sw	s1,32(sp)
+  467fa4:	0c1020b4 	jal	0x4082d0
+  467fa8:	8e040004 	lw	a0,4(s0)
+  467fac:	8e040004 	lw	a0,4(s0)
+  467fb0:	0c101fcc 	jal	0x407f30
+  467fb4:	8e11000c 	lw	s1,12(s0)
+  467fb8:	8fbf0024 	lw	ra,36(sp)
+  467fbc:	02201021 	move	v0,s1
+  467fc0:	8fb10020 	lw	s1,32(sp)
+  467fc4:	8fb0001c 	lw	s0,28(sp)
+  467fc8:	03e00008 	jr	ra
+  467fcc:	27bd0028 	addiu	sp,sp,40

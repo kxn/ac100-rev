@@ -1,0 +1,25 @@
+; func wportal_db_aut_rbtree_number @ 0x004348d8 size=0x60
+  4348d8:	27bdffd8 	addiu	sp,sp,-40
+  4348dc:	2405ffff 	li	a1,-1
+  4348e0:	afb00020 	sw	s0,32(sp)
+  4348e4:	3c100076 	lui	s0,0x76
+  4348e8:	afbf0024 	sw	ra,36(sp)
+  4348ec:	afa00018 	sw	zero,24(sp)
+  4348f0:	0c1020b4 	jal	0x4082d0
+  4348f4:	8e04a150 	lw	a0,-24240(s0)
+  4348f8:	3c020076 	lui	v0,0x76
+  4348fc:	3c050043 	lui	a1,0x43
+  434900:	27a60018 	addiu	a2,sp,24
+  434904:	8c44a160 	lw	a0,-24224(v0)
+  434908:	0c1020f0 	jal	0x4083c0
+  43490c:	24a5afd8 	addiu	a1,a1,-20520
+  434910:	0c101fcc 	jal	0x407f30
+  434914:	8e04a150 	lw	a0,-24240(s0)
+  434918:	3c040068 	lui	a0,0x68
+  43491c:	8fa50018 	lw	a1,24(sp)
+  434920:	0c101b74 	jal	0x406dd0
+  434924:	2484e604 	addiu	a0,a0,-6652
+  434928:	8fbf0024 	lw	ra,36(sp)
+  43492c:	8fb00020 	lw	s0,32(sp)
+  434930:	03e00008 	jr	ra
+  434934:	27bd0028 	addiu	sp,sp,40

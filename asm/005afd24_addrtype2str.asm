@@ -1,0 +1,20 @@
+; func addrtype2str @ 0x005afd24 size=0x4c
+  5afd24:	7c042420 	seb	a0,a0
+  5afd28:	14800006 	bnez	a0,0x5afd44
+  5afd2c:	24020001 	li	v0,1
+  5afd30:	3c06006f 	lui	a2,0x6f
+  5afd34:	00a02021 	move	a0,a1
+  5afd38:	24c6a8cc 	addiu	a2,a2,-22324
+  5afd3c:	08101dec 	j	0x4077b0
+  5afd40:	24050010 	li	a1,16
+  5afd44:	10820006 	beq	a0,v0,0x5afd60
+  5afd48:	3c060069 	lui	a2,0x69
+  5afd4c:	3c060069 	lui	a2,0x69
+  5afd50:	00a02021 	move	a0,a1
+  5afd54:	24c6d44c 	addiu	a2,a2,-11188
+  5afd58:	08101dec 	j	0x4077b0
+  5afd5c:	24050010 	li	a1,16
+  5afd60:	00a02021 	move	a0,a1
+  5afd64:	24c6d448 	addiu	a2,a2,-11192
+  5afd68:	08101dec 	j	0x4077b0
+  5afd6c:	24050010 	li	a1,16

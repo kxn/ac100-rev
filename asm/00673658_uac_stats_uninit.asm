@@ -1,0 +1,38 @@
+; func uac_stats_uninit @ 0x00673658 size=0x90
+  673658:	27bdffe0 	addiu	sp,sp,-32
+  67365c:	afbf001c 	sw	ra,28(sp)
+  673660:	0c19d21c 	jal	0x674870
+  673664:	afb00018 	sw	s0,24(sp)
+  673668:	10400009 	beqz	v0,0x673690
+  67366c:	3c020076 	lui	v0,0x76
+  673670:	80428cd0 	lb	v0,-29488(v0)
+  673674:	14400013 	bnez	v0,0x6736c4
+  673678:	2410ffff 	li	s0,-1
+  67367c:	8fbf001c 	lw	ra,28(sp)
+  673680:	02001021 	move	v0,s0
+  673684:	8fb00018 	lw	s0,24(sp)
+  673688:	03e00008 	jr	ra
+  67368c:	27bd0020 	addiu	sp,sp,32
+  673690:	0c19abbc 	jal	0x66aef0
+  673694:	00008021 	move	s0,zero
+  673698:	1040fff8 	beqz	v0,0x67367c
+  67369c:	3c020076 	lui	v0,0x76
+  6736a0:	80428cd0 	lb	v0,-29488(v0)
+  6736a4:	1040fff5 	beqz	v0,0x67367c
+  6736a8:	2410ffff 	li	s0,-1
+  6736ac:	3c040072 	lui	a0,0x72
+  6736b0:	3c050072 	lui	a1,0x72
+  6736b4:	24840920 	addiu	a0,a0,2336
+  6736b8:	24a50a84 	addiu	a1,a1,2692
+  6736bc:	0819cdb6 	j	0x6736d8
+  6736c0:	240601fc 	li	a2,508
+  6736c4:	3c040072 	lui	a0,0x72
+  6736c8:	3c050072 	lui	a1,0x72
+  6736cc:	248408ec 	addiu	a0,a0,2284
+  6736d0:	24a50a84 	addiu	a1,a1,2692
+  6736d4:	240601f7 	li	a2,503
+  6736d8:	0c101b74 	jal	0x406dd0
+  6736dc:	00000000 	nop
+  6736e0:	0819cda0 	j	0x673680
+  6736e4:	8fbf001c 	lw	ra,28(sp)
+	...

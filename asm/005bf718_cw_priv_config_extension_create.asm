@@ -1,0 +1,71 @@
+; func cw_priv_config_extension_create @ 0x005bf718 size=0x118
+  5bf718:	27bdffd8 	addiu	sp,sp,-40
+  5bf71c:	2405000c 	li	a1,12
+  5bf720:	afb10020 	sw	s1,32(sp)
+  5bf724:	afb0001c 	sw	s0,28(sp)
+  5bf728:	afbf0024 	sw	ra,36(sp)
+  5bf72c:	0c15c8cc 	jal	0x572330
+  5bf730:	00808021 	move	s0,a0
+  5bf734:	10400014 	beqz	v0,0x5bf788
+  5bf738:	00408821 	move	s1,v0
+  5bf73c:	ac400008 	sw	zero,8(v0)
+  5bf740:	8e040008 	lw	a0,8(s0)
+  5bf744:	0c15c8cc 	jal	0x572330
+  5bf748:	96050006 	lhu	a1,6(s0)
+  5bf74c:	240400c0 	li	a0,192
+  5bf750:	8e250004 	lw	a1,4(s1)
+  5bf754:	02203021 	move	a2,s1
+  5bf758:	ae220008 	sw	v0,8(s1)
+  5bf75c:	24a50005 	addiu	a1,a1,5
+  5bf760:	0c15c943 	jal	0x57250c
+  5bf764:	30a5ffff 	andi	a1,a1,0xffff
+  5bf768:	10400017 	beqz	v0,0x5bf7c8
+  5bf76c:	00408021 	move	s0,v0
+  5bf770:	8fbf0024 	lw	ra,36(sp)
+  5bf774:	02001021 	move	v0,s0
+  5bf778:	8fb10020 	lw	s1,32(sp)
+  5bf77c:	8fb0001c 	lw	s0,28(sp)
+  5bf780:	03e00008 	jr	ra
+  5bf784:	27bd0028 	addiu	sp,sp,40
+  5bf788:	3c020075 	lui	v0,0x75
+  5bf78c:	8c42cf58 	lw	v0,-12456(v0)
+  5bf790:	1040fff7 	beqz	v0,0x5bf770
+  5bf794:	00008021 	move	s0,zero
+  5bf798:	0c16276a 	jal	0x589da8
+  5bf79c:	00000000 	nop
+  5bf7a0:	5040fff4 	beqzl	v0,0x5bf774
+  5bf7a4:	8fbf0024 	lw	ra,36(sp)
+  5bf7a8:	3c04006d 	lui	a0,0x6d
+  5bf7ac:	3c05006f 	lui	a1,0x6f
+  5bf7b0:	248434fc 	addiu	a0,a0,13564
+  5bf7b4:	24a5ee00 	addiu	a1,a1,-4608
+  5bf7b8:	0c101b74 	jal	0x406dd0
+  5bf7bc:	240600ba 	li	a2,186
+  5bf7c0:	0816fddd 	j	0x5bf774
+  5bf7c4:	8fbf0024 	lw	ra,36(sp)
+  5bf7c8:	3c020075 	lui	v0,0x75
+  5bf7cc:	8c42cf58 	lw	v0,-12456(v0)
+  5bf7d0:	1440000b 	bnez	v0,0x5bf800
+  5bf7d4:	00000000 	nop
+  5bf7d8:	8e240008 	lw	a0,8(s1)
+  5bf7dc:	10800004 	beqz	a0,0x5bf7f0
+  5bf7e0:	00000000 	nop
+  5bf7e4:	0c101f7c 	jal	0x407df0
+  5bf7e8:	00000000 	nop
+  5bf7ec:	ae200008 	sw	zero,8(s1)
+  5bf7f0:	0c101f7c 	jal	0x407df0
+  5bf7f4:	02202021 	move	a0,s1
+  5bf7f8:	0816fddd 	j	0x5bf774
+  5bf7fc:	8fbf0024 	lw	ra,36(sp)
+  5bf800:	0c16276a 	jal	0x589da8
+  5bf804:	00000000 	nop
+  5bf808:	5040fff4 	beqzl	v0,0x5bf7dc
+  5bf80c:	8e240008 	lw	a0,8(s1)
+  5bf810:	3c04006d 	lui	a0,0x6d
+  5bf814:	3c05006f 	lui	a1,0x6f
+  5bf818:	248447f0 	addiu	a0,a0,18416
+  5bf81c:	24a5ee00 	addiu	a1,a1,-4608
+  5bf820:	0c101b74 	jal	0x406dd0
+  5bf824:	240600c4 	li	a2,196
+  5bf828:	0816fdf7 	j	0x5bf7dc
+  5bf82c:	8e240008 	lw	a0,8(s1)

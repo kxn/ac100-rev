@@ -1,0 +1,22 @@
+; func _sensor_di_ssidinfo_list_free @ 0x004d1ecc size=0x54
+  4d1ecc:	27bdffd8 	addiu	sp,sp,-40
+  4d1ed0:	afb10020 	sw	s1,32(sp)
+  4d1ed4:	00808821 	move	s1,a0
+  4d1ed8:	afbf0024 	sw	ra,36(sp)
+  4d1edc:	14800007 	bnez	a0,0x4d1efc
+  4d1ee0:	afb0001c 	sw	s0,28(sp)
+  4d1ee4:	081347c4 	j	0x4d1f10
+  4d1ee8:	8fbf0024 	lw	ra,36(sp)
+  4d1eec:	0c102140 	jal	0x408500
+  4d1ef0:	02002021 	move	a0,s0
+  4d1ef4:	0c13478e 	jal	0x4d1e38
+  4d1ef8:	02002021 	move	a0,s0
+  4d1efc:	0c10206c 	jal	0x4081b0
+  4d1f00:	02202021 	move	a0,s1
+  4d1f04:	1440fff9 	bnez	v0,0x4d1eec
+  4d1f08:	00408021 	move	s0,v0
+  4d1f0c:	8fbf0024 	lw	ra,36(sp)
+  4d1f10:	8fb10020 	lw	s1,32(sp)
+  4d1f14:	8fb0001c 	lw	s0,28(sp)
+  4d1f18:	03e00008 	jr	ra
+  4d1f1c:	27bd0028 	addiu	sp,sp,40

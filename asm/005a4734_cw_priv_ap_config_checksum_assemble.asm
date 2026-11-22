@@ -1,0 +1,25 @@
+; func cw_priv_ap_config_checksum_assemble @ 0x005a4734 size=0x60
+  5a4734:	27bdffd8 	addiu	sp,sp,-40
+  5a4738:	24060010 	li	a2,16
+  5a473c:	afbf0024 	sw	ra,36(sp)
+  5a4740:	afb20020 	sw	s2,32(sp)
+  5a4744:	afb1001c 	sw	s1,28(sp)
+  5a4748:	00a08821 	move	s1,a1
+  5a474c:	afb00018 	sw	s0,24(sp)
+  5a4750:	00808021 	move	s0,a0
+  5a4754:	8ca50010 	lw	a1,16(a1)
+  5a4758:	0c15c856 	jal	0x572158
+  5a475c:	94920004 	lhu	s2,4(a0)
+  5a4760:	96020004 	lhu	v0,4(s0)
+  5a4764:	9623000e 	lhu	v1,14(s1)
+  5a4768:	8fbf0024 	lw	ra,36(sp)
+  5a476c:	00529023 	subu	s2,v0,s2
+  5a4770:	8fb1001c 	lw	s1,28(sp)
+  5a4774:	8fb00018 	lw	s0,24(sp)
+  5a4778:	02431026 	xor	v0,s2,v1
+  5a477c:	8fb20020 	lw	s2,32(sp)
+  5a4780:	2403ffff 	li	v1,-1
+  5a4784:	27bd0028 	addiu	sp,sp,40
+  5a4788:	0002180a 	movz	v1,zero,v0
+  5a478c:	03e00008 	jr	ra
+  5a4790:	00601021 	move	v0,v1

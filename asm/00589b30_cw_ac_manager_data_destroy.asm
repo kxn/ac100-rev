@@ -1,0 +1,27 @@
+; func cw_ac_manager_data_destroy @ 0x00589b30 size=0x68
+  589b30:	27bdffd8 	addiu	sp,sp,-40
+  589b34:	afb10020 	sw	s1,32(sp)
+  589b38:	00808821 	move	s1,a0
+  589b3c:	afbf0024 	sw	ra,36(sp)
+  589b40:	14800007 	bnez	a0,0x589b60
+  589b44:	afb0001c 	sw	s0,28(sp)
+  589b48:	081626e2 	j	0x589b88
+  589b4c:	8fbf0024 	lw	ra,36(sp)
+  589b50:	0c102140 	jal	0x408500
+  589b54:	02002021 	move	a0,s0
+  589b58:	0c101f7c 	jal	0x407df0
+  589b5c:	02002021 	move	a0,s0
+  589b60:	0c10206c 	jal	0x4081b0
+  589b64:	02202021 	move	a0,s1
+  589b68:	1440fff9 	bnez	v0,0x589b50
+  589b6c:	00408021 	move	s0,v0
+  589b70:	02202021 	move	a0,s1
+  589b74:	8fbf0024 	lw	ra,36(sp)
+  589b78:	8fb10020 	lw	s1,32(sp)
+  589b7c:	8fb0001c 	lw	s0,28(sp)
+  589b80:	08101f7c 	j	0x407df0
+  589b84:	27bd0028 	addiu	sp,sp,40
+  589b88:	8fb10020 	lw	s1,32(sp)
+  589b8c:	8fb0001c 	lw	s0,28(sp)
+  589b90:	03e00008 	jr	ra
+  589b94:	27bd0028 	addiu	sp,sp,40

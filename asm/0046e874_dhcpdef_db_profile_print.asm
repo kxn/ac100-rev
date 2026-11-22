@@ -1,0 +1,24 @@
+; func dhcpdef_db_profile_print @ 0x0046e874 size=0x5c
+  46e874:	27bdffd8 	addiu	sp,sp,-40
+  46e878:	afb10020 	sw	s1,32(sp)
+  46e87c:	3c110069 	lui	s1,0x69
+  46e880:	afb0001c 	sw	s0,28(sp)
+  46e884:	3c100076 	lui	s0,0x76
+  46e888:	afbf0024 	sw	ra,36(sp)
+  46e88c:	0c101dd4 	jal	0x407750
+  46e890:	2624d614 	addiu	a0,s1,-10732
+  46e894:	3c040069 	lui	a0,0x69
+  46e898:	8e057088 	lw	a1,28808(s0)
+  46e89c:	26107088 	addiu	s0,s0,28808
+  46e8a0:	0c101b74 	jal	0x406dd0
+  46e8a4:	2484df3c 	addiu	a0,a0,-8388
+  46e8a8:	3c040069 	lui	a0,0x69
+  46e8ac:	8e050004 	lw	a1,4(s0)
+  46e8b0:	0c101b74 	jal	0x406dd0
+  46e8b4:	2484df64 	addiu	a0,a0,-8348
+  46e8b8:	2624d614 	addiu	a0,s1,-10732
+  46e8bc:	8fbf0024 	lw	ra,36(sp)
+  46e8c0:	8fb10020 	lw	s1,32(sp)
+  46e8c4:	8fb0001c 	lw	s0,28(sp)
+  46e8c8:	08101dd4 	j	0x407750
+  46e8cc:	27bd0028 	addiu	sp,sp,40

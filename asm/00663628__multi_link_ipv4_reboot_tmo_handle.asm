@@ -1,0 +1,25 @@
+; func _multi_link_ipv4_reboot_tmo_handle @ 0x00663628 size=0x60
+  663628:	27bdffd0 	addiu	sp,sp,-48
+  66362c:	24040003 	li	a0,3
+  663630:	afbf002c 	sw	ra,44(sp)
+  663634:	0c14b935 	jal	0x52e4d4
+  663638:	24050001 	li	a1,1
+  66363c:	10400010 	beqz	v0,0x663680
+  663640:	8fbf002c 	lw	ra,44(sp)
+  663644:	3c020072 	lui	v0,0x72
+  663648:	afa00010 	sw	zero,16(sp)
+  66364c:	3c060066 	lui	a2,0x66
+  663650:	2442bcb4 	addiu	v0,v0,-17228
+  663654:	2404001e 	li	a0,30
+  663658:	afa20014 	sw	v0,20(sp)
+  66365c:	00002821 	move	a1,zero
+  663660:	24020244 	li	v0,580
+  663664:	24c63628 	addiu	a2,a2,13864
+  663668:	00003821 	move	a3,zero
+  66366c:	0c1020d0 	jal	0x408340
+  663670:	afa20018 	sw	v0,24(sp)
+  663674:	3c030076 	lui	v1,0x76
+  663678:	ac628c84 	sw	v0,-29564(v1)
+  66367c:	8fbf002c 	lw	ra,44(sp)
+  663680:	03e00008 	jr	ra
+  663684:	27bd0030 	addiu	sp,sp,48

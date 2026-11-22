@@ -1,0 +1,27 @@
+; func rb_prev @ 0x0051f8e8 size=0x68
+  51f8e8:	8c820000 	lw	v0,0(a0)
+  51f8ec:	2403fffc 	li	v1,-4
+  51f8f0:	00621824 	and	v1,v1,v0
+  51f8f4:	10830009 	beq	a0,v1,0x51f91c
+  51f8f8:	00001021 	move	v0,zero
+  51f8fc:	8c820008 	lw	v0,8(a0)
+  51f900:	54400004 	bnezl	v0,0x51f914
+  51f904:	8c430004 	lw	v1,4(v0)
+  51f908:	10000006 	b	0x51f924
+  51f90c:	2405fffc 	li	a1,-4
+  51f910:	8c430004 	lw	v1,4(v0)
+  51f914:	5460fffe 	bnezl	v1,0x51f910
+  51f918:	00601021 	move	v0,v1
+  51f91c:	03e00008 	jr	ra
+  51f920:	00000000 	nop
+  51f924:	10000002 	b	0x51f930
+  51f928:	8c830000 	lw	v1,0(a0)
+  51f92c:	8c830000 	lw	v1,0(a0)
+  51f930:	00a31824 	and	v1,a1,v1
+  51f934:	1060fff9 	beqz	v1,0x51f91c
+  51f938:	00000000 	nop
+  51f93c:	8c660008 	lw	a2,8(v1)
+  51f940:	1086fffa 	beq	a0,a2,0x51f92c
+  51f944:	00602021 	move	a0,v1
+  51f948:	03e00008 	jr	ra
+  51f94c:	00601021 	move	v0,v1

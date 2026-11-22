@@ -1,0 +1,35 @@
+; func cw_msg_ele_format_parse @ 0x005628ec size=0x88
+  5628ec:	27bdffd8 	addiu	sp,sp,-40
+  5628f0:	2402ffff 	li	v0,-1
+  5628f4:	afb20020 	sw	s2,32(sp)
+  5628f8:	00c09021 	move	s2,a2
+  5628fc:	afb1001c 	sw	s1,28(sp)
+  562900:	00a08821 	move	s1,a1
+  562904:	afb00018 	sw	s0,24(sp)
+  562908:	00808021 	move	s0,a0
+  56290c:	10800013 	beqz	a0,0x56295c
+  562910:	afbf0024 	sw	ra,36(sp)
+  562914:	8c830000 	lw	v1,0(a0)
+  562918:	50600011 	beqzl	v1,0x562960
+  56291c:	8fbf0024 	lw	ra,36(sp)
+  562920:	94850004 	lhu	a1,4(a0)
+  562924:	94830006 	lhu	v1,6(a0)
+  562928:	00a3302b 	sltu	a2,a1,v1
+  56292c:	14c0000b 	bnez	a2,0x56295c
+  562930:	00a31823 	subu	v1,a1,v1
+  562934:	28630004 	slti	v1,v1,4
+  562938:	14600009 	bnez	v1,0x562960
+  56293c:	8fbf0024 	lw	ra,36(sp)
+  562940:	0c15c5d4 	jal	0x571750
+  562944:	00000000 	nop
+  562948:	02002021 	move	a0,s0
+  56294c:	0c15c5d4 	jal	0x571750
+  562950:	a6220000 	sh	v0,0(s1)
+  562954:	a6420000 	sh	v0,0(s2)
+  562958:	00001021 	move	v0,zero
+  56295c:	8fbf0024 	lw	ra,36(sp)
+  562960:	8fb20020 	lw	s2,32(sp)
+  562964:	8fb1001c 	lw	s1,28(sp)
+  562968:	8fb00018 	lw	s0,24(sp)
+  56296c:	03e00008 	jr	ra
+  562970:	27bd0028 	addiu	sp,sp,40

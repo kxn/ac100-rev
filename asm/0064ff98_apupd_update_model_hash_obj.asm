@@ -1,0 +1,29 @@
+; func apupd_update_model_hash_obj @ 0x0064ff98 size=0x70
+  64ff98:	27bdffe0 	addiu	sp,sp,-32
+  64ff9c:	10800007 	beqz	a0,0x64ffbc
+  64ffa0:	afbf001c 	sw	ra,28(sp)
+  64ffa4:	8fbf001c 	lw	ra,28(sp)
+  64ffa8:	2484000c 	addiu	a0,a0,12
+  64ffac:	24050004 	li	a1,4
+  64ffb0:	00003021 	move	a2,zero
+  64ffb4:	081020f4 	j	0x4083d0
+  64ffb8:	27bd0020 	addiu	sp,sp,32
+  64ffbc:	3c020076 	lui	v0,0x76
+  64ffc0:	8c428c08 	lw	v0,-29688(v0)
+  64ffc4:	14400004 	bnez	v0,0x64ffd8
+  64ffc8:	8fbf001c 	lw	ra,28(sp)
+  64ffcc:	00001021 	move	v0,zero
+  64ffd0:	03e00008 	jr	ra
+  64ffd4:	27bd0020 	addiu	sp,sp,32
+  64ffd8:	0c16276a 	jal	0x589da8
+  64ffdc:	00000000 	nop
+  64ffe0:	5040fffa 	beqzl	v0,0x64ffcc
+  64ffe4:	8fbf001c 	lw	ra,28(sp)
+  64ffe8:	3c040071 	lui	a0,0x71
+  64ffec:	3c050072 	lui	a1,0x72
+  64fff0:	24840720 	addiu	a0,a0,1824
+  64fff4:	24a5a178 	addiu	a1,a1,-24200
+  64fff8:	0c101b74 	jal	0x406dd0
+  64fffc:	2406027f 	li	a2,639
+  650000:	08193ff3 	j	0x64ffcc
+  650004:	8fbf001c 	lw	ra,28(sp)

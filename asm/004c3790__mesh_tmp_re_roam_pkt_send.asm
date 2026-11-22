@@ -1,0 +1,27 @@
+; func _mesh_tmp_re_roam_pkt_send @ 0x004c3790 size=0x68
+  4c3790:	27bdffe0 	addiu	sp,sp,-32
+  4c3794:	afbf001c 	sw	ra,28(sp)
+  4c3798:	10a0000b 	beqz	a1,0x4c37c8
+  4c379c:	afb00018 	sw	s0,24(sp)
+  4c37a0:	9484000c 	lhu	a0,12(a0)
+  4c37a4:	24060001 	li	a2,1
+  4c37a8:	8ca50000 	lw	a1,0(a1)
+  4c37ac:	0c130d35 	jal	0x4c34d4
+  4c37b0:	00008021 	move	s0,zero
+  4c37b4:	8fbf001c 	lw	ra,28(sp)
+  4c37b8:	02001021 	move	v0,s0
+  4c37bc:	8fb00018 	lw	s0,24(sp)
+  4c37c0:	03e00008 	jr	ra
+  4c37c4:	27bd0020 	addiu	sp,sp,32
+  4c37c8:	3c020073 	lui	v0,0x73
+  4c37cc:	80421a84 	lb	v0,6788(v0)
+  4c37d0:	1040fff8 	beqz	v0,0x4c37b4
+  4c37d4:	24100001 	li	s0,1
+  4c37d8:	3c04006a 	lui	a0,0x6a
+  4c37dc:	3c05006a 	lui	a1,0x6a
+  4c37e0:	24845ad4 	addiu	a0,a0,23252
+  4c37e4:	24a55f44 	addiu	a1,a1,24388
+  4c37e8:	0c101b74 	jal	0x406dd0
+  4c37ec:	240600a7 	li	a2,167
+  4c37f0:	08130dee 	j	0x4c37b8
+  4c37f4:	8fbf001c 	lw	ra,28(sp)

@@ -1,0 +1,24 @@
+; func cw_control_header_set @ 0x005a1714 size=0x5c
+  5a1714:	27bdffe0 	addiu	sp,sp,-32
+  5a1718:	30c600ff 	andi	a2,a2,0xff
+  5a171c:	30e7ffff 	andi	a3,a3,0xffff
+  5a1720:	10800009 	beqz	a0,0x5a1748
+  5a1724:	afbf001c 	sw	ra,28(sp)
+  5a1728:	00001021 	move	v0,zero
+  5a172c:	ac850010 	sw	a1,16(a0)
+  5a1730:	a0860014 	sb	a2,20(a0)
+  5a1734:	a4870016 	sh	a3,22(a0)
+  5a1738:	a0800018 	sb	zero,24(a0)
+  5a173c:	8fbf001c 	lw	ra,28(sp)
+  5a1740:	03e00008 	jr	ra
+  5a1744:	27bd0020 	addiu	sp,sp,32
+  5a1748:	3c040069 	lui	a0,0x69
+  5a174c:	3c05006e 	lui	a1,0x6e
+  5a1750:	3c07006e 	lui	a3,0x6e
+  5a1754:	2484d3ac 	addiu	a0,a0,-11348
+  5a1758:	24a56428 	addiu	a1,a1,25640
+  5a175c:	240601e9 	li	a2,489
+  5a1760:	0c101b74 	jal	0x406dd0
+  5a1764:	24e76078 	addiu	a3,a3,24696
+  5a1768:	081685cf 	j	0x5a173c
+  5a176c:	2402ffff 	li	v0,-1

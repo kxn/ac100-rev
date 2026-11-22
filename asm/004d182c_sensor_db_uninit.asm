@@ -1,0 +1,77 @@
+; func sensor_db_uninit @ 0x004d182c size=0x130
+  4d182c:	27bdffd8 	addiu	sp,sp,-40
+  4d1830:	afb0001c 	sw	s0,28(sp)
+  4d1834:	3c100077 	lui	s0,0x77
+  4d1838:	afbf0024 	sw	ra,36(sp)
+  4d183c:	afb10020 	sw	s1,32(sp)
+  4d1840:	8e0280e0 	lw	v0,-32544(s0)
+  4d1844:	1440003c 	bnez	v0,0x4d1938
+  4d1848:	3c020077 	lui	v0,0x77
+  4d184c:	3c100077 	lui	s0,0x77
+  4d1850:	8e0480d4 	lw	a0,-32556(s0)
+  4d1854:	50800005 	beqzl	a0,0x4d186c
+  4d1858:	3c100077 	lui	s0,0x77
+  4d185c:	0c101f7c 	jal	0x407df0
+  4d1860:	00000000 	nop
+  4d1864:	ae0080d4 	sw	zero,-32556(s0)
+  4d1868:	3c100077 	lui	s0,0x77
+  4d186c:	8e0480d8 	lw	a0,-32552(s0)
+  4d1870:	10800007 	beqz	a0,0x4d1890
+  4d1874:	3c05004d 	lui	a1,0x4d
+  4d1878:	00003021 	move	a2,zero
+  4d187c:	0c10215c 	jal	0x408570
+  4d1880:	24a5f348 	addiu	a1,a1,-3256
+  4d1884:	0c1020c4 	jal	0x408310
+  4d1888:	8e0480d8 	lw	a0,-32552(s0)
+  4d188c:	ae0080d8 	sw	zero,-32552(s0)
+  4d1890:	3c100077 	lui	s0,0x77
+  4d1894:	8e0480d0 	lw	a0,-32560(s0)
+  4d1898:	50800005 	beqzl	a0,0x4d18b0
+  4d189c:	3c100077 	lui	s0,0x77
+  4d18a0:	0c1020d8 	jal	0x408360
+  4d18a4:	00000000 	nop
+  4d18a8:	ae0080d0 	sw	zero,-32560(s0)
+  4d18ac:	3c100077 	lui	s0,0x77
+  4d18b0:	8e0480b8 	lw	a0,-32584(s0)
+  4d18b4:	50800005 	beqzl	a0,0x4d18cc
+  4d18b8:	3c100077 	lui	s0,0x77
+  4d18bc:	0c1020d8 	jal	0x408360
+  4d18c0:	00000000 	nop
+  4d18c4:	ae0080b8 	sw	zero,-32584(s0)
+  4d18c8:	3c100077 	lui	s0,0x77
+  4d18cc:	8e0280cc 	lw	v0,-32564(s0)
+  4d18d0:	1040001e 	beqz	v0,0x4d194c
+  4d18d4:	00000000 	nop
+  4d18d8:	3c100077 	lui	s0,0x77
+  4d18dc:	8e0480b4 	lw	a0,-32588(s0)
+  4d18e0:	10800004 	beqz	a0,0x4d18f4
+  4d18e4:	3c110077 	lui	s1,0x77
+  4d18e8:	0c10202c 	jal	0x4080b0
+  4d18ec:	00000000 	nop
+  4d18f0:	ae0080b4 	sw	zero,-32588(s0)
+  4d18f4:	08134645 	j	0x4d1914
+  4d18f8:	263180c0 	addiu	s1,s1,-32576
+  4d18fc:	0c102140 	jal	0x408500
+  4d1900:	02002021 	move	a0,s0
+  4d1904:	0c101f7c 	jal	0x407df0
+  4d1908:	8e040010 	lw	a0,16(s0)
+  4d190c:	0c101f7c 	jal	0x407df0
+  4d1910:	02002021 	move	a0,s0
+  4d1914:	0c10206c 	jal	0x4081b0
+  4d1918:	02202021 	move	a0,s1
+  4d191c:	1440fff7 	bnez	v0,0x4d18fc
+  4d1920:	00408021 	move	s0,v0
+  4d1924:	8fbf0024 	lw	ra,36(sp)
+  4d1928:	8fb10020 	lw	s1,32(sp)
+  4d192c:	8fb0001c 	lw	s0,28(sp)
+  4d1930:	03e00008 	jr	ra
+  4d1934:	27bd0028 	addiu	sp,sp,40
+  4d1938:	24050003 	li	a1,3
+  4d193c:	0c101da0 	jal	0x407680
+  4d1940:	8c4480dc 	lw	a0,-32548(v0)
+  4d1944:	08134613 	j	0x4d184c
+  4d1948:	ae0080e0 	sw	zero,-32544(s0)
+  4d194c:	0c102088 	jal	0x408220
+  4d1950:	00002021 	move	a0,zero
+  4d1954:	08134636 	j	0x4d18d8
+  4d1958:	ae0080cc 	sw	zero,-32564(s0)

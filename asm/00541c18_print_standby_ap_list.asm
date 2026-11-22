@@ -1,0 +1,27 @@
+; func print_standby_ap_list @ 0x00541c18 size=0x68
+  541c18:	27bdffd8 	addiu	sp,sp,-40
+  541c1c:	2405ffff 	li	a1,-1
+  541c20:	afb10020 	sw	s1,32(sp)
+  541c24:	3c11007c 	lui	s1,0x7c
+  541c28:	afb0001c 	sw	s0,28(sp)
+  541c2c:	3c10007c 	lui	s0,0x7c
+  541c30:	afbf0024 	sw	ra,36(sp)
+  541c34:	0c1020b4 	jal	0x4082d0
+  541c38:	8e2458c8 	lw	a0,22728(s1)
+  541c3c:	0c101fb4 	jal	0x407ed0
+  541c40:	8e0458cc 	lw	a0,22732(s0)
+  541c44:	3c04006d 	lui	a0,0x6d
+  541c48:	00402821 	move	a1,v0
+  541c4c:	0c101b74 	jal	0x406dd0
+  541c50:	24849158 	addiu	a0,a0,-28328
+  541c54:	3c050053 	lui	a1,0x53
+  541c58:	8e0458cc 	lw	a0,22732(s0)
+  541c5c:	00003021 	move	a2,zero
+  541c60:	0c10215c 	jal	0x408570
+  541c64:	24a538c8 	addiu	a1,a1,14536
+  541c68:	8e2458c8 	lw	a0,22728(s1)
+  541c6c:	8fbf0024 	lw	ra,36(sp)
+  541c70:	8fb10020 	lw	s1,32(sp)
+  541c74:	8fb0001c 	lw	s0,28(sp)
+  541c78:	08101fcc 	j	0x407f30
+  541c7c:	27bd0028 	addiu	sp,sp,40

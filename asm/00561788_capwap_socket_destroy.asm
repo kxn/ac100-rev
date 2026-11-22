@@ -1,0 +1,32 @@
+; func capwap_socket_destroy @ 0x00561788 size=0x7c
+  561788:	27bdffe0 	addiu	sp,sp,-32
+  56178c:	2402ffff 	li	v0,-1
+  561790:	afb00018 	sw	s0,24(sp)
+  561794:	00808021 	move	s0,a0
+  561798:	10820016 	beq	a0,v0,0x5617f4
+  56179c:	afbf001c 	sw	ra,28(sp)
+  5617a0:	3c02007c 	lui	v0,0x7c
+  5617a4:	8c425988 	lw	v0,22920(v0)
+  5617a8:	14400005 	bnez	v0,0x5617c0
+  5617ac:	02002021 	move	a0,s0
+  5617b0:	8fbf001c 	lw	ra,28(sp)
+  5617b4:	8fb00018 	lw	s0,24(sp)
+  5617b8:	08101be8 	j	0x406fa0
+  5617bc:	27bd0020 	addiu	sp,sp,32
+  5617c0:	0c16276a 	jal	0x589da8
+  5617c4:	00000000 	nop
+  5617c8:	5040fff9 	beqzl	v0,0x5617b0
+  5617cc:	02002021 	move	a0,s0
+  5617d0:	3c04006d 	lui	a0,0x6d
+  5617d4:	3c05006d 	lui	a1,0x6d
+  5617d8:	24842734 	addiu	a0,a0,10036
+  5617dc:	24a52cb8 	addiu	a1,a1,11448
+  5617e0:	24060200 	li	a2,512
+  5617e4:	0c101b74 	jal	0x406dd0
+  5617e8:	02003821 	move	a3,s0
+  5617ec:	081585ec 	j	0x5617b0
+  5617f0:	02002021 	move	a0,s0
+  5617f4:	8fbf001c 	lw	ra,28(sp)
+  5617f8:	8fb00018 	lw	s0,24(sp)
+  5617fc:	03e00008 	jr	ra
+  561800:	27bd0020 	addiu	sp,sp,32

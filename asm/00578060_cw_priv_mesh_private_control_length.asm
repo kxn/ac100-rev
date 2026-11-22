@@ -1,0 +1,20 @@
+; func cw_priv_mesh_private_control_length @ 0x00578060 size=0x4c
+  578060:	27bdffe0 	addiu	sp,sp,-32
+  578064:	afb00018 	sw	s0,24(sp)
+  578068:	afbf001c 	sw	ra,28(sp)
+  57806c:	0c10206c 	jal	0x4081b0
+  578070:	24100002 	li	s0,2
+  578074:	10400009 	beqz	v0,0x57809c
+  578078:	8fbf001c 	lw	ra,28(sp)
+  57807c:	9443000e 	lhu	v1,14(v0)
+  578080:	00402021 	move	a0,v0
+  578084:	24630004 	addiu	v1,v1,4
+  578088:	0c1021a0 	jal	0x408680
+  57808c:	02038021 	addu	s0,s0,v1
+  578090:	1440fffa 	bnez	v0,0x57807c
+  578094:	3210ffff 	andi	s0,s0,0xffff
+  578098:	8fbf001c 	lw	ra,28(sp)
+  57809c:	02001021 	move	v0,s0
+  5780a0:	8fb00018 	lw	s0,24(sp)
+  5780a4:	03e00008 	jr	ra
+  5780a8:	27bd0020 	addiu	sp,sp,32

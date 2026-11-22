@@ -1,0 +1,42 @@
+; func replace_old_uac_nms_params_report @ 0x0049e1d4 size=0xa4
+  49e1d4:	27bdffd0 	addiu	sp,sp,-48
+  49e1d8:	afb30028 	sw	s3,40(sp)
+  49e1dc:	00a09821 	move	s3,a1
+  49e1e0:	afb20024 	sw	s2,36(sp)
+  49e1e4:	00009021 	move	s2,zero
+  49e1e8:	afb10020 	sw	s1,32(sp)
+  49e1ec:	00808821 	move	s1,a0
+  49e1f0:	afbf002c 	sw	ra,44(sp)
+  49e1f4:	10a00018 	beqz	a1,0x49e258
+  49e1f8:	afb0001c 	sw	s0,28(sp)
+  49e1fc:	1c800012 	bgtz	a0,0x49e248
+  49e200:	8fbf002c 	lw	ra,44(sp)
+  49e204:	08127898 	j	0x49e260
+  49e208:	02401021 	move	v0,s2
+  49e20c:	1a200013 	blez	s1,0x49e25c
+  49e210:	8fbf002c 	lw	ra,44(sp)
+  49e214:	8e040020 	lw	a0,32(s0)
+  49e218:	10800007 	beqz	a0,0x49e238
+  49e21c:	00000000 	nop
+  49e220:	0c101f7c 	jal	0x407df0
+  49e224:	00000000 	nop
+  49e228:	8e02001c 	lw	v0,28(s0)
+  49e22c:	ae000020 	sw	zero,32(s0)
+  49e230:	02429021 	addu	s2,s2,v0
+  49e234:	02228823 	subu	s1,s1,v0
+  49e238:	0c102140 	jal	0x408500
+  49e23c:	02002021 	move	a0,s0
+  49e240:	0c101f7c 	jal	0x407df0
+  49e244:	02002021 	move	a0,s0
+  49e248:	0c10206c 	jal	0x4081b0
+  49e24c:	02602021 	move	a0,s3
+  49e250:	1440ffee 	bnez	v0,0x49e20c
+  49e254:	00408021 	move	s0,v0
+  49e258:	8fbf002c 	lw	ra,44(sp)
+  49e25c:	02401021 	move	v0,s2
+  49e260:	8fb30028 	lw	s3,40(sp)
+  49e264:	8fb20024 	lw	s2,36(sp)
+  49e268:	8fb10020 	lw	s1,32(sp)
+  49e26c:	8fb0001c 	lw	s0,28(sp)
+  49e270:	03e00008 	jr	ra
+  49e274:	27bd0030 	addiu	sp,sp,48

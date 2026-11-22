@@ -1,0 +1,25 @@
+; func cw_idle_timeout_assemble @ 0x0057643c size=0x60
+  57643c:	27bdffd8 	addiu	sp,sp,-40
+  576440:	afbf0024 	sw	ra,36(sp)
+  576444:	afb20020 	sw	s2,32(sp)
+  576448:	afb1001c 	sw	s1,28(sp)
+  57644c:	00a08821 	move	s1,a1
+  576450:	afb00018 	sw	s0,24(sp)
+  576454:	00808021 	move	s0,a0
+  576458:	8ca20010 	lw	v0,16(a1)
+  57645c:	94920004 	lhu	s2,4(a0)
+  576460:	0c15c7ea 	jal	0x571fa8
+  576464:	8c450000 	lw	a1,0(v0)
+  576468:	96020004 	lhu	v0,4(s0)
+  57646c:	9623000e 	lhu	v1,14(s1)
+  576470:	8fbf0024 	lw	ra,36(sp)
+  576474:	00529023 	subu	s2,v0,s2
+  576478:	8fb1001c 	lw	s1,28(sp)
+  57647c:	8fb00018 	lw	s0,24(sp)
+  576480:	02431026 	xor	v0,s2,v1
+  576484:	8fb20020 	lw	s2,32(sp)
+  576488:	2403ffff 	li	v1,-1
+  57648c:	27bd0028 	addiu	sp,sp,40
+  576490:	0002180a 	movz	v1,zero,v0
+  576494:	03e00008 	jr	ra
+  576498:	00601021 	move	v0,v1

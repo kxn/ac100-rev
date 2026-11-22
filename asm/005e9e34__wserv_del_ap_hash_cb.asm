@@ -1,0 +1,20 @@
+; func _wserv_del_ap_hash_cb @ 0x005e9e34 size=0x4c
+  5e9e34:	27bdffe0 	addiu	sp,sp,-32
+  5e9e38:	3c03007d 	lui	v1,0x7d
+  5e9e3c:	afb00018 	sw	s0,24(sp)
+  5e9e40:	00808021 	move	s0,a0
+  5e9e44:	afbf001c 	sw	ra,28(sp)
+  5e9e48:	8ca20000 	lw	v0,0(a1)
+  5e9e4c:	8c63bf08 	lw	v1,-16632(v1)
+  5e9e50:	00021080 	sll	v0,v0,0x2
+  5e9e54:	00621021 	addu	v0,v1,v0
+  5e9e58:	8c440000 	lw	a0,0(v0)
+  5e9e5c:	50800004 	beqzl	a0,0x5e9e70
+  5e9e60:	02002021 	move	a0,s0
+  5e9e64:	0c101fd0 	jal	0x407f40
+  5e9e68:	02002821 	move	a1,s0
+  5e9e6c:	02002021 	move	a0,s0
+  5e9e70:	8fbf001c 	lw	ra,28(sp)
+  5e9e74:	8fb00018 	lw	s0,24(sp)
+  5e9e78:	08101f7c 	j	0x407df0
+  5e9e7c:	27bd0020 	addiu	sp,sp,32

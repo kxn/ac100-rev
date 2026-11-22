@@ -1,0 +1,19 @@
+; func apmngr_is_support_capacity @ 0x0052a818 size=0x48
+  52a818:	24020020 	li	v0,32
+  52a81c:	24030001 	li	v1,1
+  52a820:	004001f4 	teq	v0,zero,0x7
+  52a824:	0082001a 	div	zero,a0,v0
+  52a828:	28850000 	slti	a1,a0,0
+  52a82c:	00001010 	mfhi	v0
+  52a830:	00431004 	sllv	v0,v1,v0
+  52a834:	2483001f 	addiu	v1,a0,31
+  52a838:	0065200b 	movn	a0,v1,a1
+  52a83c:	3c03007c 	lui	v1,0x7c
+  52a840:	24635484 	addiu	v1,v1,21636
+  52a844:	00042143 	sra	a0,a0,0x5
+  52a848:	00042080 	sll	a0,a0,0x2
+  52a84c:	00832021 	addu	a0,a0,v1
+  52a850:	8c830000 	lw	v1,0(a0)
+  52a854:	00431024 	and	v0,v0,v1
+  52a858:	03e00008 	jr	ra
+  52a85c:	0002102b 	sltu	v0,zero,v0

@@ -1,0 +1,31 @@
+; func uac_msgQ_getCurMsgNum @ 0x0051ead4 size=0x6c
+  51ead4:	3c1c0024 	lui	gp,0x24
+  51ead8:	279c262c 	addiu	gp,gp,9772
+  51eadc:	0399e021 	addu	gp,gp,t9
+  51eae0:	27bdffc0 	addiu	sp,sp,-64
+  51eae4:	8f9986a8 	lw	t9,-31064(gp)
+  51eae8:	24060020 	li	a2,32
+  51eaec:	00002821 	move	a1,zero
+  51eaf0:	afbc0010 	sw	gp,16(sp)
+  51eaf4:	afb00038 	sw	s0,56(sp)
+  51eaf8:	00808021 	move	s0,a0
+  51eafc:	afbf003c 	sw	ra,60(sp)
+  51eb00:	0320f809 	jalr	t9
+  51eb04:	27a40018 	addiu	a0,sp,24
+  51eb08:	27a50018 	addiu	a1,sp,24
+  51eb0c:	8fbc0010 	lw	gp,16(sp)
+  51eb10:	8f998528 	lw	t9,-31448(gp)
+  51eb14:	0320f809 	jalr	t9
+  51eb18:	02002021 	move	a0,s0
+  51eb1c:	2403ffff 	li	v1,-1
+  51eb20:	8fa40024 	lw	a0,36(sp)
+  51eb24:	00021027 	nor	v0,zero,v0
+  51eb28:	8fbf003c 	lw	ra,60(sp)
+  51eb2c:	8fb00038 	lw	s0,56(sp)
+  51eb30:	27bd0040 	addiu	sp,sp,64
+  51eb34:	0082180b 	movn	v1,a0,v0
+  51eb38:	03e00008 	jr	ra
+  51eb3c:	00601021 	move	v0,v1
+	...
+  51eb48:	3c190052 	lui	t9,0x52
+  51eb4c:	2739eb50 	addiu	t9,t9,-5296

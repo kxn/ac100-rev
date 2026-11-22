@@ -1,0 +1,23 @@
+; func rdmngr_print_msgq @ 0x006240d8 size=0x58
+  6240d8:	27bdffd8 	addiu	sp,sp,-40
+  6240dc:	afb0001c 	sw	s0,28(sp)
+  6240e0:	3c100075 	lui	s0,0x75
+  6240e4:	afbf0024 	sw	ra,36(sp)
+  6240e8:	afb10020 	sw	s1,32(sp)
+  6240ec:	0c102160 	jal	0x408580
+  6240f0:	8e04feb0 	lw	a0,-336(s0)
+  6240f4:	8e04feb0 	lw	a0,-336(s0)
+  6240f8:	0c102008 	jal	0x408020
+  6240fc:	00408821 	move	s1,v0
+  624100:	0c1860d4 	jal	0x618350
+  624104:	00408021 	move	s0,v0
+  624108:	3c040069 	lui	a0,0x69
+  62410c:	8fbf0024 	lw	ra,36(sp)
+  624110:	02202821 	move	a1,s1
+  624114:	8fb10020 	lw	s1,32(sp)
+  624118:	02003021 	move	a2,s0
+  62411c:	8fb0001c 	lw	s0,28(sp)
+  624120:	24842f8c 	addiu	a0,a0,12172
+  624124:	27bd0028 	addiu	sp,sp,40
+  624128:	08101b74 	j	0x406dd0
+  62412c:	00403821 	move	a3,v0

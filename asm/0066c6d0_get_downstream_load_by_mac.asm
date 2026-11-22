@@ -1,0 +1,33 @@
+; func get_downstream_load_by_mac @ 0x0066c6d0 size=0x80
+  66c6d0:	27bdffd0 	addiu	sp,sp,-48
+  66c6d4:	2405ffff 	li	a1,-1
+  66c6d8:	afb0001c 	sw	s0,28(sp)
+  66c6dc:	3c10007d 	lui	s0,0x7d
+  66c6e0:	afb10020 	sw	s1,32(sp)
+  66c6e4:	00808821 	move	s1,a0
+  66c6e8:	afbf002c 	sw	ra,44(sp)
+  66c6ec:	afb30028 	sw	s3,40(sp)
+  66c6f0:	00009821 	move	s3,zero
+  66c6f4:	afb20024 	sw	s2,36(sp)
+  66c6f8:	00009021 	move	s2,zero
+  66c6fc:	0c1020b4 	jal	0x4082d0
+  66c700:	8e04c8d8 	lw	a0,-14120(s0)
+  66c704:	2602c8d8 	addiu	v0,s0,-14120
+  66c708:	02202821 	move	a1,s1
+  66c70c:	0c101fe8 	jal	0x407fa0
+  66c710:	8c440008 	lw	a0,8(v0)
+  66c714:	10400003 	beqz	v0,0x66c724
+  66c718:	00000000 	nop
+  66c71c:	8c53003c 	lw	s3,60(v0)
+  66c720:	8c520038 	lw	s2,56(v0)
+  66c724:	0c101fcc 	jal	0x407f30
+  66c728:	8e04c8d8 	lw	a0,-14120(s0)
+  66c72c:	02401021 	move	v0,s2
+  66c730:	8fbf002c 	lw	ra,44(sp)
+  66c734:	02601821 	move	v1,s3
+  66c738:	8fb30028 	lw	s3,40(sp)
+  66c73c:	8fb20024 	lw	s2,36(sp)
+  66c740:	8fb10020 	lw	s1,32(sp)
+  66c744:	8fb0001c 	lw	s0,28(sp)
+  66c748:	03e00008 	jr	ra
+  66c74c:	27bd0030 	addiu	sp,sp,48

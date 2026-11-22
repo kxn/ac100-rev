@@ -1,0 +1,24 @@
+; func _sensor_test_temp_alloc_hash_obj @ 0x004f8058 size=0x5c
+  4f8058:	27bdffe0 	addiu	sp,sp,-32
+  4f805c:	10800006 	beqz	a0,0x4f8078
+  4f8060:	afbf001c 	sw	ra,28(sp)
+  4f8064:	8fbf001c 	lw	ra,28(sp)
+  4f8068:	24050006 	li	a1,6
+  4f806c:	00003021 	move	a2,zero
+  4f8070:	081020f4 	j	0x4083d0
+  4f8074:	27bd0020 	addiu	sp,sp,32
+  4f8078:	3c020073 	lui	v0,0x73
+  4f807c:	80421b24 	lb	v0,6948(v0)
+  4f8080:	14400005 	bnez	v0,0x4f8098
+  4f8084:	3c04006b 	lui	a0,0x6b
+  4f8088:	8fbf001c 	lw	ra,28(sp)
+  4f808c:	00001021 	move	v0,zero
+  4f8090:	03e00008 	jr	ra
+  4f8094:	27bd0020 	addiu	sp,sp,32
+  4f8098:	3c05006b 	lui	a1,0x6b
+  4f809c:	24844ce4 	addiu	a0,a0,19684
+  4f80a0:	24a57c24 	addiu	a1,a1,31780
+  4f80a4:	0c101b74 	jal	0x406dd0
+  4f80a8:	240600d5 	li	a2,213
+  4f80ac:	0813e023 	j	0x4f808c
+  4f80b0:	8fbf001c 	lw	ra,28(sp)

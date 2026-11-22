@@ -1,0 +1,25 @@
+; func wportal_db_rds_srv_add @ 0x0042f010 size=0x60
+  42f010:	27bdffd8 	addiu	sp,sp,-40
+  42f014:	2402ffff 	li	v0,-1
+  42f018:	afb0001c 	sw	s0,28(sp)
+  42f01c:	00808021 	move	s0,a0
+  42f020:	afbf0024 	sw	ra,36(sp)
+  42f024:	1080000d 	beqz	a0,0x42f05c
+  42f028:	afb10020 	sw	s1,32(sp)
+  42f02c:	3c110076 	lui	s1,0x76
+  42f030:	2405ffff 	li	a1,-1
+  42f034:	0c1020b4 	jal	0x4082d0
+  42f038:	8e24a174 	lw	a0,-24204(s1)
+  42f03c:	3c020076 	lui	v0,0x76
+  42f040:	02002821 	move	a1,s0
+  42f044:	0c101f88 	jal	0x407e20
+  42f048:	8c44a178 	lw	a0,-24200(v0)
+  42f04c:	8e24a174 	lw	a0,-24204(s1)
+  42f050:	0c101fcc 	jal	0x407f30
+  42f054:	00408021 	move	s0,v0
+  42f058:	02001021 	move	v0,s0
+  42f05c:	8fbf0024 	lw	ra,36(sp)
+  42f060:	8fb10020 	lw	s1,32(sp)
+  42f064:	8fb0001c 	lw	s0,28(sp)
+  42f068:	03e00008 	jr	ra
+  42f06c:	27bd0028 	addiu	sp,sp,40

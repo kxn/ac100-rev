@@ -1,0 +1,20 @@
+; func _child_arg_hash_obj @ 0x005998a0 size=0x4c
+  5998a0:	27bdffe0 	addiu	sp,sp,-32
+  5998a4:	10800005 	beqz	a0,0x5998bc
+  5998a8:	afbf001c 	sw	ra,28(sp)
+  5998ac:	8fbf001c 	lw	ra,28(sp)
+  5998b0:	2484000c 	addiu	a0,a0,12
+  5998b4:	081665fe 	j	0x5997f8
+  5998b8:	27bd0020 	addiu	sp,sp,32
+  5998bc:	3c040069 	lui	a0,0x69
+  5998c0:	3c05006e 	lui	a1,0x6e
+  5998c4:	3c07006e 	lui	a3,0x6e
+  5998c8:	2484d3ac 	addiu	a0,a0,-11348
+  5998cc:	24a53cd0 	addiu	a1,a1,15568
+  5998d0:	240600c8 	li	a2,200
+  5998d4:	0c101b74 	jal	0x406dd0
+  5998d8:	24e719f4 	addiu	a3,a3,6644
+  5998dc:	00001021 	move	v0,zero
+  5998e0:	8fbf001c 	lw	ra,28(sp)
+  5998e4:	03e00008 	jr	ra
+  5998e8:	27bd0020 	addiu	sp,sp,32

@@ -1,0 +1,29 @@
+; func apupd_systime_callback_models_timer_restart @ 0x00645204 size=0x70
+  645204:	27bdffe0 	addiu	sp,sp,-32
+  645208:	afb00018 	sw	s0,24(sp)
+  64520c:	afbf001c 	sw	ra,28(sp)
+  645210:	0c19600a 	jal	0x658028
+  645214:	00008021 	move	s0,zero
+  645218:	2403ffff 	li	v1,-1
+  64521c:	10430006 	beq	v0,v1,0x645238
+  645220:	3c020076 	lui	v0,0x76
+  645224:	8fbf001c 	lw	ra,28(sp)
+  645228:	02001021 	move	v0,s0
+  64522c:	8fb00018 	lw	s0,24(sp)
+  645230:	03e00008 	jr	ra
+  645234:	27bd0020 	addiu	sp,sp,32
+  645238:	8c428c08 	lw	v0,-29688(v0)
+  64523c:	1040fff9 	beqz	v0,0x645224
+  645240:	2410ffff 	li	s0,-1
+  645244:	0c16276a 	jal	0x589da8
+  645248:	00000000 	nop
+  64524c:	5040fff6 	beqzl	v0,0x645228
+  645250:	8fbf001c 	lw	ra,28(sp)
+  645254:	3c040071 	lui	a0,0x71
+  645258:	3c050071 	lui	a1,0x71
+  64525c:	24841fb4 	addiu	a0,a0,8116
+  645260:	24a53758 	addiu	a1,a1,14168
+  645264:	0c101b74 	jal	0x406dd0
+  645268:	2406125c 	li	a2,4700
+  64526c:	0819148a 	j	0x645228
+  645270:	8fbf001c 	lw	ra,28(sp)

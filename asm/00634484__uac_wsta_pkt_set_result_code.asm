@@ -1,0 +1,35 @@
+; func _uac_wsta_pkt_set_result_code @ 0x00634484 size=0x88
+  634484:	27bdffd8 	addiu	sp,sp,-40
+  634488:	afb0001c 	sw	s0,28(sp)
+  63448c:	00a08021 	move	s0,a1
+  634490:	24050021 	li	a1,33
+  634494:	afbf0024 	sw	ra,36(sp)
+  634498:	0c158acb 	jal	0x562b2c
+  63449c:	afb10020 	sw	s1,32(sp)
+  6344a0:	5040000b 	beqzl	v0,0x6344d0
+  6344a4:	3c020076 	lui	v0,0x76
+  6344a8:	8c430000 	lw	v1,0(v0)
+  6344ac:	14600002 	bnez	v1,0x6344b8
+  6344b0:	00008821 	move	s1,zero
+  6344b4:	ac500000 	sw	s0,0(v0)
+  6344b8:	8fbf0024 	lw	ra,36(sp)
+  6344bc:	02201021 	move	v0,s1
+  6344c0:	8fb10020 	lw	s1,32(sp)
+  6344c4:	8fb0001c 	lw	s0,28(sp)
+  6344c8:	03e00008 	jr	ra
+  6344cc:	27bd0028 	addiu	sp,sp,40
+  6344d0:	8c428bf4 	lw	v0,-29708(v0)
+  6344d4:	1040fff8 	beqz	v0,0x6344b8
+  6344d8:	2411ffff 	li	s1,-1
+  6344dc:	0c16276a 	jal	0x589da8
+  6344e0:	00000000 	nop
+  6344e4:	5040fff5 	beqzl	v0,0x6344bc
+  6344e8:	8fbf0024 	lw	ra,36(sp)
+  6344ec:	3c040071 	lui	a0,0x71
+  6344f0:	3c050071 	lui	a1,0x71
+  6344f4:	2484dda0 	addiu	a0,a0,-8800
+  6344f8:	24a5e9d0 	addiu	a1,a1,-5680
+  6344fc:	0c101b74 	jal	0x406dd0
+  634500:	24060119 	li	a2,281
+  634504:	0818d12f 	j	0x6344bc
+  634508:	8fbf0024 	lw	ra,36(sp)

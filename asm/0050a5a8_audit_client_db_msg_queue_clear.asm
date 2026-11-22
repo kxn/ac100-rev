@@ -1,0 +1,39 @@
+; func audit_client_db_msg_queue_clear @ 0x0050a5a8 size=0x98
+  50a5a8:	27bdffd8 	addiu	sp,sp,-40
+  50a5ac:	2405ffff 	li	a1,-1
+  50a5b0:	afb00018 	sw	s0,24(sp)
+  50a5b4:	3c100077 	lui	s0,0x77
+  50a5b8:	afb20020 	sw	s2,32(sp)
+  50a5bc:	24120002 	li	s2,2
+  50a5c0:	26108904 	addiu	s0,s0,-30460
+  50a5c4:	afb1001c 	sw	s1,28(sp)
+  50a5c8:	afbf0024 	sw	ra,36(sp)
+  50a5cc:	02008821 	move	s1,s0
+  50a5d0:	0c1020b4 	jal	0x4082d0
+  50a5d4:	8e040018 	lw	a0,24(s0)
+  50a5d8:	0814297b 	j	0x50a5ec
+  50a5dc:	8e220008 	lw	v0,8(s1)
+  50a5e0:	0c142863 	jal	0x50a18c
+  50a5e4:	02002021 	move	a0,s0
+  50a5e8:	8e220008 	lw	v0,8(s1)
+  50a5ec:	5040000e 	beqzl	v0,0x50a628
+  50a5f0:	8e240018 	lw	a0,24(s1)
+  50a5f4:	0c10206c 	jal	0x4081b0
+  50a5f8:	02202021 	move	a0,s1
+  50a5fc:	00408021 	move	s0,v0
+  50a600:	0c102140 	jal	0x408500
+  50a604:	00402021 	move	a0,v0
+  50a608:	8e02000c 	lw	v0,12(s0)
+  50a60c:	1452fff4 	bne	v0,s2,0x50a5e0
+  50a610:	00000000 	nop
+  50a614:	8e24000c 	lw	a0,12(s1)
+  50a618:	0c1021a4 	jal	0x408690
+  50a61c:	02002821 	move	a1,s0
+  50a620:	08142978 	j	0x50a5e0
+  50a624:	00000000 	nop
+  50a628:	8fbf0024 	lw	ra,36(sp)
+  50a62c:	8fb20020 	lw	s2,32(sp)
+  50a630:	8fb1001c 	lw	s1,28(sp)
+  50a634:	8fb00018 	lw	s0,24(sp)
+  50a638:	08101fcc 	j	0x407f30
+  50a63c:	27bd0028 	addiu	sp,sp,40

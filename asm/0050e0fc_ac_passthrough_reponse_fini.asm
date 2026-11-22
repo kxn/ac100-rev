@@ -1,0 +1,34 @@
+; func ac_passthrough_reponse_fini @ 0x0050e0fc size=0x84
+  50e0fc:	3c060051 	lui	a2,0x51
+  50e100:	27bdffe0 	addiu	sp,sp,-32
+  50e104:	24040009 	li	a0,9
+  50e108:	24050078 	li	a1,120
+  50e10c:	24c6ed78 	addiu	a2,a2,-4744
+  50e110:	afbf001c 	sw	ra,28(sp)
+  50e114:	0c1666f8 	jal	0x599be0
+  50e118:	afb00018 	sw	s0,24(sp)
+  50e11c:	2403ffff 	li	v1,-1
+  50e120:	1043000c 	beq	v0,v1,0x50e154
+  50e124:	3c020073 	lui	v0,0x73
+  50e128:	3c100077 	lui	s0,0x77
+  50e12c:	8e048974 	lw	a0,-30348(s0)
+  50e130:	10800005 	beqz	a0,0x50e148
+  50e134:	8fbf001c 	lw	ra,28(sp)
+  50e138:	0c1020d8 	jal	0x408360
+  50e13c:	00000000 	nop
+  50e140:	ae008974 	sw	zero,-30348(s0)
+  50e144:	8fbf001c 	lw	ra,28(sp)
+  50e148:	8fb00018 	lw	s0,24(sp)
+  50e14c:	03e00008 	jr	ra
+  50e150:	27bd0020 	addiu	sp,sp,32
+  50e154:	80421b41 	lb	v0,6977(v0)
+  50e158:	1040fffb 	beqz	v0,0x50e148
+  50e15c:	8fbf001c 	lw	ra,28(sp)
+  50e160:	3c04006c 	lui	a0,0x6c
+  50e164:	3c05006c 	lui	a1,0x6c
+  50e168:	8fb00018 	lw	s0,24(sp)
+  50e16c:	2484dd0c 	addiu	a0,a0,-8948
+  50e170:	24a5e964 	addiu	a1,a1,-5788
+  50e174:	240608dc 	li	a2,2268
+  50e178:	08101b74 	j	0x406dd0
+  50e17c:	27bd0020 	addiu	sp,sp,32

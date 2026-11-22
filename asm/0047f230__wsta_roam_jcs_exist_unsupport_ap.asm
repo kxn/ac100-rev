@@ -1,0 +1,22 @@
+; func _wsta_roam_jcs_exist_unsupport_ap @ 0x0047f230 size=0x54
+  47f230:	27bdffd8 	addiu	sp,sp,-40
+  47f234:	3c04015f 	lui	a0,0x15f
+  47f238:	27a60018 	addiu	a2,sp,24
+  47f23c:	afb00020 	sw	s0,32(sp)
+  47f240:	00a08021 	move	s0,a1
+  47f244:	3c050048 	lui	a1,0x48
+  47f248:	afbf0024 	sw	ra,36(sp)
+  47f24c:	afa00018 	sw	zero,24(sp)
+  47f250:	0c14e0b9 	jal	0x5382e4
+  47f254:	24a5f284 	addiu	a1,a1,-3452
+  47f258:	0c101d34 	jal	0x4074d0
+  47f25c:	8fa40018 	lw	a0,24(sp)
+  47f260:	3c050069 	lui	a1,0x69
+  47f264:	02002021 	move	a0,s0
+  47f268:	24a534d8 	addiu	a1,a1,13528
+  47f26c:	0c101d78 	jal	0x4075e0
+  47f270:	00403021 	move	a2,v0
+  47f274:	8fbf0024 	lw	ra,36(sp)
+  47f278:	8fb00020 	lw	s0,32(sp)
+  47f27c:	03e00008 	jr	ra
+  47f280:	27bd0028 	addiu	sp,sp,40

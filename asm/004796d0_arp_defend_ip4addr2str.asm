@@ -1,0 +1,19 @@
+; func arp_defend_ip4addr2str @ 0x004796d0 size=0x48
+  4796d0:	27bdffd0 	addiu	sp,sp,-48
+  4796d4:	7c823c00 	ext	v0,a0,0x10,0x8
+  4796d8:	00803821 	move	a3,a0
+  4796dc:	afa20010 	sw	v0,16(sp)
+  4796e0:	7c823a00 	ext	v0,a0,0x8,0x8
+  4796e4:	00073e02 	srl	a3,a3,0x18
+  4796e8:	afbf002c 	sw	ra,44(sp)
+  4796ec:	afa20014 	sw	v0,20(sp)
+  4796f0:	308200ff 	andi	v0,a0,0xff
+  4796f4:	00a02021 	move	a0,a1
+  4796f8:	afa20018 	sw	v0,24(sp)
+  4796fc:	00c02821 	move	a1,a2
+  479700:	3c060067 	lui	a2,0x67
+  479704:	0c101dec 	jal	0x4077b0
+  479708:	24c665d4 	addiu	a2,a2,26068
+  47970c:	8fbf002c 	lw	ra,44(sp)
+  479710:	03e00008 	jr	ra
+  479714:	27bd0030 	addiu	sp,sp,48

@@ -1,0 +1,37 @@
+; func MD4Final @ 0x0044c118 size=0x8c
+  44c118:	3c1c0031 	lui	gp,0x31
+  44c11c:	279c4fe8 	addiu	gp,gp,20456
+  44c120:	0399e021 	addu	gp,gp,t9
+  44c124:	27bdffd8 	addiu	sp,sp,-40
+  44c128:	8f998084 	lw	t9,-32636(gp)
+  44c12c:	00003021 	move	a2,zero
+  44c130:	afbc0010 	sw	gp,16(sp)
+  44c134:	afb10020 	sw	s1,32(sp)
+  44c138:	00808821 	move	s1,a0
+  44c13c:	afb0001c 	sw	s0,28(sp)
+  44c140:	00a02021 	move	a0,a1
+  44c144:	00a08021 	move	s0,a1
+  44c148:	afbf0024 	sw	ra,36(sp)
+  44c14c:	0411ff81 	bal	0x44bf54
+  44c150:	00002821 	move	a1,zero
+  44c154:	00001021 	move	v0,zero
+  44c158:	24070004 	li	a3,4
+  44c15c:	24060010 	li	a2,16
+  44c160:	02021821 	addu	v1,s0,v0
+  44c164:	02222821 	addu	a1,s1,v0
+  44c168:	8c640000 	lw	a0,0(v1)
+  44c16c:	00001821 	move	v1,zero
+  44c170:	24630001 	addiu	v1,v1,1
+  44c174:	a0a40000 	sb	a0,0(a1)
+  44c178:	24a50001 	addiu	a1,a1,1
+  44c17c:	1467fffc 	bne	v1,a3,0x44c170
+  44c180:	00042202 	srl	a0,a0,0x8
+  44c184:	24420004 	addiu	v0,v0,4
+  44c188:	5446fff6 	bnel	v0,a2,0x44c164
+  44c18c:	02021821 	addu	v1,s0,v0
+  44c190:	8fbf0024 	lw	ra,36(sp)
+  44c194:	8fb10020 	lw	s1,32(sp)
+  44c198:	8fb0001c 	lw	s0,28(sp)
+  44c19c:	03e00008 	jr	ra
+  44c1a0:	27bd0028 	addiu	sp,sp,40
+	...

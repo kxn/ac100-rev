@@ -1,0 +1,19 @@
+; func wportal_db_cmcc_iface_count @ 0x0042e054 size=0x48
+  42e054:	27bdffd8 	addiu	sp,sp,-40
+  42e058:	2405ffff 	li	a1,-1
+  42e05c:	afb0001c 	sw	s0,28(sp)
+  42e060:	3c100076 	lui	s0,0x76
+  42e064:	afbf0024 	sw	ra,36(sp)
+  42e068:	afb10020 	sw	s1,32(sp)
+  42e06c:	0c1020b4 	jal	0x4082d0
+  42e070:	8e04a13c 	lw	a0,-24260(s0)
+  42e074:	3c020076 	lui	v0,0x76
+  42e078:	8e04a13c 	lw	a0,-24260(s0)
+  42e07c:	0c101fcc 	jal	0x407f30
+  42e080:	8c51a18c 	lw	s1,-24180(v0)
+  42e084:	8fbf0024 	lw	ra,36(sp)
+  42e088:	02201021 	move	v0,s1
+  42e08c:	8fb0001c 	lw	s0,28(sp)
+  42e090:	8fb10020 	lw	s1,32(sp)
+  42e094:	03e00008 	jr	ra
+  42e098:	27bd0028 	addiu	sp,sp,40

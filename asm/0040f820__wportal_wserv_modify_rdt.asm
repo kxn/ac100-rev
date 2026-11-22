@@ -1,0 +1,66 @@
+; func _wportal_wserv_modify_rdt @ 0x0040f820 size=0x104
+  40f820:	27bdffc8 	addiu	sp,sp,-56
+  40f824:	afb30030 	sw	s3,48(sp)
+  40f828:	3c130076 	lui	s3,0x76
+  40f82c:	afb2002c 	sw	s2,44(sp)
+  40f830:	00c09021 	move	s2,a2
+  40f834:	afb00024 	sw	s0,36(sp)
+  40f838:	afbf0034 	sw	ra,52(sp)
+  40f83c:	afb10028 	sw	s1,40(sp)
+  40f840:	8e62a0b8 	lw	v0,-24392(s3)
+  40f844:	14400029 	bnez	v0,0x40f8ec
+  40f848:	00808021 	move	s0,a0
+  40f84c:	0c186b9a 	jal	0x61ae68
+  40f850:	8e040000 	lw	a0,0(s0)
+  40f854:	00408821 	move	s1,v0
+  40f858:	8e420000 	lw	v0,0(s2)
+  40f85c:	5440001a 	bnezl	v0,0x40f8c8
+  40f860:	92050003 	lbu	a1,3(s0)
+  40f864:	0c10d205 	jal	0x434814
+  40f868:	02202021 	move	a0,s1
+  40f86c:	50400016 	beqzl	v0,0x40f8c8
+  40f870:	92050003 	lbu	a1,3(s0)
+  40f874:	8e62a0b8 	lw	v0,-24392(s3)
+  40f878:	1040000c 	beqz	v0,0x40f8ac
+  40f87c:	8fbf0034 	lw	ra,52(sp)
+  40f880:	0c16276a 	jal	0x589da8
+  40f884:	00000000 	nop
+  40f888:	10400008 	beqz	v0,0x40f8ac
+  40f88c:	8fbf0034 	lw	ra,52(sp)
+  40f890:	3c040067 	lui	a0,0x67
+  40f894:	3c050068 	lui	a1,0x68
+  40f898:	248473a0 	addiu	a0,a0,29600
+  40f89c:	24a5c7e0 	addiu	a1,a1,-14368
+  40f8a0:	0c101b74 	jal	0x406dd0
+  40f8a4:	24061e07 	li	a2,7687
+  40f8a8:	8fbf0034 	lw	ra,52(sp)
+  40f8ac:	00001021 	move	v0,zero
+  40f8b0:	8fb30030 	lw	s3,48(sp)
+  40f8b4:	8fb2002c 	lw	s2,44(sp)
+  40f8b8:	8fb10028 	lw	s1,40(sp)
+  40f8bc:	8fb00024 	lw	s0,36(sp)
+  40f8c0:	03e00008 	jr	ra
+  40f8c4:	27bd0038 	addiu	sp,sp,56
+  40f8c8:	3c070042 	lui	a3,0x42
+  40f8cc:	92060004 	lbu	a2,4(s0)
+  40f8d0:	02202021 	move	a0,s1
+  40f8d4:	24e7d834 	addiu	a3,a3,-10188
+  40f8d8:	afb20010 	sw	s2,16(sp)
+  40f8dc:	0c18e387 	jal	0x638e1c
+  40f8e0:	30a5000f 	andi	a1,a1,0xf
+  40f8e4:	08103e2a 	j	0x40f8a8
+  40f8e8:	00000000 	nop
+  40f8ec:	0c16276a 	jal	0x589da8
+  40f8f0:	00000000 	nop
+  40f8f4:	1040ffd5 	beqz	v0,0x40f84c
+  40f8f8:	3c040067 	lui	a0,0x67
+  40f8fc:	92020004 	lbu	v0,4(s0)
+  40f900:	3c050068 	lui	a1,0x68
+  40f904:	8e070000 	lw	a3,0(s0)
+  40f908:	24847364 	addiu	a0,a0,29540
+  40f90c:	24a5c7e0 	addiu	a1,a1,-14368
+  40f910:	afa20010 	sw	v0,16(sp)
+  40f914:	0c101b74 	jal	0x406dd0
+  40f918:	24061e01 	li	a2,7681
+  40f91c:	08103e13 	j	0x40f84c
+  40f920:	00000000 	nop

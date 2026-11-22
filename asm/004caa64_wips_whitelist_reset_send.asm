@@ -1,0 +1,36 @@
+; func wips_whitelist_reset_send @ 0x004caa64 size=0x8c
+  4caa64:	3c020077 	lui	v0,0x77
+  4caa68:	27bdffa0 	addiu	sp,sp,-96
+  4caa6c:	804280b1 	lb	v0,-32591(v0)
+  4caa70:	afb00058 	sw	s0,88(sp)
+  4caa74:	3090ffff 	andi	s0,a0,0xffff
+  4caa78:	14400010 	bnez	v0,0x4caabc
+  4caa7c:	afbf005c 	sw	ra,92(sp)
+  4caa80:	3c05006a 	lui	a1,0x6a
+  4caa84:	27a40018 	addiu	a0,sp,24
+  4caa88:	24a57590 	addiu	a1,a1,30096
+  4caa8c:	0c101c8c 	jal	0x407230
+  4caa90:	2406003e 	li	a2,62
+  4caa94:	3402ffff 	li	v0,0xffff
+  4caa98:	12020011 	beq	s0,v0,0x4caae0
+  4caa9c:	00000000 	nop
+  4caaa0:	27a50018 	addiu	a1,sp,24
+  4caaa4:	0c13abbc 	jal	0x4eaef0
+  4caaa8:	02002021 	move	a0,s0
+  4caaac:	8fbf005c 	lw	ra,92(sp)
+  4caab0:	8fb00058 	lw	s0,88(sp)
+  4caab4:	03e00008 	jr	ra
+  4caab8:	27bd0060 	addiu	sp,sp,96
+  4caabc:	3c04006a 	lui	a0,0x6a
+  4caac0:	3c05006b 	lui	a1,0x6b
+  4caac4:	2484755c 	addiu	a0,a0,30044
+  4caac8:	24a58180 	addiu	a1,a1,-32384
+  4caacc:	240605f8 	li	a2,1528
+  4caad0:	0c101b74 	jal	0x406dd0
+  4caad4:	02003821 	move	a3,s0
+  4caad8:	08132aa1 	j	0x4caa84
+  4caadc:	3c05006a 	lui	a1,0x6a
+  4caae0:	0c13abd4 	jal	0x4eaf50
+  4caae4:	27a40018 	addiu	a0,sp,24
+  4caae8:	08132aac 	j	0x4caab0
+  4caaec:	8fbf005c 	lw	ra,92(sp)

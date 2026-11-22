@@ -1,0 +1,29 @@
+; func apupd_destroy @ 0x00648f88 size=0x70
+  648f88:	27bdffe0 	addiu	sp,sp,-32
+  648f8c:	afb00018 	sw	s0,24(sp)
+  648f90:	afbf001c 	sw	ra,28(sp)
+  648f94:	0c196074 	jal	0x6581d0
+  648f98:	00008021 	move	s0,zero
+  648f9c:	2403ffff 	li	v1,-1
+  648fa0:	10430006 	beq	v0,v1,0x648fbc
+  648fa4:	3c020076 	lui	v0,0x76
+  648fa8:	8fbf001c 	lw	ra,28(sp)
+  648fac:	02001021 	move	v0,s0
+  648fb0:	8fb00018 	lw	s0,24(sp)
+  648fb4:	03e00008 	jr	ra
+  648fb8:	27bd0020 	addiu	sp,sp,32
+  648fbc:	8c428c08 	lw	v0,-29688(v0)
+  648fc0:	1040fff9 	beqz	v0,0x648fa8
+  648fc4:	2410ffff 	li	s0,-1
+  648fc8:	0c16276a 	jal	0x589da8
+  648fcc:	00000000 	nop
+  648fd0:	5040fff6 	beqzl	v0,0x648fac
+  648fd4:	8fbf001c 	lw	ra,28(sp)
+  648fd8:	3c040071 	lui	a0,0x71
+  648fdc:	3c050071 	lui	a1,0x71
+  648fe0:	24842f34 	addiu	a0,a0,12084
+  648fe4:	24a53eb0 	addiu	a1,a1,16048
+  648fe8:	0c101b74 	jal	0x406dd0
+  648fec:	240612f7 	li	a2,4855
+  648ff0:	081923eb 	j	0x648fac
+  648ff4:	8fbf001c 	lw	ra,28(sp)

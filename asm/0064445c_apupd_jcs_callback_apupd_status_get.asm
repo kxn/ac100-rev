@@ -1,0 +1,51 @@
+; func apupd_jcs_callback_apupd_status_get @ 0x0064445c size=0xc8
+  64445c:	27bdffd0 	addiu	sp,sp,-48
+  644460:	afb00024 	sw	s0,36(sp)
+  644464:	00a08021 	move	s0,a1
+  644468:	afbf002c 	sw	ra,44(sp)
+  64446c:	afb10028 	sw	s1,40(sp)
+  644470:	1080001c 	beqz	a0,0x6444e4
+  644474:	afa00018 	sw	zero,24(sp)
+  644478:	10a0001b 	beqz	a1,0x6444e8
+  64447c:	3c020076 	lui	v0,0x76
+  644480:	27a40018 	addiu	a0,sp,24
+  644484:	0c194b42 	jal	0x652d08
+  644488:	3c110067 	lui	s1,0x67
+  64448c:	2403ffff 	li	v1,-1
+  644490:	10430009 	beq	v0,v1,0x6444b8
+  644494:	24040001 	li	a0,1
+  644498:	0c101d34 	jal	0x4074d0
+  64449c:	8fa40018 	lw	a0,24(sp)
+  6444a0:	3c05006d 	lui	a1,0x6d
+  6444a4:	02002021 	move	a0,s0
+  6444a8:	24a5eb84 	addiu	a1,a1,-5244
+  6444ac:	0c101d78 	jal	0x4075e0
+  6444b0:	00403021 	move	a2,v0
+  6444b4:	00002021 	move	a0,zero
+  6444b8:	0c101d34 	jal	0x4074d0
+  6444bc:	00000000 	nop
+  6444c0:	26256a24 	addiu	a1,s1,27172
+  6444c4:	02002021 	move	a0,s0
+  6444c8:	0c101d78 	jal	0x4075e0
+  6444cc:	00403021 	move	a2,v0
+  6444d0:	8fbf002c 	lw	ra,44(sp)
+  6444d4:	8fb10028 	lw	s1,40(sp)
+  6444d8:	8fb00024 	lw	s0,36(sp)
+  6444dc:	03e00008 	jr	ra
+  6444e0:	27bd0030 	addiu	sp,sp,48
+  6444e4:	3c020076 	lui	v0,0x76
+  6444e8:	8c428c08 	lw	v0,-29688(v0)
+  6444ec:	1040fff9 	beqz	v0,0x6444d4
+  6444f0:	8fbf002c 	lw	ra,44(sp)
+  6444f4:	0c16276a 	jal	0x589da8
+  6444f8:	00000000 	nop
+  6444fc:	1040fff5 	beqz	v0,0x6444d4
+  644500:	8fbf002c 	lw	ra,44(sp)
+  644504:	3c040071 	lui	a0,0x71
+  644508:	3c050071 	lui	a1,0x71
+  64450c:	24840720 	addiu	a0,a0,1824
+  644510:	24a53ba0 	addiu	a1,a1,15264
+  644514:	0c101b74 	jal	0x406dd0
+  644518:	24060b8e 	li	a2,2958
+  64451c:	08191134 	j	0x6444d0
+  644520:	00000000 	nop

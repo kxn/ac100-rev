@@ -1,0 +1,22 @@
+; func _delete_unfirmed_sensor @ 0x004e31c4 size=0x54
+  4e31c4:	27bdffd8 	addiu	sp,sp,-40
+  4e31c8:	afb00020 	sw	s0,32(sp)
+  4e31cc:	afbf0024 	sw	ra,36(sp)
+  4e31d0:	8c82003c 	lw	v0,60(a0)
+  4e31d4:	10400006 	beqz	v0,0x4e31f0
+  4e31d8:	00a08021 	move	s0,a1
+  4e31dc:	8fbf0024 	lw	ra,36(sp)
+  4e31e0:	00001021 	move	v0,zero
+  4e31e4:	8fb00020 	lw	s0,32(sp)
+  4e31e8:	03e00008 	jr	ra
+  4e31ec:	27bd0028 	addiu	sp,sp,40
+  4e31f0:	24840010 	addiu	a0,a0,16
+  4e31f4:	afa00010 	sw	zero,16(sp)
+  4e31f8:	24050001 	li	a1,1
+  4e31fc:	00003021 	move	a2,zero
+  4e3200:	0c14b9f6 	jal	0x52e7d8
+  4e3204:	00003821 	move	a3,zero
+  4e3208:	1200fff4 	beqz	s0,0x4e31dc
+  4e320c:	24020001 	li	v0,1
+  4e3210:	08138c77 	j	0x4e31dc
+  4e3214:	ae020000 	sw	v0,0(s0)

@@ -1,0 +1,56 @@
+; func stats_db_sta_get @ 0x0066cb40 size=0xdc
+  66cb40:	27bdffd0 	addiu	sp,sp,-48
+  66cb44:	afb30028 	sw	s3,40(sp)
+  66cb48:	00c09821 	move	s3,a2
+  66cb4c:	afb20024 	sw	s2,36(sp)
+  66cb50:	00a09021 	move	s2,a1
+  66cb54:	afb0001c 	sw	s0,28(sp)
+  66cb58:	00808021 	move	s0,a0
+  66cb5c:	afbf002c 	sw	ra,44(sp)
+  66cb60:	10800022 	beqz	a0,0x66cbec
+  66cb64:	afb10020 	sw	s1,32(sp)
+  66cb68:	10a00021 	beqz	a1,0x66cbf0
+  66cb6c:	3c020076 	lui	v0,0x76
+  66cb70:	3c11007d 	lui	s1,0x7d
+  66cb74:	2405ffff 	li	a1,-1
+  66cb78:	0c1020b4 	jal	0x4082d0
+  66cb7c:	8e24c8d8 	lw	a0,-14120(s1)
+  66cb80:	2622c8d8 	addiu	v0,s1,-14120
+  66cb84:	02002821 	move	a1,s0
+  66cb88:	24100001 	li	s0,1
+  66cb8c:	0c101fe8 	jal	0x407fa0
+  66cb90:	8c440008 	lw	a0,8(v0)
+  66cb94:	1040000b 	beqz	v0,0x66cbc4
+  66cb98:	00000000 	nop
+  66cb9c:	12700005 	beq	s3,s0,0x66cbb4
+  66cba0:	24060128 	li	a2,296
+  66cba4:	9043000c 	lbu	v1,12(v0)
+  66cba8:	30630002 	andi	v1,v1,0x2
+  66cbac:	10600005 	beqz	v1,0x66cbc4
+  66cbb0:	00000000 	nop
+  66cbb4:	00008021 	move	s0,zero
+  66cbb8:	02402021 	move	a0,s2
+  66cbbc:	0c101c8c 	jal	0x407230
+  66cbc0:	00402821 	move	a1,v0
+  66cbc4:	0c101fcc 	jal	0x407f30
+  66cbc8:	8e24c8d8 	lw	a0,-14120(s1)
+  66cbcc:	8fbf002c 	lw	ra,44(sp)
+  66cbd0:	02001021 	move	v0,s0
+  66cbd4:	8fb30028 	lw	s3,40(sp)
+  66cbd8:	8fb20024 	lw	s2,36(sp)
+  66cbdc:	8fb10020 	lw	s1,32(sp)
+  66cbe0:	8fb0001c 	lw	s0,28(sp)
+  66cbe4:	03e00008 	jr	ra
+  66cbe8:	27bd0030 	addiu	sp,sp,48
+  66cbec:	3c020076 	lui	v0,0x76
+  66cbf0:	80428cd0 	lb	v0,-29488(v0)
+  66cbf4:	1040fff5 	beqz	v0,0x66cbcc
+  66cbf8:	2410ffff 	li	s0,-1
+  66cbfc:	3c040072 	lui	a0,0x72
+  66cc00:	3c050072 	lui	a1,0x72
+  66cc04:	2484eb20 	addiu	a0,a0,-5344
+  66cc08:	24a5fd6c 	addiu	a1,a1,-660
+  66cc0c:	0c101b74 	jal	0x406dd0
+  66cc10:	24060932 	li	a2,2354
+  66cc14:	0819b2f3 	j	0x66cbcc
+  66cc18:	00000000 	nop

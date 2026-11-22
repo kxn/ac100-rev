@@ -1,0 +1,35 @@
+; func capwap_ac_session_hash_create @ 0x0058ff20 size=0x88
+  58ff20:	00803821 	move	a3,a0
+  58ff24:	3c050059 	lui	a1,0x59
+  58ff28:	3c040059 	lui	a0,0x59
+  58ff2c:	3c060059 	lui	a2,0x59
+  58ff30:	27bdffe0 	addiu	sp,sp,-32
+  58ff34:	2484fa78 	addiu	a0,a0,-1416
+  58ff38:	24a5f9d0 	addiu	a1,a1,-1584
+  58ff3c:	afb00018 	sw	s0,24(sp)
+  58ff40:	afbf001c 	sw	ra,28(sp)
+  58ff44:	0c102028 	jal	0x4080a0
+  58ff48:	24c6f8f0 	addiu	a2,a2,-1808
+  58ff4c:	10400006 	beqz	v0,0x58ff68
+  58ff50:	00408021 	move	s0,v0
+  58ff54:	8fbf001c 	lw	ra,28(sp)
+  58ff58:	02001021 	move	v0,s0
+  58ff5c:	8fb00018 	lw	s0,24(sp)
+  58ff60:	03e00008 	jr	ra
+  58ff64:	27bd0020 	addiu	sp,sp,32
+  58ff68:	3c020075 	lui	v0,0x75
+  58ff6c:	8c42cf58 	lw	v0,-12456(v0)
+  58ff70:	1040fff9 	beqz	v0,0x58ff58
+  58ff74:	8fbf001c 	lw	ra,28(sp)
+  58ff78:	0c16276a 	jal	0x589da8
+  58ff7c:	00000000 	nop
+  58ff80:	5040fff5 	beqzl	v0,0x58ff58
+  58ff84:	8fbf001c 	lw	ra,28(sp)
+  58ff88:	3c04006e 	lui	a0,0x6e
+  58ff8c:	3c05006e 	lui	a1,0x6e
+  58ff90:	24841404 	addiu	a0,a0,5124
+  58ff94:	24a514c4 	addiu	a1,a1,5316
+  58ff98:	0c101b74 	jal	0x406dd0
+  58ff9c:	2406013a 	li	a2,314
+  58ffa0:	08163fd6 	j	0x58ff58
+  58ffa4:	8fbf001c 	lw	ra,28(sp)

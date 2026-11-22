@@ -1,0 +1,22 @@
+; func apmngr_ap_telnet_port_update @ 0x0052c1ac size=0x54
+  52c1ac:	27bdffd0 	addiu	sp,sp,-48
+  52c1b0:	afb00028 	sw	s0,40(sp)
+  52c1b4:	3090ffff 	andi	s0,a0,0xffff
+  52c1b8:	27a40018 	addiu	a0,sp,24
+  52c1bc:	afbf002c 	sw	ra,44(sp)
+  52c1c0:	afa0001c 	sw	zero,28(sp)
+  52c1c4:	0c14f2c1 	jal	0x53cb04
+  52c1c8:	afa00020 	sw	zero,32(sp)
+  52c1cc:	3c050053 	lui	a1,0x53
+  52c1d0:	8fa20018 	lw	v0,24(sp)
+  52c1d4:	27a6001c 	addiu	a2,sp,28
+  52c1d8:	2404ffff 	li	a0,-1
+  52c1dc:	a7b00020 	sh	s0,32(sp)
+  52c1e0:	24a5b93c 	addiu	a1,a1,-18116
+  52c1e4:	0c14e0b9 	jal	0x5382e4
+  52c1e8:	afa2001c 	sw	v0,28(sp)
+  52c1ec:	00001021 	move	v0,zero
+  52c1f0:	8fbf002c 	lw	ra,44(sp)
+  52c1f4:	8fb00028 	lw	s0,40(sp)
+  52c1f8:	03e00008 	jr	ra
+  52c1fc:	27bd0030 	addiu	sp,sp,48

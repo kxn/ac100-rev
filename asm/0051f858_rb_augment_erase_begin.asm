@@ -1,0 +1,37 @@
+; func rb_augment_erase_begin @ 0x0051f858 size=0x90
+  51f858:	3c1c0024 	lui	gp,0x24
+  51f85c:	279c18a8 	addiu	gp,gp,6312
+  51f860:	0399e021 	addu	gp,gp,t9
+  51f864:	27bdffe0 	addiu	sp,sp,-32
+  51f868:	afbc0010 	sw	gp,16(sp)
+  51f86c:	afb00018 	sw	s0,24(sp)
+  51f870:	00808021 	move	s0,a0
+  51f874:	afbf001c 	sw	ra,28(sp)
+  51f878:	8c820004 	lw	v0,4(a0)
+  51f87c:	10400014 	beqz	v0,0x51f8d0
+  51f880:	8c830008 	lw	v1,8(a0)
+  51f884:	10600009 	beqz	v1,0x51f8ac
+  51f888:	8f998370 	lw	t9,-31888(gp)
+  51f88c:	0411ffd8 	bal	0x51f7f0
+  51f890:	00000000 	nop
+  51f894:	10400006 	beqz	v0,0x51f8b0
+  51f898:	8fbf001c 	lw	ra,28(sp)
+  51f89c:	8c430004 	lw	v1,4(v0)
+  51f8a0:	50600006 	beqzl	v1,0x51f8bc
+  51f8a4:	8c430000 	lw	v1,0(v0)
+  51f8a8:	00601021 	move	v0,v1
+  51f8ac:	8fbf001c 	lw	ra,28(sp)
+  51f8b0:	8fb00018 	lw	s0,24(sp)
+  51f8b4:	03e00008 	jr	ra
+  51f8b8:	27bd0020 	addiu	sp,sp,32
+  51f8bc:	2404fffc 	li	a0,-4
+  51f8c0:	00831824 	and	v1,a0,v1
+  51f8c4:	02038026 	xor	s0,s0,v1
+  51f8c8:	1000fff8 	b	0x51f8ac
+  51f8cc:	0070100b 	movn	v0,v1,s0
+  51f8d0:	1460fff6 	bnez	v1,0x51f8ac
+  51f8d4:	00601021 	move	v0,v1
+  51f8d8:	8c820000 	lw	v0,0(a0)
+  51f8dc:	2403fffc 	li	v1,-4
+  51f8e0:	1000fff2 	b	0x51f8ac
+  51f8e4:	00621024 	and	v0,v1,v0

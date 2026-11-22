@@ -1,0 +1,22 @@
+; func wportal_db_aut_del @ 0x0042ff70 size=0x54
+  42ff70:	27bdffd8 	addiu	sp,sp,-40
+  42ff74:	2402ffff 	li	v0,-1
+  42ff78:	afb10020 	sw	s1,32(sp)
+  42ff7c:	00808821 	move	s1,a0
+  42ff80:	afbf0024 	sw	ra,36(sp)
+  42ff84:	1080000a 	beqz	a0,0x42ffb0
+  42ff88:	afb0001c 	sw	s0,28(sp)
+  42ff8c:	3c100076 	lui	s0,0x76
+  42ff90:	2405ffff 	li	a1,-1
+  42ff94:	0c1020b4 	jal	0x4082d0
+  42ff98:	8e04a150 	lw	a0,-24240(s0)
+  42ff9c:	0c10af8f 	jal	0x42be3c
+  42ffa0:	02202021 	move	a0,s1
+  42ffa4:	0c101fcc 	jal	0x407f30
+  42ffa8:	8e04a150 	lw	a0,-24240(s0)
+  42ffac:	00001021 	move	v0,zero
+  42ffb0:	8fbf0024 	lw	ra,36(sp)
+  42ffb4:	8fb10020 	lw	s1,32(sp)
+  42ffb8:	8fb0001c 	lw	s0,28(sp)
+  42ffbc:	03e00008 	jr	ra
+  42ffc0:	27bd0028 	addiu	sp,sp,40

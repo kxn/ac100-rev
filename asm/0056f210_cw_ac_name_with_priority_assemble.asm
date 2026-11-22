@@ -1,0 +1,56 @@
+; func cw_ac_name_with_priority_assemble @ 0x0056f210 size=0xd8
+  56f210:	27bdffd0 	addiu	sp,sp,-48
+  56f214:	afb20024 	sw	s2,36(sp)
+  56f218:	00809021 	move	s2,a0
+  56f21c:	afb10020 	sw	s1,32(sp)
+  56f220:	00a08821 	move	s1,a1
+  56f224:	afbf002c 	sw	ra,44(sp)
+  56f228:	afb30028 	sw	s3,40(sp)
+  56f22c:	afb0001c 	sw	s0,28(sp)
+  56f230:	8cb00010 	lw	s0,16(a1)
+  56f234:	8e020004 	lw	v0,4(s0)
+  56f238:	10400006 	beqz	v0,0x56f254
+  56f23c:	94930004 	lhu	s3,4(a0)
+  56f240:	96030002 	lhu	v1,2(s0)
+  56f244:	94a2000e 	lhu	v0,14(a1)
+  56f248:	24630001 	addiu	v1,v1,1
+  56f24c:	10620018 	beq	v1,v0,0x56f2b0
+  56f250:	00000000 	nop
+  56f254:	3c020075 	lui	v0,0x75
+  56f258:	8c42cf58 	lw	v0,-12456(v0)
+  56f25c:	10400005 	beqz	v0,0x56f274
+  56f260:	2410ffff 	li	s0,-1
+  56f264:	0c16276a 	jal	0x589da8
+  56f268:	00000000 	nop
+  56f26c:	14400009 	bnez	v0,0x56f294
+  56f270:	3c04006d 	lui	a0,0x6d
+  56f274:	8fbf002c 	lw	ra,44(sp)
+  56f278:	02001021 	move	v0,s0
+  56f27c:	8fb30028 	lw	s3,40(sp)
+  56f280:	8fb20024 	lw	s2,36(sp)
+  56f284:	8fb10020 	lw	s1,32(sp)
+  56f288:	8fb0001c 	lw	s0,28(sp)
+  56f28c:	03e00008 	jr	ra
+  56f290:	27bd0030 	addiu	sp,sp,48
+  56f294:	3c05006d 	lui	a1,0x6d
+  56f298:	248470e0 	addiu	a0,a0,28896
+  56f29c:	24a57220 	addiu	a1,a1,29216
+  56f2a0:	0c101b74 	jal	0x406dd0
+  56f2a4:	2406008f 	li	a2,143
+  56f2a8:	0815bc9e 	j	0x56f278
+  56f2ac:	8fbf002c 	lw	ra,44(sp)
+  56f2b0:	0c15c799 	jal	0x571e64
+  56f2b4:	92050000 	lbu	a1,0(s0)
+  56f2b8:	02402021 	move	a0,s2
+  56f2bc:	8e050004 	lw	a1,4(s0)
+  56f2c0:	0c15c856 	jal	0x572158
+  56f2c4:	96060002 	lhu	a2,2(s0)
+  56f2c8:	96500004 	lhu	s0,4(s2)
+  56f2cc:	9622000e 	lhu	v0,14(s1)
+  56f2d0:	02138023 	subu	s0,s0,s3
+  56f2d4:	02028026 	xor	s0,s0,v0
+  56f2d8:	2402ffff 	li	v0,-1
+  56f2dc:	0010100a 	movz	v0,zero,s0
+  56f2e0:	0815bc9d 	j	0x56f274
+  56f2e4:	00408021 	move	s0,v0
+	...

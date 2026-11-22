@@ -1,0 +1,19 @@
+; func sensor_di_get_cache_sensor_max @ 0x004e1d88 size=0x48
+  4e1d88:	27bdffd8 	addiu	sp,sp,-40
+  4e1d8c:	2405ffff 	li	a1,-1
+  4e1d90:	afb0001c 	sw	s0,28(sp)
+  4e1d94:	3c100077 	lui	s0,0x77
+  4e1d98:	afbf0024 	sw	ra,36(sp)
+  4e1d9c:	afb10020 	sw	s1,32(sp)
+  4e1da0:	0c1020b4 	jal	0x4082d0
+  4e1da4:	8e0485fc 	lw	a0,-31236(s0)
+  4e1da8:	3c020077 	lui	v0,0x77
+  4e1dac:	8e0485fc 	lw	a0,-31236(s0)
+  4e1db0:	0c101fcc 	jal	0x407f30
+  4e1db4:	8c5185f8 	lw	s1,-31240(v0)
+  4e1db8:	8fbf0024 	lw	ra,36(sp)
+  4e1dbc:	02201021 	move	v0,s1
+  4e1dc0:	8fb0001c 	lw	s0,28(sp)
+  4e1dc4:	8fb10020 	lw	s1,32(sp)
+  4e1dc8:	03e00008 	jr	ra
+  4e1dcc:	27bd0028 	addiu	sp,sp,40

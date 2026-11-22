@@ -1,0 +1,37 @@
+; func mesh_set_web_pwd @ 0x004c00bc size=0x90
+  4c00bc:	27bdffe0 	addiu	sp,sp,-32
+  4c00c0:	afb00018 	sw	s0,24(sp)
+  4c00c4:	00808021 	move	s0,a0
+  4c00c8:	10800006 	beqz	a0,0x4c00e4
+  4c00cc:	afbf001c 	sw	ra,28(sp)
+  4c00d0:	0c101ee4 	jal	0x407b90
+  4c00d4:	00000000 	nop
+  4c00d8:	2c430011 	sltiu	v1,v0,17
+  4c00dc:	14600009 	bnez	v1,0x4c0104
+  4c00e0:	02002021 	move	a0,s0
+  4c00e4:	3c020073 	lui	v0,0x73
+  4c00e8:	80421a84 	lb	v0,6788(v0)
+  4c00ec:	1440000f 	bnez	v0,0x4c012c
+  4c00f0:	3c04006a 	lui	a0,0x6a
+  4c00f4:	8fbf001c 	lw	ra,28(sp)
+  4c00f8:	8fb00018 	lw	s0,24(sp)
+  4c00fc:	03e00008 	jr	ra
+  4c0100:	27bd0020 	addiu	sp,sp,32
+  4c0104:	0c12e3e4 	jal	0x4b8f90
+  4c0108:	00402821 	move	a1,v0
+  4c010c:	0c101ee4 	jal	0x407b90
+  4c0110:	02002021 	move	a0,s0
+  4c0114:	02002021 	move	a0,s0
+  4c0118:	8fbf001c 	lw	ra,28(sp)
+  4c011c:	7c022e20 	seh	a1,v0
+  4c0120:	8fb00018 	lw	s0,24(sp)
+  4c0124:	08130f67 	j	0x4c3d9c
+  4c0128:	27bd0020 	addiu	sp,sp,32
+  4c012c:	8fbf001c 	lw	ra,28(sp)
+  4c0130:	3c05006a 	lui	a1,0x6a
+  4c0134:	8fb00018 	lw	s0,24(sp)
+  4c0138:	24844a14 	addiu	a0,a0,18964
+  4c013c:	24a54e48 	addiu	a1,a1,20040
+  4c0140:	24060849 	li	a2,2121
+  4c0144:	08101b74 	j	0x406dd0
+  4c0148:	27bd0020 	addiu	sp,sp,32

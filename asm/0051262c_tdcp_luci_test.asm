@@ -1,0 +1,36 @@
+; func tdcp_luci_test @ 0x0051262c size=0x8c
+  51262c:	27bdfde0 	addiu	sp,sp,-544
+  512630:	3c05006c 	lui	a1,0x6c
+  512634:	27a40018 	addiu	a0,sp,24
+  512638:	24a5ffcc 	addiu	a1,a1,-52
+  51263c:	afbf021c 	sw	ra,540(sp)
+  512640:	24060044 	li	a2,68
+  512644:	0c101c8c 	jal	0x407230
+  512648:	afb00218 	sw	s0,536(sp)
+  51264c:	27a4005c 	addiu	a0,sp,92
+  512650:	00002821 	move	a1,zero
+  512654:	0c101cf0 	jal	0x4073c0
+  512658:	240601bc 	li	a2,444
+  51265c:	0c144118 	jal	0x510460
+  512660:	27a40018 	addiu	a0,sp,24
+  512664:	00408021 	move	s0,v0
+  512668:	3c020078 	lui	v0,0x78
+  51266c:	8c4219e4 	lw	v0,6628(v0)
+  512670:	54400009 	bnezl	v0,0x512698
+  512674:	3c04006c 	lui	a0,0x6c
+  512678:	12000004 	beqz	s0,0x51268c
+  51267c:	8fbf021c 	lw	ra,540(sp)
+  512680:	0c101f7c 	jal	0x407df0
+  512684:	02002021 	move	a0,s0
+  512688:	8fbf021c 	lw	ra,540(sp)
+  51268c:	8fb00218 	lw	s0,536(sp)
+  512690:	03e00008 	jr	ra
+  512694:	27bd0220 	addiu	sp,sp,544
+  512698:	3c05006c 	lui	a1,0x6c
+  51269c:	2484d298 	addiu	a0,a0,-11624
+  5126a0:	24a5051c 	addiu	a1,a1,1308
+  5126a4:	240604ab 	li	a2,1195
+  5126a8:	0c101b74 	jal	0x406dd0
+  5126ac:	02003821 	move	a3,s0
+  5126b0:	0814499e 	j	0x512678
+  5126b4:	00000000 	nop

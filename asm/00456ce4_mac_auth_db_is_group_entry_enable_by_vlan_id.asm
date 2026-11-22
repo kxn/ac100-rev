@@ -1,0 +1,25 @@
+; func mac_auth_db_is_group_entry_enable_by_vlan_id @ 0x00456ce4 size=0x60
+  456ce4:	27bdffd8 	addiu	sp,sp,-40
+  456ce8:	2405ffff 	li	a1,-1
+  456cec:	afb10020 	sw	s1,32(sp)
+  456cf0:	3c110076 	lui	s1,0x76
+  456cf4:	afb0001c 	sw	s0,28(sp)
+  456cf8:	00808021 	move	s0,a0
+  456cfc:	26316ff0 	addiu	s1,s1,28656
+  456d00:	afbf0024 	sw	ra,36(sp)
+  456d04:	00108080 	sll	s0,s0,0x2
+  456d08:	0c1020b4 	jal	0x4082d0
+  456d0c:	8e240008 	lw	a0,8(s1)
+  456d10:	8e220028 	lw	v0,40(s1)
+  456d14:	8e240008 	lw	a0,8(s1)
+  456d18:	00508021 	addu	s0,v0,s0
+  456d1c:	0c101fcc 	jal	0x407f30
+  456d20:	8e100000 	lw	s0,0(s0)
+  456d24:	8fbf0024 	lw	ra,36(sp)
+  456d28:	26100001 	addiu	s0,s0,1
+  456d2c:	8fb10020 	lw	s1,32(sp)
+  456d30:	2e100001 	sltiu	s0,s0,1
+  456d34:	02001021 	move	v0,s0
+  456d38:	8fb0001c 	lw	s0,28(sp)
+  456d3c:	03e00008 	jr	ra
+  456d40:	27bd0028 	addiu	sp,sp,40

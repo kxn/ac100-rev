@@ -1,0 +1,25 @@
+; func radius_pair_free @ 0x00449b34 size=0x60
+  449b34:	3c1c0031 	lui	gp,0x31
+  449b38:	279c75cc 	addiu	gp,gp,30156
+  449b3c:	0399e021 	addu	gp,gp,t9
+  449b40:	27bdffd8 	addiu	sp,sp,-40
+  449b44:	afbc0010 	sw	gp,16(sp)
+  449b48:	afb0001c 	sw	s0,28(sp)
+  449b4c:	afbf0024 	sw	ra,36(sp)
+  449b50:	afb10020 	sw	s1,32(sp)
+  449b54:	1080000a 	beqz	a0,0x449b80
+  449b58:	8f9081a0 	lw	s0,-32352(gp)
+  449b5c:	8f998054 	lw	t9,-32684(gp)
+  449b60:	0320f809 	jalr	t9
+  449b64:	8c910150 	lw	s1,336(a0)
+  449b68:	8e020000 	lw	v0,0(s0)
+  449b6c:	02202021 	move	a0,s1
+  449b70:	8fbc0010 	lw	gp,16(sp)
+  449b74:	24420001 	addiu	v0,v0,1
+  449b78:	1480fff8 	bnez	a0,0x449b5c
+  449b7c:	ae020000 	sw	v0,0(s0)
+  449b80:	8fbf0024 	lw	ra,36(sp)
+  449b84:	8fb10020 	lw	s1,32(sp)
+  449b88:	8fb0001c 	lw	s0,28(sp)
+  449b8c:	03e00008 	jr	ra
+  449b90:	27bd0028 	addiu	sp,sp,40

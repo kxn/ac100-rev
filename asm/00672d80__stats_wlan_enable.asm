@@ -1,0 +1,34 @@
+; func _stats_wlan_enable @ 0x00672d80 size=0x84
+  672d80:	27bdffd0 	addiu	sp,sp,-48
+  672d84:	afbf002c 	sw	ra,44(sp)
+  672d88:	afb30028 	sw	s3,40(sp)
+  672d8c:	30b300ff 	andi	s3,a1,0xff
+  672d90:	afb20024 	sw	s2,36(sp)
+  672d94:	00809021 	move	s2,a0
+  672d98:	afb10020 	sw	s1,32(sp)
+  672d9c:	0c186b9a 	jal	0x61ae68
+  672da0:	afb0001c 	sw	s0,28(sp)
+  672da4:	0c1506a9 	jal	0x541aa4
+  672da8:	3051ffff 	andi	s1,v0,0xffff
+  672dac:	0222102a 	slt	v0,s1,v0
+  672db0:	14400009 	bnez	v0,0x672dd8
+  672db4:	02202021 	move	a0,s1
+  672db8:	0c1506a9 	jal	0x541aa4
+  672dbc:	00000000 	nop
+  672dc0:	0c1506b2 	jal	0x541ac8
+  672dc4:	00408021 	move	s0,v0
+  672dc8:	02028021 	addu	s0,s0,v0
+  672dcc:	0230802a 	slt	s0,s1,s0
+  672dd0:	16000004 	bnez	s0,0x672de4
+  672dd4:	02202021 	move	a0,s1
+  672dd8:	3245000f 	andi	a1,s2,0xf
+  672ddc:	0c19becf 	jal	0x66fb3c
+  672de0:	02603021 	move	a2,s3
+  672de4:	8fbf002c 	lw	ra,44(sp)
+  672de8:	00001021 	move	v0,zero
+  672dec:	8fb30028 	lw	s3,40(sp)
+  672df0:	8fb20024 	lw	s2,36(sp)
+  672df4:	8fb10020 	lw	s1,32(sp)
+  672df8:	8fb0001c 	lw	s0,28(sp)
+  672dfc:	03e00008 	jr	ra
+  672e00:	27bd0030 	addiu	sp,sp,48

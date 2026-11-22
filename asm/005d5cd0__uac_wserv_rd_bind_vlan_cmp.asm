@@ -1,0 +1,34 @@
+; func _uac_wserv_rd_bind_vlan_cmp @ 0x005d5cd0 size=0x84
+  5d5cd0:	27bdffc8 	addiu	sp,sp,-56
+  5d5cd4:	afb2002c 	sw	s2,44(sp)
+  5d5cd8:	00809021 	move	s2,a0
+  5d5cdc:	afb10028 	sw	s1,40(sp)
+  5d5ce0:	00c02021 	move	a0,a2
+  5d5ce4:	afb00024 	sw	s0,36(sp)
+  5d5ce8:	00a08821 	move	s1,a1
+  5d5cec:	afbf0034 	sw	ra,52(sp)
+  5d5cf0:	24100001 	li	s0,1
+  5d5cf4:	afb30030 	sw	s3,48(sp)
+  5d5cf8:	10c0000e 	beqz	a2,0x5d5d34
+  5d5cfc:	a7a00018 	sh	zero,24(sp)
+  5d5d00:	0c101db4 	jal	0x4076d0
+  5d5d04:	00000000 	nop
+  5d5d08:	27a60018 	addiu	a2,sp,24
+  5d5d0c:	02202021 	move	a0,s1
+  5d5d10:	02402821 	move	a1,s2
+  5d5d14:	0c17c7bf 	jal	0x5f1efc
+  5d5d18:	00409821 	move	s3,v0
+  5d5d1c:	14400006 	bnez	v0,0x5d5d38
+  5d5d20:	8fbf0034 	lw	ra,52(sp)
+  5d5d24:	97b00018 	lhu	s0,24(sp)
+  5d5d28:	3273ffff 	andi	s3,s3,0xffff
+  5d5d2c:	02138026 	xor	s0,s0,s3
+  5d5d30:	0010802b 	sltu	s0,zero,s0
+  5d5d34:	8fbf0034 	lw	ra,52(sp)
+  5d5d38:	02001021 	move	v0,s0
+  5d5d3c:	8fb30030 	lw	s3,48(sp)
+  5d5d40:	8fb2002c 	lw	s2,44(sp)
+  5d5d44:	8fb10028 	lw	s1,40(sp)
+  5d5d48:	8fb00024 	lw	s0,36(sp)
+  5d5d4c:	03e00008 	jr	ra
+  5d5d50:	27bd0038 	addiu	sp,sp,56

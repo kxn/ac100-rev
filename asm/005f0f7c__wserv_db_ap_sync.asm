@@ -1,0 +1,43 @@
+; func _wserv_db_ap_sync @ 0x005f0f7c size=0xa8
+  5f0f7c:	27bdffd0 	addiu	sp,sp,-48
+  5f0f80:	afb00024 	sw	s0,36(sp)
+  5f0f84:	00808021 	move	s0,a0
+  5f0f88:	afbf002c 	sw	ra,44(sp)
+  5f0f8c:	afb10028 	sw	s1,40(sp)
+  5f0f90:	8ca3000c 	lw	v1,12(a1)
+  5f0f94:	94b10000 	lhu	s1,0(a1)
+  5f0f98:	9482000c 	lhu	v0,12(a0)
+  5f0f9c:	8ca60004 	lw	a2,4(a1)
+  5f0fa0:	8ca70008 	lw	a3,8(a1)
+  5f0fa4:	02202021 	move	a0,s1
+  5f0fa8:	afa30010 	sw	v1,16(sp)
+  5f0fac:	8ca30010 	lw	v1,16(a1)
+  5f0fb0:	00402821 	move	a1,v0
+  5f0fb4:	0c17c254 	jal	0x5f0950
+  5f0fb8:	afa30014 	sw	v1,20(sp)
+  5f0fbc:	10400004 	beqz	v0,0x5f0fd0
+  5f0fc0:	3c020075 	lui	v0,0x75
+  5f0fc4:	8c42fe70 	lw	v0,-400(v0)
+  5f0fc8:	14400007 	bnez	v0,0x5f0fe8
+  5f0fcc:	00000000 	nop
+  5f0fd0:	8fbf002c 	lw	ra,44(sp)
+  5f0fd4:	00001021 	move	v0,zero
+  5f0fd8:	8fb10028 	lw	s1,40(sp)
+  5f0fdc:	8fb00024 	lw	s0,36(sp)
+  5f0fe0:	03e00008 	jr	ra
+  5f0fe4:	27bd0030 	addiu	sp,sp,48
+  5f0fe8:	0c16276a 	jal	0x589da8
+  5f0fec:	00000000 	nop
+  5f0ff0:	5040fff8 	beqzl	v0,0x5f0fd4
+  5f0ff4:	8fbf002c 	lw	ra,44(sp)
+  5f0ff8:	3c040070 	lui	a0,0x70
+  5f0ffc:	9602000c 	lhu	v0,12(s0)
+  5f1000:	3c050070 	lui	a1,0x70
+  5f1004:	248490d8 	addiu	a0,a0,-28456
+  5f1008:	24a5a55c 	addiu	a1,a1,-23204
+  5f100c:	afa20010 	sw	v0,16(sp)
+  5f1010:	24061066 	li	a2,4198
+  5f1014:	0c101b74 	jal	0x406dd0
+  5f1018:	02203821 	move	a3,s1
+  5f101c:	0817c3f5 	j	0x5f0fd4
+  5f1020:	8fbf002c 	lw	ra,44(sp)

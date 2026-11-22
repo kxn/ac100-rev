@@ -1,0 +1,22 @@
+; func cw_user_defined_send_pkt_create @ 0x0058819c size=0x54
+  58819c:	27bdffd8 	addiu	sp,sp,-40
+  5881a0:	240504e5 	li	a1,1253
+  5881a4:	afb10020 	sw	s1,32(sp)
+  5881a8:	00808821 	move	s1,a0
+  5881ac:	afb0001c 	sw	s0,28(sp)
+  5881b0:	afbf0024 	sw	ra,36(sp)
+  5881b4:	0c102114 	jal	0x408450
+  5881b8:	24040010 	li	a0,16
+  5881bc:	10400006 	beqz	v0,0x5881d8
+  5881c0:	00408021 	move	s0,v0
+  5881c4:	00002821 	move	a1,zero
+  5881c8:	24060010 	li	a2,16
+  5881cc:	0c101cf0 	jal	0x4073c0
+  5881d0:	00402021 	move	a0,v0
+  5881d4:	ae110004 	sw	s1,4(s0)
+  5881d8:	8fbf0024 	lw	ra,36(sp)
+  5881dc:	02001021 	move	v0,s0
+  5881e0:	8fb10020 	lw	s1,32(sp)
+  5881e4:	8fb0001c 	lw	s0,28(sp)
+  5881e8:	03e00008 	jr	ra
+  5881ec:	27bd0028 	addiu	sp,sp,40

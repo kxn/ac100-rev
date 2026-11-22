@@ -1,0 +1,22 @@
+; func mac2str @ 0x004bb2d8 size=0x54
+  4bb2d8:	27bdffc8 	addiu	sp,sp,-56
+  4bb2dc:	afbf0034 	sw	ra,52(sp)
+  4bb2e0:	90820001 	lbu	v0,1(a0)
+  4bb2e4:	90870000 	lbu	a3,0(a0)
+  4bb2e8:	afa20010 	sw	v0,16(sp)
+  4bb2ec:	90820002 	lbu	v0,2(a0)
+  4bb2f0:	afa20014 	sw	v0,20(sp)
+  4bb2f4:	90820003 	lbu	v0,3(a0)
+  4bb2f8:	afa20018 	sw	v0,24(sp)
+  4bb2fc:	90820004 	lbu	v0,4(a0)
+  4bb300:	afa2001c 	sw	v0,28(sp)
+  4bb304:	90820005 	lbu	v0,5(a0)
+  4bb308:	00a02021 	move	a0,a1
+  4bb30c:	00c02821 	move	a1,a2
+  4bb310:	3c060069 	lui	a2,0x69
+  4bb314:	afa20020 	sw	v0,32(sp)
+  4bb318:	0c101dec 	jal	0x4077b0
+  4bb31c:	24c6baac 	addiu	a2,a2,-17748
+  4bb320:	8fbf0034 	lw	ra,52(sp)
+  4bb324:	03e00008 	jr	ra
+  4bb328:	27bd0038 	addiu	sp,sp,56

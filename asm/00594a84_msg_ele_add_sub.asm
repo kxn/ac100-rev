@@ -1,0 +1,25 @@
+; func msg_ele_add_sub @ 0x00594a84 size=0x60
+  594a84:	27bdffd8 	addiu	sp,sp,-40
+  594a88:	afb10020 	sw	s1,32(sp)
+  594a8c:	7c058e20 	seh	s1,a1
+  594a90:	afb0001c 	sw	s0,28(sp)
+  594a94:	00808021 	move	s0,a0
+  594a98:	1080000d 	beqz	a0,0x594ad0
+  594a9c:	afbf0024 	sw	ra,36(sp)
+  594aa0:	24040010 	li	a0,16
+  594aa4:	0c102114 	jal	0x408450
+  594aa8:	24050107 	li	a1,263
+  594aac:	10400008 	beqz	v0,0x594ad0
+  594ab0:	26040010 	addiu	a0,s0,16
+  594ab4:	a451000c 	sh	s1,12(v0)
+  594ab8:	8fbf0024 	lw	ra,36(sp)
+  594abc:	00402821 	move	a1,v0
+  594ac0:	8fb10020 	lw	s1,32(sp)
+  594ac4:	8fb0001c 	lw	s0,28(sp)
+  594ac8:	081021ac 	j	0x4086b0
+  594acc:	27bd0028 	addiu	sp,sp,40
+  594ad0:	8fbf0024 	lw	ra,36(sp)
+  594ad4:	8fb10020 	lw	s1,32(sp)
+  594ad8:	8fb0001c 	lw	s0,28(sp)
+  594adc:	03e00008 	jr	ra
+  594ae0:	27bd0028 	addiu	sp,sp,40

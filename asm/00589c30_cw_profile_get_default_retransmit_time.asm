@@ -1,0 +1,20 @@
+; func cw_profile_get_default_retransmit_time @ 0x00589c30 size=0x4c
+  589c30:	3c02007c 	lui	v0,0x7c
+  589c34:	27bdffe0 	addiu	sp,sp,-32
+  589c38:	8c42598c 	lw	v0,22924(v0)
+  589c3c:	10400005 	beqz	v0,0x589c54
+  589c40:	afbf001c 	sw	ra,28(sp)
+  589c44:	8c420138 	lw	v0,312(v0)
+  589c48:	8fbf001c 	lw	ra,28(sp)
+  589c4c:	03e00008 	jr	ra
+  589c50:	27bd0020 	addiu	sp,sp,32
+  589c54:	3c040069 	lui	a0,0x69
+  589c58:	3c05006e 	lui	a1,0x6e
+  589c5c:	3c07006e 	lui	a3,0x6e
+  589c60:	2484d3ac 	addiu	a0,a0,-11348
+  589c64:	24a51090 	addiu	a1,a1,4240
+  589c68:	24060a40 	li	a2,2624
+  589c6c:	0c101b74 	jal	0x406dd0
+  589c70:	24e7e734 	addiu	a3,a3,-6348
+  589c74:	08162712 	j	0x589c48
+  589c78:	2402003c 	li	v0,60

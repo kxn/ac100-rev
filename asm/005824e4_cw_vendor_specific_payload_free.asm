@@ -1,0 +1,19 @@
+; func cw_vendor_specific_payload_free @ 0x005824e4 size=0x48
+  5824e4:	27bdffd8 	addiu	sp,sp,-40
+  5824e8:	afb10020 	sw	s1,32(sp)
+  5824ec:	afbf0024 	sw	ra,36(sp)
+  5824f0:	afb0001c 	sw	s0,28(sp)
+  5824f4:	8c900010 	lw	s0,16(a0)
+  5824f8:	12000006 	beqz	s0,0x582514
+  5824fc:	00808821 	move	s1,a0
+  582500:	0c1608f9 	jal	0x5823e4
+  582504:	02002021 	move	a0,s0
+  582508:	0c101f7c 	jal	0x407df0
+  58250c:	02002021 	move	a0,s0
+  582510:	ae200010 	sw	zero,16(s1)
+  582514:	8fbf0024 	lw	ra,36(sp)
+  582518:	00001021 	move	v0,zero
+  58251c:	8fb10020 	lw	s1,32(sp)
+  582520:	8fb0001c 	lw	s0,28(sp)
+  582524:	03e00008 	jr	ra
+  582528:	27bd0028 	addiu	sp,sp,40

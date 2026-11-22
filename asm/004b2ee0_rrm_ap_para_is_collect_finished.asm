@@ -1,0 +1,26 @@
+; func rrm_ap_para_is_collect_finished @ 0x004b2ee0 size=0x64
+  4b2ee0:	27bdffe0 	addiu	sp,sp,-32
+  4b2ee4:	afbf001c 	sw	ra,28(sp)
+  4b2ee8:	1080000a 	beqz	a0,0x4b2f14
+  4b2eec:	afb00018 	sw	s0,24(sp)
+  4b2ef0:	8c900004 	lw	s0,4(a0)
+  4b2ef4:	8c820000 	lw	v0,0(a0)
+  4b2ef8:	02028026 	xor	s0,s0,v0
+  4b2efc:	2e100001 	sltiu	s0,s0,1
+  4b2f00:	8fbf001c 	lw	ra,28(sp)
+  4b2f04:	02001021 	move	v0,s0
+  4b2f08:	8fb00018 	lw	s0,24(sp)
+  4b2f0c:	03e00008 	jr	ra
+  4b2f10:	27bd0020 	addiu	sp,sp,32
+  4b2f14:	3c020073 	lui	v0,0x73
+  4b2f18:	804219b0 	lb	v0,6576(v0)
+  4b2f1c:	1040fff8 	beqz	v0,0x4b2f00
+  4b2f20:	24100001 	li	s0,1
+  4b2f24:	3c04006a 	lui	a0,0x6a
+  4b2f28:	3c05006a 	lui	a1,0x6a
+  4b2f2c:	248403dc 	addiu	a0,a0,988
+  4b2f30:	24a519ac 	addiu	a1,a1,6572
+  4b2f34:	0c101b74 	jal	0x406dd0
+  4b2f38:	24060331 	li	a2,817
+  4b2f3c:	0812cbc1 	j	0x4b2f04
+  4b2f40:	8fbf001c 	lw	ra,28(sp)

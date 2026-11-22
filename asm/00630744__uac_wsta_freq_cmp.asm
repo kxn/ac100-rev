@@ -1,0 +1,23 @@
+; func _uac_wsta_freq_cmp @ 0x00630744 size=0x58
+  630744:	27bdffe0 	addiu	sp,sp,-32
+  630748:	00801021 	move	v0,a0
+  63074c:	afbf001c 	sw	ra,28(sp)
+  630750:	afb00018 	sw	s0,24(sp)
+  630754:	00a08021 	move	s0,a1
+  630758:	8c840020 	lw	a0,32(a0)
+  63075c:	0c186b96 	jal	0x61ae58
+  630760:	90450024 	lbu	a1,36(v0)
+  630764:	0c18755b 	jal	0x61d56c
+  630768:	00402021 	move	a0,v0
+  63076c:	0c181fde 	jal	0x607f78
+  630770:	00402021 	move	a0,v0
+  630774:	00402821 	move	a1,v0
+  630778:	10a00004 	beqz	a1,0x63078c
+  63077c:	24020001 	li	v0,1
+  630780:	0c101e14 	jal	0x407850
+  630784:	02002021 	move	a0,s0
+  630788:	0002102b 	sltu	v0,zero,v0
+  63078c:	8fbf001c 	lw	ra,28(sp)
+  630790:	8fb00018 	lw	s0,24(sp)
+  630794:	03e00008 	jr	ra
+  630798:	27bd0020 	addiu	sp,sp,32

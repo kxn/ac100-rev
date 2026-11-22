@@ -1,0 +1,53 @@
+; func apdb_destroy @ 0x00606cd8 size=0xd0
+  606cd8:	27bdffd8 	addiu	sp,sp,-40
+  606cdc:	afb0001c 	sw	s0,28(sp)
+  606ce0:	3c10007d 	lui	s0,0x7d
+  606ce4:	afbf0024 	sw	ra,36(sp)
+  606ce8:	0c180096 	jal	0x600258
+  606cec:	afb10020 	sw	s1,32(sp)
+  606cf0:	2604c2a0 	addiu	a0,s0,-15712
+  606cf4:	0c10206c 	jal	0x4081b0
+  606cf8:	2610c2a0 	addiu	s0,s0,-15712
+  606cfc:	00408821 	move	s1,v0
+  606d00:	12200011 	beqz	s1,0x606d48
+  606d04:	3c02007d 	lui	v0,0x7d
+  606d08:	8e24000c 	lw	a0,12(s1)
+  606d0c:	10800004 	beqz	a0,0x606d20
+  606d10:	00000000 	nop
+  606d14:	0c101f7c 	jal	0x407df0
+  606d18:	00000000 	nop
+  606d1c:	ae20000c 	sw	zero,12(s1)
+  606d20:	0c102140 	jal	0x408500
+  606d24:	02202021 	move	a0,s1
+  606d28:	0c101f7c 	jal	0x407df0
+  606d2c:	02202021 	move	a0,s1
+  606d30:	0c10206c 	jal	0x4081b0
+  606d34:	02002021 	move	a0,s0
+  606d38:	00408821 	move	s1,v0
+  606d3c:	5620fff3 	bnezl	s1,0x606d0c
+  606d40:	8e24000c 	lw	a0,12(s1)
+  606d44:	3c02007d 	lui	v0,0x7d
+  606d48:	8c42bfd0 	lw	v0,-16432(v0)
+  606d4c:	1440000f 	bnez	v0,0x606d8c
+  606d50:	3c040070 	lui	a0,0x70
+  606d54:	3c10007d 	lui	s0,0x7d
+  606d58:	8e04c288 	lw	a0,-15736(s0)
+  606d5c:	10800004 	beqz	a0,0x606d70
+  606d60:	00000000 	nop
+  606d64:	0c1020d8 	jal	0x408360
+  606d68:	00000000 	nop
+  606d6c:	ae00c288 	sw	zero,-15736(s0)
+  606d70:	0c1847c5 	jal	0x611f14
+  606d74:	00000000 	nop
+  606d78:	8fbf0024 	lw	ra,36(sp)
+  606d7c:	8fb10020 	lw	s1,32(sp)
+  606d80:	8fb0001c 	lw	s0,28(sp)
+  606d84:	08184808 	j	0x612020
+  606d88:	27bd0028 	addiu	sp,sp,40
+  606d8c:	3c050070 	lui	a1,0x70
+  606d90:	24840680 	addiu	a0,a0,1664
+  606d94:	24a523c4 	addiu	a1,a1,9156
+  606d98:	0c101b74 	jal	0x406dd0
+  606d9c:	2406149d 	li	a2,5277
+  606da0:	08181b56 	j	0x606d58
+  606da4:	3c10007d 	lui	s0,0x7d

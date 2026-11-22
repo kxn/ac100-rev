@@ -1,0 +1,37 @@
+; func wportal_db_ftt_set @ 0x0042eec0 size=0x90
+  42eec0:	27bdffd8 	addiu	sp,sp,-40
+  42eec4:	afb20020 	sw	s2,32(sp)
+  42eec8:	2412ffff 	li	s2,-1
+  42eecc:	afb00018 	sw	s0,24(sp)
+  42eed0:	00808021 	move	s0,a0
+  42eed4:	afbf0024 	sw	ra,36(sp)
+  42eed8:	10800012 	beqz	a0,0x42ef24
+  42eedc:	afb1001c 	sw	s1,28(sp)
+  42eee0:	3c110076 	lui	s1,0x76
+  42eee4:	2405ffff 	li	a1,-1
+  42eee8:	0c1020b4 	jal	0x4082d0
+  42eeec:	8e24a148 	lw	a0,-24248(s1)
+  42eef0:	3c020076 	lui	v0,0x76
+  42eef4:	02002821 	move	a1,s0
+  42eef8:	0c102030 	jal	0x4080c0
+  42eefc:	8c44a14c 	lw	a0,-24244(v0)
+  42ef00:	1040000f 	beqz	v0,0x42ef40
+  42ef04:	00000000 	nop
+  42ef08:	24060144 	li	a2,324
+  42ef0c:	00402021 	move	a0,v0
+  42ef10:	0c101c8c 	jal	0x407230
+  42ef14:	02002821 	move	a1,s0
+  42ef18:	00009021 	move	s2,zero
+  42ef1c:	0c101fcc 	jal	0x407f30
+  42ef20:	8e24a148 	lw	a0,-24248(s1)
+  42ef24:	8fbf0024 	lw	ra,36(sp)
+  42ef28:	02401021 	move	v0,s2
+  42ef2c:	8fb20020 	lw	s2,32(sp)
+  42ef30:	8fb1001c 	lw	s1,28(sp)
+  42ef34:	8fb00018 	lw	s0,24(sp)
+  42ef38:	03e00008 	jr	ra
+  42ef3c:	27bd0028 	addiu	sp,sp,40
+  42ef40:	0c101fcc 	jal	0x407f30
+  42ef44:	8e24a148 	lw	a0,-24248(s1)
+  42ef48:	0810bbca 	j	0x42ef28
+  42ef4c:	8fbf0024 	lw	ra,36(sp)

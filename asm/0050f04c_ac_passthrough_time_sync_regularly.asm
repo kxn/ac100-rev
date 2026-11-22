@@ -1,0 +1,25 @@
+; func ac_passthrough_time_sync_regularly @ 0x0050f04c size=0x60
+  50f04c:	27bdffd0 	addiu	sp,sp,-48
+  50f050:	2402ffff 	li	v0,-1
+  50f054:	afb00028 	sw	s0,40(sp)
+  50f058:	3c100073 	lui	s0,0x73
+  50f05c:	afbf002c 	sw	ra,44(sp)
+  50f060:	0c143bea 	jal	0x50efa8
+  50f064:	ae021b48 	sw	v0,6984(s0)
+  50f068:	3c02006c 	lui	v0,0x6c
+  50f06c:	3c060051 	lui	a2,0x51
+  50f070:	afa00010 	sw	zero,16(sp)
+  50f074:	2442ee04 	addiu	v0,v0,-4604
+  50f078:	24040e10 	li	a0,3600
+  50f07c:	afa20014 	sw	v0,20(sp)
+  50f080:	00002821 	move	a1,zero
+  50f084:	240208b0 	li	v0,2224
+  50f088:	24c6f04c 	addiu	a2,a2,-4020
+  50f08c:	00003821 	move	a3,zero
+  50f090:	0c1020d0 	jal	0x408340
+  50f094:	afa20018 	sw	v0,24(sp)
+  50f098:	8fbf002c 	lw	ra,44(sp)
+  50f09c:	ae021b48 	sw	v0,6984(s0)
+  50f0a0:	8fb00028 	lw	s0,40(sp)
+  50f0a4:	03e00008 	jr	ra
+  50f0a8:	27bd0030 	addiu	sp,sp,48

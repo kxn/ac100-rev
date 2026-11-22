@@ -1,0 +1,32 @@
+; func wips_detail_insert_to_list @ 0x004c6a24 size=0x7c
+  4c6a24:	27bdffd8 	addiu	sp,sp,-40
+  4c6a28:	afb10020 	sw	s1,32(sp)
+  4c6a2c:	00808821 	move	s1,a0
+  4c6a30:	afb0001c 	sw	s0,28(sp)
+  4c6a34:	afbf0024 	sw	ra,36(sp)
+  4c6a38:	0c10206c 	jal	0x4081b0
+  4c6a3c:	00a08021 	move	s0,a1
+  4c6a40:	5040000b 	beqzl	v0,0x4c6a70
+  4c6a44:	02202021 	move	a0,s1
+  4c6a48:	8c440024 	lw	a0,36(v0)
+  4c6a4c:	8e030024 	lw	v1,36(s0)
+  4c6a50:	0083182a 	slt	v1,a0,v1
+  4c6a54:	1460000c 	bnez	v1,0x4c6a88
+  4c6a58:	00402021 	move	a0,v0
+  4c6a5c:	0c1021a0 	jal	0x408680
+  4c6a60:	00000000 	nop
+  4c6a64:	5440fff9 	bnezl	v0,0x4c6a4c
+  4c6a68:	8c440024 	lw	a0,36(v0)
+  4c6a6c:	02202021 	move	a0,s1
+  4c6a70:	8fbf0024 	lw	ra,36(sp)
+  4c6a74:	02002821 	move	a1,s0
+  4c6a78:	8fb10020 	lw	s1,32(sp)
+  4c6a7c:	8fb0001c 	lw	s0,28(sp)
+  4c6a80:	081021ac 	j	0x4086b0
+  4c6a84:	27bd0028 	addiu	sp,sp,40
+  4c6a88:	02002821 	move	a1,s0
+  4c6a8c:	8fbf0024 	lw	ra,36(sp)
+  4c6a90:	8fb10020 	lw	s1,32(sp)
+  4c6a94:	8fb0001c 	lw	s0,28(sp)
+  4c6a98:	0810205c 	j	0x408170
+  4c6a9c:	27bd0028 	addiu	sp,sp,40

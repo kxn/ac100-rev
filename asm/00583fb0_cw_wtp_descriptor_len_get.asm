@@ -1,0 +1,35 @@
+; func cw_wtp_descriptor_len_get @ 0x00583fb0 size=0x88
+  583fb0:	27bdffd8 	addiu	sp,sp,-40
+  583fb4:	afb10020 	sw	s1,32(sp)
+  583fb8:	00808821 	move	s1,a0
+  583fbc:	afb0001c 	sw	s0,28(sp)
+  583fc0:	00008021 	move	s0,zero
+  583fc4:	10800016 	beqz	a0,0x584020
+  583fc8:	afbf0024 	sw	ra,36(sp)
+  583fcc:	24840004 	addiu	a0,a0,4
+  583fd0:	0c10206c 	jal	0x4081b0
+  583fd4:	24100003 	li	s0,3
+  583fd8:	10400006 	beqz	v0,0x583ff4
+  583fdc:	00000000 	nop
+  583fe0:	26100003 	addiu	s0,s0,3
+  583fe4:	0c1021a0 	jal	0x408680
+  583fe8:	00402021 	move	a0,v0
+  583fec:	1440fffc 	bnez	v0,0x583fe0
+  583ff0:	3210ffff 	andi	s0,s0,0xffff
+  583ff4:	0c10206c 	jal	0x4081b0
+  583ff8:	26240010 	addiu	a0,s1,16
+  583ffc:	10400009 	beqz	v0,0x584024
+  584000:	8fbf0024 	lw	ra,36(sp)
+  584004:	94430012 	lhu	v1,18(v0)
+  584008:	00402021 	move	a0,v0
+  58400c:	24630008 	addiu	v1,v1,8
+  584010:	0c1021a0 	jal	0x408680
+  584014:	02038021 	addu	s0,s0,v1
+  584018:	1440fffa 	bnez	v0,0x584004
+  58401c:	3210ffff 	andi	s0,s0,0xffff
+  584020:	8fbf0024 	lw	ra,36(sp)
+  584024:	02001021 	move	v0,s0
+  584028:	8fb10020 	lw	s1,32(sp)
+  58402c:	8fb0001c 	lw	s0,28(sp)
+  584030:	03e00008 	jr	ra
+  584034:	27bd0028 	addiu	sp,sp,40

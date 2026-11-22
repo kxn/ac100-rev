@@ -1,0 +1,39 @@
+; func cw_packet_queue_is_full @ 0x0059bb44 size=0x98
+  59bb44:	27bdffd8 	addiu	sp,sp,-40
+  59bb48:	afb0001c 	sw	s0,28(sp)
+  59bb4c:	00808021 	move	s0,a0
+  59bb50:	afbf0024 	sw	ra,36(sp)
+  59bb54:	10800011 	beqz	a0,0x59bb9c
+  59bb58:	afb10020 	sw	s1,32(sp)
+  59bb5c:	8c840000 	lw	a0,0(a0)
+  59bb60:	0c1020b4 	jal	0x4082d0
+  59bb64:	2405ffff 	li	a1,-1
+  59bb68:	8e02000c 	lw	v0,12(s0)
+  59bb6c:	8e040000 	lw	a0,0(s0)
+  59bb70:	8c510008 	lw	s1,8(v0)
+  59bb74:	8c420010 	lw	v0,16(v0)
+  59bb78:	02228826 	xor	s1,s1,v0
+  59bb7c:	0c101fcc 	jal	0x407f30
+  59bb80:	2e310001 	sltiu	s1,s1,1
+  59bb84:	8fbf0024 	lw	ra,36(sp)
+  59bb88:	02201021 	move	v0,s1
+  59bb8c:	8fb10020 	lw	s1,32(sp)
+  59bb90:	8fb0001c 	lw	s0,28(sp)
+  59bb94:	03e00008 	jr	ra
+  59bb98:	27bd0028 	addiu	sp,sp,40
+  59bb9c:	3c020075 	lui	v0,0x75
+  59bba0:	8c42cf58 	lw	v0,-12456(v0)
+  59bba4:	1040fff7 	beqz	v0,0x59bb84
+  59bba8:	00008821 	move	s1,zero
+  59bbac:	0c16276a 	jal	0x589da8
+  59bbb0:	00000000 	nop
+  59bbb4:	1040fff4 	beqz	v0,0x59bb88
+  59bbb8:	8fbf0024 	lw	ra,36(sp)
+  59bbbc:	3c04006e 	lui	a0,0x6e
+  59bbc0:	3c05006e 	lui	a1,0x6e
+  59bbc4:	24843dc4 	addiu	a0,a0,15812
+  59bbc8:	24a53ff8 	addiu	a1,a1,16376
+  59bbcc:	0c101b74 	jal	0x406dd0
+  59bbd0:	2406017b 	li	a2,379
+  59bbd4:	08166ee1 	j	0x59bb84
+  59bbd8:	00000000 	nop

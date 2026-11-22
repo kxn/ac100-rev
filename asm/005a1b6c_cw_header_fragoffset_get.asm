@@ -1,0 +1,24 @@
+; func cw_header_fragoffset_get @ 0x005a1b6c size=0x5c
+  5a1b6c:	27bdffd8 	addiu	sp,sp,-40
+  5a1b70:	afbf0024 	sw	ra,36(sp)
+  5a1b74:	1080000a 	beqz	a0,0x5a1ba0
+  5a1b78:	a7a00018 	sh	zero,24(sp)
+  5a1b7c:	90820006 	lbu	v0,6(a0)
+  5a1b80:	a3a20018 	sb	v0,24(sp)
+  5a1b84:	90820007 	lbu	v0,7(a0)
+  5a1b88:	a3a20019 	sb	v0,25(sp)
+  5a1b8c:	97a20018 	lhu	v0,24(sp)
+  5a1b90:	000210c2 	srl	v0,v0,0x3
+  5a1b94:	8fbf0024 	lw	ra,36(sp)
+  5a1b98:	03e00008 	jr	ra
+  5a1b9c:	27bd0028 	addiu	sp,sp,40
+  5a1ba0:	3c040069 	lui	a0,0x69
+  5a1ba4:	3c05006e 	lui	a1,0x6e
+  5a1ba8:	3c07006e 	lui	a3,0x6e
+  5a1bac:	2484d3ac 	addiu	a0,a0,-11348
+  5a1bb0:	24a56514 	addiu	a1,a1,25876
+  5a1bb4:	240602ce 	li	a2,718
+  5a1bb8:	0c101b74 	jal	0x406dd0
+  5a1bbc:	24e7608c 	addiu	a3,a3,24716
+  5a1bc0:	081686e5 	j	0x5a1b94
+  5a1bc4:	00001021 	move	v0,zero

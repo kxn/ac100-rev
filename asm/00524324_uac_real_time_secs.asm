@@ -1,0 +1,23 @@
+; func uac_real_time_secs @ 0x00524324 size=0x58
+  524324:	3c1c0024 	lui	gp,0x24
+  524328:	279ccddc 	addiu	gp,gp,-12836
+  52432c:	0399e021 	addu	gp,gp,t9
+  524330:	27bdffd8 	addiu	sp,sp,-40
+  524334:	8f9987a0 	lw	t9,-30816(gp)
+  524338:	00002021 	move	a0,zero
+  52433c:	afbc0010 	sw	gp,16(sp)
+  524340:	afbf0024 	sw	ra,36(sp)
+  524344:	0320f809 	jalr	t9
+  524348:	27a50018 	addiu	a1,sp,24
+  52434c:	14400006 	bnez	v0,0x524368
+  524350:	8fbc0010 	lw	gp,16(sp)
+  524354:	8fa30018 	lw	v1,24(sp)
+  524358:	8fbf0024 	lw	ra,36(sp)
+  52435c:	000317c3 	sra	v0,v1,0x1f
+  524360:	03e00008 	jr	ra
+  524364:	27bd0028 	addiu	sp,sp,40
+  524368:	8f998598 	lw	t9,-31336(gp)
+  52436c:	0320f809 	jalr	t9
+  524370:	00002021 	move	a0,zero
+  524374:	1000fff8 	b	0x524358
+  524378:	00401821 	move	v1,v0

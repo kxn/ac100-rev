@@ -1,0 +1,25 @@
+; func cw_priv_ac_info_assemble @ 0x005a2c78 size=0x60
+  5a2c78:	27bdffd8 	addiu	sp,sp,-40
+  5a2c7c:	24060006 	li	a2,6
+  5a2c80:	afbf0024 	sw	ra,36(sp)
+  5a2c84:	afb20020 	sw	s2,32(sp)
+  5a2c88:	afb1001c 	sw	s1,28(sp)
+  5a2c8c:	00a08821 	move	s1,a1
+  5a2c90:	afb00018 	sw	s0,24(sp)
+  5a2c94:	00808021 	move	s0,a0
+  5a2c98:	8ca50010 	lw	a1,16(a1)
+  5a2c9c:	0c15c856 	jal	0x572158
+  5a2ca0:	94920004 	lhu	s2,4(a0)
+  5a2ca4:	96020004 	lhu	v0,4(s0)
+  5a2ca8:	9623000e 	lhu	v1,14(s1)
+  5a2cac:	8fbf0024 	lw	ra,36(sp)
+  5a2cb0:	00529023 	subu	s2,v0,s2
+  5a2cb4:	8fb1001c 	lw	s1,28(sp)
+  5a2cb8:	8fb00018 	lw	s0,24(sp)
+  5a2cbc:	02431026 	xor	v0,s2,v1
+  5a2cc0:	8fb20020 	lw	s2,32(sp)
+  5a2cc4:	2403ffff 	li	v1,-1
+  5a2cc8:	27bd0028 	addiu	sp,sp,40
+  5a2ccc:	0002180a 	movz	v1,zero,v0
+  5a2cd0:	03e00008 	jr	ra
+  5a2cd4:	00601021 	move	v0,v1

@@ -1,0 +1,26 @@
+; func cw_priv_ap_update_feature_assemble @ 0x005a9744 size=0x64
+  5a9744:	27bdffd8 	addiu	sp,sp,-40
+  5a9748:	8ca20010 	lw	v0,16(a1)
+  5a974c:	afbf0024 	sw	ra,36(sp)
+  5a9750:	afb20020 	sw	s2,32(sp)
+  5a9754:	afb1001c 	sw	s1,28(sp)
+  5a9758:	00a08821 	move	s1,a1
+  5a975c:	afb00018 	sw	s0,24(sp)
+  5a9760:	00808021 	move	s0,a0
+  5a9764:	8c470004 	lw	a3,4(v0)
+  5a9768:	8c460000 	lw	a2,0(v0)
+  5a976c:	0c15c815 	jal	0x572054
+  5a9770:	94920004 	lhu	s2,4(a0)
+  5a9774:	96020004 	lhu	v0,4(s0)
+  5a9778:	9623000e 	lhu	v1,14(s1)
+  5a977c:	8fbf0024 	lw	ra,36(sp)
+  5a9780:	00529023 	subu	s2,v0,s2
+  5a9784:	8fb1001c 	lw	s1,28(sp)
+  5a9788:	8fb00018 	lw	s0,24(sp)
+  5a978c:	02431026 	xor	v0,s2,v1
+  5a9790:	8fb20020 	lw	s2,32(sp)
+  5a9794:	2403ffff 	li	v1,-1
+  5a9798:	27bd0028 	addiu	sp,sp,40
+  5a979c:	0002180a 	movz	v1,zero,v0
+  5a97a0:	03e00008 	jr	ra
+  5a97a4:	00601021 	move	v0,v1

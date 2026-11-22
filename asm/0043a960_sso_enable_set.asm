@@ -1,0 +1,26 @@
+; func sso_enable_set @ 0x0043a960 size=0x64
+  43a960:	27bdffd8 	addiu	sp,sp,-40
+  43a964:	afb20020 	sw	s2,32(sp)
+  43a968:	3c120076 	lui	s2,0x76
+  43a96c:	afb00018 	sw	s0,24(sp)
+  43a970:	00808021 	move	s0,a0
+  43a974:	afb1001c 	sw	s1,28(sp)
+  43a978:	00a08821 	move	s1,a1
+  43a97c:	afbf0024 	sw	ra,36(sp)
+  43a980:	2405ffff 	li	a1,-1
+  43a984:	8e44a2dc 	lw	a0,-23844(s2)
+  43a988:	0c1020b4 	jal	0x4082d0
+  43a98c:	0010880a 	movz	s1,zero,s0
+  43a990:	3c020076 	lui	v0,0x76
+  43a994:	8e44a2dc 	lw	a0,-23844(s2)
+  43a998:	ac50a2d8 	sw	s0,-23848(v0)
+  43a99c:	3c020076 	lui	v0,0x76
+  43a9a0:	0c101fcc 	jal	0x407f30
+  43a9a4:	ac51a2d4 	sw	s1,-23852(v0)
+  43a9a8:	00001021 	move	v0,zero
+  43a9ac:	8fbf0024 	lw	ra,36(sp)
+  43a9b0:	8fb20020 	lw	s2,32(sp)
+  43a9b4:	8fb1001c 	lw	s1,28(sp)
+  43a9b8:	8fb00018 	lw	s0,24(sp)
+  43a9bc:	03e00008 	jr	ra
+  43a9c0:	27bd0028 	addiu	sp,sp,40

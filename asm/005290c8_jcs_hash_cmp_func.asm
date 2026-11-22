@@ -1,0 +1,33 @@
+; func jcs_hash_cmp_func @ 0x005290c8 size=0x80
+  5290c8:	3c1c0024 	lui	gp,0x24
+  5290cc:	279c8038 	addiu	gp,gp,-32712
+  5290d0:	0399e021 	addu	gp,gp,t9
+  5290d4:	27bdffe0 	addiu	sp,sp,-32
+  5290d8:	afbc0010 	sw	gp,16(sp)
+  5290dc:	afbf001c 	sw	ra,28(sp)
+  5290e0:	1080000c 	beqz	a0,0x529114
+  5290e4:	afb00018 	sw	s0,24(sp)
+  5290e8:	10a0000b 	beqz	a1,0x529118
+  5290ec:	8f8280f0 	lw	v0,-32528(gp)
+  5290f0:	8f9984d4 	lw	t9,-31532(gp)
+  5290f4:	0320f809 	jalr	t9
+  5290f8:	00000000 	nop
+  5290fc:	2c500001 	sltiu	s0,v0,1
+  529100:	8fbf001c 	lw	ra,28(sp)
+  529104:	02001021 	move	v0,s0
+  529108:	8fb00018 	lw	s0,24(sp)
+  52910c:	03e00008 	jr	ra
+  529110:	27bd0020 	addiu	sp,sp,32
+  529114:	8f8280f0 	lw	v0,-32528(gp)
+  529118:	8c420000 	lw	v0,0(v0)
+  52911c:	1040fff8 	beqz	v0,0x529100
+  529120:	00008021 	move	s0,zero
+  529124:	8f848028 	lw	a0,-32728(gp)
+  529128:	2406009d 	li	a2,157
+  52912c:	8f858028 	lw	a1,-32728(gp)
+  529130:	8f9987d0 	lw	t9,-30768(gp)
+  529134:	24845004 	addiu	a0,a0,20484
+  529138:	0320f809 	jalr	t9
+  52913c:	24a55394 	addiu	a1,a1,21396
+  529140:	1000fff0 	b	0x529104
+  529144:	8fbf001c 	lw	ra,28(sp)

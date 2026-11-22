@@ -1,0 +1,25 @@
+; func wsta_db_print_all @ 0x0063981c size=0x60
+  63981c:	27bdffd8 	addiu	sp,sp,-40
+  639820:	afb20020 	sw	s2,32(sp)
+  639824:	3c12007d 	lui	s2,0x7d
+  639828:	afb1001c 	sw	s1,28(sp)
+  63982c:	3c11007d 	lui	s1,0x7d
+  639830:	afb00018 	sw	s0,24(sp)
+  639834:	00008021 	move	s0,zero
+  639838:	0818e615 	j	0x639854
+  63983c:	afbf0024 	sw	ra,36(sp)
+  639840:	001011c0 	sll	v0,s0,0x7
+  639844:	26100001 	addiu	s0,s0,1
+  639848:	8c640010 	lw	a0,16(v1)
+  63984c:	0c18db93 	jal	0x636e4c
+  639850:	00822021 	addu	a0,a0,v0
+  639854:	8e22c6a8 	lw	v0,-14680(s1)
+  639858:	0202102b 	sltu	v0,s0,v0
+  63985c:	1440fff8 	bnez	v0,0x639840
+  639860:	2643c6b8 	addiu	v1,s2,-14664
+  639864:	8fbf0024 	lw	ra,36(sp)
+  639868:	8fb20020 	lw	s2,32(sp)
+  63986c:	8fb1001c 	lw	s1,28(sp)
+  639870:	8fb00018 	lw	s0,24(sp)
+  639874:	03e00008 	jr	ra
+  639878:	27bd0028 	addiu	sp,sp,40

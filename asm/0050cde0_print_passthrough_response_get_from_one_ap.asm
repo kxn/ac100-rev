@@ -1,0 +1,25 @@
+; func print_passthrough_response_get_from_one_ap @ 0x0050cde0 size=0x60
+  50cde0:	27bdffd8 	addiu	sp,sp,-40
+  50cde4:	afb10020 	sw	s1,32(sp)
+  50cde8:	afb0001c 	sw	s0,28(sp)
+  50cdec:	afbf0024 	sw	ra,36(sp)
+  50cdf0:	0c143363 	jal	0x50cd8c
+  50cdf4:	3c11006f 	lui	s1,0x6f
+  50cdf8:	10400009 	beqz	v0,0x50ce20
+  50cdfc:	00408021 	move	s0,v0
+  50ce00:	0c101dd4 	jal	0x407750
+  50ce04:	2624a0e8 	addiu	a0,s1,-24344
+  50ce08:	3c04006c 	lui	a0,0x6c
+  50ce0c:	8e05000c 	lw	a1,12(s0)
+  50ce10:	8e060010 	lw	a2,16(s0)
+  50ce14:	2484d6d4 	addiu	a0,a0,-10540
+  50ce18:	0c101b74 	jal	0x406dd0
+  50ce1c:	8e070018 	lw	a3,24(s0)
+  50ce20:	0c101dd4 	jal	0x407750
+  50ce24:	2624a0e8 	addiu	a0,s1,-24344
+  50ce28:	00001021 	move	v0,zero
+  50ce2c:	8fbf0024 	lw	ra,36(sp)
+  50ce30:	8fb10020 	lw	s1,32(sp)
+  50ce34:	8fb0001c 	lw	s0,28(sp)
+  50ce38:	03e00008 	jr	ra
+  50ce3c:	27bd0028 	addiu	sp,sp,40

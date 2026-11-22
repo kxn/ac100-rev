@@ -1,0 +1,27 @@
+; func _wportal_db_cmcc_del_serialno @ 0x0042bb30 size=0x68
+  42bb30:	27bdffe0 	addiu	sp,sp,-32
+  42bb34:	27a50020 	addiu	a1,sp,32
+  42bb38:	afb00018 	sw	s0,24(sp)
+  42bb3c:	3c100076 	lui	s0,0x76
+  42bb40:	a7a40020 	sh	a0,32(sp)
+  42bb44:	afbf001c 	sw	ra,28(sp)
+  42bb48:	0c102030 	jal	0x4080c0
+  42bb4c:	8e04a198 	lw	a0,-24168(s0)
+  42bb50:	00402021 	move	a0,v0
+  42bb54:	1080000c 	beqz	a0,0x42bb88
+  42bb58:	2402ffff 	li	v0,-1
+  42bb5c:	0c102140 	jal	0x408500
+  42bb60:	24840014 	addiu	a0,a0,20
+  42bb64:	27a50020 	addiu	a1,sp,32
+  42bb68:	0c1021a4 	jal	0x408690
+  42bb6c:	8e04a198 	lw	a0,-24168(s0)
+  42bb70:	3c030076 	lui	v1,0x76
+  42bb74:	8c64a1a0 	lw	a0,-24160(v1)
+  42bb78:	18800003 	blez	a0,0x42bb88
+  42bb7c:	00001021 	move	v0,zero
+  42bb80:	2484ffff 	addiu	a0,a0,-1
+  42bb84:	ac64a1a0 	sw	a0,-24160(v1)
+  42bb88:	8fbf001c 	lw	ra,28(sp)
+  42bb8c:	8fb00018 	lw	s0,24(sp)
+  42bb90:	03e00008 	jr	ra
+  42bb94:	27bd0020 	addiu	sp,sp,32

@@ -1,0 +1,22 @@
+; func arp_defend_api_for_apmngr_copy @ 0x00477018 size=0x54
+  477018:	27bdffd8 	addiu	sp,sp,-40
+  47701c:	afb10020 	sw	s1,32(sp)
+  477020:	00808821 	move	s1,a0
+  477024:	afb0001c 	sw	s0,28(sp)
+  477028:	02203021 	move	a2,s1
+  47702c:	afbf0024 	sw	ra,36(sp)
+  477030:	2410ffff 	li	s0,-1
+  477034:	94a40010 	lhu	a0,16(a1)
+  477038:	0c11ef29 	jal	0x47bca4
+  47703c:	96250010 	lhu	a1,16(s1)
+  477040:	14400005 	bnez	v0,0x477058
+  477044:	8fbf0024 	lw	ra,36(sp)
+  477048:	0c11f865 	jal	0x47e194
+  47704c:	96240010 	lhu	a0,16(s1)
+  477050:	0002800a 	movz	s0,zero,v0
+  477054:	8fbf0024 	lw	ra,36(sp)
+  477058:	02001021 	move	v0,s0
+  47705c:	8fb10020 	lw	s1,32(sp)
+  477060:	8fb0001c 	lw	s0,28(sp)
+  477064:	03e00008 	jr	ra
+  477068:	27bd0028 	addiu	sp,sp,40

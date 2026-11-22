@@ -1,0 +1,22 @@
+; func cw_sta_assoc_req_subelement_get @ 0x005c2144 size=0x54
+  5c2144:	27bdffe0 	addiu	sp,sp,-32
+  5c2148:	00001021 	move	v0,zero
+  5c214c:	afb00018 	sw	s0,24(sp)
+  5c2150:	30b0ffff 	andi	s0,a1,0xffff
+  5c2154:	1080000c 	beqz	a0,0x5c2188
+  5c2158:	afbf001c 	sw	ra,28(sp)
+  5c215c:	0c10206c 	jal	0x4081b0
+  5c2160:	24840014 	addiu	a0,a0,20
+  5c2164:	10400009 	beqz	v0,0x5c218c
+  5c2168:	8fbf001c 	lw	ra,28(sp)
+  5c216c:	9443000c 	lhu	v1,12(v0)
+  5c2170:	50700005 	beql	v1,s0,0x5c2188
+  5c2174:	8c420010 	lw	v0,16(v0)
+  5c2178:	0c1021a0 	jal	0x408680
+  5c217c:	00402021 	move	a0,v0
+  5c2180:	5440fffb 	bnezl	v0,0x5c2170
+  5c2184:	9443000c 	lhu	v1,12(v0)
+  5c2188:	8fbf001c 	lw	ra,28(sp)
+  5c218c:	8fb00018 	lw	s0,24(sp)
+  5c2190:	03e00008 	jr	ra
+  5c2194:	27bd0020 	addiu	sp,sp,32

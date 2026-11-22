@@ -1,0 +1,51 @@
+; func cloud_mngt_jcs_cloud_config_switch_set @ 0x0048c060 size=0xc8
+  48c060:	3c05006d 	lui	a1,0x6d
+  48c064:	27bdffe0 	addiu	sp,sp,-32
+  48c068:	afb00018 	sw	s0,24(sp)
+  48c06c:	afbf001c 	sw	ra,28(sp)
+  48c070:	0c101eac 	jal	0x407ab0
+  48c074:	24a5eb84 	addiu	a1,a1,-5244
+  48c078:	1040000b 	beqz	v0,0x48c0a8
+  48c07c:	00408021 	move	s0,v0
+  48c080:	0c101bfc 	jal	0x406ff0
+  48c084:	00402021 	move	a0,v0
+  48c088:	24030003 	li	v1,3
+  48c08c:	1043001b 	beq	v0,v1,0x48c0fc
+  48c090:	02002021 	move	a0,s0
+  48c094:	0c101bfc 	jal	0x406ff0
+  48c098:	00000000 	nop
+  48c09c:	24030002 	li	v1,2
+  48c0a0:	1043001a 	beq	v0,v1,0x48c10c
+  48c0a4:	00000000 	nop
+  48c0a8:	3c020075 	lui	v0,0x75
+  48c0ac:	8c42be90 	lw	v0,-16752(v0)
+  48c0b0:	1440000a 	bnez	v0,0x48c0dc
+  48c0b4:	2410ffff 	li	s0,-1
+  48c0b8:	3c020073 	lui	v0,0x73
+  48c0bc:	0010802b 	sltu	s0,zero,s0
+  48c0c0:	8c431820 	lw	v1,6176(v0)
+  48c0c4:	54700001 	bnel	v1,s0,0x48c0cc
+  48c0c8:	ac501820 	sw	s0,6176(v0)
+  48c0cc:	8fbf001c 	lw	ra,28(sp)
+  48c0d0:	8fb00018 	lw	s0,24(sp)
+  48c0d4:	03e00008 	jr	ra
+  48c0d8:	27bd0020 	addiu	sp,sp,32
+  48c0dc:	3c040067 	lui	a0,0x67
+  48c0e0:	3c05006a 	lui	a1,0x6a
+  48c0e4:	24846a80 	addiu	a0,a0,27264
+  48c0e8:	24a5bc90 	addiu	a1,a1,-17264
+  48c0ec:	0c101b74 	jal	0x406dd0
+  48c0f0:	24061eac 	li	a2,7852
+  48c0f4:	0812302f 	j	0x48c0bc
+  48c0f8:	3c020073 	lui	v0,0x73
+  48c0fc:	0c101d10 	jal	0x407440
+  48c100:	00000000 	nop
+  48c104:	0812302e 	j	0x48c0b8
+  48c108:	00408021 	move	s0,v0
+  48c10c:	0c101c54 	jal	0x407150
+  48c110:	02002021 	move	a0,s0
+  48c114:	00602821 	move	a1,v1
+  48c118:	0c101f0c 	jal	0x407c30
+  48c11c:	00402021 	move	a0,v0
+  48c120:	0812302e 	j	0x48c0b8
+  48c124:	00408021 	move	s0,v0

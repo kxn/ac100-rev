@@ -1,0 +1,39 @@
+; func cw_priv_radio_role_table_control_length @ 0x0057dcd0 size=0x98
+  57dcd0:	3c02007c 	lui	v0,0x7c
+  57dcd4:	27bdffe0 	addiu	sp,sp,-32
+  57dcd8:	8c425988 	lw	v0,22920(v0)
+  57dcdc:	afb00018 	sw	s0,24(sp)
+  57dce0:	00808021 	move	s0,a0
+  57dce4:	14400015 	bnez	v0,0x57dd3c
+  57dce8:	afbf001c 	sw	ra,28(sp)
+  57dcec:	1200000f 	beqz	s0,0x57dd2c
+  57dcf0:	00001021 	move	v0,zero
+  57dcf4:	92040000 	lbu	a0,0(s0)
+  57dcf8:	00001821 	move	v1,zero
+  57dcfc:	0815f748 	j	0x57dd20
+  57dd00:	24020001 	li	v0,1
+  57dd04:	000328c0 	sll	a1,v1,0x3
+  57dd08:	24630001 	addiu	v1,v1,1
+  57dd0c:	00c52821 	addu	a1,a2,a1
+  57dd10:	94a50002 	lhu	a1,2(a1)
+  57dd14:	24a50003 	addiu	a1,a1,3
+  57dd18:	00a21021 	addu	v0,a1,v0
+  57dd1c:	3042ffff 	andi	v0,v0,0xffff
+  57dd20:	0064282a 	slt	a1,v1,a0
+  57dd24:	54a0fff7 	bnezl	a1,0x57dd04
+  57dd28:	8e060004 	lw	a2,4(s0)
+  57dd2c:	8fbf001c 	lw	ra,28(sp)
+  57dd30:	8fb00018 	lw	s0,24(sp)
+  57dd34:	03e00008 	jr	ra
+  57dd38:	27bd0020 	addiu	sp,sp,32
+  57dd3c:	0c16276a 	jal	0x589da8
+  57dd40:	00000000 	nop
+  57dd44:	1040ffe9 	beqz	v0,0x57dcec
+  57dd48:	3c04006e 	lui	a0,0x6e
+  57dd4c:	3c05006e 	lui	a1,0x6e
+  57dd50:	2484a540 	addiu	a0,a0,-23232
+  57dd54:	24a5ac20 	addiu	a1,a1,-21472
+  57dd58:	0c101b74 	jal	0x406dd0
+  57dd5c:	24060068 	li	a2,104
+  57dd60:	0815f73b 	j	0x57dcec
+  57dd64:	00000000 	nop

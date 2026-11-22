@@ -1,0 +1,20 @@
+; func _uac_print_mutex @ 0x00522c60 size=0x4c
+  522c60:	3c1c0024 	lui	gp,0x24
+  522c64:	279ce4a0 	addiu	gp,gp,-7008
+  522c68:	0399e021 	addu	gp,gp,t9
+  522c6c:	27bdffd8 	addiu	sp,sp,-40
+  522c70:	8f9987d0 	lw	t9,-30768(gp)
+  522c74:	afbc0018 	sw	gp,24(sp)
+  522c78:	afbf0024 	sw	ra,36(sp)
+  522c7c:	8c850018 	lw	a1,24(a0)
+  522c80:	8c86001c 	lw	a2,28(a0)
+  522c84:	8c870020 	lw	a3,32(a0)
+  522c88:	8c820024 	lw	v0,36(a0)
+  522c8c:	8f848028 	lw	a0,-32728(gp)
+  522c90:	afa20010 	sw	v0,16(sp)
+  522c94:	0320f809 	jalr	t9
+  522c98:	24843bb0 	addiu	a0,a0,15280
+  522c9c:	00001021 	move	v0,zero
+  522ca0:	8fbf0024 	lw	ra,36(sp)
+  522ca4:	03e00008 	jr	ra
+  522ca8:	27bd0028 	addiu	sp,sp,40

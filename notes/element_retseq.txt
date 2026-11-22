@@ -1,0 +1,194 @@
+0x0001	ac descriptor	cw_ac_descriptor_parse@0x56d71c	r16 r16 r16 r16 r8 r8 r8 r8 r32 r16 r16
+0x0002	ac ipv4 list	cw_ac_ipv4_list_parse@0x56e14c	r32
+0x0003	ac ipv6 list	cw_ac_ipv6_list_parse@0x56e754	rraw
+0x0004	ac name	cw_ac_name_parse@0x56ebdc	
+0x0005	ac name with priority	cw_ac_name_with_priority_parse@0x56f0d0	r8
+0x0006	ac timestamp	cw_ac_timestamp_parse@0x56f4e8	r32
+0x0007	add mac acl entry	cw_add_mac_acl_entry_parse@0x56fab8	r8 r8 rraw
+0x0008	add station	cw_add_station_parse@0x570338	r8 r8 rraw
+0x000a	capwap control ipv4 address	cw_capwap_control_ipv4_address_parse@0x5708d4	r32 r16
+0x000b	capwap control ipv6 address	cw_capwap_control_ipv6_address_parse@0x570c68	rbytes r16
+0x000c	capwap timers	cw_capwap_timers_parse@0x5715e0	r8 r8
+0x000d	data transfer data	cw_data_transfer_data_parse@0x572db8	r8 r8 r16 rraw
+0x000e	data transfer mode	cw_data_transfer_mode_parse@0x573198	r8
+0x000f	decryption error report	cw_decryption_error_report_parse@0x573910	r8 r8 r8 rraw
+0x0010	decryption error report period	cw_decryption_error_report_period_parse@0x573d44	r8 r16
+0x0011	delete mac acl entry	cw_delete_mac_acl_entry_parse@0x57445c	r8 r8 rraw
+0x0012	delete station	cw_delete_station_parse@0x574b4c	r8 r8 rraw
+0x0014	discovery type	cw_discovery_type_parse@0x574f28	r8
+0x0015	duplicate ipv4 address	cw_duplicate_ipv4_address_parse@0x575630	r32 r8 r8 rraw
+0x0016	duplicate ipv6 address	cw_duplicate_ipv6_address_parse@0x575d80	rbytes r8 r8 rraw
+0x0017	idle timeout	cw_idle_timeout_parse@0x576578	r32
+0x0018	image data	cw_image_data_parse@0x576bb8	r8 rraw
+0x0019	image identifier	cw_image_identifier_parse@0x5771e8	r32
+0x001a	image information	cw_image_information_parse@0x5775a4	r32 rbytes
+0x001b	initiate download	cw_initiate_download_parse@0x577810	
+0x001c	location data	cw_location_data_parse@0x577b94	
+0x001d	maximum message length	cw_maximum_message_length_parse@0x577f88	r16
+0x001e	capwap local ipv4 address	cw_capwap_local_ipv4_address_parse@0x570f7c	r32
+0x001f	radio administrative state	cw_radio_administrative_state_parse@0x57f608	r8 r8
+0x0020	radio operational state	cw_radio_operational_state_parse@0x57fb20	r8 r8 r8
+0x0021	result code	cw_result_code_parse@0x57fed4	r32
+0x0022	returned message element	cw_returned_message_element_parse@0x580630	r8 r8 rraw
+0x0023	session id	cw_session_id_parse@0x580a90	rbytes
+0x0024	statistics timer	cw_statistics_timer_parse@0x581c88	r16
+0x0025	vendor specific payload	cw_vendor_specific_payload_parse@0x58286c	r32 r16
+0x0026	wtp board data	cw_wtp_board_data_parse@0x5838e0	r32 r16 r16 rraw
+0x0027	wtp descriptor	cw_wtp_descriptor_parse@0x584978	r8 r8 r8 r8 r16 r32 r16 r16
+0x0028	wtp fallback	cw_wtp_fallback_parse@0x585244	r8
+0x0029	frame tunnel mode	cw_wtp_frame_tunnel_mode_parse@0x585664	r8
+0x002c	wtp mac type	cw_wtp_mac_type_parse@0x585a18	r8
+0x002d	wtp name	cw_wtp_name_parse@0x585eec	
+0x002f	wtp radio statistics	cw_wtp_radio_statistics_parse@0x58648c	r8 r8 r16 r16 r16 r16 r16 r16 r16 r16 r16
+0x0030	wtp reboot statistics	cw_wtp_reboot_statistics_parse@0x586a00	r16 r16 r16 r16 r16 r16 r16 r8
+0x0031	wtp static ip address information	cw_wtp_static_ip_address_information_parse@0x586f3c	r32 r32 r32 r8
+0x0032	wtp capability flag	cw_wtp_capability_flag_parse@0x583eb0	r32
+0x0033	station rssi	cw_sta_rssi_parse@0x581888	r8 r32 rbytes r8
+0x0034	station information list	cw_sta_info_list_parse@0x581148	r8 r32 r32 r32 r32 rbytes
+0x0035	ecn support	cw_ecn_support_parse@0x576168	r8
+0x0036	capwap local ipv6 address	cw_capwap_local_ipv6_address_parse@0x5712cc	rbytes
+0x0400	ieee 802.11 add wlan	cw_80211_add_wlan_parse@0x563a1c	r8 r8 r16 r8 r8 r16 rbytes r8 r8 r8 r8 r8
+0x0401	ieee 802.11 antenna	cw_80211_antenna_parse@0x5645a4	r8 r8 r8 r8 rraw
+0x0402	ieee 802.11 assigned wtp bssid	cw_80211_assigned_wtp_bssid_parse@0x564b0c	r8 r8 rbytes
+0x0403	ieee 802.11 delete wlan	cw_80211_delete_wlan_parse@0x564f9c	r8 r8
+0x0404	ieee 802.11 direct sequence control	cw_80211_direct_sequence_control_parse@0x56571c	r8 r8 r8 r8 r32 r8 r16 r16 r16 r16 r8 r8
+0x0405	ieee 802.11 information element	cw_80211_information_element_parse@0x565eb4	r8 r8 r8 rraw
+0x0406	ieee 802.11 mac operation	cw_80211_mac_operation_parse@0x5663d8	r8 r8 r16 r8 r8 r16 r32 r32
+0x0407	ieee 802.11 mic countermeasures	cw_80211_mic_countermeasures_parse@0x56691c	r8 r8 rbytes
+0x0408	ieee 802.11 multidomain capability	cw_80211_multidomain_capability_parse@0x566e08	r8 r8 r16 r16 r16
+0x0409	ieee 802.11 ofdm control	cw_80211_ofdm_control_parse@0x567358	r8 r8 r8 r8 r32
+0x040a	ieee 802.11 rate set	cw_80211_rate_set_parse@0x567890	r8 rbytes
+0x040b	ieee 802.11 rsna error report	cw_80211_rsna_error_report_parse@0x567ed8	rbytes rbytes r8 r8 r16 r32 r32 r32 r32 r32 r32
+0x040c	ieee 802.11 station	cw_80211_station_parse@0x5687b0	r8 r16 r8 rbytes r16 r8 rraw
+0x040d	ieee 802.11 station qos	cw_80211_station_qos_parse@0x568c8c	rbytes
+0x040e	ieee 802.11 station session key	cw_80211_station_session_key_parse@0x569284	rbytes r16 rbytes rbytes rraw
+0x040f	ieee 802.11 station	cw_80211_station_parse@0x5687b0	r8 r16 r8 rbytes r16 r8 rraw
+0x0410	ieee 802.11 supported rates	cw_80211_supported_rates_parse@0x5696c0	r8 rbytes
+0x0411	ieee 802.11 tx power	cw_80211_tx_power_parse@0x569b34	r8 r8 r16
+0x0412	ieee 802.11 tx power level	cw_80211_tx_power_level_parse@0x56a0a8	r8 r8 r16
+0x0413	ieee 802.11 update station qos	cw_80211_update_station_qos_parse@0x56a6cc	r8 rbytes r8 r8
+0x0414	ieee 802.11 update wlan	cw_80211_update_wlan_parse@0x56b174	r8 r8 r16 r8 r8 r16 rraw
+0x0415	ieee 802.11 wtp qos	cw_80211_wtp_qos_parse@0x56b844	r8 r8 r8 r16 r16 r8 r8 r8
+0x0416	ieee 802.11 wtp radio configuration	cw_80211_wtp_radio_configuration_parse@0x56bf38	r8 r8 r8 r8 rbytes r16 rbytes
+0x0417	ieee 802.11 delete wlan	cw_80211_wtp_radio_fail_alarm_parse@0x56c46c	r8 r8 r8 r8
+0x0418	ieee 802.11 wtp radio information	cw_80211_wtp_radio_information_parse@0x56c9d0	r8 r32
+0x0000	private capwap version	cw_priv_cwver_parse@0x5aecf4	r16 r16
+0x0001	private station authentication request	cw_priv_sta_auth_req_parse@0x5c4e20	r8 r8 rbytes r32 rraw
+0x0002	private station association request	cw_priv_sta_assoc_req_parse@0x5c17ec	r8 r8 rbytes r32 rraw r32
+0x0003	private station disauthentication	cw_priv_sta_deassoc_parse@0x5c5990	r8 r8 rbytes
+0x0004	private station authentication result	cw_priv_sta_assoc_rslt_parse@0x5c32bc	r8 r8 rbytes r32 r32 rraw
+0x0005	private ap base parameter	cw_priv_ap_base_para_parse@0x5a3f40	r32 r32
+0x0006	private channel state	cw_priv_ch_state_parse@0x5ad3f0	r8 r8
+0x0007	private power state	cw_priv_pwr_state_parse@0x5b92f4	r8 r8
+0x0008	private advanced radio parameter	cw_priv_adv_rd_para_parse@0x5a3654	r8 r8 r8 r8 r16 r8 r8 r8 r8 r8 r8 r8 r16 r8 rbytes r8 r8 r8 r8 r8
+0x0009	private wireless service parameter	cw_priv_wsrv_para_parse@0x5ce6f8	r8 r8 r16 r16 r8 r8 r8 r8 r8 r32 r32 r16 r16 rraw r8 r8 r32 r16 rraw r8 r8 r8 rbytes r16 r16 r32 r32
+0x000a	private rate	cw_priv_rate_parse@0x5ba0e4	r8 rbytes rbytes r8 rbytes rbytes r8 rbytes rbytes r8 r8 r8 r8
+0x000b	private station discovery	cw_priv_sta_dis_parse@0x5c5de4	r8 r8 rbytes
+0x000c	private state report period	cw_priv_stat_prd_parse@0x5c81e0	r32 r32
+0x000d	private clear state	cw_priv_clr_stat_parse@0x5ae6a4	r32
+0x000e	private frame state	cw_priv_frame_stat_parse@0x5b1c68	r8 rbytes r32 r32 r32 r32 r32 r32 r32 r32 r32 r32 r32 r32 r32 r32 r32 r32 r32 r32 r32 r32 r32 r32 r32 r32 r32 r32 r32 r32 r32 r32
+0x0012	private sn md5	cw_priv_sn_md5_parse@0x5c004c	rbytes rbytes
+0x0013	private station authentication result	cw_priv_sta_auth_rslt_parse@0x5c552c	r8 r8 rbytes r32 r32 rraw
+0x0014	private trans data request	cw_priv_trans_data_request_parse@0x5c9cbc	r16 r16 rraw
+0x001a	private except	cw_priv_except_parse@0x5b0a44	r32 r32 rbytes r32 rbytes
+0x001b	private ac info	cw_priv_ac_info_parse@0x5a2db4	rbytes
+0x001c	private image update result	cw_priv_image_update_result_parse@0x5b3f4c	r32
+0x001d	private data tunnel mode	cw_priv_data_tunnel_mode_parse@0x5af010	r32
+0x001e	private wlan list	cw_priv_wlan_list_parse@0x5cba28	r32 r32 r8 rbytes
+0x001f	private sta list	cw_priv_sta_list_parse@0x5c6c28	r8 r8 r32 rbytes
+0x0023	private reset mask	cw_priv_reset_mask_parse@0x5bb0c8	r32
+0x0025	private ap res info	cw_priv_ap_res_info_parse@0x5a6f6c	r8 r8 r8 r16
+0x0026	private spec msg sw	cw_priv_spec_msg_sw_parse@0x5c0f10	r32 r32
+0x0027	private config type	cw_priv_config_type_parse@0x5ae9f0	r32
+0x0028	private portal data	cw_priv_portal_data_parse@0x5b8a4c	r16 rraw
+0x002a	private portal syn	cw_priv_portal_syn_parse@0x5b8f7c	r16 rraw
+0x002b	private ap 11ac rate	cw_priv_ap_11ac_rate_parse@0x5a3adc	r8 r8 r8 r8
+0x002c	private ap capacity	cw_priv_ap_capacity_parse@0x5a4228	r32
+0x002e	private ap tx stat	cw_priv_ap_tx_stat_parse@0x5a92f8	r8 rbytes r64 r64 r32 r32 r32 r32 r32 r32 r32 r32 r32 r32 r32 r32 r32 r32 r32 r32 r32 r32 r32 r32
+0x002f	private rpt para	cw_priv_rpt_para_parse@0x5bdf38	r16 r16 r8 r32 r32
+0x0030	private ap wire vlan	cw_priv_ap_wire_vlan_parse@0x5aa718	r32
+0x0038	private ap led status	cw_priv_ap_led_status_parse@0x5a5700	r32
+0x0039	private ap led op	cw_priv_ap_led_op_parse@0x5a5400	r32
+0x003a	private ap spectral	cw_priv_ap_spectral_parse@0x5a73fc	r8 r8 r8 r8
+0x003c	private ap offline mngr	cw_priv_ap_offline_mngr_parse@0x5a6b88	r32 r32 r32 r32 r32 r32
+0x003d	private ap user	cw_priv_ap_user_parse@0x5a9c28	rbytes rbytes
+0x003e	private spec rssi	cw_priv_spec_rssi_parse@0x5c11f8	r32
+0x003f	private mac filter	cw_priv_mac_filter_parse@0x5b59bc	r32 r8 r8 r16 rraw
+0x0040	private ap switch link	cw_priv_ap_switch_link_parse@0x5a89e0	r32
+0x0041	private ap config checksum	cw_priv_ap_config_checksum_parse@0x5a4870	rbytes
+0x0042	private wechat white iplist	cw_priv_wechat_iplist_parse@0x5cb378	r32 rraw
+0x0043	private ap wire vlan(type 2)	cw_priv_ap_wire_vlan_2_parse@0x5aaa4c	r16
+0x0044	private AP Trunk	cw_priv_ap_trunk_parse@0x5a8cb8	r32
+0x0045	private bandwidth control	cw_priv_bw_ctrl_parse@0x5ac66c	r8 r32 r32 r8 r32 r8 rbytes
+0x0046	private broadcast storm control	cw_priv_bcast_storm_ctrl_parse@0x5abdb8	r8 r32
+0x0047	private dhcp defend	cw_priv_dhcp_defend_parse@0x5afb5c	r8 r8 r32 r8 rbytes
+0x0048	private arp_defend	cw_priv_arp_defend_parse@0x5ab914	r8 r8 r32 r32 rbytes
+0x0049	private station pmk request	cw_priv_sta_pmk_req_parse@0x5c7288	r8 r8 r8 r8 r32 rbytes rbytes rbytes rbytes rbytes rbytes
+0x004c	private wlan_rssi_orient	cw_priv_wlan_rssi_orient_parse@0x5cbd78	r32 r16 r8 r8
+0x004d	private sta ip list	cw_priv_sta_ip_list_parse@0x5c64f4	r32 rbytes rip
+0x0051	private apdb info	cw_priv_apdb_info_parse@0x5ab25c	rraw
+0x0052	private station statistics request	cw_priv_sta_statistics_parse@0x5c7c9c	r32 rbytes r8 r8 r8 r8 r8 r8 r16 r32 r16 r8 r8 r32 r32 r32 r32
+0x0053	private rssi statistics request	cw_priv_rssi_statistics_parse@0x5bf28c	rbytes rbytes r32 rbytes rbytes
+0x0054	private ap statistics request	cw_priv_ap_statistics_parse@0x5a7f04	r8 r8 r8 rbytes r8 r16 r32 r32 r32 r32 r32 r32 r32 r8 r8 r16 r16 r16 r8 r8 r8 r8 r32 r32 r32 r32 r8 r8 r8 r8 r8 r8 rbytes r16 r8 r8 r32 r32 r32 r32
+0x0055	private statistics control request	cw_priv_statistics_control_parse@0x5c8480	r8 r8 r8 r16 r16 r16
+0x0056	private fail station request	cw_priv_fail_station_parse@0x5b1020	r32 rbytes r8 r8 r8 r32 r32
+0x0057	private roaming control request	cw_priv_roaming_control_parse@0x5bcd04	r8 r8 r8 r8 r8 r8 r8 r8 r8 r8 r8 r8 r8 r8 r8 r8 r8 r8 r8 r8 r8 rbytes
+0x0058	private roaming trigger request	cw_priv_roaming_trigger_parse@0x5bd644	r8 r8 r8 r32 rbytes r8 r8 r8 r8 rbytes r8 r8 r8
+0x0059	private roaming calculate result request	cw_priv_roaming_calculate_result_parse@0x5bc118	r8 r8 r32 r32 rbytes rbytes r8 r8 r8 r8 rbytes r8 rbytes
+0x005a	delete implicitly leave station	cw_priv_delete_implicitly_leave_station_parse@0x5af5bc	r8 r8 rraw
+0x005b	private AP Firmware Id	cw_priv_ap_firmware_id_parse@0x5a4d54	rbytes r8 rbytes
+0x005c	private ndp para	cw_priv_ndp_para_parse@0x5b7c44	rbytes r8 r8 r16 r16 r16 r16 r8 r8 r8 r8 rbytes
+0x005d	private rrm neighs list	cw_priv_rrm_neighs_list_parse@0x5be944	r8 r8 r16 rbytes r8 r8 r8 r8 r8
+0x005f	private ap log	cw_priv_ap_log_parse@0x5a5c08	r16 r8 r8 r16 rraw
+0x0060	private ap log report para	cw_priv_ap_log_report_para_parse@0x5a64b4	r8 r8 r8 r8 rip r32
+0x0061	private dhcpv6 defend	cw_priv_dhcpv6_defend_parse@0x5b036c	r8 r8 r32 r8 rbytes
+0x0062	private nd_defend	cw_priv_nd_defend_parse@0x5b73dc	r8 r8 r32 rbytes rbytes
+0x0063	private wireless service parameter(new)	cw_priv_wsrv_para_new_parse@0x5cfcb0	r8 r8 r16 r16 r8 r8 r8 r8 r8 r32 rip rip rip r16 r16 r16 r16 rraw r8 r8 r32 r16 rraw r8 r8 r8 rbytes
+0x0066	ap working channel list	cw_priv_ap_working_channel_list_parse@0x5aadd0	r32
+0x0067	private lldp	cw_priv_lldp_parse@0x5b4e70	rbytes
+0x0068	private lldp_report	cw_priv_lldp_report_parse@0x5b524c	r32 rbytes
+0x006d	private sniffing control request	cw_priv_sniffing_control_parse@0x5c0384	r8 r16 r16
+0x006e	private sniffing statistics request	cw_priv_sniffing_statistics_parse@0x5c0874	r32 r8 r8 rbytes r8 r32 r8
+0x006f	private ap led mode control	cw_priv_ap_led_mode_ctrl_parse@0x5a5108	r32
+0x0070	private igmp snooping config	cw_priv_igmp_snooping_config_parse@0x5b2e08	r8 r8 r8 r8 r16
+0x0071	private igmp snooping config by ssid	cw_priv_igmp_snooping_config_by_ssid_parse@0x5b3470	r32 r8 r8 r8
+0x0072	private igmp query config	cw_priv_igmp_query_config_parse@0x5b220c	r16 r8
+0x0073	private igmp query config by ssid	cw_priv_igmp_query_config_by_ssid_parse@0x5b2790	r32 r8 r8 r8
+0x0074	private igmp snooping group policy	cw_priv_igmp_snooping_group_policy_parse@0x5b3b3c	r32 r8 rip
+0x0075	private mesh public control	cw_priv_mesh_public_control_parse@0x5b6b80	r16 rbytes r16
+0x0076	private mesh private control	cw_priv_mesh_private_control_parse@0x57bd6c	r16 r16 r16 r32 r32 r8 r16 r16 r16 rbytes r32 r8 r8 rbytes r16 rbytes r16 rbytes r8 r16 r16 rbytes rbytes r32 r8 rbytes r16 rbytes rbytes r8 r16 r16 rbytes r8 r8 r32 r8 rbytes rbytes r8 r8 rbytes rbytes r8 r8 rbytes r32 rbytes r8 r8 r32 rbytes rbytes r32 rbytes r8 r8 r32 rbytes
+0x007f	private radio role table	cw_priv_radio_role_table_parse@0x5b969c	r8 rraw
+0x0080	private sub_device_report	cw_priv_sub_device_report_parse@0x5c8a10	r16 r16 r32 rbytes
+0x0083	private nms_report_set_ap	cw_priv_tdcp_passthrough_send_info_parse@0x57f1a0	r32 r32 r8 rbytes
+0x0085	private ap checksum result	cw_priv_ap_checksum_result_parse@0x5a451c	r8
+0x0086	private capwap retransmit parameter	cw_priv_capwap_retrans_para_parse@0x5acf74	r8 r16 r8
+0x008a	private station association request(new)	cw_priv_sta_assoc_req_new_parse@0x5c282c	r8 r8 rbytes r32 r8 r32 r16 r16 rraw rraw rbytes r8 r8 r8 rbytes r32
+0x008b	private station association result(new)	cw_priv_sta_assoc_rslt_new_parse@0x5c43d4	r8 r8 rbytes r32 r8 r32 r16 r16 r16 rraw rraw
+0x008c	private vap info list	cw_priv_vap_info_list_parse@0x5cacb4	r8 rbytes r8 r8 r16 r32 r16 r16 r16 rraw
+0x008d	private time sync	cw_priv_time_sync_parse@0x5c9840	r32 r32
+0x008e	private special frame rate ctrl	cw_priv_special_frame_rate_ctrl_parse@0x5bb6ac	r8 r8 r8 r8 r16 r16
+0x008f	private wtp sub capability	cw_priv_wtp_sub_capability_parse@0x5d06d8	r16 r16 r16 rbytes rbytes_ns
+0x0090	private radio role table control	cw_priv_radio_role_table_control_parse@0x57e738	r8 r8 r16 r8 r32
+0x0094	private wsrv enable para support(new)	cw_priv_wsrv_enable_para_parse@0x5cd154	r8 r8 r16 r16 r8 r8 r16 rraw r8 r8 r8 r8 r32 rip rip rip r16 r16 r16 r16 rraw r8 r8 r32 r16 rraw r8 r8 r8 rbytes
+0x0096	MESH2.0 Router join request transmit	cw_priv_join_request_transmit_parse@0x5b424c	r16 r16
+0x0097	private region table	cw_priv_region_list_parse@0x5ba890	r8 rraw
+0x0098	private region config	cw_priv_region_config_parse@0x5ba594	r8
+0x009a	private mesh2 join type	cw_priv_mesh2_join_type_parse@0x5b5d54	r32
+0x009b	private chnl_scan	cw_priv_chnl_scan_parse@0x5ad7dc	r8 r8 r8 r8 rbytes
+0x009c	private chnl_scan_report	cw_priv_chnl_scan_report_parse@0x5ae290	r8 r8 r8 r8 r8 r8 r8 r8 r8 r8
+0x009d	private set_silence_params	cw_priv_set_silence_params_parse@0x5bfb40	r8 r16
+0x009f	private telnet_config	cw_priv_telnet_config_parse@0x5c952c	r8 r16
+0x00a0	private rate	cw_priv_11ax_rate_parse@0x5a28fc	r8 r8 r8 r8
+0x00a2	private port info	cw_priv_port_info_parse@0x5b8208	r8 r8 r8 r32 memcpy
+0x00a3	private lag config	cw_priv_lag_config_parse@0x5b4638	r8 r8 r8 rraw
+0x00a4	private fit_fat_button_status	cw_priv_fit_fat_button_status_parse@0x5b1698	r32
+0x00a5	private trans tdcp or other data	cw_priv_two_way_passthrough_general_info_request_parse@0x5ca370	r8 r8 r8 r8 r32 r32 rraw
+0x00a7	private bluetooth config	cw_priv_bluetooth_config_parse@0x5ac120	r8 r32 r32
+0x00a9	private ap web account	cw_priv_ap_web_account_parse@0x5aa270	r16 r8 r8 rbytes rbytes
+0x00af	private large fireware info	cw_priv_large_fireware_info_parse@0x5b4adc	r8 r32 r32 rbytes r32
+0x00b0	private sub fireware info	cw_priv_sub_fireware_info_parse@0x5c912c	r8 r8 r32 rbytes r32
+0x00b1	private sub fireware action	cw_priv_sub_fireware_action_parse@0x5c8e58	r8 r8 r32
+0x00b2	11ax feature default value	cw_priv_11ax_feature_default_value_parse@0x5a2504	r8 r8 r8 r8 r8 r8 r8 r8 r8
+0x00b5	private ap_update_feature	cw_priv_ap_update_feature_parse@0x5a97a8	r64
+0x00b6	private ap_mlo_switch	cw_priv_ap_mlo_switch_parse@0x5a6924	r8
+0x00c0	private config extension	cw_priv_config_extension_parse@0x5bf8c4	r8 r32 rbytes

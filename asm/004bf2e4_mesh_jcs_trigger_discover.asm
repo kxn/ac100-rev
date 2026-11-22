@@ -1,0 +1,41 @@
+; func mesh_jcs_trigger_discover @ 0x004bf2e4 size=0xa0
+  4bf2e4:	27bdffd8 	addiu	sp,sp,-40
+  4bf2e8:	27a40018 	addiu	a0,sp,24
+  4bf2ec:	afb00020 	sw	s0,32(sp)
+  4bf2f0:	00a08021 	move	s0,a1
+  4bf2f4:	afbf0024 	sw	ra,36(sp)
+  4bf2f8:	0c12e499 	jal	0x4b9264
+  4bf2fc:	afa00018 	sw	zero,24(sp)
+  4bf300:	2403ffff 	li	v1,-1
+  4bf304:	1043000c 	beq	v0,v1,0x4bf338
+  4bf308:	2404ffff 	li	a0,-1
+  4bf30c:	3c020076 	lui	v0,0x76
+  4bf310:	80427fbd 	lb	v0,32701(v0)
+  4bf314:	14400013 	bnez	v0,0x4bf364
+  4bf318:	3c04006a 	lui	a0,0x6a
+  4bf31c:	8fa30018 	lw	v1,24(sp)
+  4bf320:	24020001 	li	v0,1
+  4bf324:	10620004 	beq	v1,v0,0x4bf338
+  4bf328:	00002021 	move	a0,zero
+  4bf32c:	0c12fc69 	jal	0x4bf1a4
+  4bf330:	00000000 	nop
+  4bf334:	00402021 	move	a0,v0
+  4bf338:	0c101d34 	jal	0x4074d0
+  4bf33c:	00000000 	nop
+  4bf340:	3c050067 	lui	a1,0x67
+  4bf344:	02002021 	move	a0,s0
+  4bf348:	24a56a24 	addiu	a1,a1,27172
+  4bf34c:	0c101d78 	jal	0x4075e0
+  4bf350:	00403021 	move	a2,v0
+  4bf354:	8fbf0024 	lw	ra,36(sp)
+  4bf358:	8fb00020 	lw	s0,32(sp)
+  4bf35c:	03e00008 	jr	ra
+  4bf360:	27bd0028 	addiu	sp,sp,40
+  4bf364:	8fa70018 	lw	a3,24(sp)
+  4bf368:	3c05006a 	lui	a1,0x6a
+  4bf36c:	24844520 	addiu	a0,a0,17696
+  4bf370:	24a54f88 	addiu	a1,a1,20360
+  4bf374:	0c101b74 	jal	0x406dd0
+  4bf378:	24060558 	li	a2,1368
+  4bf37c:	0812fcc8 	j	0x4bf320
+  4bf380:	8fa30018 	lw	v1,24(sp)

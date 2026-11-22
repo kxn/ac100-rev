@@ -1,0 +1,19 @@
+; func rrm_adjust_cur_pwr @ 0x004ab300 size=0x48
+  4ab300:	27bdffd8 	addiu	sp,sp,-40
+  4ab304:	308400ff 	andi	a0,a0,0xff
+  4ab308:	afb10020 	sw	s1,32(sp)
+  4ab30c:	30d100ff 	andi	s1,a2,0xff
+  4ab310:	afb0001c 	sw	s0,28(sp)
+  4ab314:	30b000ff 	andi	s0,a1,0xff
+  4ab318:	02002821 	move	a1,s0
+  4ab31c:	afbf0024 	sw	ra,36(sp)
+  4ab320:	0c12ac66 	jal	0x4ab198
+  4ab324:	02203021 	move	a2,s1
+  4ab328:	02002821 	move	a1,s0
+  4ab32c:	02203021 	move	a2,s1
+  4ab330:	8fbf0024 	lw	ra,36(sp)
+  4ab334:	8fb10020 	lw	s1,32(sp)
+  4ab338:	00402021 	move	a0,v0
+  4ab33c:	8fb0001c 	lw	s0,28(sp)
+  4ab340:	0812ac8f 	j	0x4ab23c
+  4ab344:	27bd0028 	addiu	sp,sp,40

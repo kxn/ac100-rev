@@ -1,0 +1,27 @@
+; func _wportal_db_dm_calling_station_hash_print @ 0x0042b08c size=0x68
+  42b08c:	27bdffc0 	addiu	sp,sp,-64
+  42b090:	10800015 	beqz	a0,0x42b0e8
+  42b094:	afbf003c 	sw	ra,60(sp)
+  42b098:	9082000e 	lbu	v0,14(a0)
+  42b09c:	8c850014 	lw	a1,20(a0)
+  42b0a0:	9086000c 	lbu	a2,12(a0)
+  42b0a4:	9087000d 	lbu	a3,13(a0)
+  42b0a8:	afa20010 	sw	v0,16(sp)
+  42b0ac:	9082000f 	lbu	v0,15(a0)
+  42b0b0:	afa20014 	sw	v0,20(sp)
+  42b0b4:	90820010 	lbu	v0,16(a0)
+  42b0b8:	afa20018 	sw	v0,24(sp)
+  42b0bc:	90820011 	lbu	v0,17(a0)
+  42b0c0:	afa2001c 	sw	v0,28(sp)
+  42b0c4:	90820080 	lbu	v0,128(a0)
+  42b0c8:	afa20020 	sw	v0,32(sp)
+  42b0cc:	24820058 	addiu	v0,a0,88
+  42b0d0:	afa20024 	sw	v0,36(sp)
+  42b0d4:	8c82003c 	lw	v0,60(a0)
+  42b0d8:	3c040068 	lui	a0,0x68
+  42b0dc:	2484cdd8 	addiu	a0,a0,-12840
+  42b0e0:	0c101b74 	jal	0x406dd0
+  42b0e4:	afa20028 	sw	v0,40(sp)
+  42b0e8:	8fbf003c 	lw	ra,60(sp)
+  42b0ec:	03e00008 	jr	ra
+  42b0f0:	27bd0040 	addiu	sp,sp,64

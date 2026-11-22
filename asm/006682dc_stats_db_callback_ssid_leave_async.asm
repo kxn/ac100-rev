@@ -1,0 +1,21 @@
+; func stats_db_callback_ssid_leave_async @ 0x006682dc size=0x50
+  6682dc:	27bdffe0 	addiu	sp,sp,-32
+  6682e0:	2405ffff 	li	a1,-1
+  6682e4:	afb00018 	sw	s0,24(sp)
+  6682e8:	3c10007d 	lui	s0,0x7d
+  6682ec:	afa40020 	sw	a0,32(sp)
+  6682f0:	afbf001c 	sw	ra,28(sp)
+  6682f4:	0c1020b4 	jal	0x4082d0
+  6682f8:	8e04c8d8 	lw	a0,-14120(s0)
+  6682fc:	2602c8d8 	addiu	v0,s0,-14120
+  668300:	3c050067 	lui	a1,0x67
+  668304:	27a60020 	addiu	a2,sp,32
+  668308:	8c440008 	lw	a0,8(v0)
+  66830c:	0c10215c 	jal	0x408570
+  668310:	24a5883c 	addiu	a1,a1,-30660
+  668314:	0c101fcc 	jal	0x407f30
+  668318:	8e04c8d8 	lw	a0,-14120(s0)
+  66831c:	8fbf001c 	lw	ra,28(sp)
+  668320:	8fb00018 	lw	s0,24(sp)
+  668324:	03e00008 	jr	ra
+  668328:	27bd0020 	addiu	sp,sp,32

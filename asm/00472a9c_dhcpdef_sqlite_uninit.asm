@@ -1,0 +1,73 @@
+; func dhcpdef_sqlite_uninit @ 0x00472a9c size=0x120
+  472a9c:	27bdffd0 	addiu	sp,sp,-48
+  472aa0:	afb10024 	sw	s1,36(sp)
+  472aa4:	3c110076 	lui	s1,0x76
+  472aa8:	afbf002c 	sw	ra,44(sp)
+  472aac:	262270b8 	addiu	v0,s1,28856
+  472ab0:	afb20028 	sw	s2,40(sp)
+  472ab4:	afb00020 	sw	s0,32(sp)
+  472ab8:	8c430018 	lw	v1,24(v0)
+  472abc:	54600024 	bnezl	v1,0x472b50
+  472ac0:	8c44001c 	lw	a0,28(v0)
+  472ac4:	3c100076 	lui	s0,0x76
+  472ac8:	8e0470d8 	lw	a0,28888(s0)
+  472acc:	10800004 	beqz	a0,0x472ae0
+  472ad0:	3c120076 	lui	s2,0x76
+  472ad4:	0c10202c 	jal	0x4080b0
+  472ad8:	00000000 	nop
+  472adc:	ae0070d8 	sw	zero,28888(s0)
+  472ae0:	0811cac3 	j	0x472b0c
+  472ae4:	265270bc 	addiu	s2,s2,28860
+  472ae8:	0c102140 	jal	0x408500
+  472aec:	02002021 	move	a0,s0
+  472af0:	8e040010 	lw	a0,16(s0)
+  472af4:	10800003 	beqz	a0,0x472b04
+  472af8:	00000000 	nop
+  472afc:	0c101f7c 	jal	0x407df0
+  472b00:	00000000 	nop
+  472b04:	0c101f7c 	jal	0x407df0
+  472b08:	02002021 	move	a0,s0
+  472b0c:	0c10206c 	jal	0x4081b0
+  472b10:	02402021 	move	a0,s2
+  472b14:	1440fff4 	bnez	v0,0x472ae8
+  472b18:	00408021 	move	s0,v0
+  472b1c:	263070b8 	addiu	s0,s1,28856
+  472b20:	0c102088 	jal	0x408220
+  472b24:	8e040014 	lw	a0,20(s0)
+  472b28:	0c1020d8 	jal	0x408360
+  472b2c:	8e040010 	lw	a0,16(s0)
+  472b30:	00001021 	move	v0,zero
+  472b34:	8fbf002c 	lw	ra,44(sp)
+  472b38:	8fb20028 	lw	s2,40(sp)
+  472b3c:	8fb00020 	lw	s0,32(sp)
+  472b40:	ae2070b8 	sw	zero,28856(s1)
+  472b44:	8fb10024 	lw	s1,36(sp)
+  472b48:	03e00008 	jr	ra
+  472b4c:	27bd0030 	addiu	sp,sp,48
+  472b50:	0c101da0 	jal	0x407680
+  472b54:	24050003 	li	a1,3
+  472b58:	10400005 	beqz	v0,0x472b70
+  472b5c:	00408021 	move	s0,v0
+  472b60:	3c020073 	lui	v0,0x73
+  472b64:	8c421480 	lw	v0,5248(v0)
+  472b68:	14400004 	bnez	v0,0x472b7c
+  472b6c:	00000000 	nop
+  472b70:	262270b8 	addiu	v0,s1,28856
+  472b74:	0811cab1 	j	0x472ac4
+  472b78:	ac400018 	sw	zero,24(v0)
+  472b7c:	0c16276a 	jal	0x589da8
+  472b80:	00000000 	nop
+  472b84:	1040fffb 	beqz	v0,0x472b74
+  472b88:	262270b8 	addiu	v0,s1,28856
+  472b8c:	3c040069 	lui	a0,0x69
+  472b90:	afb00010 	sw	s0,16(sp)
+  472b94:	3c050069 	lui	a1,0x69
+  472b98:	3c060069 	lui	a2,0x69
+  472b9c:	2484f3e0 	addiu	a0,a0,-3104
+  472ba0:	24a5ba54 	addiu	a1,a1,-17836
+  472ba4:	24c6f6c4 	addiu	a2,a2,-2364
+  472ba8:	0c101b74 	jal	0x406dd0
+  472bac:	2407039a 	li	a3,922
+  472bb0:	262270b8 	addiu	v0,s1,28856
+  472bb4:	0811cab1 	j	0x472ac4
+  472bb8:	ac400018 	sw	zero,24(v0)

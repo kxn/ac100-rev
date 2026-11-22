@@ -1,0 +1,23 @@
+; func arp_defend_print_msgq @ 0x0047f09c size=0x58
+  47f09c:	27bdffd8 	addiu	sp,sp,-40
+  47f0a0:	afb0001c 	sw	s0,28(sp)
+  47f0a4:	3c100073 	lui	s0,0x73
+  47f0a8:	afbf0024 	sw	ra,36(sp)
+  47f0ac:	afb10020 	sw	s1,32(sp)
+  47f0b0:	0c102160 	jal	0x408580
+  47f0b4:	8e0414c4 	lw	a0,5316(s0)
+  47f0b8:	8e0414c4 	lw	a0,5316(s0)
+  47f0bc:	0c102008 	jal	0x408020
+  47f0c0:	00408821 	move	s1,v0
+  47f0c4:	0c11e120 	jal	0x478480
+  47f0c8:	00408021 	move	s0,v0
+  47f0cc:	3c040069 	lui	a0,0x69
+  47f0d0:	8fbf0024 	lw	ra,36(sp)
+  47f0d4:	02202821 	move	a1,s1
+  47f0d8:	8fb10020 	lw	s1,32(sp)
+  47f0dc:	02003021 	move	a2,s0
+  47f0e0:	8fb0001c 	lw	s0,28(sp)
+  47f0e4:	24842f8c 	addiu	a0,a0,12172
+  47f0e8:	27bd0028 	addiu	sp,sp,40
+  47f0ec:	08101b74 	j	0x406dd0
+  47f0f0:	00403821 	move	a3,v0

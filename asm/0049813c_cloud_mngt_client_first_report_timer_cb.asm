@@ -1,0 +1,38 @@
+; func cloud_mngt_client_first_report_timer_cb @ 0x0049813c size=0x94
+  49813c:	3c020076 	lui	v0,0x76
+  498140:	27bdffd0 	addiu	sp,sp,-48
+  498144:	8c4277d8 	lw	v0,30680(v0)
+  498148:	1040001a 	beqz	v0,0x4981b4
+  49814c:	afbf002c 	sw	ra,44(sp)
+  498150:	3c020076 	lui	v0,0x76
+  498154:	8c4277dc 	lw	v0,30684(v0)
+  498158:	14400019 	bnez	v0,0x4981c0
+  49815c:	24040001 	li	a0,1
+  498160:	0c101f9c 	jal	0x407e70
+  498164:	00000000 	nop
+  498168:	3c020076 	lui	v0,0x76
+  49816c:	24040005 	li	a0,5
+  498170:	0c123b87 	jal	0x48ee1c
+  498174:	ac437628 	sw	v1,30248(v0)
+  498178:	3c020073 	lui	v0,0x73
+  49817c:	3c060049 	lui	a2,0x49
+  498180:	afa00010 	sw	zero,16(sp)
+  498184:	00002821 	move	a1,zero
+  498188:	8c441804 	lw	a0,6148(v0)
+  49818c:	3c02006a 	lui	v0,0x6a
+  498190:	24c678e8 	addiu	a2,a2,30952
+  498194:	2442bd70 	addiu	v0,v0,-17040
+  498198:	00003821 	move	a3,zero
+  49819c:	afa20014 	sw	v0,20(sp)
+  4981a0:	24021e32 	li	v0,7730
+  4981a4:	0c1020d0 	jal	0x408340
+  4981a8:	afa20018 	sw	v0,24(sp)
+  4981ac:	3c030073 	lui	v1,0x73
+  4981b0:	ac62182c 	sw	v0,6188(v1)
+  4981b4:	8fbf002c 	lw	ra,44(sp)
+  4981b8:	03e00008 	jr	ra
+  4981bc:	27bd0030 	addiu	sp,sp,48
+  4981c0:	0c19ca72 	jal	0x6729c8
+  4981c4:	00002821 	move	a1,zero
+  4981c8:	08126058 	j	0x498160
+  4981cc:	00000000 	nop

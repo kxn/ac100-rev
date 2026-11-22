@@ -1,0 +1,27 @@
+; func local_wsta_intelligent_roam_set_params_cb @ 0x00489ae4 size=0x68
+  489ae4:	27bdffe0 	addiu	sp,sp,-32
+  489ae8:	afbf001c 	sw	ra,28(sp)
+  489aec:	10800006 	beqz	a0,0x489b08
+  489af0:	afb00018 	sw	s0,24(sp)
+  489af4:	94840010 	lhu	a0,16(a0)
+  489af8:	0c1225e9 	jal	0x4897a4
+  489afc:	00008021 	move	s0,zero
+  489b00:	10400006 	beqz	v0,0x489b1c
+  489b04:	8fbf001c 	lw	ra,28(sp)
+  489b08:	3c020073 	lui	v0,0x73
+  489b0c:	804214d0 	lb	v0,5328(v0)
+  489b10:	14400006 	bnez	v0,0x489b2c
+  489b14:	24100001 	li	s0,1
+  489b18:	8fbf001c 	lw	ra,28(sp)
+  489b1c:	02001021 	move	v0,s0
+  489b20:	8fb00018 	lw	s0,24(sp)
+  489b24:	03e00008 	jr	ra
+  489b28:	27bd0020 	addiu	sp,sp,32
+  489b2c:	3c040069 	lui	a0,0x69
+  489b30:	3c050069 	lui	a1,0x69
+  489b34:	248467d4 	addiu	a0,a0,26580
+  489b38:	24a57090 	addiu	a1,a1,28816
+  489b3c:	0c101b74 	jal	0x406dd0
+  489b40:	24060b96 	li	a2,2966
+  489b44:	081226c7 	j	0x489b1c
+  489b48:	8fbf001c 	lw	ra,28(sp)

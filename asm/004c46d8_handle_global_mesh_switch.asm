@@ -1,0 +1,27 @@
+; func handle_global_mesh_switch @ 0x004c46d8 size=0x68
+  4c46d8:	27bdffe0 	addiu	sp,sp,-32
+  4c46dc:	3c05004c 	lui	a1,0x4c
+  4c46e0:	afbf001c 	sw	ra,28(sp)
+  4c46e4:	1080000e 	beqz	a0,0x4c4720
+  4c46e8:	afa40020 	sw	a0,32(sp)
+  4c46ec:	3c04000e 	lui	a0,0xe
+  4c46f0:	24a50f38 	addiu	a1,a1,3896
+  4c46f4:	0c14e0b9 	jal	0x5382e4
+  4c46f8:	27a60020 	addiu	a2,sp,32
+  4c46fc:	3c05004c 	lui	a1,0x4c
+  4c4700:	3c04000e 	lui	a0,0xe
+  4c4704:	24a531b0 	addiu	a1,a1,12720
+  4c4708:	0c14e0b9 	jal	0x5382e4
+  4c470c:	00003021 	move	a2,zero
+  4c4710:	8fbf001c 	lw	ra,28(sp)
+  4c4714:	00001021 	move	v0,zero
+  4c4718:	03e00008 	jr	ra
+  4c471c:	27bd0020 	addiu	sp,sp,32
+  4c4720:	3c04000e 	lui	a0,0xe
+  4c4724:	24a50f38 	addiu	a1,a1,3896
+  4c4728:	0c14e0b9 	jal	0x5382e4
+  4c472c:	27a60020 	addiu	a2,sp,32
+  4c4730:	0c130c8e 	jal	0x4c3238
+  4c4734:	00002021 	move	a0,zero
+  4c4738:	081311c5 	j	0x4c4714
+  4c473c:	8fbf001c 	lw	ra,28(sp)

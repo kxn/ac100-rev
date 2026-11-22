@@ -1,0 +1,24 @@
+; func _apdb_fwid_key_hash_func @ 0x005fbe70 size=0x5c
+  5fbe70:	27bdffe0 	addiu	sp,sp,-32
+  5fbe74:	10800006 	beqz	a0,0x5fbe90
+  5fbe78:	afbf001c 	sw	ra,28(sp)
+  5fbe7c:	8fbf001c 	lw	ra,28(sp)
+  5fbe80:	24050010 	li	a1,16
+  5fbe84:	00003021 	move	a2,zero
+  5fbe88:	081020f4 	j	0x4083d0
+  5fbe8c:	27bd0020 	addiu	sp,sp,32
+  5fbe90:	3c020075 	lui	v0,0x75
+  5fbe94:	8c42fe84 	lw	v0,-380(v0)
+  5fbe98:	14400005 	bnez	v0,0x5fbeb0
+  5fbe9c:	3c040070 	lui	a0,0x70
+  5fbea0:	8fbf001c 	lw	ra,28(sp)
+  5fbea4:	00001021 	move	v0,zero
+  5fbea8:	03e00008 	jr	ra
+  5fbeac:	27bd0020 	addiu	sp,sp,32
+  5fbeb0:	3c050070 	lui	a1,0x70
+  5fbeb4:	2484ca8c 	addiu	a0,a0,-13684
+  5fbeb8:	24a51d5c 	addiu	a1,a1,7516
+  5fbebc:	0c101b74 	jal	0x406dd0
+  5fbec0:	2406036a 	li	a2,874
+  5fbec4:	0817efa9 	j	0x5fbea4
+  5fbec8:	8fbf001c 	lw	ra,28(sp)

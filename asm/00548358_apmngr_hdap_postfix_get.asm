@@ -1,0 +1,36 @@
+; func apmngr_hdap_postfix_get @ 0x00548358 size=0x8c
+  548358:	27bdffe0 	addiu	sp,sp,-32
+  54835c:	24020001 	li	v0,1
+  548360:	afbf001c 	sw	ra,28(sp)
+  548364:	10820019 	beq	a0,v0,0x5483cc
+  548368:	afb00018 	sw	s0,24(sp)
+  54836c:	24020002 	li	v0,2
+  548370:	10820019 	beq	a0,v0,0x5483d8
+  548374:	3c02007c 	lui	v0,0x7c
+  548378:	3c100069 	lui	s0,0x69
+  54837c:	80425481 	lb	v0,21633(v0)
+  548380:	14400006 	bnez	v0,0x54839c
+  548384:	26108af8 	addiu	s0,s0,-29960
+  548388:	8fbf001c 	lw	ra,28(sp)
+  54838c:	02001021 	move	v0,s0
+  548390:	8fb00018 	lw	s0,24(sp)
+  548394:	03e00008 	jr	ra
+  548398:	27bd0020 	addiu	sp,sp,32
+  54839c:	0c16276a 	jal	0x589da8
+  5483a0:	00000000 	nop
+  5483a4:	5040fff9 	beqzl	v0,0x54838c
+  5483a8:	8fbf001c 	lw	ra,28(sp)
+  5483ac:	3c04006d 	lui	a0,0x6d
+  5483b0:	3c05006d 	lui	a1,0x6d
+  5483b4:	2484d6a4 	addiu	a0,a0,-10588
+  5483b8:	24a5d6f0 	addiu	a1,a1,-10512
+  5483bc:	0c101b74 	jal	0x406dd0
+  5483c0:	2406005a 	li	a2,90
+  5483c4:	081520e3 	j	0x54838c
+  5483c8:	8fbf001c 	lw	ra,28(sp)
+  5483cc:	3c10006d 	lui	s0,0x6d
+  5483d0:	081520e2 	j	0x548388
+  5483d4:	2610d69c 	addiu	s0,s0,-10596
+  5483d8:	3c10006d 	lui	s0,0x6d
+  5483dc:	081520e2 	j	0x548388
+  5483e0:	2610d6a0 	addiu	s0,s0,-10592

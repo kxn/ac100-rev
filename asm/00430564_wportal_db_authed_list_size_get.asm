@@ -1,0 +1,21 @@
+; func wportal_db_authed_list_size_get @ 0x00430564 size=0x50
+  430564:	27bdffd8 	addiu	sp,sp,-40
+  430568:	2405ffff 	li	a1,-1
+  43056c:	afb10020 	sw	s1,32(sp)
+  430570:	3c110076 	lui	s1,0x76
+  430574:	afbf0024 	sw	ra,36(sp)
+  430578:	afb0001c 	sw	s0,28(sp)
+  43057c:	0c1020b4 	jal	0x4082d0
+  430580:	8e24a150 	lw	a0,-24240(s1)
+  430584:	3c020076 	lui	v0,0x76
+  430588:	0c101ff8 	jal	0x407fe0
+  43058c:	8c44a158 	lw	a0,-24232(v0)
+  430590:	8e24a150 	lw	a0,-24240(s1)
+  430594:	0c101fcc 	jal	0x407f30
+  430598:	00408021 	move	s0,v0
+  43059c:	02001021 	move	v0,s0
+  4305a0:	8fbf0024 	lw	ra,36(sp)
+  4305a4:	8fb10020 	lw	s1,32(sp)
+  4305a8:	8fb0001c 	lw	s0,28(sp)
+  4305ac:	03e00008 	jr	ra
+  4305b0:	27bd0028 	addiu	sp,sp,40

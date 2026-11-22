@@ -1,0 +1,25 @@
+; func cw_priv_mesh2_join_type_assemble @ 0x005b5c18 size=0x60
+  5b5c18:	27bdffd8 	addiu	sp,sp,-40
+  5b5c1c:	afbf0024 	sw	ra,36(sp)
+  5b5c20:	afb20020 	sw	s2,32(sp)
+  5b5c24:	afb1001c 	sw	s1,28(sp)
+  5b5c28:	00a08821 	move	s1,a1
+  5b5c2c:	afb00018 	sw	s0,24(sp)
+  5b5c30:	00808021 	move	s0,a0
+  5b5c34:	8ca20010 	lw	v0,16(a1)
+  5b5c38:	94920004 	lhu	s2,4(a0)
+  5b5c3c:	0c15c7ea 	jal	0x571fa8
+  5b5c40:	8c450000 	lw	a1,0(v0)
+  5b5c44:	96020004 	lhu	v0,4(s0)
+  5b5c48:	9623000e 	lhu	v1,14(s1)
+  5b5c4c:	8fbf0024 	lw	ra,36(sp)
+  5b5c50:	00529023 	subu	s2,v0,s2
+  5b5c54:	8fb1001c 	lw	s1,28(sp)
+  5b5c58:	8fb00018 	lw	s0,24(sp)
+  5b5c5c:	02431026 	xor	v0,s2,v1
+  5b5c60:	8fb20020 	lw	s2,32(sp)
+  5b5c64:	2403ffff 	li	v1,-1
+  5b5c68:	27bd0028 	addiu	sp,sp,40
+  5b5c6c:	0002180a 	movz	v1,zero,v0
+  5b5c70:	03e00008 	jr	ra
+  5b5c74:	00601021 	move	v0,v1

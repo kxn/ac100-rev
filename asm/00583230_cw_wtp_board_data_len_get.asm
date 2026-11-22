@@ -1,0 +1,23 @@
+; func cw_wtp_board_data_len_get @ 0x00583230 size=0x58
+  583230:	27bdffe0 	addiu	sp,sp,-32
+  583234:	afb00018 	sw	s0,24(sp)
+  583238:	00008021 	move	s0,zero
+  58323c:	1080000d 	beqz	a0,0x583274
+  583240:	afbf001c 	sw	ra,28(sp)
+  583244:	24840004 	addiu	a0,a0,4
+  583248:	0c10206c 	jal	0x4081b0
+  58324c:	24100004 	li	s0,4
+  583250:	10400009 	beqz	v0,0x583278
+  583254:	8fbf001c 	lw	ra,28(sp)
+  583258:	9443000e 	lhu	v1,14(v0)
+  58325c:	00402021 	move	a0,v0
+  583260:	24630004 	addiu	v1,v1,4
+  583264:	0c1021a0 	jal	0x408680
+  583268:	02038021 	addu	s0,s0,v1
+  58326c:	1440fffa 	bnez	v0,0x583258
+  583270:	3210ffff 	andi	s0,s0,0xffff
+  583274:	8fbf001c 	lw	ra,28(sp)
+  583278:	02001021 	move	v0,s0
+  58327c:	8fb00018 	lw	s0,24(sp)
+  583280:	03e00008 	jr	ra
+  583284:	27bd0020 	addiu	sp,sp,32

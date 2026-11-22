@@ -1,0 +1,21 @@
+; func sensor_test_db_is_test_result_slow @ 0x0050687c size=0x50
+  50687c:	2c820009 	sltiu	v0,a0,9
+  506880:	54400003 	bnezl	v0,0x506890
+  506884:	3c02006c 	lui	v0,0x6c
+  506888:	03e00008 	jr	ra
+  50688c:	00001021 	move	v0,zero
+  506890:	00042080 	sll	a0,a0,0x2
+  506894:	2442b490 	addiu	v0,v0,-19312
+  506898:	00442021 	addu	a0,v0,a0
+  50689c:	8c820000 	lw	v0,0(a0)
+  5068a0:	00400008 	jr	v0
+  5068a4:	00000000 	nop
+  5068a8:	2ca207d1 	sltiu	v0,a1,2001
+  5068ac:	38420001 	xori	v0,v0,0x1
+  5068b0:	03e00008 	jr	ra
+  5068b4:	00000000 	nop
+  5068b8:	3c020001 	lui	v0,0x1
+  5068bc:	344286a1 	ori	v0,v0,0x86a1
+  5068c0:	00a2102b 	sltu	v0,a1,v0
+  5068c4:	03e00008 	jr	ra
+  5068c8:	38420001 	xori	v0,v0,0x1

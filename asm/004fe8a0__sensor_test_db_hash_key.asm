@@ -1,0 +1,24 @@
+; func _sensor_test_db_hash_key @ 0x004fe8a0 size=0x5c
+  4fe8a0:	27bdffe0 	addiu	sp,sp,-32
+  4fe8a4:	10800006 	beqz	a0,0x4fe8c0
+  4fe8a8:	afbf001c 	sw	ra,28(sp)
+  4fe8ac:	8fbf001c 	lw	ra,28(sp)
+  4fe8b0:	24050006 	li	a1,6
+  4fe8b4:	00003021 	move	a2,zero
+  4fe8b8:	081020f4 	j	0x4083d0
+  4fe8bc:	27bd0020 	addiu	sp,sp,32
+  4fe8c0:	3c020073 	lui	v0,0x73
+  4fe8c4:	80421b24 	lb	v0,6948(v0)
+  4fe8c8:	14400005 	bnez	v0,0x4fe8e0
+  4fe8cc:	3c04006b 	lui	a0,0x6b
+  4fe8d0:	8fbf001c 	lw	ra,28(sp)
+  4fe8d4:	00001021 	move	v0,zero
+  4fe8d8:	03e00008 	jr	ra
+  4fe8dc:	27bd0020 	addiu	sp,sp,32
+  4fe8e0:	3c05006c 	lui	a1,0x6c
+  4fe8e4:	24844ce4 	addiu	a0,a0,19684
+  4fe8e8:	24a5b74c 	addiu	a1,a1,-18612
+  4fe8ec:	0c101b74 	jal	0x406dd0
+  4fe8f0:	24060c4f 	li	a2,3151
+  4fe8f4:	0813fa35 	j	0x4fe8d4
+  4fe8f8:	8fbf001c 	lw	ra,28(sp)

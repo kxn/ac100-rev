@@ -1,0 +1,19 @@
+; func _apdb_ap_fwid_hash_free @ 0x005fa348 size=0x48
+  5fa348:	27bdffe0 	addiu	sp,sp,-32
+  5fa34c:	afb00018 	sw	s0,24(sp)
+  5fa350:	00808021 	move	s0,a0
+  5fa354:	1080000a 	beqz	a0,0x5fa380
+  5fa358:	afbf001c 	sw	ra,28(sp)
+  5fa35c:	3c050060 	lui	a1,0x60
+  5fa360:	00003021 	move	a2,zero
+  5fa364:	0c10215c 	jal	0x408570
+  5fa368:	24a59aa4 	addiu	a1,a1,-25948
+  5fa36c:	02002021 	move	a0,s0
+  5fa370:	8fbf001c 	lw	ra,28(sp)
+  5fa374:	8fb00018 	lw	s0,24(sp)
+  5fa378:	081020c4 	j	0x408310
+  5fa37c:	27bd0020 	addiu	sp,sp,32
+  5fa380:	8fbf001c 	lw	ra,28(sp)
+  5fa384:	8fb00018 	lw	s0,24(sp)
+  5fa388:	03e00008 	jr	ra
+  5fa38c:	27bd0020 	addiu	sp,sp,32

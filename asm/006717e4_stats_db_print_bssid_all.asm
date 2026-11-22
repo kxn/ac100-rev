@@ -1,0 +1,19 @@
+; func stats_db_print_bssid_all @ 0x006717e4 size=0x48
+  6717e4:	27bdffe0 	addiu	sp,sp,-32
+  6717e8:	2405ffff 	li	a1,-1
+  6717ec:	afb00018 	sw	s0,24(sp)
+  6717f0:	3c10007d 	lui	s0,0x7d
+  6717f4:	afbf001c 	sw	ra,28(sp)
+  6717f8:	0c1020b4 	jal	0x4082d0
+  6717fc:	8e04c8d8 	lw	a0,-14120(s0)
+  671800:	2602c8d8 	addiu	v0,s0,-14120
+  671804:	3c050066 	lui	a1,0x66
+  671808:	00003021 	move	a2,zero
+  67180c:	8c44001c 	lw	a0,28(v0)
+  671810:	0c10215c 	jal	0x408570
+  671814:	24a57e2c 	addiu	a1,a1,32300
+  671818:	8e04c8d8 	lw	a0,-14120(s0)
+  67181c:	8fbf001c 	lw	ra,28(sp)
+  671820:	8fb00018 	lw	s0,24(sp)
+  671824:	08101fcc 	j	0x407f30
+  671828:	27bd0020 	addiu	sp,sp,32

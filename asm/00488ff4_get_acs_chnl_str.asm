@@ -1,0 +1,13 @@
+; func get_acs_chnl_str @ 0x00488ff4 size=0x30
+  488ff4:	7c042420 	seb	a0,a0
+  488ff8:	308300ff 	andi	v1,a0,0xff
+  488ffc:	2c630002 	sltiu	v1,v1,2
+  489000:	10600006 	beqz	v1,0x48901c
+  489004:	00001021 	move	v0,zero
+  489008:	3c020069 	lui	v0,0x69
+  48900c:	00042080 	sll	a0,a0,0x2
+  489010:	24426d90 	addiu	v0,v0,28048
+  489014:	00822021 	addu	a0,a0,v0
+  489018:	8c820000 	lw	v0,0(a0)
+  48901c:	03e00008 	jr	ra
+  489020:	00000000 	nop

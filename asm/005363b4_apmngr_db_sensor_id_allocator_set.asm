@@ -1,0 +1,24 @@
+; func apmngr_db_sensor_id_allocator_set @ 0x005363b4 size=0x5c
+  5363b4:	27bdffd8 	addiu	sp,sp,-40
+  5363b8:	2402ffff 	li	v0,-1
+  5363bc:	afb10020 	sw	s1,32(sp)
+  5363c0:	00808821 	move	s1,a0
+  5363c4:	afbf0024 	sw	ra,36(sp)
+  5363c8:	1080000c 	beqz	a0,0x5363fc
+  5363cc:	afb0001c 	sw	s0,28(sp)
+  5363d0:	3c10007c 	lui	s0,0x7c
+  5363d4:	2405ffff 	li	a1,-1
+  5363d8:	0c1020b4 	jal	0x4082d0
+  5363dc:	8e045874 	lw	a0,22644(s0)
+  5363e0:	3c02007c 	lui	v0,0x7c
+  5363e4:	02202821 	move	a1,s1
+  5363e8:	0c10201c 	jal	0x408070
+  5363ec:	8c44586c 	lw	a0,22636(v0)
+  5363f0:	0c101fcc 	jal	0x407f30
+  5363f4:	8e045874 	lw	a0,22644(s0)
+  5363f8:	00001021 	move	v0,zero
+  5363fc:	8fbf0024 	lw	ra,36(sp)
+  536400:	8fb10020 	lw	s1,32(sp)
+  536404:	8fb0001c 	lw	s0,28(sp)
+  536408:	03e00008 	jr	ra
+  53640c:	27bd0028 	addiu	sp,sp,40

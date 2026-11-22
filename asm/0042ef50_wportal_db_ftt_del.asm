@@ -1,0 +1,24 @@
+; func wportal_db_ftt_del @ 0x0042ef50 size=0x5c
+  42ef50:	27bdffd8 	addiu	sp,sp,-40
+  42ef54:	2402ffff 	li	v0,-1
+  42ef58:	afb10020 	sw	s1,32(sp)
+  42ef5c:	00808821 	move	s1,a0
+  42ef60:	afbf0024 	sw	ra,36(sp)
+  42ef64:	1080000c 	beqz	a0,0x42ef98
+  42ef68:	afb0001c 	sw	s0,28(sp)
+  42ef6c:	3c100076 	lui	s0,0x76
+  42ef70:	2405ffff 	li	a1,-1
+  42ef74:	0c1020b4 	jal	0x4082d0
+  42ef78:	8e04a148 	lw	a0,-24248(s0)
+  42ef7c:	3c020076 	lui	v0,0x76
+  42ef80:	02202821 	move	a1,s1
+  42ef84:	0c1021a4 	jal	0x408690
+  42ef88:	8c44a14c 	lw	a0,-24244(v0)
+  42ef8c:	0c101fcc 	jal	0x407f30
+  42ef90:	8e04a148 	lw	a0,-24248(s0)
+  42ef94:	00001021 	move	v0,zero
+  42ef98:	8fbf0024 	lw	ra,36(sp)
+  42ef9c:	8fb10020 	lw	s1,32(sp)
+  42efa0:	8fb0001c 	lw	s0,28(sp)
+  42efa4:	03e00008 	jr	ra
+  42efa8:	27bd0028 	addiu	sp,sp,40

@@ -1,0 +1,139 @@
+; func cw_add_mac_acl_entry_parse @ 0x0056fab8 size=0x228
+  56fab8:	27bdffd0 	addiu	sp,sp,-48
+  56fabc:	afb30024 	sw	s3,36(sp)
+  56fac0:	00a09821 	move	s3,a1
+  56fac4:	afb1001c 	sw	s1,28(sp)
+  56fac8:	24050066 	li	a1,102
+  56facc:	afb00018 	sw	s0,24(sp)
+  56fad0:	00808821 	move	s1,a0
+  56fad4:	afbf002c 	sw	ra,44(sp)
+  56fad8:	afb40028 	sw	s4,40(sp)
+  56fadc:	afb20020 	sw	s2,32(sp)
+  56fae0:	94940006 	lhu	s4,6(a0)
+  56fae4:	0c102114 	jal	0x408450
+  56fae8:	24040008 	li	a0,8
+  56faec:	1040002e 	beqz	v0,0x56fba8
+  56faf0:	00408021 	move	s0,v0
+  56faf4:	00002821 	move	a1,zero
+  56faf8:	24060008 	li	a2,8
+  56fafc:	0c101cf0 	jal	0x4073c0
+  56fb00:	00402021 	move	a0,v0
+  56fb04:	0c15c5b0 	jal	0x5716c0
+  56fb08:	02202021 	move	a0,s1
+  56fb0c:	1040003d 	beqz	v0,0x56fc04
+  56fb10:	a2020000 	sb	v0,0(s0)
+  56fb14:	0c15c5b0 	jal	0x5716c0
+  56fb18:	02202021 	move	a0,s1
+  56fb1c:	24030006 	li	v1,6
+  56fb20:	10430004 	beq	v0,v1,0x56fb34
+  56fb24:	a2020001 	sb	v0,1(s0)
+  56fb28:	24030008 	li	v1,8
+  56fb2c:	54430043 	bnel	v0,v1,0x56fc3c
+  56fb30:	3c020075 	lui	v0,0x75
+  56fb34:	92030000 	lbu	v1,0(s0)
+  56fb38:	9672000e 	lhu	s2,14(s3)
+  56fb3c:	70621002 	mul	v0,v1,v0
+  56fb40:	2652fffe 	addiu	s2,s2,-2
+  56fb44:	3252ffff 	andi	s2,s2,0xffff
+  56fb48:	16420027 	bne	s2,v0,0x56fbe8
+  56fb4c:	3c020075 	lui	v0,0x75
+  56fb50:	02202021 	move	a0,s1
+  56fb54:	0c15c6bc 	jal	0x571af0
+  56fb58:	02402821 	move	a1,s2
+  56fb5c:	10400051 	beqz	v0,0x56fca4
+  56fb60:	ae020004 	sw	v0,4(s0)
+  56fb64:	9662000e 	lhu	v0,14(s3)
+  56fb68:	ae700010 	sw	s0,16(s3)
+  56fb6c:	96300006 	lhu	s0,6(s1)
+  56fb70:	02148023 	subu	s0,s0,s4
+  56fb74:	02028026 	xor	s0,s0,v0
+  56fb78:	2402ffff 	li	v0,-1
+  56fb7c:	0010100a 	movz	v0,zero,s0
+  56fb80:	00408021 	move	s0,v0
+  56fb84:	8fbf002c 	lw	ra,44(sp)
+  56fb88:	02001021 	move	v0,s0
+  56fb8c:	8fb40028 	lw	s4,40(sp)
+  56fb90:	8fb30024 	lw	s3,36(sp)
+  56fb94:	8fb20020 	lw	s2,32(sp)
+  56fb98:	8fb1001c 	lw	s1,28(sp)
+  56fb9c:	8fb00018 	lw	s0,24(sp)
+  56fba0:	03e00008 	jr	ra
+  56fba4:	27bd0030 	addiu	sp,sp,48
+  56fba8:	3c020075 	lui	v0,0x75
+  56fbac:	8c42cf58 	lw	v0,-12456(v0)
+  56fbb0:	1040fff4 	beqz	v0,0x56fb84
+  56fbb4:	2410ffff 	li	s0,-1
+  56fbb8:	0c16276a 	jal	0x589da8
+  56fbbc:	00000000 	nop
+  56fbc0:	5040fff1 	beqzl	v0,0x56fb88
+  56fbc4:	8fbf002c 	lw	ra,44(sp)
+  56fbc8:	3c04006d 	lui	a0,0x6d
+  56fbcc:	3c05006d 	lui	a1,0x6d
+  56fbd0:	2484381c 	addiu	a0,a0,14364
+  56fbd4:	24a5758c 	addiu	a1,a1,30092
+  56fbd8:	0c101b74 	jal	0x406dd0
+  56fbdc:	24060069 	li	a2,105
+  56fbe0:	0815bee2 	j	0x56fb88
+  56fbe4:	8fbf002c 	lw	ra,44(sp)
+  56fbe8:	8c42cf58 	lw	v0,-12456(v0)
+  56fbec:	14400023 	bnez	v0,0x56fc7c
+  56fbf0:	00000000 	nop
+  56fbf4:	0c101f7c 	jal	0x407df0
+  56fbf8:	02002021 	move	a0,s0
+  56fbfc:	0815bee1 	j	0x56fb84
+  56fc00:	2410ffff 	li	s0,-1
+  56fc04:	3c020075 	lui	v0,0x75
+  56fc08:	8c42cf58 	lw	v0,-12456(v0)
+  56fc0c:	1040fff9 	beqz	v0,0x56fbf4
+  56fc10:	00000000 	nop
+  56fc14:	0c16276a 	jal	0x589da8
+  56fc18:	00000000 	nop
+  56fc1c:	1040fff5 	beqz	v0,0x56fbf4
+  56fc20:	3c04006d 	lui	a0,0x6d
+  56fc24:	92070000 	lbu	a3,0(s0)
+  56fc28:	3c05006d 	lui	a1,0x6d
+  56fc2c:	2484741c 	addiu	a0,a0,29724
+  56fc30:	24a5758c 	addiu	a1,a1,30092
+  56fc34:	0815bf1b 	j	0x56fc6c
+  56fc38:	24060072 	li	a2,114
+  56fc3c:	8c42cf58 	lw	v0,-12456(v0)
+  56fc40:	1040ffec 	beqz	v0,0x56fbf4
+  56fc44:	00000000 	nop
+  56fc48:	0c16276a 	jal	0x589da8
+  56fc4c:	00000000 	nop
+  56fc50:	1040ffe8 	beqz	v0,0x56fbf4
+  56fc54:	3c04006d 	lui	a0,0x6d
+  56fc58:	92070001 	lbu	a3,1(s0)
+  56fc5c:	3c05006d 	lui	a1,0x6d
+  56fc60:	24847450 	addiu	a0,a0,29776
+  56fc64:	24a5758c 	addiu	a1,a1,30092
+  56fc68:	2406007b 	li	a2,123
+  56fc6c:	0c101b74 	jal	0x406dd0
+  56fc70:	00000000 	nop
+  56fc74:	0815befd 	j	0x56fbf4
+  56fc78:	00000000 	nop
+  56fc7c:	0c16276a 	jal	0x589da8
+  56fc80:	00000000 	nop
+  56fc84:	1040ffdb 	beqz	v0,0x56fbf4
+  56fc88:	3c04006d 	lui	a0,0x6d
+  56fc8c:	3c05006d 	lui	a1,0x6d
+  56fc90:	248474c0 	addiu	a0,a0,29888
+  56fc94:	24a5758c 	addiu	a1,a1,30092
+  56fc98:	24060084 	li	a2,132
+  56fc9c:	0815bf1b 	j	0x56fc6c
+  56fca0:	02403821 	move	a3,s2
+  56fca4:	3c020075 	lui	v0,0x75
+  56fca8:	8c42cf58 	lw	v0,-12456(v0)
+  56fcac:	1040ffd1 	beqz	v0,0x56fbf4
+  56fcb0:	00000000 	nop
+  56fcb4:	0c16276a 	jal	0x589da8
+  56fcb8:	00000000 	nop
+  56fcbc:	1040ffcd 	beqz	v0,0x56fbf4
+  56fcc0:	3c04006d 	lui	a0,0x6d
+  56fcc4:	3c05006d 	lui	a1,0x6d
+  56fcc8:	24847500 	addiu	a0,a0,29952
+  56fccc:	24a5758c 	addiu	a1,a1,30092
+  56fcd0:	0c101b74 	jal	0x406dd0
+  56fcd4:	2406008b 	li	a2,139
+  56fcd8:	0815befd 	j	0x56fbf4
+  56fcdc:	00000000 	nop

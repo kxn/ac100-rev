@@ -1,0 +1,81 @@
+// func sendto_business_by_short_link @ 00675040 size=16
+
+void sendto_business_by_short_link(void)
+
+{
+  (*(code *)_GLOBAL_OFFSET_TABLE_)();
+  (*(code *)_GLOBAL_OFFSET_TABLE_)();
+  (*(code *)_GLOBAL_OFFSET_TABLE_)();
+  (*(code *)_GLOBAL_OFFSET_TABLE_)();
+  (*(code *)_GLOBAL_OFFSET_TABLE_)();
+  (*(code *)_GLOBAL_OFFSET_TABLE_)();
+  (*(code *)_GLOBAL_OFFSET_TABLE_)();
+  (*(code *)_GLOBAL_OFFSET_TABLE_)();
+  (*(code *)_GLOBAL_OFFSET_TABLE_)();
+  (*(code *)_GLOBAL_OFFSET_TABLE_)();
+  (*(code *)_GLOBAL_OFFSET_TABLE_)();
+  (*(code *)_GLOBAL_OFFSET_TABLE_)();
+  (*(code *)_GLOBAL_OFFSET_TABLE_)();
+  (*(code *)_GLOBAL_OFFSET_TABLE_)();
+  (*(code *)_GLOBAL_OFFSET_TABLE_)();
+  (*(code *)_GLOBAL_OFFSET_TABLE_)();
+  (*(code *)_GLOBAL_OFFSET_TABLE_)();
+  (*(code *)_GLOBAL_OFFSET_TABLE_)();
+  (*(code *)_GLOBAL_OFFSET_TABLE_)();
+  (*(code *)_GLOBAL_OFFSET_TABLE_)();
+  (*(code *)_GLOBAL_OFFSET_TABLE_)();
+  (*(code *)_GLOBAL_OFFSET_TABLE_)();
+  (*(code *)_GLOBAL_OFFSET_TABLE_)();
+  (*(code *)_GLOBAL_OFFSET_TABLE_)();
+  (*(code *)_GLOBAL_OFFSET_TABLE_)();
+  (*(code *)_GLOBAL_OFFSET_TABLE_)();
+  (*(code *)_GLOBAL_OFFSET_TABLE_)();
+  (*(code *)_GLOBAL_OFFSET_TABLE_)();
+  (*(code *)_GLOBAL_OFFSET_TABLE_)();
+  (*(code *)_GLOBAL_OFFSET_TABLE_)();
+  (*(code *)_GLOBAL_OFFSET_TABLE_)();
+  (*(code *)_GLOBAL_OFFSET_TABLE_)();
+  (*(code *)_GLOBAL_OFFSET_TABLE_)();
+  (*(code *)_GLOBAL_OFFSET_TABLE_)();
+  (*(code *)_GLOBAL_OFFSET_TABLE_)();
+  (*(code *)_GLOBAL_OFFSET_TABLE_)();
+  (*(code *)_GLOBAL_OFFSET_TABLE_)();
+  (*(code *)_GLOBAL_OFFSET_TABLE_)();
+  (*(code *)_GLOBAL_OFFSET_TABLE_)();
+  (*(code *)_GLOBAL_OFFSET_TABLE_)();
+  (*(code *)_GLOBAL_OFFSET_TABLE_)();
+  (*(code *)_GLOBAL_OFFSET_TABLE_)();
+  (*(code *)_GLOBAL_OFFSET_TABLE_)();
+  (*(code *)_GLOBAL_OFFSET_TABLE_)();
+  (*(code *)_GLOBAL_OFFSET_TABLE_)();
+  (*(code *)_GLOBAL_OFFSET_TABLE_)();
+  (*(code *)_GLOBAL_OFFSET_TABLE_)();
+  (*(code *)_GLOBAL_OFFSET_TABLE_)();
+  (*(code *)_GLOBAL_OFFSET_TABLE_)();
+  (*(code *)_GLOBAL_OFFSET_TABLE_)();
+  (*(code *)_GLOBAL_OFFSET_TABLE_)();
+  (*(code *)_GLOBAL_OFFSET_TABLE_)();
+  (*(code *)_GLOBAL_OFFSET_TABLE_)();
+  (*(code *)_GLOBAL_OFFSET_TABLE_)();
+  (*(code *)_GLOBAL_OFFSET_TABLE_)();
+  (*(code *)_GLOBAL_OFFSET_TABLE_)();
+  (*(code *)_GLOBAL_OFFSET_TABLE_)();
+  (*(code *)_GLOBAL_OFFSET_TABLE_)();
+  (*(code *)_GLOBAL_OFFSET_TABLE_)();
+  (*(code *)_GLOBAL_OFFSET_TABLE_)();
+  (*(code *)_GLOBAL_OFFSET_TABLE_)();
+  (*(code *)_GLOBAL_OFFSET_TABLE_)();
+  (*(code *)_GLOBAL_OFFSET_TABLE_)();
+  (*(code *)_GLOBAL_OFFSET_TABLE_)();
+  (*(code *)_GLOBAL_OFFSET_TABLE_)();
+  (*(code *)_GLOBAL_OFFSET_TABLE_)();
+  (*(code *)_GLOBAL_OFFSET_TABLE_)();
+  (*(code *)_GLOBAL_OFFSET_TABLE_)();
+  (*(code *)_GLOBAL_OFFSET_TABLE_)();
+  (*(code *)_GLOBAL_OFFSET_TABLE_)();
+  (*(code *)_GLOBAL_OFFSET_TABLE_)();
+  (*(code *)_GLOBAL_OFFSET_TABLE_)();
+  FUN_0040b1f0();
+  return;
+}
+

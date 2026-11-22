@@ -1,0 +1,21 @@
+; func stats_db_callback_wtp_leave_async @ 0x0066837c size=0x50
+  66837c:	27bdffe0 	addiu	sp,sp,-32
+  668380:	2405ffff 	li	a1,-1
+  668384:	afb00018 	sw	s0,24(sp)
+  668388:	3c10007d 	lui	s0,0x7d
+  66838c:	afa40020 	sw	a0,32(sp)
+  668390:	afbf001c 	sw	ra,28(sp)
+  668394:	0c1020b4 	jal	0x4082d0
+  668398:	8e04c8d8 	lw	a0,-14120(s0)
+  66839c:	2602c8d8 	addiu	v0,s0,-14120
+  6683a0:	3c050067 	lui	a1,0x67
+  6683a4:	27a60020 	addiu	a2,sp,32
+  6683a8:	8c440008 	lw	a0,8(v0)
+  6683ac:	0c10215c 	jal	0x408570
+  6683b0:	24a5894c 	addiu	a1,a1,-30388
+  6683b4:	0c101fcc 	jal	0x407f30
+  6683b8:	8e04c8d8 	lw	a0,-14120(s0)
+  6683bc:	8fbf001c 	lw	ra,28(sp)
+  6683c0:	8fb00018 	lw	s0,24(sp)
+  6683c4:	03e00008 	jr	ra
+  6683c8:	27bd0020 	addiu	sp,sp,32

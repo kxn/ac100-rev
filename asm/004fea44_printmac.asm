@@ -1,0 +1,26 @@
+; func printmac @ 0x004fea44 size=0x64
+  4fea44:	3c020077 	lui	v0,0x77
+  4fea48:	27bdffc8 	addiu	sp,sp,-56
+  4fea4c:	804288a5 	lb	v0,-30555(v0)
+  4fea50:	10400012 	beqz	v0,0x4fea9c
+  4fea54:	afbf0034 	sw	ra,52(sp)
+  4fea58:	90820001 	lbu	v0,1(a0)
+  4fea5c:	3c05006c 	lui	a1,0x6c
+  4fea60:	90870000 	lbu	a3,0(a0)
+  4fea64:	24060d4e 	li	a2,3406
+  4fea68:	24a5b58c 	addiu	a1,a1,-19060
+  4fea6c:	afa20010 	sw	v0,16(sp)
+  4fea70:	90820002 	lbu	v0,2(a0)
+  4fea74:	afa20014 	sw	v0,20(sp)
+  4fea78:	90820003 	lbu	v0,3(a0)
+  4fea7c:	afa20018 	sw	v0,24(sp)
+  4fea80:	90820004 	lbu	v0,4(a0)
+  4fea84:	afa2001c 	sw	v0,28(sp)
+  4fea88:	90820005 	lbu	v0,5(a0)
+  4fea8c:	3c04006c 	lui	a0,0x6c
+  4fea90:	2484860c 	addiu	a0,a0,-31220
+  4fea94:	0c101b74 	jal	0x406dd0
+  4fea98:	afa20020 	sw	v0,32(sp)
+  4fea9c:	8fbf0034 	lw	ra,52(sp)
+  4feaa0:	03e00008 	jr	ra
+  4feaa4:	27bd0038 	addiu	sp,sp,56

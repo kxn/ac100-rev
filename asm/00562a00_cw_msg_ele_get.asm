@@ -1,0 +1,22 @@
+; func cw_msg_ele_get @ 0x00562a00 size=0x54
+  562a00:	27bdffe0 	addiu	sp,sp,-32
+  562a04:	00001021 	move	v0,zero
+  562a08:	afb00018 	sw	s0,24(sp)
+  562a0c:	30b0ffff 	andi	s0,a1,0xffff
+  562a10:	1080000c 	beqz	a0,0x562a44
+  562a14:	afbf001c 	sw	ra,28(sp)
+  562a18:	0c10206c 	jal	0x4081b0
+  562a1c:	2484001c 	addiu	a0,a0,28
+  562a20:	10400009 	beqz	v0,0x562a48
+  562a24:	8fbf001c 	lw	ra,28(sp)
+  562a28:	9443000c 	lhu	v1,12(v0)
+  562a2c:	10700006 	beq	v1,s0,0x562a48
+  562a30:	8fbf001c 	lw	ra,28(sp)
+  562a34:	0c1021a0 	jal	0x408680
+  562a38:	00402021 	move	a0,v0
+  562a3c:	5440fffb 	bnezl	v0,0x562a2c
+  562a40:	9443000c 	lhu	v1,12(v0)
+  562a44:	8fbf001c 	lw	ra,28(sp)
+  562a48:	8fb00018 	lw	s0,24(sp)
+  562a4c:	03e00008 	jr	ra
+  562a50:	27bd0020 	addiu	sp,sp,32

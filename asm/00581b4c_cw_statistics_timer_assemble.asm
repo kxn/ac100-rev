@@ -1,0 +1,25 @@
+; func cw_statistics_timer_assemble @ 0x00581b4c size=0x60
+  581b4c:	27bdffd8 	addiu	sp,sp,-40
+  581b50:	afbf0024 	sw	ra,36(sp)
+  581b54:	afb20020 	sw	s2,32(sp)
+  581b58:	afb1001c 	sw	s1,28(sp)
+  581b5c:	00a08821 	move	s1,a1
+  581b60:	afb00018 	sw	s0,24(sp)
+  581b64:	00808021 	move	s0,a0
+  581b68:	8ca20010 	lw	v0,16(a1)
+  581b6c:	94920004 	lhu	s2,4(a0)
+  581b70:	0c15c7be 	jal	0x571ef8
+  581b74:	94450000 	lhu	a1,0(v0)
+  581b78:	96020004 	lhu	v0,4(s0)
+  581b7c:	9623000e 	lhu	v1,14(s1)
+  581b80:	8fbf0024 	lw	ra,36(sp)
+  581b84:	00529023 	subu	s2,v0,s2
+  581b88:	8fb1001c 	lw	s1,28(sp)
+  581b8c:	8fb00018 	lw	s0,24(sp)
+  581b90:	02431026 	xor	v0,s2,v1
+  581b94:	8fb20020 	lw	s2,32(sp)
+  581b98:	2403ffff 	li	v1,-1
+  581b9c:	27bd0028 	addiu	sp,sp,40
+  581ba0:	0002180a 	movz	v1,zero,v0
+  581ba4:	03e00008 	jr	ra
+  581ba8:	00601021 	move	v0,v1

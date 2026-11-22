@@ -1,0 +1,36 @@
+; func _sensor_di_ssid_hash_key @ 0x004dcd1c size=0x8c
+  4dcd1c:	27bdffe0 	addiu	sp,sp,-32
+  4dcd20:	afb00018 	sw	s0,24(sp)
+  4dcd24:	00808021 	move	s0,a0
+  4dcd28:	1080000f 	beqz	a0,0x4dcd68
+  4dcd2c:	afbf001c 	sw	ra,28(sp)
+  4dcd30:	80820031 	lb	v0,49(a0)
+  4dcd34:	5440000a 	bnezl	v0,0x4dcd60
+  4dcd38:	24840031 	addiu	a0,a0,49
+  4dcd3c:	0c101ee4 	jal	0x407b90
+  4dcd40:	00000000 	nop
+  4dcd44:	02002021 	move	a0,s0
+  4dcd48:	00402821 	move	a1,v0
+  4dcd4c:	8fbf001c 	lw	ra,28(sp)
+  4dcd50:	00003021 	move	a2,zero
+  4dcd54:	8fb00018 	lw	s0,24(sp)
+  4dcd58:	081020f4 	j	0x4083d0
+  4dcd5c:	27bd0020 	addiu	sp,sp,32
+  4dcd60:	08137353 	j	0x4dcd4c
+  4dcd64:	24050001 	li	a1,1
+  4dcd68:	3c020073 	lui	v0,0x73
+  4dcd6c:	8c421ad0 	lw	v0,6864(v0)
+  4dcd70:	14400006 	bnez	v0,0x4dcd8c
+  4dcd74:	3c04006b 	lui	a0,0x6b
+  4dcd78:	8fbf001c 	lw	ra,28(sp)
+  4dcd7c:	00001021 	move	v0,zero
+  4dcd80:	8fb00018 	lw	s0,24(sp)
+  4dcd84:	03e00008 	jr	ra
+  4dcd88:	27bd0020 	addiu	sp,sp,32
+  4dcd8c:	3c05006b 	lui	a1,0x6b
+  4dcd90:	2484a204 	addiu	a0,a0,-24060
+  4dcd94:	24a5f80c 	addiu	a1,a1,-2036
+  4dcd98:	0c101b74 	jal	0x406dd0
+  4dcd9c:	2406015e 	li	a2,350
+  4dcda0:	0813735f 	j	0x4dcd7c
+  4dcda4:	8fbf001c 	lw	ra,28(sp)

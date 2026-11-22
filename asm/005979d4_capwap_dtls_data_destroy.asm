@@ -1,0 +1,19 @@
+; func capwap_dtls_data_destroy @ 0x005979d4 size=0x48
+  5979d4:	27bdffe0 	addiu	sp,sp,-32
+  5979d8:	24050001 	li	a1,1
+  5979dc:	afbf001c 	sw	ra,28(sp)
+  5979e0:	afb00018 	sw	s0,24(sp)
+  5979e4:	00808021 	move	s0,a0
+  5979e8:	0c101d50 	jal	0x407540
+  5979ec:	8c840000 	lw	a0,0(a0)
+  5979f0:	3c020076 	lui	v0,0x76
+  5979f4:	8c599904 	lw	t9,-26364(v0)
+  5979f8:	0320f809 	jalr	t9
+  5979fc:	8e040054 	lw	a0,84(s0)
+  597a00:	0c101d40 	jal	0x407500
+  597a04:	8e040000 	lw	a0,0(s0)
+  597a08:	02002021 	move	a0,s0
+  597a0c:	8fbf001c 	lw	ra,28(sp)
+  597a10:	8fb00018 	lw	s0,24(sp)
+  597a14:	08101f7c 	j	0x407df0
+  597a18:	27bd0020 	addiu	sp,sp,32

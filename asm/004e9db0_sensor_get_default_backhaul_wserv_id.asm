@@ -1,0 +1,19 @@
+; func sensor_get_default_backhaul_wserv_id @ 0x004e9db0 size=0x48
+  4e9db0:	27bdffd8 	addiu	sp,sp,-40
+  4e9db4:	2405ffff 	li	a1,-1
+  4e9db8:	afb0001c 	sw	s0,28(sp)
+  4e9dbc:	3c100077 	lui	s0,0x77
+  4e9dc0:	afbf0024 	sw	ra,36(sp)
+  4e9dc4:	afb10020 	sw	s1,32(sp)
+  4e9dc8:	0c1020b4 	jal	0x4082d0
+  4e9dcc:	8e04862c 	lw	a0,-31188(s0)
+  4e9dd0:	3c020073 	lui	v0,0x73
+  4e9dd4:	8e04862c 	lw	a0,-31188(s0)
+  4e9dd8:	0c101fcc 	jal	0x407f30
+  4e9ddc:	8c511af4 	lw	s1,6900(v0)
+  4e9de0:	8fbf0024 	lw	ra,36(sp)
+  4e9de4:	02201021 	move	v0,s1
+  4e9de8:	8fb0001c 	lw	s0,28(sp)
+  4e9dec:	8fb10020 	lw	s1,32(sp)
+  4e9df0:	03e00008 	jr	ra
+  4e9df4:	27bd0028 	addiu	sp,sp,40

@@ -1,0 +1,21 @@
+; func send_tdcp_request_to_ap_by_id @ 0x0050ec80 size=0x50
+  50ec80:	27bdffc8 	addiu	sp,sp,-56
+  50ec84:	00c01021 	move	v0,a2
+  50ec88:	30a6ffff 	andi	a2,a1,0xffff
+  50ec8c:	8fa30048 	lw	v1,72(sp)
+  50ec90:	10600002 	beqz	v1,0x50ec9c
+  50ec94:	afbf0034 	sw	ra,52(sp)
+  50ec98:	ac600000 	sw	zero,0(v1)
+  50ec9c:	27a50050 	addiu	a1,sp,80
+  50eca0:	afa30014 	sw	v1,20(sp)
+  50eca4:	afa70010 	sw	a3,16(sp)
+  50eca8:	00403821 	move	a3,v0
+  50ecac:	afa50028 	sw	a1,40(sp)
+  50ecb0:	afa5001c 	sw	a1,28(sp)
+  50ecb4:	00002821 	move	a1,zero
+  50ecb8:	8fa3004c 	lw	v1,76(sp)
+  50ecbc:	0c142e70 	jal	0x50b9c0
+  50ecc0:	afa30018 	sw	v1,24(sp)
+  50ecc4:	8fbf0034 	lw	ra,52(sp)
+  50ecc8:	03e00008 	jr	ra
+  50eccc:	27bd0038 	addiu	sp,sp,56

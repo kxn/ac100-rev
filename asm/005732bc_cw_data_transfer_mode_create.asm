@@ -1,0 +1,57 @@
+; func cw_data_transfer_mode_create @ 0x005732bc size=0xdc
+  5732bc:	27bdffd8 	addiu	sp,sp,-40
+  5732c0:	24050001 	li	a1,1
+  5732c4:	afb0001c 	sw	s0,28(sp)
+  5732c8:	afbf0024 	sw	ra,36(sp)
+  5732cc:	0c15c8cc 	jal	0x572330
+  5732d0:	afb10020 	sw	s1,32(sp)
+  5732d4:	1040000d 	beqz	v0,0x57330c
+  5732d8:	00408021 	move	s0,v0
+  5732dc:	2404000e 	li	a0,14
+  5732e0:	24050001 	li	a1,1
+  5732e4:	0c15c943 	jal	0x57250c
+  5732e8:	00403021 	move	a2,v0
+  5732ec:	10400017 	beqz	v0,0x57334c
+  5732f0:	00408821 	move	s1,v0
+  5732f4:	8fbf0024 	lw	ra,36(sp)
+  5732f8:	02201021 	move	v0,s1
+  5732fc:	8fb10020 	lw	s1,32(sp)
+  573300:	8fb0001c 	lw	s0,28(sp)
+  573304:	03e00008 	jr	ra
+  573308:	27bd0028 	addiu	sp,sp,40
+  57330c:	3c020075 	lui	v0,0x75
+  573310:	8c42cf58 	lw	v0,-12456(v0)
+  573314:	1040fff7 	beqz	v0,0x5732f4
+  573318:	00008821 	move	s1,zero
+  57331c:	0c16276a 	jal	0x589da8
+  573320:	00000000 	nop
+  573324:	5040fff4 	beqzl	v0,0x5732f8
+  573328:	8fbf0024 	lw	ra,36(sp)
+  57332c:	3c04006d 	lui	a0,0x6d
+  573330:	3c05006e 	lui	a1,0x6e
+  573334:	248434fc 	addiu	a0,a0,13564
+  573338:	24a581f0 	addiu	a1,a1,-32272
+  57333c:	0c101b74 	jal	0x406dd0
+  573340:	240600a3 	li	a2,163
+  573344:	0815ccbe 	j	0x5732f8
+  573348:	8fbf0024 	lw	ra,36(sp)
+  57334c:	3c020075 	lui	v0,0x75
+  573350:	8c42cf58 	lw	v0,-12456(v0)
+  573354:	14400005 	bnez	v0,0x57336c
+  573358:	00000000 	nop
+  57335c:	0c101f7c 	jal	0x407df0
+  573360:	02002021 	move	a0,s0
+  573364:	0815ccbe 	j	0x5732f8
+  573368:	8fbf0024 	lw	ra,36(sp)
+  57336c:	0c16276a 	jal	0x589da8
+  573370:	00000000 	nop
+  573374:	1040fff9 	beqz	v0,0x57335c
+  573378:	3c04006d 	lui	a0,0x6d
+  57337c:	3c05006e 	lui	a1,0x6e
+  573380:	248447f0 	addiu	a0,a0,18416
+  573384:	24a581f0 	addiu	a1,a1,-32272
+  573388:	0c101b74 	jal	0x406dd0
+  57338c:	240600ab 	li	a2,171
+  573390:	0815ccd7 	j	0x57335c
+  573394:	00000000 	nop
+	...

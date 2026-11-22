@@ -1,0 +1,31 @@
+; func WHEEL_MD5_TIMER_GET_BY_ID @ 0x0051c79c size=0x78
+  51c79c:	3c1c0024 	lui	gp,0x24
+  51c7a0:	279c4964 	addiu	gp,gp,18788
+  51c7a4:	0399e021 	addu	gp,gp,t9
+  51c7a8:	8f8280ac 	lw	v0,-32596(gp)
+  51c7ac:	24060001 	li	a2,1
+  51c7b0:	8f8382ac 	lw	v1,-32084(gp)
+  51c7b4:	8c452044 	lw	a1,8260(v0)
+  51c7b8:	00a62804 	sllv	a1,a2,a1
+  51c7bc:	24a2ffff 	addiu	v0,a1,-1
+  51c7c0:	0082382a 	slt	a3,a0,v0
+  51c7c4:	14e0000e 	bnez	a3,0x51c800
+  51c7c8:	246322d4 	addiu	v1,v1,8916
+  51c7cc:	8c671818 	lw	a3,6168(v1)
+  51c7d0:	00471021 	addu	v0,v0,a3
+  51c7d4:	0082382a 	slt	a3,a0,v0
+  51c7d8:	10e00007 	beqz	a3,0x51c7f8
+  51c7dc:	00001021 	move	v0,zero
+  51c7e0:	00c52823 	subu	a1,a2,a1
+  51c7e4:	8c621814 	lw	v0,6164(v1)
+  51c7e8:	00852021 	addu	a0,a0,a1
+  51c7ec:	00042080 	sll	a0,a0,0x2
+  51c7f0:	00442021 	addu	a0,v0,a0
+  51c7f4:	8c820000 	lw	v0,0(a0)
+  51c7f8:	03e00008 	jr	ra
+  51c7fc:	00000000 	nop
+  51c800:	2402006c 	li	v0,108
+  51c804:	70822002 	mul	a0,a0,v0
+  51c808:	8c621810 	lw	v0,6160(v1)
+  51c80c:	03e00008 	jr	ra
+  51c810:	00441021 	addu	v0,v0,a0

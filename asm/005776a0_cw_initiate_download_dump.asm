@@ -1,0 +1,23 @@
+; func cw_initiate_download_dump @ 0x005776a0 size=0x58
+  5776a0:	27bdffe0 	addiu	sp,sp,-32
+  5776a4:	afb00018 	sw	s0,24(sp)
+  5776a8:	00808021 	move	s0,a0
+  5776ac:	3c04006e 	lui	a0,0x6e
+  5776b0:	afbf001c 	sw	ra,28(sp)
+  5776b4:	9606000e 	lhu	a2,14(s0)
+  5776b8:	9605000c 	lhu	a1,12(s0)
+  5776bc:	0c101b74 	jal	0x406dd0
+  5776c0:	24849120 	addiu	a0,a0,-28384
+  5776c4:	3c04006e 	lui	a0,0x6e
+  5776c8:	9605000c 	lhu	a1,12(s0)
+  5776cc:	0c101b74 	jal	0x406dd0
+  5776d0:	2484914c 	addiu	a0,a0,-28340
+  5776d4:	3c04006d 	lui	a0,0x6d
+  5776d8:	9605000e 	lhu	a1,14(s0)
+  5776dc:	0c101b74 	jal	0x406dd0
+  5776e0:	24842f58 	addiu	a0,a0,12120
+  5776e4:	00001021 	move	v0,zero
+  5776e8:	8fbf001c 	lw	ra,28(sp)
+  5776ec:	8fb00018 	lw	s0,24(sp)
+  5776f0:	03e00008 	jr	ra
+  5776f4:	27bd0020 	addiu	sp,sp,32

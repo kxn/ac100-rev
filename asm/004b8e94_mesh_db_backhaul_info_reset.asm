@@ -1,0 +1,21 @@
+; func mesh_db_backhaul_info_reset @ 0x004b8e94 size=0x50
+  4b8e94:	27bdffe0 	addiu	sp,sp,-32
+  4b8e98:	2405ffff 	li	a1,-1
+  4b8e9c:	afb00018 	sw	s0,24(sp)
+  4b8ea0:	3c100076 	lui	s0,0x76
+  4b8ea4:	afbf001c 	sw	ra,28(sp)
+  4b8ea8:	26107eb0 	addiu	s0,s0,32432
+  4b8eac:	0c1020b4 	jal	0x4082d0
+  4b8eb0:	8e040004 	lw	a0,4(s0)
+  4b8eb4:	3c050076 	lui	a1,0x76
+  4b8eb8:	2604000d 	addiu	a0,s0,13
+  4b8ebc:	24a57fc0 	addiu	a1,a1,32704
+  4b8ec0:	0c101c8c 	jal	0x407230
+  4b8ec4:	24060082 	li	a2,130
+  4b8ec8:	0c101fcc 	jal	0x407f30
+  4b8ecc:	8e040004 	lw	a0,4(s0)
+  4b8ed0:	00001021 	move	v0,zero
+  4b8ed4:	8fbf001c 	lw	ra,28(sp)
+  4b8ed8:	8fb00018 	lw	s0,24(sp)
+  4b8edc:	03e00008 	jr	ra
+  4b8ee0:	27bd0020 	addiu	sp,sp,32

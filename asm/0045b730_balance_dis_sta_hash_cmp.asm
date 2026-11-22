@@ -1,0 +1,31 @@
+; func balance_dis_sta_hash_cmp @ 0x0045b730 size=0x78
+  45b730:	27bdffe0 	addiu	sp,sp,-32
+  45b734:	afbf001c 	sw	ra,28(sp)
+  45b738:	1080000b 	beqz	a0,0x45b768
+  45b73c:	afb00018 	sw	s0,24(sp)
+  45b740:	10a0000a 	beqz	a1,0x45b76c
+  45b744:	3c020073 	lui	v0,0x73
+  45b748:	0c101e4c 	jal	0x407930
+  45b74c:	24060006 	li	a2,6
+  45b750:	2c500001 	sltiu	s0,v0,1
+  45b754:	8fbf001c 	lw	ra,28(sp)
+  45b758:	02001021 	move	v0,s0
+  45b75c:	8fb00018 	lw	s0,24(sp)
+  45b760:	03e00008 	jr	ra
+  45b764:	27bd0020 	addiu	sp,sp,32
+  45b768:	3c020073 	lui	v0,0x73
+  45b76c:	8c4213e0 	lw	v0,5088(v0)
+  45b770:	1040fff8 	beqz	v0,0x45b754
+  45b774:	00008021 	move	s0,zero
+  45b778:	0c16276a 	jal	0x589da8
+  45b77c:	00000000 	nop
+  45b780:	5040fff5 	beqzl	v0,0x45b758
+  45b784:	8fbf001c 	lw	ra,28(sp)
+  45b788:	3c040068 	lui	a0,0x68
+  45b78c:	3c050069 	lui	a1,0x69
+  45b790:	24847440 	addiu	a0,a0,29760
+  45b794:	24a5a758 	addiu	a1,a1,-22696
+  45b798:	0c101b74 	jal	0x406dd0
+  45b79c:	240600e0 	li	a2,224
+  45b7a0:	08116dd6 	j	0x45b758
+  45b7a4:	8fbf001c 	lw	ra,28(sp)

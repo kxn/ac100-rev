@@ -1,0 +1,35 @@
+; func ac_session_global_init @ 0x00590304 size=0x88
+  590304:	3c04006e 	lui	a0,0x6e
+  590308:	27bdffe0 	addiu	sp,sp,-32
+  59030c:	2484143c 	addiu	a0,a0,5180
+  590310:	00002821 	move	a1,zero
+  590314:	afbf001c 	sw	ra,28(sp)
+  590318:	0c101fc0 	jal	0x407f00
+  59031c:	afb00018 	sw	s0,24(sp)
+  590320:	3c03007c 	lui	v1,0x7c
+  590324:	10400009 	beqz	v0,0x59034c
+  590328:	ac6259a0 	sw	v0,22944(v1)
+  59032c:	3c02007c 	lui	v0,0x7c
+  590330:	00008021 	move	s0,zero
+  590334:	ac4059a4 	sw	zero,22948(v0)
+  590338:	8fbf001c 	lw	ra,28(sp)
+  59033c:	02001021 	move	v0,s0
+  590340:	8fb00018 	lw	s0,24(sp)
+  590344:	03e00008 	jr	ra
+  590348:	27bd0020 	addiu	sp,sp,32
+  59034c:	3c020075 	lui	v0,0x75
+  590350:	8c42cf58 	lw	v0,-12456(v0)
+  590354:	1040fff8 	beqz	v0,0x590338
+  590358:	2410ffff 	li	s0,-1
+  59035c:	0c16276a 	jal	0x589da8
+  590360:	00000000 	nop
+  590364:	5040fff5 	beqzl	v0,0x59033c
+  590368:	8fbf001c 	lw	ra,28(sp)
+  59036c:	3c04006e 	lui	a0,0x6e
+  590370:	3c05006e 	lui	a1,0x6e
+  590374:	24841450 	addiu	a0,a0,5200
+  590378:	24a515a8 	addiu	a1,a1,5544
+  59037c:	0c101b74 	jal	0x406dd0
+  590380:	240601c4 	li	a2,452
+  590384:	081640cf 	j	0x59033c
+  590388:	8fbf001c 	lw	ra,28(sp)

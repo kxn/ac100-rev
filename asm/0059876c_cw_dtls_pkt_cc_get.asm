@@ -1,0 +1,22 @@
+; func cw_dtls_pkt_cc_get @ 0x0059876c size=0x54
+  59876c:	27bdffe0 	addiu	sp,sp,-32
+  598770:	00001021 	move	v0,zero
+  598774:	afbf001c 	sw	ra,28(sp)
+  598778:	1080000d 	beqz	a0,0x5987b0
+  59877c:	afb00018 	sw	s0,24(sp)
+  598780:	24840004 	addiu	a0,a0,4
+  598784:	0c10206c 	jal	0x4081b0
+  598788:	24100014 	li	s0,20
+  59878c:	10400009 	beqz	v0,0x5987b4
+  598790:	8fbf001c 	lw	ra,28(sp)
+  598794:	9043000c 	lbu	v1,12(v0)
+  598798:	10700006 	beq	v1,s0,0x5987b4
+  59879c:	8fbf001c 	lw	ra,28(sp)
+  5987a0:	0c1021a0 	jal	0x408680
+  5987a4:	00402021 	move	a0,v0
+  5987a8:	5440fffb 	bnezl	v0,0x598798
+  5987ac:	9043000c 	lbu	v1,12(v0)
+  5987b0:	8fbf001c 	lw	ra,28(sp)
+  5987b4:	8fb00018 	lw	s0,24(sp)
+  5987b8:	03e00008 	jr	ra
+  5987bc:	27bd0020 	addiu	sp,sp,32

@@ -1,0 +1,29 @@
+; func cw_ipstr_to_protocol_ip @ 0x005727e0 size=0x6c
+  5727e0:	27bdffc0 	addiu	sp,sp,-64
+  5727e4:	afb10038 	sw	s1,56(sp)
+  5727e8:	2411ffff 	li	s1,-1
+  5727ec:	afb00034 	sw	s0,52(sp)
+  5727f0:	00a08021 	move	s0,a1
+  5727f4:	afbf003c 	sw	ra,60(sp)
+  5727f8:	afa00018 	sw	zero,24(sp)
+  5727fc:	afa0001c 	sw	zero,28(sp)
+  572800:	afa00020 	sw	zero,32(sp)
+  572804:	afa00024 	sw	zero,36(sp)
+  572808:	1080000a 	beqz	a0,0x572834
+  57280c:	afa00028 	sw	zero,40(sp)
+  572810:	10a00009 	beqz	a1,0x572838
+  572814:	8fbf003c 	lw	ra,60(sp)
+  572818:	0c1469ea 	jal	0x51a7a8
+  57281c:	27a50018 	addiu	a1,sp,24
+  572820:	14400004 	bnez	v0,0x572834
+  572824:	27a50018 	addiu	a1,sp,24
+  572828:	0c15c9d3 	jal	0x57274c
+  57282c:	02002021 	move	a0,s0
+  572830:	00408821 	move	s1,v0
+  572834:	8fbf003c 	lw	ra,60(sp)
+  572838:	02201021 	move	v0,s1
+  57283c:	8fb10038 	lw	s1,56(sp)
+  572840:	8fb00034 	lw	s0,52(sp)
+  572844:	03e00008 	jr	ra
+  572848:	27bd0040 	addiu	sp,sp,64
+  57284c:	00000000 	nop

@@ -1,0 +1,57 @@
+; func balance_capwap_callback_wtp_event_request_listen @ 0x00459f60 size=0xe0
+  459f60:	27bdffd8 	addiu	sp,sp,-40
+  459f64:	afb0001c 	sw	s0,28(sp)
+  459f68:	00a08021 	move	s0,a1
+  459f6c:	afbf0024 	sw	ra,36(sp)
+  459f70:	10800015 	beqz	a0,0x459fc8
+  459f74:	afb10020 	sw	s1,32(sp)
+  459f78:	10a00014 	beqz	a1,0x459fcc
+  459f7c:	3c020073 	lui	v0,0x73
+  459f80:	10c00013 	beqz	a2,0x459fd0
+  459f84:	8c4213e0 	lw	v0,5088(v0)
+  459f88:	2405000b 	li	a1,11
+  459f8c:	0c160c45 	jal	0x583114
+  459f90:	00008821 	move	s1,zero
+  459f94:	10400006 	beqz	v0,0x459fb0
+  459f98:	24440002 	addiu	a0,v0,2
+  459f9c:	0c11674c 	jal	0x459d30
+  459fa0:	02002821 	move	a1,s0
+  459fa4:	2403ffff 	li	v1,-1
+  459fa8:	10430018 	beq	v0,v1,0x45a00c
+  459fac:	3c020076 	lui	v0,0x76
+  459fb0:	8fbf0024 	lw	ra,36(sp)
+  459fb4:	02201021 	move	v0,s1
+  459fb8:	8fb10020 	lw	s1,32(sp)
+  459fbc:	8fb0001c 	lw	s0,28(sp)
+  459fc0:	03e00008 	jr	ra
+  459fc4:	27bd0028 	addiu	sp,sp,40
+  459fc8:	3c020073 	lui	v0,0x73
+  459fcc:	8c4213e0 	lw	v0,5088(v0)
+  459fd0:	1040fff7 	beqz	v0,0x459fb0
+  459fd4:	2411ffff 	li	s1,-1
+  459fd8:	0c16276a 	jal	0x589da8
+  459fdc:	00000000 	nop
+  459fe0:	5040fff4 	beqzl	v0,0x459fb4
+  459fe4:	8fbf0024 	lw	ra,36(sp)
+  459fe8:	3c040068 	lui	a0,0x68
+  459fec:	3c050069 	lui	a1,0x69
+  459ff0:	24847440 	addiu	a0,a0,29760
+  459ff4:	24a58990 	addiu	a1,a1,-30320
+  459ff8:	240603e1 	li	a2,993
+  459ffc:	0c101b74 	jal	0x406dd0
+  45a000:	00000000 	nop
+  45a004:	081167ed 	j	0x459fb4
+  45a008:	8fbf0024 	lw	ra,36(sp)
+  45a00c:	8c427030 	lw	v0,28720(v0)
+  45a010:	1040ffe7 	beqz	v0,0x459fb0
+  45a014:	2411ffff 	li	s1,-1
+  45a018:	0c16276a 	jal	0x589da8
+  45a01c:	00000000 	nop
+  45a020:	5040ffe4 	beqzl	v0,0x459fb4
+  45a024:	8fbf0024 	lw	ra,36(sp)
+  45a028:	3c040069 	lui	a0,0x69
+  45a02c:	3c050069 	lui	a1,0x69
+  45a030:	248484a4 	addiu	a0,a0,-31580
+  45a034:	24a58990 	addiu	a1,a1,-30320
+  45a038:	081167ff 	j	0x459ffc
+  45a03c:	240603eb 	li	a2,1003

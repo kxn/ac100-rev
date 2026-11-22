@@ -1,0 +1,36 @@
+; func _rrm_jcs_rrm_state_get @ 0x004aa714 size=0x8c
+  4aa714:	27bdffe0 	addiu	sp,sp,-32
+  4aa718:	afb00018 	sw	s0,24(sp)
+  4aa71c:	00a08021 	move	s0,a1
+  4aa720:	1080000f 	beqz	a0,0x4aa760
+  4aa724:	afbf001c 	sw	ra,28(sp)
+  4aa728:	10a0000e 	beqz	a1,0x4aa764
+  4aa72c:	3c020073 	lui	v0,0x73
+  4aa730:	0c12c70c 	jal	0x4b1c30
+  4aa734:	00000000 	nop
+  4aa738:	0c101d34 	jal	0x4074d0
+  4aa73c:	00402021 	move	a0,v0
+  4aa740:	3c05006f 	lui	a1,0x6f
+  4aa744:	02002021 	move	a0,s0
+  4aa748:	8fbf001c 	lw	ra,28(sp)
+  4aa74c:	8fb00018 	lw	s0,24(sp)
+  4aa750:	24a5a018 	addiu	a1,a1,-24552
+  4aa754:	27bd0020 	addiu	sp,sp,32
+  4aa758:	08101d78 	j	0x4075e0
+  4aa75c:	00403021 	move	a2,v0
+  4aa760:	3c020073 	lui	v0,0x73
+  4aa764:	804219b0 	lb	v0,6576(v0)
+  4aa768:	14400005 	bnez	v0,0x4aa780
+  4aa76c:	3c04006a 	lui	a0,0x6a
+  4aa770:	8fbf001c 	lw	ra,28(sp)
+  4aa774:	8fb00018 	lw	s0,24(sp)
+  4aa778:	03e00008 	jr	ra
+  4aa77c:	27bd0020 	addiu	sp,sp,32
+  4aa780:	8fbf001c 	lw	ra,28(sp)
+  4aa784:	3c05006a 	lui	a1,0x6a
+  4aa788:	8fb00018 	lw	s0,24(sp)
+  4aa78c:	2484fcf8 	addiu	a0,a0,-776
+  4aa790:	24a515bc 	addiu	a1,a1,5564
+  4aa794:	2406093a 	li	a2,2362
+  4aa798:	08101b74 	j	0x406dd0
+  4aa79c:	27bd0020 	addiu	sp,sp,32

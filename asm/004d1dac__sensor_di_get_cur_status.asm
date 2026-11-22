@@ -1,0 +1,19 @@
+; func _sensor_di_get_cur_status @ 0x004d1dac size=0x48
+  4d1dac:	27bdffd8 	addiu	sp,sp,-40
+  4d1db0:	2405ffff 	li	a1,-1
+  4d1db4:	afb10020 	sw	s1,32(sp)
+  4d1db8:	3c110077 	lui	s1,0x77
+  4d1dbc:	afbf0024 	sw	ra,36(sp)
+  4d1dc0:	afb0001c 	sw	s0,28(sp)
+  4d1dc4:	0c1020b4 	jal	0x4082d0
+  4d1dc8:	8e2485e4 	lw	a0,-31260(s1)
+  4d1dcc:	3c020077 	lui	v0,0x77
+  4d1dd0:	8e2485e4 	lw	a0,-31260(s1)
+  4d1dd4:	0c101fcc 	jal	0x407f30
+  4d1dd8:	845085e2 	lh	s0,-31262(v0)
+  4d1ddc:	8fbf0024 	lw	ra,36(sp)
+  4d1de0:	02001021 	move	v0,s0
+  4d1de4:	8fb10020 	lw	s1,32(sp)
+  4d1de8:	8fb0001c 	lw	s0,28(sp)
+  4d1dec:	03e00008 	jr	ra
+  4d1df0:	27bd0028 	addiu	sp,sp,40

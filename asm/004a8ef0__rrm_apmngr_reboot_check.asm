@@ -1,0 +1,27 @@
+; func _rrm_apmngr_reboot_check @ 0x004a8ef0 size=0x68
+  4a8ef0:	27bdffe0 	addiu	sp,sp,-32
+  4a8ef4:	afb00018 	sw	s0,24(sp)
+  4a8ef8:	afbf001c 	sw	ra,28(sp)
+  4a8efc:	0c12c70c 	jal	0x4b1c30
+  4a8f00:	24100001 	li	s0,1
+  4a8f04:	10400006 	beqz	v0,0x4a8f20
+  4a8f08:	24030007 	li	v1,7
+  4a8f0c:	10430004 	beq	v0,v1,0x4a8f20
+  4a8f10:	3c030076 	lui	v1,0x76
+  4a8f14:	80637c32 	lb	v1,31794(v1)
+  4a8f18:	14600006 	bnez	v1,0x4a8f34
+  4a8f1c:	00008021 	move	s0,zero
+  4a8f20:	8fbf001c 	lw	ra,28(sp)
+  4a8f24:	02001021 	move	v0,s0
+  4a8f28:	8fb00018 	lw	s0,24(sp)
+  4a8f2c:	03e00008 	jr	ra
+  4a8f30:	27bd0020 	addiu	sp,sp,32
+  4a8f34:	3c04006a 	lui	a0,0x6a
+  4a8f38:	3c05006a 	lui	a1,0x6a
+  4a8f3c:	2484fb94 	addiu	a0,a0,-1132
+  4a8f40:	24a51530 	addiu	a1,a1,5424
+  4a8f44:	24060a3c 	li	a2,2620
+  4a8f48:	0c101b74 	jal	0x406dd0
+  4a8f4c:	00403821 	move	a3,v0
+  4a8f50:	0812a3c9 	j	0x4a8f24
+  4a8f54:	8fbf001c 	lw	ra,28(sp)

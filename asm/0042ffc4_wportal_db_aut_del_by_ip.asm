@@ -1,0 +1,22 @@
+; func wportal_db_aut_del_by_ip @ 0x0042ffc4 size=0x54
+  42ffc4:	27bdffd8 	addiu	sp,sp,-40
+  42ffc8:	2402ffff 	li	v0,-1
+  42ffcc:	afb10020 	sw	s1,32(sp)
+  42ffd0:	00808821 	move	s1,a0
+  42ffd4:	afbf0024 	sw	ra,36(sp)
+  42ffd8:	1080000a 	beqz	a0,0x430004
+  42ffdc:	afb0001c 	sw	s0,28(sp)
+  42ffe0:	3c100076 	lui	s0,0x76
+  42ffe4:	2405ffff 	li	a1,-1
+  42ffe8:	0c1020b4 	jal	0x4082d0
+  42ffec:	8e04a150 	lw	a0,-24240(s0)
+  42fff0:	0c10afe4 	jal	0x42bf90
+  42fff4:	02202021 	move	a0,s1
+  42fff8:	0c101fcc 	jal	0x407f30
+  42fffc:	8e04a150 	lw	a0,-24240(s0)
+  430000:	00001021 	move	v0,zero
+  430004:	8fbf0024 	lw	ra,36(sp)
+  430008:	8fb10020 	lw	s1,32(sp)
+  43000c:	8fb0001c 	lw	s0,28(sp)
+  430010:	03e00008 	jr	ra
+  430014:	27bd0028 	addiu	sp,sp,40

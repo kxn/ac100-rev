@@ -1,0 +1,18 @@
+; func uac_schedule_container_update @ 0x0052146c size=0x44
+  52146c:	3c1c0024 	lui	gp,0x24
+  521470:	279cfc94 	addiu	gp,gp,-876
+  521474:	0399e021 	addu	gp,gp,t9
+  521478:	1080000b 	beqz	a0,0x5214a8
+  52147c:	00000000 	nop
+  521480:	8c83007c 	lw	v1,124(a0)
+  521484:	24020001 	li	v0,1
+  521488:	10620004 	beq	v1,v0,0x52149c
+  52148c:	8f9982f8 	lw	t9,-32008(gp)
+  521490:	8f998398 	lw	t9,-31848(gp)
+  521494:	1000faea 	b	0x520040
+  521498:	00000000 	nop
+  52149c:	2739078c 	addiu	t9,t9,1932
+  5214a0:	1000fcba 	b	0x52078c
+  5214a4:	8f868398 	lw	a2,-31848(gp)
+  5214a8:	03e00008 	jr	ra
+  5214ac:	2402ffff 	li	v0,-1

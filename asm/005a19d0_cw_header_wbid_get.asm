@@ -1,0 +1,24 @@
+; func cw_header_wbid_get @ 0x005a19d0 size=0x5c
+  5a19d0:	27bdffd8 	addiu	sp,sp,-40
+  5a19d4:	00802821 	move	a1,a0
+  5a19d8:	afbf0024 	sw	ra,36(sp)
+  5a19dc:	10800009 	beqz	a0,0x5a1a04
+  5a19e0:	afa00018 	sw	zero,24(sp)
+  5a19e4:	27a40018 	addiu	a0,sp,24
+  5a19e8:	0c101c8c 	jal	0x407230
+  5a19ec:	24060004 	li	a2,4
+  5a19f0:	8fa20018 	lw	v0,24(sp)
+  5a19f4:	7c422240 	ext	v0,v0,0x9,0x5
+  5a19f8:	8fbf0024 	lw	ra,36(sp)
+  5a19fc:	03e00008 	jr	ra
+  5a1a00:	27bd0028 	addiu	sp,sp,40
+  5a1a04:	3c040069 	lui	a0,0x69
+  5a1a08:	3c05006e 	lui	a1,0x6e
+  5a1a0c:	3c07006e 	lui	a3,0x6e
+  5a1a10:	2484d3ac 	addiu	a0,a0,-11348
+  5a1a14:	24a564bc 	addiu	a1,a1,25788
+  5a1a18:	24060278 	li	a2,632
+  5a1a1c:	0c101b74 	jal	0x406dd0
+  5a1a20:	24e7608c 	addiu	a3,a3,24716
+  5a1a24:	0816867e 	j	0x5a19f8
+  5a1a28:	00001021 	move	v0,zero

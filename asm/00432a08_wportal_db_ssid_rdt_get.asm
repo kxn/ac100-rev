@@ -1,0 +1,46 @@
+; func wportal_db_ssid_rdt_get @ 0x00432a08 size=0xb4
+  432a08:	27bdffd0 	addiu	sp,sp,-48
+  432a0c:	afb30028 	sw	s3,40(sp)
+  432a10:	2413ffff 	li	s3,-1
+  432a14:	afb20024 	sw	s2,36(sp)
+  432a18:	00a09021 	move	s2,a1
+  432a1c:	afb0001c 	sw	s0,28(sp)
+  432a20:	00808021 	move	s0,a0
+  432a24:	afbf002c 	sw	ra,44(sp)
+  432a28:	10a00018 	beqz	a1,0x432a8c
+  432a2c:	afb10020 	sw	s1,32(sp)
+  432a30:	04800017 	bltz	a0,0x432a90
+  432a34:	8fbf002c 	lw	ra,44(sp)
+  432a38:	0c17ac57 	jal	0x5eb15c
+  432a3c:	00000000 	nop
+  432a40:	0202102b 	sltu	v0,s0,v0
+  432a44:	10400011 	beqz	v0,0x432a8c
+  432a48:	3c110076 	lui	s1,0x76
+  432a4c:	2405ffff 	li	a1,-1
+  432a50:	001080c0 	sll	s0,s0,0x3
+  432a54:	0c1020b4 	jal	0x4082d0
+  432a58:	8e24a13c 	lw	a0,-24260(s1)
+  432a5c:	3c020076 	lui	v0,0x76
+  432a60:	8c42a180 	lw	v0,-24192(v0)
+  432a64:	00508021 	addu	s0,v0,s0
+  432a68:	8e050004 	lw	a1,4(s0)
+  432a6c:	10a0000f 	beqz	a1,0x432aac
+  432a70:	00000000 	nop
+  432a74:	2406016c 	li	a2,364
+  432a78:	0c101c8c 	jal	0x407230
+  432a7c:	02402021 	move	a0,s2
+  432a80:	00009821 	move	s3,zero
+  432a84:	0c101fcc 	jal	0x407f30
+  432a88:	8e24a13c 	lw	a0,-24260(s1)
+  432a8c:	8fbf002c 	lw	ra,44(sp)
+  432a90:	02601021 	move	v0,s3
+  432a94:	8fb30028 	lw	s3,40(sp)
+  432a98:	8fb20024 	lw	s2,36(sp)
+  432a9c:	8fb10020 	lw	s1,32(sp)
+  432aa0:	8fb0001c 	lw	s0,28(sp)
+  432aa4:	03e00008 	jr	ra
+  432aa8:	27bd0030 	addiu	sp,sp,48
+  432aac:	0c101fcc 	jal	0x407f30
+  432ab0:	8e24a13c 	lw	a0,-24260(s1)
+  432ab4:	0810caa4 	j	0x432a90
+  432ab8:	8fbf002c 	lw	ra,44(sp)

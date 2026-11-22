@@ -1,0 +1,25 @@
+; func mac_auth_db_is_group_entry_enable_by_ssid @ 0x00456d44 size=0x60
+  456d44:	27bdffd8 	addiu	sp,sp,-40
+  456d48:	2405ffff 	li	a1,-1
+  456d4c:	afb10020 	sw	s1,32(sp)
+  456d50:	3c110076 	lui	s1,0x76
+  456d54:	afb0001c 	sw	s0,28(sp)
+  456d58:	00808021 	move	s0,a0
+  456d5c:	26316ff0 	addiu	s1,s1,28656
+  456d60:	afbf0024 	sw	ra,36(sp)
+  456d64:	00108080 	sll	s0,s0,0x2
+  456d68:	0c1020b4 	jal	0x4082d0
+  456d6c:	8e240008 	lw	a0,8(s1)
+  456d70:	8e22002c 	lw	v0,44(s1)
+  456d74:	8e240008 	lw	a0,8(s1)
+  456d78:	00508021 	addu	s0,v0,s0
+  456d7c:	0c101fcc 	jal	0x407f30
+  456d80:	8e100000 	lw	s0,0(s0)
+  456d84:	8fbf0024 	lw	ra,36(sp)
+  456d88:	26100001 	addiu	s0,s0,1
+  456d8c:	8fb10020 	lw	s1,32(sp)
+  456d90:	2e100001 	sltiu	s0,s0,1
+  456d94:	02001021 	move	v0,s0
+  456d98:	8fb0001c 	lw	s0,28(sp)
+  456d9c:	03e00008 	jr	ra
+  456da0:	27bd0028 	addiu	sp,sp,40

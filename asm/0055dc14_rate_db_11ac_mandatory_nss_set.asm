@@ -1,0 +1,23 @@
+; func rate_db_11ac_mandatory_nss_set @ 0x0055dc14 size=0x58
+  55dc14:	27bdffd8 	addiu	sp,sp,-40
+  55dc18:	2405ffff 	li	a1,-1
+  55dc1c:	afb10020 	sw	s1,32(sp)
+  55dc20:	3c11007c 	lui	s1,0x7c
+  55dc24:	afb0001c 	sw	s0,28(sp)
+  55dc28:	00808021 	move	s0,a0
+  55dc2c:	afbf0024 	sw	ra,36(sp)
+  55dc30:	0c1020b4 	jal	0x4082d0
+  55dc34:	8e245930 	lw	a0,22832(s1)
+  55dc38:	3c02007c 	lui	v0,0x7c
+  55dc3c:	02002821 	move	a1,s0
+  55dc40:	0c157b78 	jal	0x55ede0
+  55dc44:	8c445934 	lw	a0,22836(v0)
+  55dc48:	8e245930 	lw	a0,22832(s1)
+  55dc4c:	0c101fcc 	jal	0x407f30
+  55dc50:	00408021 	move	s0,v0
+  55dc54:	02001021 	move	v0,s0
+  55dc58:	8fbf0024 	lw	ra,36(sp)
+  55dc5c:	8fb10020 	lw	s1,32(sp)
+  55dc60:	8fb0001c 	lw	s0,28(sp)
+  55dc64:	03e00008 	jr	ra
+  55dc68:	27bd0028 	addiu	sp,sp,40

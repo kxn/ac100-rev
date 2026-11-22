@@ -1,0 +1,25 @@
+; func _wportal_rds_hash_key_func @ 0x0042c694 size=0x60
+  42c694:	27bdffc8 	addiu	sp,sp,-56
+  42c698:	00802821 	move	a1,a0
+  42c69c:	24060014 	li	a2,20
+  42c6a0:	afbf0034 	sw	ra,52(sp)
+  42c6a4:	0c101c8c 	jal	0x407230
+  42c6a8:	27a40018 	addiu	a0,sp,24
+  42c6ac:	24020001 	li	v0,1
+  42c6b0:	93a30018 	lbu	v1,24(sp)
+  42c6b4:	1062000d 	beq	v1,v0,0x42c6ec
+  42c6b8:	27a4001c 	addiu	a0,sp,28
+  42c6bc:	24040002 	li	a0,2
+  42c6c0:	10640004 	beq	v1,a0,0x42c6d4
+  42c6c4:	00001021 	move	v0,zero
+  42c6c8:	8fbf0034 	lw	ra,52(sp)
+  42c6cc:	03e00008 	jr	ra
+  42c6d0:	27bd0038 	addiu	sp,sp,56
+  42c6d4:	27a4001c 	addiu	a0,sp,28
+  42c6d8:	24050010 	li	a1,16
+  42c6dc:	0c1020f4 	jal	0x4083d0
+  42c6e0:	00003021 	move	a2,zero
+  42c6e4:	0810b1b3 	j	0x42c6cc
+  42c6e8:	8fbf0034 	lw	ra,52(sp)
+  42c6ec:	0810b1b7 	j	0x42c6dc
+  42c6f0:	24050004 	li	a1,4

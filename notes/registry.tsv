@@ -1,0 +1,48 @@
+# uac CAPWAP dispatch registry — extracted from decompiled corpus
+# evidence: serv_msg_mngr_register / serv_ent_mngr_register call sites in export/decomp/
+# msg register: (capwap_control_msg_type, priority, handler); sorted-insert ascending by priority
+# ent register: (event_type 0..3, priority, handler) — session lifecycle events
+
+balance_init	msg	9,1,balance_capwap_callback_wtp_event_request_listen
+wsta_roam_pkt_init	msg	9,0x5a,_wsta_roam_pkt_wtp_event_listener
+uac_nms_report_init	ent	1,0x79,_uac_nms_report_pkt_enter_run_cb
+uac_lldp_pkt_init	msg	9,0x78,_uac_lldp_pkt_echo_req_listen
+uac_rrm_init	msg	9,0x41,_rrm_pkt_wtp_event_listener
+mesh_pkt_init	msg	3,0x78,_mesh_pkt_join_req_policy_listen
+mesh_pkt_init	msg	9,0x78,_mesh_pkt_wtp_event_req_listen
+mesh_pkt_init	msg	3,0x79,_mesh_pkt_join_req_listen
+mesh_pkt_init	msg	1,100,_mesh_pkt_discover_req_listen
+mesh_pkt_init	msg	5,100,_mesh_pkt_config_status_req_listen
+sensor_pkt_init	msg	9,0x78,_sensor_pkt_wtp_event_req_listen
+sensor_pkt_init	msg	3,0x32,_sensor_pkt_join_req_listen
+audit_client_pkt_init	msg	9,0x50,_audit_client_pkt_wtp_event_listener
+ac_passthrough_reponse_init	msg	9,0x78,ac_sub_device_report_pkt_wtp_event_req_listen
+ac_passthrough_reponse_init	msg	0xd,0x78,ac_sub_device_report_pkt_echo_req_listen
+apmngr_pkt_init	msg	0xd,0x78,_apmngr_pkt_echo_req_listen
+apmngr_pkt_init	msg	9,0x78,_apmngr_pkt_wtp_event_req_listen
+apmngr_pkt_init	msg	3,0x78,_apmngr_pkt_join_req_listen
+apmngr_pkt_init	msg	1,0xff,_apmngr_pkt_discover_req_listen
+apmngr_pkt_init	msg	5,0x50,_apmngr_pkt_config_status_req_listen
+apmngr_pkt_init	ent	1,0x79,_apmngr_pkt_enter_run_cb
+apmngr_pkt_init	ent	2,0x79,_apmngr_pkt_enter_reset_cb
+apmngr_pkt_init	ent	0,0x79,_apmngr_pkt_enter_reset_cb
+apmngr_pkt_init	ent	3,0x79,_apmngr_pkt_ifindex_change_cb
+serv_msg_mngr_register	msg	undefined4 param_1,undefined2 param_2,undefined4 param_3
+serv_ent_mngr_register	ent	uint param_1,undefined2 param_2,int param_3
+uac_wservice_pkt_init	msg	5,100,_uac_wserv_pkt_config_status_req_listener
+apdb_pkt_init	msg	3,0x100,_apdb_pkt_join_req_listen
+apdb_pkt_init	msg	1,0x100,_apdb_pkt_discover_req_listen
+rdmngr_init	msg	9,0x5a,rdmngr_capwap_callback_wtp_event_request_listen
+rdmngr_init	msg	5,0x5a,rdmngr_capwap_callback_cfg_status_request_listen
+rdmngr_init	msg	3,0x73,rdmngr_capwap_callback_join_req_listen
+uac_wstation_pkt_init	msg	9,100,_uac_wsta_pkt_wtp_event_listener
+apupd_init	msg	8,100,apupd_capwap_callback_config_update_response_listen
+apupd_init	msg	0x10,1,apupd_capwap_callback_image_response_listen
+apupd_init	msg	3,100,apupd_capwap_callback_join_request_listen
+apupd_init	msg	0xf,1,apupd_capwap_callback_image_request_listen
+multi_link_init	ent	1,0x6e,_multi_link_enter_run_cb
+multi_link_init	msg	1,100,_multi_link_pkt_discover_or_join_req_listen
+multi_link_init	msg	9,100,_multi_link_pkt_wtp_evt_req_listen
+acpdt_init	msg	1,200,acpdt_capwap_callback_discovery_reqeust_listen
+acpdt_init	msg	3,200,acpdt_capwap_callback_join_reqeust_listen
+stats_pkt_init	msg	9,0x50,_stats_pkt_wtp_event_listener

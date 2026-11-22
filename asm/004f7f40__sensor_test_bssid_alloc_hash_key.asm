@@ -1,0 +1,24 @@
+; func _sensor_test_bssid_alloc_hash_key @ 0x004f7f40 size=0x5c
+  4f7f40:	27bdffe0 	addiu	sp,sp,-32
+  4f7f44:	10800006 	beqz	a0,0x4f7f60
+  4f7f48:	afbf001c 	sw	ra,28(sp)
+  4f7f4c:	8fbf001c 	lw	ra,28(sp)
+  4f7f50:	24050006 	li	a1,6
+  4f7f54:	00003021 	move	a2,zero
+  4f7f58:	081020f4 	j	0x4083d0
+  4f7f5c:	27bd0020 	addiu	sp,sp,32
+  4f7f60:	3c020073 	lui	v0,0x73
+  4f7f64:	80421b24 	lb	v0,6948(v0)
+  4f7f68:	14400005 	bnez	v0,0x4f7f80
+  4f7f6c:	3c04006b 	lui	a0,0x6b
+  4f7f70:	8fbf001c 	lw	ra,28(sp)
+  4f7f74:	00001021 	move	v0,zero
+  4f7f78:	03e00008 	jr	ra
+  4f7f7c:	27bd0020 	addiu	sp,sp,32
+  4f7f80:	3c05006b 	lui	a1,0x6b
+  4f7f84:	24844ce4 	addiu	a0,a0,19684
+  4f7f88:	24a576a0 	addiu	a1,a1,30368
+  4f7f8c:	0c101b74 	jal	0x406dd0
+  4f7f90:	2406012a 	li	a2,298
+  4f7f94:	0813dfdd 	j	0x4f7f74
+  4f7f98:	8fbf001c 	lw	ra,28(sp)

@@ -1,0 +1,29 @@
+; func cw_fsm_ac_echo_interval_set @ 0x0059d378 size=0x70
+  59d378:	27bdffe0 	addiu	sp,sp,-32
+  59d37c:	10800012 	beqz	a0,0x59d3c8
+  59d380:	afbf001c 	sw	ra,28(sp)
+  59d384:	04a20006 	bltzl	a1,0x59d3a0
+  59d388:	3c040069 	lui	a0,0x69
+  59d38c:	00001021 	move	v0,zero
+  59d390:	ac8500d0 	sw	a1,208(a0)
+  59d394:	8fbf001c 	lw	ra,28(sp)
+  59d398:	03e00008 	jr	ra
+  59d39c:	27bd0020 	addiu	sp,sp,32
+  59d3a0:	3c05006e 	lui	a1,0x6e
+  59d3a4:	3c07006e 	lui	a3,0x6e
+  59d3a8:	2484d3ac 	addiu	a0,a0,-11348
+  59d3ac:	24a54bec 	addiu	a1,a1,19436
+  59d3b0:	24060182 	li	a2,386
+  59d3b4:	24e74800 	addiu	a3,a3,18432
+  59d3b8:	0c101b74 	jal	0x406dd0
+  59d3bc:	00000000 	nop
+  59d3c0:	081674e5 	j	0x59d394
+  59d3c4:	2402ffff 	li	v0,-1
+  59d3c8:	3c040069 	lui	a0,0x69
+  59d3cc:	3c05006e 	lui	a1,0x6e
+  59d3d0:	3c07006e 	lui	a3,0x6e
+  59d3d4:	2484d3ac 	addiu	a0,a0,-11348
+  59d3d8:	24a54bec 	addiu	a1,a1,19436
+  59d3dc:	24060181 	li	a2,385
+  59d3e0:	081674ee 	j	0x59d3b8
+  59d3e4:	24e718e4 	addiu	a3,a3,6372

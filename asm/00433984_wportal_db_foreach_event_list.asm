@@ -1,0 +1,55 @@
+; func wportal_db_foreach_event_list @ 0x00433984 size=0xd8
+  433984:	27bdffd0 	addiu	sp,sp,-48
+  433988:	2c820002 	sltiu	v0,a0,2
+  43398c:	afb30028 	sw	s3,40(sp)
+  433990:	00c09821 	move	s3,a2
+  433994:	afb20024 	sw	s2,36(sp)
+  433998:	00809021 	move	s2,a0
+  43399c:	afb10020 	sw	s1,32(sp)
+  4339a0:	00a08821 	move	s1,a1
+  4339a4:	afbf002c 	sw	ra,44(sp)
+  4339a8:	14400011 	bnez	v0,0x4339f0
+  4339ac:	afb0001c 	sw	s0,28(sp)
+  4339b0:	3c020073 	lui	v0,0x73
+  4339b4:	8c421230 	lw	v0,4656(v0)
+  4339b8:	10400005 	beqz	v0,0x4339d0
+  4339bc:	2410ffff 	li	s0,-1
+  4339c0:	0c16276a 	jal	0x589da8
+  4339c4:	00000000 	nop
+  4339c8:	1440001d 	bnez	v0,0x433a40
+  4339cc:	3c040068 	lui	a0,0x68
+  4339d0:	8fbf002c 	lw	ra,44(sp)
+  4339d4:	02001021 	move	v0,s0
+  4339d8:	8fb30028 	lw	s3,40(sp)
+  4339dc:	8fb20024 	lw	s2,36(sp)
+  4339e0:	8fb10020 	lw	s1,32(sp)
+  4339e4:	8fb0001c 	lw	s0,28(sp)
+  4339e8:	03e00008 	jr	ra
+  4339ec:	27bd0030 	addiu	sp,sp,48
+  4339f0:	50a0fff0 	beqzl	a1,0x4339b4
+  4339f4:	3c020073 	lui	v0,0x73
+  4339f8:	3c040076 	lui	a0,0x76
+  4339fc:	0c10206c 	jal	0x4081b0
+  433a00:	2484a130 	addiu	a0,a0,-24272
+  433a04:	0810ce85 	j	0x433a14
+  433a08:	00000000 	nop
+  433a0c:	0c1021a0 	jal	0x408680
+  433a10:	02002021 	move	a0,s0
+  433a14:	1040ffee 	beqz	v0,0x4339d0
+  433a18:	00408021 	move	s0,v0
+  433a1c:	8e020030 	lw	v0,48(s0)
+  433a20:	1452fffa 	bne	v0,s2,0x433a0c
+  433a24:	02202021 	move	a0,s1
+  433a28:	8e190034 	lw	t9,52(s0)
+  433a2c:	8e050038 	lw	a1,56(s0)
+  433a30:	0320f809 	jalr	t9
+  433a34:	02603021 	move	a2,s3
+  433a38:	0810ce83 	j	0x433a0c
+  433a3c:	00000000 	nop
+  433a40:	3c050068 	lui	a1,0x68
+  433a44:	2484e254 	addiu	a0,a0,-7596
+  433a48:	24a5ec24 	addiu	a1,a1,-5084
+  433a4c:	0c101b74 	jal	0x406dd0
+  433a50:	24061b87 	li	a2,7047
+  433a54:	0810ce75 	j	0x4339d4
+  433a58:	8fbf002c 	lw	ra,44(sp)

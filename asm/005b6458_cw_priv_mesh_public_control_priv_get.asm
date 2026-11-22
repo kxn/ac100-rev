@@ -1,0 +1,41 @@
+; func cw_priv_mesh_public_control_priv_get @ 0x005b6458 size=0xa0
+  5b6458:	27bdffd8 	addiu	sp,sp,-40
+  5b645c:	00001021 	move	v0,zero
+  5b6460:	afb1001c 	sw	s1,28(sp)
+  5b6464:	30b1ffff 	andi	s1,a1,0xffff
+  5b6468:	afbf0024 	sw	ra,36(sp)
+  5b646c:	afb20020 	sw	s2,32(sp)
+  5b6470:	10800010 	beqz	a0,0x5b64b4
+  5b6474:	afb00018 	sw	s0,24(sp)
+  5b6478:	2484000c 	addiu	a0,a0,12
+  5b647c:	0c10206c 	jal	0x4081b0
+  5b6480:	24120025 	li	s2,37
+  5b6484:	00408021 	move	s0,v0
+  5b6488:	1200000a 	beqz	s0,0x5b64b4
+  5b648c:	00001021 	move	v0,zero
+  5b6490:	9602000c 	lhu	v0,12(s0)
+  5b6494:	5052000d 	beql	v0,s2,0x5b64cc
+  5b6498:	8e040010 	lw	a0,16(s0)
+  5b649c:	0c1021a0 	jal	0x408680
+  5b64a0:	02002021 	move	a0,s0
+  5b64a4:	00408021 	move	s0,v0
+  5b64a8:	5600fffa 	bnezl	s0,0x5b6494
+  5b64ac:	9602000c 	lhu	v0,12(s0)
+  5b64b0:	00001021 	move	v0,zero
+  5b64b4:	8fbf0024 	lw	ra,36(sp)
+  5b64b8:	8fb20020 	lw	s2,32(sp)
+  5b64bc:	8fb1001c 	lw	s1,28(sp)
+  5b64c0:	8fb00018 	lw	s0,24(sp)
+  5b64c4:	03e00008 	jr	ra
+  5b64c8:	27bd0028 	addiu	sp,sp,40
+  5b64cc:	0c10206c 	jal	0x4081b0
+  5b64d0:	24840008 	addiu	a0,a0,8
+  5b64d4:	1040fff1 	beqz	v0,0x5b649c
+  5b64d8:	00000000 	nop
+  5b64dc:	9443000c 	lhu	v1,12(v0)
+  5b64e0:	5071fff4 	beql	v1,s1,0x5b64b4
+  5b64e4:	8c420010 	lw	v0,16(v0)
+  5b64e8:	0c1021a0 	jal	0x408680
+  5b64ec:	00402021 	move	a0,v0
+  5b64f0:	0816d935 	j	0x5b64d4
+  5b64f4:	00000000 	nop

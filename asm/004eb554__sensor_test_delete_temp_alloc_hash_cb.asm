@@ -1,0 +1,20 @@
+; func _sensor_test_delete_temp_alloc_hash_cb @ 0x004eb554 size=0x4c
+  4eb554:	27bdffe0 	addiu	sp,sp,-32
+  4eb558:	afb00018 	sw	s0,24(sp)
+  4eb55c:	00808021 	move	s0,a0
+  4eb560:	afbf001c 	sw	ra,28(sp)
+  4eb564:	1200000a 	beqz	s0,0x4eb590
+  4eb568:	00a02021 	move	a0,a1
+  4eb56c:	10a00009 	beqz	a1,0x4eb594
+  4eb570:	8fbf001c 	lw	ra,28(sp)
+  4eb574:	0c101fd0 	jal	0x407f40
+  4eb578:	02002821 	move	a1,s0
+  4eb57c:	02002021 	move	a0,s0
+  4eb580:	8fbf001c 	lw	ra,28(sp)
+  4eb584:	8fb00018 	lw	s0,24(sp)
+  4eb588:	08101f7c 	j	0x407df0
+  4eb58c:	27bd0020 	addiu	sp,sp,32
+  4eb590:	8fbf001c 	lw	ra,28(sp)
+  4eb594:	8fb00018 	lw	s0,24(sp)
+  4eb598:	03e00008 	jr	ra
+  4eb59c:	27bd0020 	addiu	sp,sp,32

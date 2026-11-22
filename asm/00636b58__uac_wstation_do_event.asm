@@ -1,0 +1,86 @@
+; func _uac_wstation_do_event @ 0x00636b58 size=0x154
+  636b58:	27bdffd8 	addiu	sp,sp,-40
+  636b5c:	2c820003 	sltiu	v0,a0,3
+  636b60:	afb20020 	sw	s2,32(sp)
+  636b64:	00a09021 	move	s2,a1
+  636b68:	afb00018 	sw	s0,24(sp)
+  636b6c:	00808021 	move	s0,a0
+  636b70:	afbf0024 	sw	ra,36(sp)
+  636b74:	1440000c 	bnez	v0,0x636ba8
+  636b78:	afb1001c 	sw	s1,28(sp)
+  636b7c:	3c020076 	lui	v0,0x76
+  636b80:	8c428bf4 	lw	v0,-29708(v0)
+  636b84:	14400028 	bnez	v0,0x636c28
+  636b88:	2411ffff 	li	s1,-1
+  636b8c:	8fbf0024 	lw	ra,36(sp)
+  636b90:	02201021 	move	v0,s1
+  636b94:	8fb20020 	lw	s2,32(sp)
+  636b98:	8fb1001c 	lw	s1,28(sp)
+  636b9c:	8fb00018 	lw	s0,24(sp)
+  636ba0:	03e00008 	jr	ra
+  636ba4:	27bd0028 	addiu	sp,sp,40
+  636ba8:	3c02007d 	lui	v0,0x7d
+  636bac:	8c42c6a0 	lw	v0,-14688(v0)
+  636bb0:	1440002a 	bnez	v0,0x636c5c
+  636bb4:	24020001 	li	v0,1
+  636bb8:	12020035 	beq	s0,v0,0x636c90
+  636bbc:	24020002 	li	v0,2
+  636bc0:	12020038 	beq	s0,v0,0x636ca4
+  636bc4:	3c04007d 	lui	a0,0x7d
+  636bc8:	3c04007d 	lui	a0,0x7d
+  636bcc:	2484c6e8 	addiu	a0,a0,-14616
+  636bd0:	8c820008 	lw	v0,8(a0)
+  636bd4:	1040ffed 	beqz	v0,0x636b8c
+  636bd8:	00008821 	move	s1,zero
+  636bdc:	0c10206c 	jal	0x4081b0
+  636be0:	00000000 	nop
+  636be4:	0818daff 	j	0x636bfc
+  636be8:	00000000 	nop
+  636bec:	0320f809 	jalr	t9
+  636bf0:	00000000 	nop
+  636bf4:	0c1021a0 	jal	0x408680
+  636bf8:	02002021 	move	a0,s0
+  636bfc:	10400027 	beqz	v0,0x636c9c
+  636c00:	00408021 	move	s0,v0
+  636c04:	8e020034 	lw	v0,52(s0)
+  636c08:	02402021 	move	a0,s2
+  636c0c:	10400004 	beqz	v0,0x636c20
+  636c10:	8e190030 	lw	t9,48(s0)
+  636c14:	8c450000 	lw	a1,0(v0)
+  636c18:	14a0fff4 	bnez	a1,0x636bec
+  636c1c:	00000000 	nop
+  636c20:	0818dafb 	j	0x636bec
+  636c24:	00002821 	move	a1,zero
+  636c28:	0c16276a 	jal	0x589da8
+  636c2c:	00000000 	nop
+  636c30:	5040ffd7 	beqzl	v0,0x636b90
+  636c34:	8fbf0024 	lw	ra,36(sp)
+  636c38:	3c040071 	lui	a0,0x71
+  636c3c:	3c050071 	lui	a1,0x71
+  636c40:	2484ec28 	addiu	a0,a0,-5080
+  636c44:	24a50444 	addiu	a1,a1,1092
+  636c48:	240602ba 	li	a2,698
+  636c4c:	0c101b74 	jal	0x406dd0
+  636c50:	02003821 	move	a3,s0
+  636c54:	0818dae4 	j	0x636b90
+  636c58:	8fbf0024 	lw	ra,36(sp)
+  636c5c:	0c16276a 	jal	0x589da8
+  636c60:	00000000 	nop
+  636c64:	5040ffd4 	beqzl	v0,0x636bb8
+  636c68:	24020001 	li	v0,1
+  636c6c:	3c040071 	lui	a0,0x71
+  636c70:	3c050071 	lui	a1,0x71
+  636c74:	2484ec58 	addiu	a0,a0,-5032
+  636c78:	24a50444 	addiu	a1,a1,1092
+  636c7c:	240602be 	li	a2,702
+  636c80:	0c101b74 	jal	0x406dd0
+  636c84:	02003821 	move	a3,s0
+  636c88:	0818daee 	j	0x636bb8
+  636c8c:	24020001 	li	v0,1
+  636c90:	3c04007d 	lui	a0,0x7d
+  636c94:	0818daf4 	j	0x636bd0
+  636c98:	2484c6f4 	addiu	a0,a0,-14604
+  636c9c:	0818dae3 	j	0x636b8c
+  636ca0:	00008821 	move	s1,zero
+  636ca4:	0818daf4 	j	0x636bd0
+  636ca8:	2484c700 	addiu	a0,a0,-14592

@@ -1,0 +1,29 @@
+; func dhcpdef_db_apbind_entry_del_force @ 0x00468fc8 size=0x70
+  468fc8:	3c020076 	lui	v0,0x76
+  468fcc:	27bdffd8 	addiu	sp,sp,-40
+  468fd0:	8c427080 	lw	v0,28800(v0)
+  468fd4:	afb00020 	sw	s0,32(sp)
+  468fd8:	00808021 	move	s0,a0
+  468fdc:	14400007 	bnez	v0,0x468ffc
+  468fe0:	afbf0024 	sw	ra,36(sp)
+  468fe4:	02002021 	move	a0,s0
+  468fe8:	8fbf0024 	lw	ra,36(sp)
+  468fec:	8fb00020 	lw	s0,32(sp)
+  468ff0:	00002821 	move	a1,zero
+  468ff4:	081199d7 	j	0x46675c
+  468ff8:	27bd0028 	addiu	sp,sp,40
+  468ffc:	0c16276a 	jal	0x589da8
+  469000:	00000000 	nop
+  469004:	5040fff8 	beqzl	v0,0x468fe8
+  469008:	02002021 	move	a0,s0
+  46900c:	3c060069 	lui	a2,0x69
+  469010:	3c040069 	lui	a0,0x69
+  469014:	3c050069 	lui	a1,0x69
+  469018:	24c6e80c 	addiu	a2,a2,-6132
+  46901c:	2484ba38 	addiu	a0,a0,-17864
+  469020:	24a5ba54 	addiu	a1,a1,-17836
+  469024:	afa60010 	sw	a2,16(sp)
+  469028:	0c101b74 	jal	0x406dd0
+  46902c:	2407037f 	li	a3,895
+  469030:	0811a3fa 	j	0x468fe8
+  469034:	02002021 	move	a0,s0

@@ -1,0 +1,24 @@
+; func mac_auth_mac_hash_key @ 0x00451d5c size=0x5c
+  451d5c:	27bdffe0 	addiu	sp,sp,-32
+  451d60:	10800006 	beqz	a0,0x451d7c
+  451d64:	afbf001c 	sw	ra,28(sp)
+  451d68:	8fbf001c 	lw	ra,28(sp)
+  451d6c:	24050006 	li	a1,6
+  451d70:	00003021 	move	a2,zero
+  451d74:	081020f4 	j	0x4083d0
+  451d78:	27bd0020 	addiu	sp,sp,32
+  451d7c:	3c020073 	lui	v0,0x73
+  451d80:	8c4213d0 	lw	v0,5072(v0)
+  451d84:	14400005 	bnez	v0,0x451d9c
+  451d88:	3c040068 	lui	a0,0x68
+  451d8c:	8fbf001c 	lw	ra,28(sp)
+  451d90:	00001021 	move	v0,zero
+  451d94:	03e00008 	jr	ra
+  451d98:	27bd0020 	addiu	sp,sp,32
+  451d9c:	3c050068 	lui	a1,0x68
+  451da0:	24845800 	addiu	a0,a0,22528
+  451da4:	24a57278 	addiu	a1,a1,29304
+  451da8:	0c101b74 	jal	0x406dd0
+  451dac:	2406049a 	li	a2,1178
+  451db0:	08114764 	j	0x451d90
+  451db4:	8fbf001c 	lw	ra,28(sp)

@@ -1,0 +1,20 @@
+; func multi_link_debug_help @ 0x00664944 size=0x4c
+  664944:	3c040072 	lui	a0,0x72
+  664948:	27bdffe0 	addiu	sp,sp,-32
+  66494c:	afbf001c 	sw	ra,28(sp)
+  664950:	0c101dd4 	jal	0x407750
+  664954:	2484b824 	addiu	a0,a0,-18396
+  664958:	3c040072 	lui	a0,0x72
+  66495c:	0c101dd4 	jal	0x407750
+  664960:	2484b840 	addiu	a0,a0,-18368
+  664964:	3c040072 	lui	a0,0x72
+  664968:	0c101dd4 	jal	0x407750
+  66496c:	2484b86c 	addiu	a0,a0,-18324
+  664970:	3c040072 	lui	a0,0x72
+  664974:	0c101dd4 	jal	0x407750
+  664978:	2484b89c 	addiu	a0,a0,-18276
+  66497c:	3c040072 	lui	a0,0x72
+  664980:	8fbf001c 	lw	ra,28(sp)
+  664984:	27bd0020 	addiu	sp,sp,32
+  664988:	08101dd4 	j	0x407750
+  66498c:	2484b8c8 	addiu	a0,a0,-18232

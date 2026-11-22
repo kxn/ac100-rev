@@ -1,0 +1,1806 @@
+{
+		"version": "1.0.17",
+		"copy_right": "Copyright(c) TP-LINK TECHNOLOGIES CO., LTD.",
+		"vendor":	0,
+		"ap_list":
+		[{
+		"ap_name":	"TL-AP300C-PoE",
+		"id":	50384385,
+		"vendor":	0,
+		"models":	[{
+				"hwver":	"1.0",
+				"radios":	{
+					"2.4G":	{
+						"max_ssid":	8,
+						"max_stations":	100,
+						"max_tx_power":	26,
+						"min_tx_power":	3
+					}
+				}
+			}, {
+				"hwver":	"2.0",
+				"radios":	{
+					"2.4G":	{
+						"max_ssid":	8,
+						"max_stations":	100,
+						"max_tx_power":	29,
+						"min_tx_power":	3
+					}
+				}
+			}, {
+				"hwver":	"1.1",
+				"radios":	{
+					"2.4G":	{
+						"max_ssid":	8,
+						"max_stations":	100,
+						"max_tx_power":	26,
+						"min_tx_power":	3
+					}
+				}
+			}, {
+				"hwver":	"2.1",
+				"radios":	{
+					"2.4G":	{
+						"max_ssid":	8,
+						"max_stations":	100,
+						"max_tx_power":	29,
+						"min_tx_power":	3
+					}
+				}
+			}]
+	}, {
+		"ap_name":	"TL-AP450C-PoE",
+		"id":	72404481,
+		"vendor":	0,
+		"models":	[{
+				"hwver":	"1.0",
+				"radios":	{
+					"2.4G":	{
+						"max_ssid":	8,
+						"max_stations":	100,
+						"max_tx_power":	28,
+						"min_tx_power":	5
+					}
+				}
+			}, {
+				"hwver":	"2.0",
+				"radios":	{
+					"2.4G":	{
+						"max_ssid":	8,
+						"max_stations":	100,
+						"max_tx_power":	31,
+						"min_tx_power":	5
+					}
+				}
+			}, {
+				"hwver":	"1.1",
+				"radios":	{
+					"2.4G":	{
+						"max_ssid":	8,
+						"max_stations":	100,
+						"max_tx_power":	28,
+						"min_tx_power":	5
+					}
+				}
+			}, {
+				"hwver":	"2.1",
+				"radios":	{
+					"2.4G":	{
+						"max_ssid":	8,
+						"max_stations":	100,
+						"max_tx_power":	31,
+						"min_tx_power":	5
+					}
+				}
+			}]
+	}, {
+		"ap_name":	"TL-AP600C-PoE",
+		"id":	100716033,
+		"vendor":	0,
+		"models":	[{
+				"hwver":	"1.0",
+				"radios":	{
+					"2.4G":	{
+						"max_ssid":	8,
+						"max_stations":	100,
+						"max_tx_power":	29,
+						"min_tx_power":	3
+					},
+					"5.0G":	{
+						"support_11ac":	false,
+						"max_ssid":	8,
+						"max_stations":	100,
+						"max_tx_power":	26,
+						"min_tx_power":	3
+					}
+				}
+			}, {
+				"hwver":	"1.1",
+				"radios":	{
+					"2.4G":	{
+						"max_ssid":	8,
+						"max_stations":	100,
+						"max_tx_power":	29,
+						"min_tx_power":	3
+					},
+					"5.0G":	{
+						"support_11ac":	false,
+						"max_ssid":	8,
+						"max_stations":	100,
+						"max_tx_power":	26,
+						"min_tx_power":	3
+					}
+				}
+			}]
+	}, {
+		"ap_name":	"TL-AP1750C-PoE",
+		"id":	391171585,
+		"vendor":	0,
+		"models":	[{
+				"hwver":	"1.0",
+				"radios":	{
+					"2.4G":	{
+						"max_ssid":	8,
+						"max_stations":	100,
+						"max_tx_power":	28,
+						"min_tx_power":	5
+					},
+					"5.0G":	{
+						"support_11ac":	true,
+						"max_ssid":	8,
+						"max_stations":	100,
+						"max_tx_power":	25,
+						"min_tx_power":	5
+					}
+				}
+			}, {
+				"hwver":	"1.1",
+				"radios":	{
+					"2.4G":	{
+						"max_ssid":	8,
+						"max_stations":	100,
+						"max_tx_power":	28,
+						"min_tx_power":	5
+					},
+					"5.0G":	{
+						"support_11ac":	true,
+						"max_ssid":	8,
+						"max_stations":	100,
+						"max_tx_power":	25,
+						"min_tx_power":	5
+					}
+				}
+			}]
+	}, {
+		"ap_name":	"TL-AP300I-PoE",
+		"id":	50339329,
+		"vendor":	0,
+		"ext_wire_phy": 1,
+		"models":	[{
+				"hwver":	"1.0",
+				"radios":	{
+					"2.4G":	{
+						"max_ssid":	4,
+						"max_stations":	32,
+						"max_tx_power":	19,
+						"min_tx_power":	3
+					}
+				}
+			}, {
+				"hwver":	"1.1",
+				"radios":	{
+					"2.4G":	{
+						"max_ssid":	4,
+						"max_stations":	32,
+						"max_tx_power":	19,
+						"min_tx_power":	3
+					}
+				}
+			}]
+	}, {
+		"ap_name":	"TL-AP300I-DC",
+		"id":	50339073,
+		"vendor":	0,
+		"ext_wire_phy": 1,
+		"models":	[{
+				"hwver":	"1.0",
+				"radios":	{
+					"2.4G":	{
+						"max_ssid":	8,
+						"max_stations":	100,
+						"max_tx_power":	18,
+						"min_tx_power":	3
+					}
+				}
+			}, {
+				"hwver":	"1.1",
+				"radios":	{
+					"2.4G":	{
+						"max_ssid":	8,
+						"max_stations":	100,
+						"max_tx_power":	18,
+						"min_tx_power":	3
+					}
+				}
+			}]
+	}, {
+		"ap_name":	"TL-AP300D",
+		"id":	50388225,
+		"vendor":	0,
+		"models":	[{
+				"hwver":	"1.0",
+				"radios":	{
+					"2.4G":	{
+						"max_ssid":	8,
+						"max_stations":	100,
+						"max_tx_power":	26,
+						"min_tx_power":	3
+					}
+				}
+			}, {
+				"hwver":	"1.1",
+				"radios":	{
+					"2.4G":	{
+						"max_ssid":	8,
+						"max_stations":	100,
+						"max_tx_power":	26,
+						"min_tx_power":	3
+					}
+				}
+			}]
+	}, {
+		"ap_name":	"TL-AP450D",
+		"id":	72408321,
+		"vendor":	0,
+		"models":	[{
+				"hwver":	"1.0",
+				"radios":	{
+					"2.4G":	{
+						"max_ssid":	8,
+						"max_stations":	100,
+						"max_tx_power":	28,
+						"min_tx_power":	5
+					}
+				}
+			}, {
+				"hwver":	"1.1",
+				"radios":	{
+					"2.4G":	{
+						"max_ssid":	8,
+						"max_stations":	100,
+						"max_tx_power":	28,
+						"min_tx_power":	5
+					}
+				}
+			}]
+	}, {
+		"ap_name":	"TL-AP300P",
+		"id":	50340097,
+		"vendor":	0,
+		"models":	[{
+				"hwver":	"1.0",
+				"radios":	{
+					"2.4G":	{
+						"max_ssid":	8,
+						"max_stations":	100,
+						"max_tx_power":	30,
+						"min_tx_power":	3
+					}
+				}
+			}, {
+				"hwver":	"1.1",
+				"radios":	{
+					"2.4G":	{
+						"max_ssid":	8,
+						"max_stations":	100,
+						"max_tx_power":	30,
+						"min_tx_power":	3
+					}
+				}
+			}]
+	}, {
+		"ap_name":	"TL-AP451C",
+		"id":	72469761,
+		"vendor":	0,
+		"models":	[{
+				"hwver":	"1.0",
+				"radios":	{
+					"2.4G":	{
+						"max_ssid":	8,
+						"max_stations":	100,
+						"max_tx_power":	23,
+						"min_tx_power":	5
+					}
+				}
+			}, {
+				"hwver":	"1.1",
+				"radios":	{
+					"2.4G":	{
+						"max_ssid":	8,
+						"max_stations":	100,
+						"max_tx_power":	23,
+						"min_tx_power":	5
+					}
+				}
+			}]
+	}, {
+		"ap_name":	"TL-AP452C-PoE",
+		"id":	72535553,
+		"vendor":	0,
+		"models":	[{
+				"hwver":	"1.0",
+				"radios":	{
+					"2.4G":	{
+						"max_ssid":	8,
+						"max_stations":	100,
+						"max_tx_power":	23,
+						"min_tx_power":	5
+					}
+				}
+			}, {
+				"hwver":	"1.1",
+				"radios":	{
+					"2.4G":	{
+						"max_ssid":	8,
+						"max_stations":	100,
+						"max_tx_power":	23,
+						"min_tx_power":	5
+					}
+				}
+			}]
+	}, {
+		"ap_name":	"TL-AP301C",
+		"id":	50449665,
+		"vendor":	0,
+		"models":	[{
+				"hwver":	"1.0",
+				"radios":	{
+					"2.4G":	{
+						"max_ssid":	8,
+						"max_stations":	100,
+						"max_tx_power":	26,
+						"min_tx_power":	3
+					}
+				}
+			}, {
+				"hwver":	"1.1",
+				"radios":	{
+					"2.4G":	{
+						"max_ssid":	8,
+						"max_stations":	100,
+						"max_tx_power":	26,
+						"min_tx_power":	3
+					}
+				}
+			}]
+	}, {
+		"ap_name":	"TL-AP302C-PoE",
+		"id":	50515457,
+		"vendor":	0,
+		"models":	[{
+				"hwver":	"1.0",
+				"radios":	{
+					"2.4G":	{
+						"max_ssid":	8,
+						"max_stations":	100,
+						"max_tx_power":	26,
+						"min_tx_power":	3
+					}
+				}
+			}, {
+				"hwver":	"1.1",
+				"radios":	{
+					"2.4G":	{
+						"max_ssid":	8,
+						"max_stations":	100,
+						"max_tx_power":	26,
+						"min_tx_power":	3
+					}
+				}
+			}]
+	},
+	{
+		"ap_name":	"TL-AP300I-PoE",
+		"id":	50339330,
+		"vendor":	0,
+		"ext_wire_phy": 1,
+		"models":	[{
+				"hwver":	"3.0",
+				"radios":	{
+					"2.4G":	{
+						"max_ssid":	4,
+						"max_stations":	32,
+						"max_tx_power":	19,
+						"min_tx_power":	3
+					}
+				}
+			}, {
+				"hwver":	"3.1",
+				"radios":	{
+					"2.4G":	{
+						"max_ssid":	4,
+						"max_stations":	32,
+						"max_tx_power":	19,
+						"min_tx_power":	3
+					}
+				}
+			}]
+	}, {
+		"ap_name":	"TL-AP301C",
+		"id":	50449666,
+		"vendor":	0,
+		"models":	[{
+				"hwver":	"2.0",
+				"radios":	{
+					"2.4G":	{
+						"max_ssid":	8,
+						"max_stations":	100,
+						"max_tx_power":	26,
+						"min_tx_power":	3
+					}
+				}
+			}]
+	}, {
+		"ap_name":	"TL-AP300C-PoE",
+		"id":	50384387,
+		"vendor":	0,
+		"models":	[{
+				"hwver":	"3.0",
+				"radios":	{
+					"2.4G":	{
+						"max_ssid":	8,
+						"max_stations":	100,
+						"max_tx_power":	29,
+						"min_tx_power":	3
+					}
+				}
+			}]
+	}, {
+		"ap_name":	"TL-AP451C",
+		"id":	72469762,
+		"vendor":	0,
+		"models":	[{
+				"hwver":	"2.0",
+				"radios":	{
+					"2.4G":	{
+						"max_ssid":	8,
+						"max_stations":	100,
+						"max_tx_power":	23,
+						"min_tx_power":	5
+					}
+				}
+			}]
+	}, {
+		"ap_name":	"TL-AP452C-PoE",
+		"id":	72535554,
+		"vendor":	0,
+		"models":	[{
+				"hwver":	"2.0",
+				"radios":	{
+					"2.4G":	{
+						"max_ssid":	8,
+						"max_stations":	100,
+						"max_tx_power":	23,
+						"min_tx_power":	5
+					}
+				}
+			}]
+	}, {
+		"ap_name":	"TL-AP1200C-PoE",
+		"id":	302042625,
+		"vendor":	0,
+		"models":	[{
+				"hwver":	"1.0",
+				"radios":	{
+					"2.4G":	{
+						"max_ssid":	8,
+						"max_stations":	100,
+						"max_tx_power":	28,
+						"min_tx_power":	5
+					},
+					"5.0G":	{
+						"support_11ac":	true,
+						"max_ssid":	8,
+						"max_stations":	100,
+						"max_tx_power":	25,
+						"min_tx_power":	5
+					}
+				}
+			}]
+	}, {
+		"ap_name":	"TL-AP450C-PoE",
+		"id":	72404483,
+		"vendor":	0,
+		"models":	[{
+				"hwver":	"3.0",
+				"radios":	{
+					"2.4G":	{
+						"max_ssid":	8,
+						"max_stations":	100,
+						"max_tx_power":	32,
+						"min_tx_power":	5
+					}
+				}
+			}]
+	}, {
+		"ap_name":	"TL-AP302C-PoE",
+		"id":	50515458,
+		"vendor":	0,
+		"models":	[{
+				"hwver":	"2.0",
+				"radios":	{
+					"2.4G":	{
+						"max_ssid":	8,
+						"max_stations":	100,
+						"max_tx_power":	26,
+						"min_tx_power":	3
+					}
+				}
+			}]
+	}, {
+		"ap_name":	"TL-AP453C-PoE",
+		"id":	72601089,
+		"vendor":	0,
+		"models":	[{
+				"hwver":	"1.0",
+				"radios":	{
+					"2.4G":	{
+						"max_ssid":	4,
+						"max_stations":	32,
+						"max_tx_power":	23,
+						"min_tx_power":	5
+					}
+				}
+			}]
+	}, {
+		"ap_name":	"TL-AP450I-PoE",
+		"id":	72359425,
+		"vendor":	0,
+		"ext_wire_phy": 1,
+		"models":	[{
+				"hwver":	"1.0",
+				"radios":	{
+					"2.4G":	{
+						"max_ssid":	4,
+						"max_stations":	32,
+						"max_tx_power":	23,
+						"min_tx_power":	5
+					}
+				}
+			}]
+	}, {
+		"ap_name":	"TL-AP450I-DC",
+		"id":	72359169,
+		"vendor":	0,
+		"ext_wire_phy": 1,
+		"models":	[{
+				"hwver":	"1.0",
+				"radios":	{
+					"2.4G":	{
+						"max_ssid":	4,
+						"max_stations":	32,
+						"max_tx_power":	23,
+						"min_tx_power":	5
+					}
+				}
+			}]
+	}, {
+		"ap_name":	"TL-AP302I-PoE",
+		"id":	50470401,
+		"vendor":	0,
+		"ext_wire_phy": 1,
+		"models":	[{
+				"hwver":	"1.0",
+				"radios":	{
+					"2.4G":	{
+						"max_ssid":	4,
+						"max_stations":	32,
+						"max_tx_power":	20,
+						"min_tx_power":	3
+					}
+				}
+			}]
+	}, {
+		"ap_name":	"TL-AP302I-DC",
+		"id":	50470145,
+		"vendor":	0,
+		"ext_wire_phy": 1,
+		"models":	[{
+				"hwver":	"1.0",
+				"radios":	{
+					"2.4G":	{
+						"max_ssid":	4,
+						"max_stations":	32,
+						"max_tx_power":	20,
+						"min_tx_power":	3
+					}
+				}
+			}]
+	}, {
+		"ap_name":	"TL-AP303I-PoE",
+		"id":	50535937,
+		"vendor":	0,
+		"ext_wire_phy": 1,
+		"models":	[{
+				"hwver":	"1.0",
+				"radios":	{
+					"2.4G":	{
+						"max_ssid":	4,
+						"max_stations":	32,
+						"max_tx_power":	20,
+						"min_tx_power":	3
+					}
+				}
+			}]
+	}, {
+		"ap_name":	"TL-AP306I-PoE",
+		"id":	50732545,
+		"vendor":	0,
+		"ext_wire_phy": 2,
+		"models":	[{
+				"hwver":	"1.0",
+				"radios":	{
+					"2.4G":	{
+						"max_ssid":	8,
+						"max_stations":	100,
+						"max_tx_power":	20,
+						"min_tx_power":	3
+					}
+				}
+			}]
+	}, {
+		"ap_name":	"TL-AP900C-PoE",
+		"id":	151047681,
+		"vendor":	0,
+		"models":	[{
+				"hwver":	"1.0",
+				"radios":	{
+					"2.4G":	{
+						"max_ssid":	8,
+						"max_stations":	100,
+						"max_tx_power":	32,
+						"min_tx_power":	5
+					},
+					"5.0G":	{
+						"support_11ac":	true,
+						"max_ssid":	8,
+						"max_stations":	100,
+						"max_tx_power":	22,
+						"min_tx_power":	5
+					}
+				}
+			}]
+	}, {
+		"ap_name":	"TL-AP902C-PoE",
+		"id":	151178753,
+		"vendor":	0,
+		"models":	[{
+				"hwver":	"1.0",
+				"radios":	{
+					"2.4G":	{
+						"max_ssid":	8,
+						"max_stations":	100,
+						"max_tx_power":	29,
+						"min_tx_power":	5
+					},
+					"5.0G":	{
+						"support_11ac":	true,
+						"max_ssid":	8,
+						"max_stations":	100,
+						"max_tx_power":	22,
+						"min_tx_power":	5
+					}
+				}
+			}]
+	},{ 
+		"ap_name": "TL-AP450D", 
+		"id": 72408322, 
+		"vendor": 0, 
+		"models": [{ 
+				"hwver": "2.0", 
+				"radios": { 
+					"2.4G": { 
+						"max_ssid": 8, 
+						"max_stations": 100, 
+						"max_tx_power": 32, 
+						"min_tx_power": 5 
+					}
+				}
+			}]
+	},{
+		"ap_name": "TL-AP1300C-PoE",
+		"id": 318819841,
+		"vendor": 0,
+		"models": [{
+			"hwver": "1.0",
+			"radios": {
+					"2.4G": {
+						"max_ssid": 8,
+						"max_stations": 100,
+						"max_tx_power": 32,
+						"min_tx_power": 5
+					},
+					"5.0G": {
+						"support_11ac": true,
+						"max_ssid": 8,
+						"max_stations": 100,
+						"max_tx_power": 22,
+						"min_tx_power": 5
+					}
+				}
+			}]
+	},{
+		"ap_name": "TL-AP303C-PoE",
+		"id": 50580993,
+		"vendor": 0,
+		"models": [{
+			"hwver": "1.0",
+			"radios":{
+					"2.4G":	{
+						"max_ssid":	8,
+						"max_stations":	100,
+						"max_tx_power": 26,
+						"min_tx_power": 3
+					}
+				}
+			}]
+	},{
+		"ap_name": "TL-AP901C",
+		"id": 151112961,
+		"vendor": 0,
+		"models": [{
+			"hwver": "1.0",
+			"radios":{
+					"2.4G": {
+						"max_ssid":	8,
+						"max_stations":	100,
+						"max_tx_power":	29,
+						"min_tx_power":	5
+						},
+					"5.0G":	{
+						"support_11ac":	true,
+						"max_ssid":	8,
+						"max_stations":	100,
+						"max_tx_power":	22,
+						"min_tx_power":	5
+					}
+				}
+			}]
+	},{
+		"ap_name":	"TL-AP301C",
+		"id":	50449667, 
+		"vendor":	0,
+		"models":	[{
+				"hwver":	"3.0",
+				"radios":	{
+					"2.4G":	{
+						"max_ssid":	8,
+						"max_stations":	100,
+						"max_tx_power":	26,
+						"min_tx_power":	3
+					}
+				}
+			}]
+	},{
+		"ap_name":	"TL-AP300C-PoE",
+		"id":	50384388, 
+		"vendor":	0,
+		"models":	[{
+				"hwver":	"4.0",
+				"radios":	{
+					"2.4G":	{
+						"max_ssid":	8,
+						"max_stations":	100,
+						"max_tx_power":	29,
+						"min_tx_power":	3
+					}
+				}
+			}]
+	},{
+		"ap_name":	"TL-AP451C",
+		"id":	72469763, 
+		"vendor":	0,
+		"models":	[{
+				"hwver":	"3.0",
+				"radios":	{
+					"2.4G":	{
+						"max_ssid":	8,
+						"max_stations":	100,
+						"max_tx_power":	23,
+						"min_tx_power":	5
+					}
+				}
+			}]
+	},{
+		"ap_name":	"TL-AP452C-PoE",
+		"id":	72535555, 
+		"vendor":	0,
+		"models":	[{
+				"hwver":	"3.0",
+				"radios":	{
+					"2.4G":	{
+						"max_ssid":	8,
+						"max_stations":	100,
+						"max_tx_power":	23,
+						"min_tx_power":	5
+					}
+				}
+			}]
+	},{
+		"ap_name":	"TL-AP302C-PoE",
+		"id":	50515459, 
+		"vendor":	0,
+		"models":	[{
+				"hwver":	"3.0",
+				"radios":	{
+					"2.4G":	{
+						"max_ssid":	8,
+						"max_stations":	100,
+						"max_tx_power":	26,
+						"min_tx_power":	3
+					}
+				}
+			}]
+	},{
+		"ap_name":	"TL-HDAP1800C-PoE",
+		"id":	402705921,
+		"vendor":	0,
+		"is_hd_ap": true,
+		"support_ap_trunk": true,
+		"models":	[{
+				"hwver":	"1.0",
+				"radios":	{
+					"2.4G":	{
+						"max_ssid":	8,
+						"max_stations":	100,
+						"max_tx_power":	20,
+						"min_tx_power":	5
+					},
+					"5.0G":	{
+						"support_11ac":	true,
+						"max_ssid":	8,
+						"max_stations":	100,
+						"max_tx_power":	18,
+						"min_tx_power":	1
+					}
+				}
+			}]
+	},
+	{
+        "ap_name":	"TL-AP1300I-PoE",
+        "id": 318774785,
+        "vendor":	0,
+        "ext_wire_phy": 2,
+        "models":	[{
+            "hwver":	"1.0",
+            "radios":	{
+	                "2.4G":	{
+                        "max_ssid":	8,
+	  		            "max_stations":	100,
+           	            "max_tx_power":	19,
+                        "min_tx_power":	5
+                    },
+	                "5.0G":	{
+	                    "support_11ac":	true,
+	                    "max_ssid":	8,
+	                    "max_stations":	100,
+	                    "max_tx_power":	20,
+	                    "min_tx_power":	5
+	                }
+	        }
+        }]
+    },
+	{
+		"ap_name":	"TL-AP900I-PoE",
+		"id":	151002625,
+		"vendor":	0,
+	    "ext_wire_phy": 2,
+		"models":	[{
+				"hwver":	"1.0",
+				"radios":	{
+					"2.4G":	{
+						"max_ssid":	8,
+						"max_stations":	100,
+						"max_tx_power":	19,
+						"min_tx_power":	5
+					},
+					"5.0G":	{
+						"support_11ac":	true,
+						"max_ssid":	8,
+						"max_stations":	100,
+						"max_tx_power":	15,
+						"min_tx_power":	5
+					}
+				}
+			}]
+	},
+	{ 
+	    "ap_name":	"TL-AP301P", 
+	    "id":	50405634, 
+	    "vendor":	0, 
+	    "models":	[{ 
+	        "hwver":	"2.0", 
+	        "radios":	{ 
+		        "2.4G":	{ 
+			            "max_ssid":	8, 
+			            "max_stations":	100, 
+			            "max_tx_power":	30, 
+			            "min_tx_power":	3 
+			            } 
+			        } 
+		    }] 
+	},
+	{ 
+	    "ap_name": "TL-AP300P", 
+	    "id": 50340098, 
+	    "vendor": 0, 
+	    "models": [{ 
+	        "hwver": "2.0", 
+	        "radios": { 
+		        "2.4G": { 
+			            "max_ssid": 8, 
+			            "max_stations": 100, 
+			            "max_tx_power": 30, 
+			            "min_tx_power": 3 
+			            } 
+			        } 
+		    }] 
+	}, 
+    {
+		"ap_name":	"TL-AP301V-223",
+		"id":	50412801,
+		"vendor":	0,
+		"models":	[{
+				"hwver":	"1.0",
+				"radios":	{
+					"2.4G":	{
+						"max_ssid":	8,
+						"max_stations":	100,
+						"max_tx_power":	26,
+						"min_tx_power":	3
+					}
+				}
+			}]
+	},
+	{
+		"ap_name":	"TL-AP302V-223P",
+		"id":	50478593,
+		"vendor":	0,
+		"models":	[{
+				"hwver":	"1.0",
+				"radios":	{
+					"2.4G":	{
+						"max_ssid":	8,
+						"max_stations":	100,
+						"max_tx_power":	26,
+						"min_tx_power":	3
+					}
+				}
+			}]
+	}, 
+    {
+		"ap_name": "TL-AP1750C-PoE",
+		"id": 391171586,
+		"vendor": 0,
+		"models": [{
+			"hwver": "2.0",
+			"radios": {
+					"2.4G": {
+						"max_ssid": 8,
+						"max_stations": 100,
+						"max_tx_power": 31,
+						"min_tx_power": 5
+					},
+					"5.0G": {
+						"support_11ac": true,
+						"max_ssid": 8,
+						"max_stations": 100,
+						"max_tx_power": 31,
+						"min_tx_power": 5
+					}
+			}
+		}]
+	},
+	{
+		"ap_name": "TL-AP450GP全向",
+		"id": 72357633,
+		"vendor": 0,
+		"models": [{
+				"hwver": "1.0",
+				"radios": {
+					"2.4G": {
+                        "max_ssid": 8,
+						"max_stations": 100,
+                        "max_tx_power": 32,
+                        "min_tx_power": 5
+                    }
+				}
+		}]
+	},
+	{
+		"ap_name": "TL-AP450GP扇区",
+		"id": 72362497,
+		"vendor": 0,
+		"models": [{
+				"hwver": "1.0",
+				"radios": {
+					"2.4G": {
+                        "max_ssid": 8,
+						"max_stations": 100,
+                        "max_tx_power": 32,
+                        "min_tx_power": 5
+                    }
+				}
+		}]
+	},
+	{ 
+		"ap_name": "TL-AP1750GP全向", 
+		"id": 391124737,
+		"vendor": 0, 
+		"models": [{ 
+		       "hwver": "1.0", 
+		       "radios": { 
+		           "2.4G": { 
+		               "max_ssid": 8, 
+		               "max_stations": 100, 
+		               "max_tx_power": 32, 
+		               "min_tx_power": 5 
+			        },
+			        "5.0G": { 
+		               "support_11ac": true, 
+		               "max_ssid": 8, 
+		               "max_stations": 100, 
+		               "max_tx_power": 31, 
+		               "min_tx_power": 5 
+		           } 
+			    } 
+		}]
+	},
+	{ 
+		"ap_name": "TL-AP1750GP扇区", 
+		"id": 391129601,
+		"vendor": 0, 
+		"models": [{ 
+				"hwver": "1.0", 
+				"radios": { 
+					"2.4G": { 
+						"max_ssid": 8, 
+						"max_stations": 100, 
+						"max_tx_power": 32, 
+						"min_tx_power": 5 
+					},
+					"5.0G": { 
+				       "support_11ac": true, 
+				       "max_ssid": 8, 
+				       "max_stations": 100, 
+				       "max_tx_power": 31, 
+				       "min_tx_power": 5 
+					} 
+				} 
+		}]
+	},
+    {
+        "ap_name": "TL-AP1308GI-PoE",
+        "id": 319327745,
+        "vendor": 0,
+        "ext_wire_phy": 4,
+        "models": [{
+                 "hwver": "1.0",
+                 "radios": {
+                     "2.4G": {
+                         "max_ssid": 8,
+                         "max_stations": 100,
+                         "max_tx_power": 22,
+                         "min_tx_power": 5
+                    },
+                     "5.0G": {
+                         "support_11ac": true,
+                         "max_ssid": 8,
+                         "max_stations": 100,
+                         "max_tx_power": 20,
+                         "min_tx_power": 5
+                    }
+                }
+        }]
+    },
+    {
+       "ap_name": "TL-AP1758GI-PoE",
+       "id": 391679489,
+       "vendor": 0,
+        "ext_wire_phy": 4,
+       "models": [{
+                 "hwver": "1.0",
+                 "radios": {
+                       "2.4G": {
+                                "max_ssid": 8,
+                                "max_stations": 100,
+                                "max_tx_power": 22,
+                                "min_tx_power": 5
+                       },
+                       "5.0G": {
+                                "support_11ac": true,
+                                "max_ssid": 8,
+                                "max_stations": 100,
+                                "max_tx_power": 22,
+                                "min_tx_power": 5
+                       }
+                 }
+       }]
+    },
+	{
+		"ap_name": "TL-AP450P全向",
+		"id": 72360193,
+		"vendor": 0,
+		"models": [{
+				"hwver": "1.0",
+				"radios": {
+						"2.4G": {
+	                        "max_ssid": 8,
+							"max_stations": 100,
+	                        "max_tx_power": 32,
+	                        "min_tx_power": 5
+			            }
+				}
+		}]
+	},
+	{
+		"ap_name": "TL-AP450P扇区",
+		"id": 72372481,
+		"vendor": 0,
+		"models": [{
+				"hwver": "1.0",
+				"radios": {
+						"2.4G": {
+	                        "max_ssid": 8,
+							"max_stations": 100,
+	                        "max_tx_power": 32,
+	                        "min_tx_power": 5
+			            }
+				}
+		}]
+	},
+	{
+
+      "ap_name":  "TL-AP1200I-PoE",
+      "id": 301997569,
+      "vendor": 0,
+      "ext_wire_phy": 2,
+      "models": [{
+            "hwver": "1.0",
+            "radios":       {
+                   "2.4G":   {
+                          "max_ssid":  8,
+                          "max_stations":  100,
+                          "max_tx_power": 10,
+                          "min_tx_power": 1
+                   },
+                   "5.0G":   {
+                          "support_11ac":  true,
+                          "max_ssid":  8,
+                          "max_stations":  100,
+                          "max_tx_power": 10,
+                          "min_tx_power": 1
+                   }
+            }
+     	}]
+	},
+	{
+
+	    "ap_name": "TL-AP1200GI-PoE",
+	    "id": 302026241,
+	    "vendor": 0,
+	    "ext_wire_phy": 2,
+	    "models": [{
+	            "hwver": "1.0",
+	            "radios":       {
+	                   "2.4G":   {
+	                          "max_ssid":  8,
+	                          "max_stations":  100,
+	                          "max_tx_power": 10,
+	                          "min_tx_power": 1
+	                   },
+	                   "5.0G":   {
+	                          "support_11ac":  true,
+	                          "max_ssid":  8,
+	                          "max_stations":  100,
+	                          "max_tx_power": 10,
+	                          "min_tx_power": 1
+	                   }
+	            }
+        }]
+    },
+	{
+       "ap_name": "TL-AP1200C-PoE",
+       "id": 302042626,
+       "vendor": 0,
+       "models": [{
+	        "hwver":  "2.0",
+	        "radios": {
+                   "2.4G":  {
+                        "max_ssid": 8,
+                        "max_stations": 100,
+                        "max_tx_power": 29,
+                        "min_tx_power": 5
+	                },
+	                "5.0G":  {
+                        "support_11ac": true,
+                        "max_ssid": 8,
+                        "max_stations": 100,
+                        "max_tx_power": 23,
+                        "min_tx_power": 5
+                   }
+	        }
+		}]
+	},
+    {
+       "ap_name": "TL-AP302I-PoE",
+       "id": 50470403,
+       "vendor": 0,
+       "ext_wire_phy": 1,
+       "models": [{
+                 "hwver":  "3.0",
+                 "radios":  {
+                       "2.4G": {
+	                         "max_ssid": 4,
+	                         "max_stations": 16,
+	                         "max_tx_power": 10,
+	                         "min_tx_power":  1
+                       }
+                }
+       }]
+    },
+    {
+       "ap_name": "TL-AP300I-DC",
+       "id": 50339074,
+       "vendor": 0,
+       "ext_wire_phy": 1,
+       "models": [{
+                 "hwver":  "2.0",
+                 "radios":  {
+                       "2.4G": {
+                                  "max_ssid": 4,
+                                  "max_stations": 16,
+                                  "max_tx_power": 10,
+                                  "min_tx_power":  1
+                       }
+                }
+       }]
+	},
+	{
+       "ap_name": "TL-AP300I-PoE",
+       "id": 50339332,
+       "vendor": 0,
+       "ext_wire_phy": 1,
+       "models": [{
+                 "hwver":  "4.0",
+                 "radios":  {
+                       "2.4G": {
+                              "max_ssid": 4,
+                              "max_stations": 16,
+                              "max_tx_power": 10,
+                              "min_tx_power":  1
+                       }
+                }
+       }]
+	},
+	{
+       "ap_name": "TL-AP302I-DC",
+       "id": 50470146,
+       "vendor": 0,
+       "ext_wire_phy": 1,
+       "models": [{
+                 "hwver":  "2.0",
+                 "radios":  {
+                       "2.4G": {
+                              	"max_ssid": 4,
+                              	"max_stations": 16,
+                              	"max_tx_power": 10,
+                              	"min_tx_power":  1
+                       }
+                }
+       }]
+	},
+	{
+		"ap_name": "TL-AP306I-PoE",
+		"id": 50732546,
+		"vendor": 0,
+		"ext_wire_phy": 2,
+		"models": [{
+				"hwver":  "2.0",
+				"radios": {
+					"2.4G": {
+								"max_ssid": 4,
+								"max_stations": 16,
+								"max_tx_power": 10,
+								"min_tx_power":  1
+					}
+				}
+		}]
+	},
+    {
+       "ap_name": "TL-AP450I-PoE",
+       "id": 72359426,
+       "vendor": 0,
+       "ext_wire_phy": 1,
+       "models": [{
+                 "hwver":  "2.0",
+                 "radios":  {
+                       "2.4G": {
+	                          "max_ssid": 8,
+	                          "max_stations": 50,
+	                          "max_tx_power": 10,
+	                          "min_tx_power":  1
+                       }
+                }
+       }]
+	},
+	{
+       "ap_name": "TL-AP453I-PoE",
+       "id": 72556033,
+       "vendor": 0,
+       "ext_wire_phy": 1,
+       "models": [{
+                 "hwver":  "1.0",
+                 "radios":  {
+                       "2.4G": {
+                              "max_ssid": 8,
+                              "max_stations": 50,
+                              "max_tx_power": 10,
+                              "min_tx_power":  1
+                       }
+                }
+       }]
+	},
+	{
+       "ap_name": "TL-AP456I-PoE",
+       "id": 72752641,
+       "vendor": 0,
+       "ext_wire_phy": 2,
+       "models": [{
+                 "hwver":  "1.0",
+                 "radios":  {
+                       "2.4G": {
+                            "max_ssid": 8,
+                            "max_stations": 50,
+                            "max_tx_power": 10,
+                            "min_tx_power":  1
+                       }
+                }
+       }]
+	},
+	{
+       "ap_name": "TL-AP450I-DC",
+       "id":  72359170,
+       "vendor":   0,
+       "ext_wire_phy": 1,
+       "models": [{
+                 "hwver":  "2.0",
+                 "radios":  {
+                       "2.4G": {
+                            "max_ssid": 8,
+                            "max_stations": 50,
+                            "max_tx_power": 10,
+                            "min_tx_power": 1
+                       }
+               }
+       }]
+	},
+    {
+            "ap_name": "TL-AP303I-PoE",
+            "id": 50535938,
+            "vendor": 0,
+            "ext_wire_phy": 1,
+            "models": [{
+                        "hwver": "2.0",
+                        "radios": {
+                            "2.4G": {
+                                "max_ssid": 4,
+                                "max_stations": 16,
+                                "max_tx_power": 10,
+                                "min_tx_power": 1
+                            }
+                        }
+            }]
+    },
+    { 
+        "ap_name":  "TL-AP302P", 
+        "id":   50471169, 
+        "vendor":   0, 
+        "models":   [{ 
+	            "hwver":    "1.0", 
+	            "radios":   { 
+	                "2.4G": { 
+	                        "max_ssid": 4, 
+	                        "max_stations": 50, 
+	                        "max_tx_power": 20, 
+	                        "min_tx_power": 3 
+                        } 
+                } 
+        }] 
+    },
+    {
+        "ap_name": "TL-AP1300GI-PoE",
+        "id": 318803457,
+        "vendor": 0,
+        "ext_wire_phy": 2,
+        "models": [{
+                 "hwver": "1.0",
+                 "radios": {
+                       "2.4G": {
+                                "max_ssid": 8,
+                                "max_stations": 100,
+                                "max_tx_power": 17,
+                                "min_tx_power": 5
+                       },
+                       "5.0G": {
+                                "support_11ac": true,
+                                "max_ssid": 8,
+                                "max_stations": 100,
+                                "max_tx_power": 15,
+                                "min_tx_power": 5
+                       }
+                 }
+        }]
+    },
+    {
+        "ap_name": "TL-AP450I-PoE香槟金",
+        "id": 74718722,
+        "vendor": 0,
+        "ext_wire_phy": 1,
+        "models": [{
+                    "hwver":  "2.0",
+                    "radios":  {
+                        "2.4G": {
+                                "max_ssid": 8,
+                                "max_stations": 50,
+                                "max_tx_power": 10,
+                                "min_tx_power": 1
+                        }
+                    }
+        }]
+    },
+    {
+        "ap_name": "TL-AP302I-PoE香槟金",
+        "id": 52829698,
+        "vendor": 0,
+        "ext_wire_phy": 1,
+        "models": [{
+                    "hwver":  "2.0",
+                    "radios":  {
+                        "2.4G": {
+                                "max_ssid": 4,
+                                "max_stations": 16,
+                                "max_tx_power": 10,
+                                "min_tx_power": 1
+                        }
+                    }
+        }]
+    },
+	{
+       "ap_name": "TL-AP1750GI-PoE",
+       "id": 391155201,
+       "vendor": 0,
+	   "ext_wire_phy": 2,
+       "models": [{
+                 "hwver": "1.0",
+                 "radios": {
+                       "2.4G": {
+                                "max_ssid": 8,
+                                "max_stations": 100,
+                                "max_tx_power": 22,
+                                "min_tx_power": 5
+                       },
+                       "5.0G": {
+                                "support_11ac": true,
+                                "max_ssid": 8,
+                                "max_stations": 100,
+                                "max_tx_power": 22,
+                                "min_tx_power": 5
+                       }
+                 }
+       }]
+    },
+    {
+        "ap_name": "TL-AP1200GP全向",
+        "id": 302014721,
+        "vendor": 0,
+        "models": [{
+                    "hwver": "1.0",
+                    "radios": {
+                        "2.4G": {
+                                "max_ssid": 8,
+                                "max_stations": 100,
+                                "max_tx_power": 30,
+                                "min_tx_power": 5,
+                                "dft_tx_power": 30
+                        },
+                        "5.0G": {
+                                "support_11ac": true,
+                                "max_ssid": 8,
+                                "max_stations": 100,
+                                "max_tx_power": 27,
+                                "min_tx_power": 5,
+                                "dft_tx_power": 27
+                        }
+                    }
+        }]
+    },
+    {
+        "ap_name": "TL-AP1200GP扇区",
+        "id": 302018817,
+        "vendor": 0,
+        "models": [{
+                    "hwver": "1.0",
+                    "radios": {
+                        "2.4G": {
+                                "max_ssid": 8,
+                                "max_stations": 100,
+                                "max_tx_power": 30,
+                                "min_tx_power": 5,
+                                "dft_tx_power": 30
+                        },
+                        "5.0G": {
+                                "support_11ac": true,
+                                "max_ssid": 8,
+                                "max_stations": 100,
+                                "max_tx_power": 27,
+                                "min_tx_power": 5,
+                                "dft_tx_power": 27
+                        }
+                    }
+        }]
+    },
+    {
+            "ap_name": "TL-AP306C-PoE",
+            "id": 50777601,
+            "vendor": 0,
+            "models": [{
+                      "hwver":  "1.0",
+                      "radios":  {
+                            "2.4G": {
+                                       "max_ssid": 8,
+                                       "max_stations": 100,
+                                       "max_tx_power": 26,
+                                       "min_tx_power": 3,
+                                       "dft_tx_power": 26
+                            }
+                    }
+            }]
+    },
+	{
+		"ap_name": "TL-AP456C-PoE",
+		"id": 72797697,
+		"vendor": 0,
+		"models": [{
+					"hwver":  "1.0",
+					"radios":  {
+						"2.4G": {
+								"max_ssid": 8,
+								"max_stations": 100,
+								"max_tx_power": 27,
+								"min_tx_power": 5,
+								"dft_tx_power": 27
+						}
+					}
+		}]
+	},
+    {
+            "ap_name": "TL-AP300S-PoE",
+            "id": 50372097,
+            "vendor": 0,
+            "ext_wire_phy": 1,
+            "models": [{
+                      "hwver":  "1.0",
+                      "radios":  {
+                            "2.4G": {
+                                       "max_ssid": 4,
+                                       "max_stations": 16,
+                                       "max_tx_power": 10,
+                                       "min_tx_power":  1
+                            }
+                    }
+            }]
+    },
+    {
+        "ap_name": "TL-AP300S-DC",
+        "id": 50371841,
+        "vendor": 0,
+        "ext_wire_phy": 1,
+        "models": [{
+                    "hwver":  "1.0",
+                    "radios":  {
+                        "2.4G": {
+                                "max_ssid": 4,
+                                "max_stations": 16,
+                                "max_tx_power": 10,
+                                "min_tx_power": 1
+                        }
+                    }
+        }]
+    },
+	{
+      "ap_name":  "TL-AP1208GI-PoE",
+      "id": 302550529,
+      "vendor": 0,
+      "ext_wire_phy": 4,
+      "models": [{
+	            "hwver": "1.0",
+	            "radios":{
+	                   "2.4G":   {
+	                          "max_ssid":  8,
+	                          "max_stations":  100,
+	                          "max_tx_power": 10,
+	                          "min_tx_power": 1
+	                   },
+	                   "5.0G":   {
+	                          "support_11ac":  true,
+	                          "max_ssid":  8,
+	                          "max_stations":  100,
+	                          "max_tx_power": 10,
+	                          "min_tx_power": 1
+	                   }
+	            }
+        }]
+    },
+    {
+            "ap_name": "TL-AP1203I-PoE",
+            "id": 302194177,
+            "vendor": 0,
+            "ext_wire_phy": 2,
+            "models": [{
+                        "hwver": "1.0",
+                        "radios": {
+                            "2.4G": {
+                                "max_ssid": 8,
+                                "max_stations": 100,
+                                "max_tx_power": 10,
+                                "min_tx_power": 1
+                            },
+                            "5.0G": {
+                                "support_11ac": true,
+                                "max_ssid": 8,
+                                "max_stations": 100,
+                                "max_tx_power": 10,
+                                "min_tx_power": 1
+                            }
+                        }
+            }]
+    }
+],
+"multi_ap_list":[	
+	{
+		"ap_name": "TL-HDAP2600C-PoE",
+		"id": 637554177,
+		"vendor": 0,
+		"linked_modify_2.4G": "chnl,rdMd,bwMd,wmm,brd,maxUsr,rssi,dcs,beacon,wlan", 
+		"linked_modify_5.0G": "wlan", 
+		"support_ap_trunk": true,
+		"models": [{
+			"hwver": "1.0",
+			"radios": {
+					"2.4G": {
+						"max_ssid": 8,
+						"max_stations": 100,
+						"max_tx_power": 20,
+						"min_tx_power": 5,
+						"mutex_channel": "1,11", 
+						"dft_tx_power": 13,
+						"dft_bw_mode": 0
+					},
+					"5.0G": {
+						"support_11ac": true,
+						"max_ssid": 8,
+						"max_stations": 100,
+						"max_tx_power": 21,
+						"min_tx_power": 3,
+						"mutex_channel": "36,40,44,48", 
+						"dft_tx_power": 21
+					},
+					"2.4G": {
+						"max_ssid": 8,
+						"max_stations": 100,
+						"max_tx_power": 20,
+						"min_tx_power": 5,
+						"mutex_channel": "1,11", 
+						"dft_tx_power": 13,
+						"dft_bw_mode": 0
+					},
+					"5.0G": {
+						"support_11ac": true,
+						"max_ssid": 8,
+						"max_stations": 100,
+						"max_tx_power": 21,
+						"min_tx_power": 3,
+						"mutex_channel": "149,153,157,161", 
+						"dft_tx_power": 21
+					}
+			}
+		}]
+	},
+	{
+		"ap_name": "TL-HDAP3500C-PoE",
+		"id": 889212417,
+		"vendor": 0,
+		"linked_modify_2.4G": "chnl,rdMd,bwMd,wmm,brd,maxUsr,rssi,dcs,beacon,wlan", 
+		"linked_modify_5.0G": "wlan", 
+		"support_ap_trunk": true,
+		"models": [{
+				"hwver": "1.0",
+				"radios": {
+						"2.4G": {
+							"max_ssid": 8,
+							"max_stations": 100,
+							"max_tx_power": 20,
+							"min_tx_power": 5,
+							"mutex_channel": "1,11", 
+							"dft_tx_power": 13,
+							"dft_bw_mode": 0
+						},
+						"5.0G": {
+							"support_11ac": true,
+							"max_ssid": 8,
+							"max_stations": 100,
+							"max_tx_power": 23,
+							"min_tx_power": 5,
+							"mutex_channel": "36,40,44,48", 
+							"dft_tx_power": 23
+						},
+						"2.4G": {
+							"max_ssid": 8,
+							"max_stations": 100,
+							"max_tx_power": 20,
+							"min_tx_power": 5,
+							"mutex_channel": "1,11", 
+							"dft_tx_power": 13,
+							"dft_bw_mode": 0
+						},
+						"5.0G": {
+							"support_11ac": true,
+							"max_ssid": 8,
+							"max_stations": 100,
+							"max_tx_power": 23,
+							"min_tx_power": 5,
+							"mutex_channel": "149,153,157,161", 
+							"dft_tx_power": 23
+						}
+				}
+		}]
+	},
+	{
+		"ap_name": "TL-HDAP4300C-非标PoE/DC",
+		"id": 1124125953,
+		"vendor": 0,
+		"support_ap_trunk": true,
+		"models": [{
+				"hwver":  "1.0",
+				"radios":  {                   
+						"2.4G": {
+							"max_ssid": 8,
+							"max_stations": 100,
+							"max_tx_power": 31,
+							"min_tx_power": 5,
+							"dft_tx_power": 31
+						},
+						"5.0G": {
+							"support_11ac": true,
+							"max_ssid": 8,
+							"max_stations": 100,
+							"max_tx_power": 31,
+							"min_tx_power": 5,
+							"dft_tx_power": 31,
+							"mutex_channel": "36,40,44,48"
+						},
+						"5.0G": {
+							"support_11ac": true,
+							"max_ssid": 8,
+							"max_stations": 100,
+							"max_tx_power": 31,
+							"min_tx_power": 5,
+							"dft_tx_power": 31,
+							"mutex_channel": "149,153,157,161"
+						}
+				}
+		}]
+	}
+]
+}

@@ -1,0 +1,22 @@
+; func apmngr_db_id_trim @ 0x005361fc size=0x54
+  5361fc:	27bdffe0 	addiu	sp,sp,-32
+  536200:	2405ffff 	li	a1,-1
+  536204:	afb00018 	sw	s0,24(sp)
+  536208:	3c10007c 	lui	s0,0x7c
+  53620c:	afbf001c 	sw	ra,28(sp)
+  536210:	0c1020b4 	jal	0x4082d0
+  536214:	8e045874 	lw	a0,22644(s0)
+  536218:	3c02007c 	lui	v0,0x7c
+  53621c:	0c1020ec 	jal	0x4083b0
+  536220:	8c445868 	lw	a0,22632(v0)
+  536224:	3c02007c 	lui	v0,0x7c
+  536228:	0c1020ec 	jal	0x4083b0
+  53622c:	8c44586c 	lw	a0,22636(v0)
+  536230:	3c02007c 	lui	v0,0x7c
+  536234:	0c1020ec 	jal	0x4083b0
+  536238:	8c445864 	lw	a0,22628(v0)
+  53623c:	8e045874 	lw	a0,22644(s0)
+  536240:	8fbf001c 	lw	ra,28(sp)
+  536244:	8fb00018 	lw	s0,24(sp)
+  536248:	08101fcc 	j	0x407f30
+  53624c:	27bd0020 	addiu	sp,sp,32

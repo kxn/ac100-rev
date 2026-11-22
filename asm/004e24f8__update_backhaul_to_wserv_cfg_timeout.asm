@@ -1,0 +1,20 @@
+; func _update_backhaul_to_wserv_cfg_timeout @ 0x004e24f8 size=0x4c
+  4e24f8:	27bdffe0 	addiu	sp,sp,-32
+  4e24fc:	2405ffff 	li	a1,-1
+  4e2500:	afb00018 	sw	s0,24(sp)
+  4e2504:	3c100077 	lui	s0,0x77
+  4e2508:	afbf001c 	sw	ra,28(sp)
+  4e250c:	0c1020b4 	jal	0x4082d0
+  4e2510:	8e04862c 	lw	a0,-31188(s0)
+  4e2514:	3c020073 	lui	v0,0x73
+  4e2518:	2403ffff 	li	v1,-1
+  4e251c:	0c138908 	jal	0x4e2420
+  4e2520:	ac431b00 	sw	v1,6912(v0)
+  4e2524:	0c101fcc 	jal	0x407f30
+  4e2528:	8e04862c 	lw	a0,-31188(s0)
+  4e252c:	3c04006b 	lui	a0,0x6b
+  4e2530:	8fbf001c 	lw	ra,28(sp)
+  4e2534:	8fb00018 	lw	s0,24(sp)
+  4e2538:	2484fc60 	addiu	a0,a0,-928
+  4e253c:	08101d74 	j	0x4075d0
+  4e2540:	27bd0020 	addiu	sp,sp,32

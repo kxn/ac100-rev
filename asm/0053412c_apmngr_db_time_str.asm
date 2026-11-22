@@ -1,0 +1,25 @@
+; func apmngr_db_time_str @ 0x0053412c size=0x60
+  53412c:	27bdffd8 	addiu	sp,sp,-40
+  534130:	afb00020 	sw	s0,32(sp)
+  534134:	00a08021 	move	s0,a1
+  534138:	afbf0024 	sw	ra,36(sp)
+  53413c:	00c02821 	move	a1,a2
+  534140:	1200000b 	beqz	s0,0x534170
+  534144:	afa40028 	sw	a0,40(sp)
+  534148:	18c0000e 	blez	a2,0x534184
+  53414c:	93a20029 	lbu	v0,41(sp)
+  534150:	3c06006d 	lui	a2,0x6d
+  534154:	93a70028 	lbu	a3,40(sp)
+  534158:	02002021 	move	a0,s0
+  53415c:	24c680a8 	addiu	a2,a2,-32600
+  534160:	afa20010 	sw	v0,16(sp)
+  534164:	93a2002a 	lbu	v0,42(sp)
+  534168:	0c101dec 	jal	0x4077b0
+  53416c:	afa20014 	sw	v0,20(sp)
+  534170:	8fbf0024 	lw	ra,36(sp)
+  534174:	02001021 	move	v0,s0
+  534178:	8fb00020 	lw	s0,32(sp)
+  53417c:	03e00008 	jr	ra
+  534180:	27bd0028 	addiu	sp,sp,40
+  534184:	0814d05c 	j	0x534170
+  534188:	00008021 	move	s0,zero

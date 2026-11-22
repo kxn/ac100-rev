@@ -1,0 +1,32 @@
+; func _str2mac @ 0x004fd0b0 size=0x7c
+  4fd0b0:	3c03006c 	lui	v1,0x6c
+  4fd0b4:	00001021 	move	v0,zero
+  4fd0b8:	2463b9c4 	addiu	v1,v1,-17980
+  4fd0bc:	24090006 	li	t1,6
+  4fd0c0:	90870000 	lbu	a3,0(a0)
+  4fd0c4:	24e7ffcf 	addiu	a3,a3,-49
+  4fd0c8:	30e700ff 	andi	a3,a3,0xff
+  4fd0cc:	2ce80036 	sltiu	t0,a3,54
+  4fd0d0:	11000003 	beqz	t0,0x4fd0e0
+  4fd0d4:	00003021 	move	a2,zero
+  4fd0d8:	00e33821 	addu	a3,a3,v1
+  4fd0dc:	90e60000 	lbu	a2,0(a3)
+  4fd0e0:	00063100 	sll	a2,a2,0x4
+  4fd0e4:	30c600ff 	andi	a2,a2,0xff
+  4fd0e8:	a0a60000 	sb	a2,0(a1)
+  4fd0ec:	90880001 	lbu	t0,1(a0)
+  4fd0f0:	2508ffcf 	addiu	t0,t0,-49
+  4fd0f4:	310800ff 	andi	t0,t0,0xff
+  4fd0f8:	2d0a0036 	sltiu	t2,t0,54
+  4fd0fc:	11400003 	beqz	t2,0x4fd10c
+  4fd100:	00003821 	move	a3,zero
+  4fd104:	01034021 	addu	t0,t0,v1
+  4fd108:	91070000 	lbu	a3,0(t0)
+  4fd10c:	00e63021 	addu	a2,a3,a2
+  4fd110:	24420001 	addiu	v0,v0,1
+  4fd114:	a0a60000 	sb	a2,0(a1)
+  4fd118:	24840003 	addiu	a0,a0,3
+  4fd11c:	1449ffe8 	bne	v0,t1,0x4fd0c0
+  4fd120:	24a50001 	addiu	a1,a1,1
+  4fd124:	03e00008 	jr	ra
+  4fd128:	00000000 	nop

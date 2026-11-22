@@ -1,0 +1,23 @@
+; func mesh_db_bh_work_mode_get @ 0x004b9104 size=0x58
+  4b9104:	27bdffd8 	addiu	sp,sp,-40
+  4b9108:	2402ffff 	li	v0,-1
+  4b910c:	afb10020 	sw	s1,32(sp)
+  4b9110:	00808821 	move	s1,a0
+  4b9114:	afbf0024 	sw	ra,36(sp)
+  4b9118:	1080000b 	beqz	a0,0x4b9148
+  4b911c:	afb0001c 	sw	s0,28(sp)
+  4b9120:	3c100076 	lui	s0,0x76
+  4b9124:	2405ffff 	li	a1,-1
+  4b9128:	26107eb0 	addiu	s0,s0,32432
+  4b912c:	0c1020b4 	jal	0x4082d0
+  4b9130:	8e040004 	lw	a0,4(s0)
+  4b9134:	8e0200fc 	lw	v0,252(s0)
+  4b9138:	ae220000 	sw	v0,0(s1)
+  4b913c:	0c101fcc 	jal	0x407f30
+  4b9140:	8e040004 	lw	a0,4(s0)
+  4b9144:	00001021 	move	v0,zero
+  4b9148:	8fbf0024 	lw	ra,36(sp)
+  4b914c:	8fb10020 	lw	s1,32(sp)
+  4b9150:	8fb0001c 	lw	s0,28(sp)
+  4b9154:	03e00008 	jr	ra
+  4b9158:	27bd0028 	addiu	sp,sp,40

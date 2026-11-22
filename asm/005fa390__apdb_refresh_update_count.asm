@@ -1,0 +1,26 @@
+; func _apdb_refresh_update_count @ 0x005fa390 size=0x64
+  5fa390:	27bdff18 	addiu	sp,sp,-232
+  5fa394:	00002821 	move	a1,zero
+  5fa398:	240600c8 	li	a2,200
+  5fa39c:	afb000e0 	sw	s0,224(sp)
+  5fa3a0:	00808021 	move	s0,a0
+  5fa3a4:	afbf00e4 	sw	ra,228(sp)
+  5fa3a8:	0c101cf0 	jal	0x4073c0
+  5fa3ac:	27a40018 	addiu	a0,sp,24
+  5fa3b0:	3c070070 	lui	a3,0x70
+  5fa3b4:	27a40018 	addiu	a0,sp,24
+  5fa3b8:	1600000b 	bnez	s0,0x5fa3e8
+  5fa3bc:	240500c8 	li	a1,200
+  5fa3c0:	3c060070 	lui	a2,0x70
+  5fa3c4:	24c6bf58 	addiu	a2,a2,-16552
+  5fa3c8:	0c101dec 	jal	0x4077b0
+  5fa3cc:	24e7bf38 	addiu	a3,a3,-16584
+  5fa3d0:	0c101d74 	jal	0x4075d0
+  5fa3d4:	27a40018 	addiu	a0,sp,24
+  5fa3d8:	8fbf00e4 	lw	ra,228(sp)
+  5fa3dc:	8fb000e0 	lw	s0,224(sp)
+  5fa3e0:	03e00008 	jr	ra
+  5fa3e4:	27bd00e8 	addiu	sp,sp,232
+  5fa3e8:	3c060070 	lui	a2,0x70
+  5fa3ec:	0817e8f2 	j	0x5fa3c8
+  5fa3f0:	24c6bf24 	addiu	a2,a2,-16604

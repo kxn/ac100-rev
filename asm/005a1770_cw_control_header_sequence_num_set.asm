@@ -1,0 +1,20 @@
+; func cw_control_header_sequence_num_set @ 0x005a1770 size=0x4c
+  5a1770:	27bdffe0 	addiu	sp,sp,-32
+  5a1774:	30a500ff 	andi	a1,a1,0xff
+  5a1778:	10800006 	beqz	a0,0x5a1794
+  5a177c:	afbf001c 	sw	ra,28(sp)
+  5a1780:	00001021 	move	v0,zero
+  5a1784:	a0850014 	sb	a1,20(a0)
+  5a1788:	8fbf001c 	lw	ra,28(sp)
+  5a178c:	03e00008 	jr	ra
+  5a1790:	27bd0020 	addiu	sp,sp,32
+  5a1794:	3c040069 	lui	a0,0x69
+  5a1798:	3c05006e 	lui	a1,0x6e
+  5a179c:	3c07006e 	lui	a3,0x6e
+  5a17a0:	2484d3ac 	addiu	a0,a0,-11348
+  5a17a4:	24a56440 	addiu	a1,a1,25664
+  5a17a8:	24060201 	li	a2,513
+  5a17ac:	0c101b74 	jal	0x406dd0
+  5a17b0:	24e76078 	addiu	a3,a3,24696
+  5a17b4:	081685e2 	j	0x5a1788
+  5a17b8:	2402ffff 	li	v0,-1

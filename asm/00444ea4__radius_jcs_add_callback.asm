@@ -1,0 +1,26 @@
+; func _radius_jcs_add_callback @ 0x00444ea4 size=0x64
+  444ea4:	3c1c0032 	lui	gp,0x32
+  444ea8:	279cc25c 	addiu	gp,gp,-15780
+  444eac:	0399e021 	addu	gp,gp,t9
+  444eb0:	8f998048 	lw	t9,-32696(gp)
+  444eb4:	27bdffe0 	addiu	sp,sp,-32
+  444eb8:	afbc0010 	sw	gp,16(sp)
+  444ebc:	273905a8 	addiu	t9,t9,1448
+  444ec0:	afbf001c 	sw	ra,28(sp)
+  444ec4:	afb00018 	sw	s0,24(sp)
+  444ec8:	0411edb7 	bal	0x4405a8
+  444ecc:	00a08021 	move	s0,a1
+  444ed0:	8fbc0010 	lw	gp,16(sp)
+  444ed4:	8f998678 	lw	t9,-31112(gp)
+  444ed8:	0320f809 	jalr	t9
+  444edc:	00402021 	move	a0,v0
+  444ee0:	02002021 	move	a0,s0
+  444ee4:	8fbc0010 	lw	gp,16(sp)
+  444ee8:	00403021 	move	a2,v0
+  444eec:	8fbf001c 	lw	ra,28(sp)
+  444ef0:	8fb00018 	lw	s0,24(sp)
+  444ef4:	27bd0020 	addiu	sp,sp,32
+  444ef8:	8f858018 	lw	a1,-32744(gp)
+  444efc:	8f998638 	lw	t9,-31176(gp)
+  444f00:	03200008 	jr	t9
+  444f04:	24a56a24 	addiu	a1,a1,27172

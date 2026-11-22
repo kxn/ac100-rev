@@ -1,0 +1,57 @@
+; func cw_wtp_radio_statistics_create @ 0x0058663c size=0xdc
+  58663c:	27bdffd8 	addiu	sp,sp,-40
+  586640:	24050014 	li	a1,20
+  586644:	afb0001c 	sw	s0,28(sp)
+  586648:	afbf0024 	sw	ra,36(sp)
+  58664c:	0c15c8cc 	jal	0x572330
+  586650:	afb10020 	sw	s1,32(sp)
+  586654:	1040000d 	beqz	v0,0x58668c
+  586658:	00408021 	move	s0,v0
+  58665c:	2404002f 	li	a0,47
+  586660:	24050014 	li	a1,20
+  586664:	0c15c943 	jal	0x57250c
+  586668:	00403021 	move	a2,v0
+  58666c:	10400017 	beqz	v0,0x5866cc
+  586670:	00408821 	move	s1,v0
+  586674:	8fbf0024 	lw	ra,36(sp)
+  586678:	02201021 	move	v0,s1
+  58667c:	8fb10020 	lw	s1,32(sp)
+  586680:	8fb0001c 	lw	s0,28(sp)
+  586684:	03e00008 	jr	ra
+  586688:	27bd0028 	addiu	sp,sp,40
+  58668c:	3c020075 	lui	v0,0x75
+  586690:	8c42cf58 	lw	v0,-12456(v0)
+  586694:	1040fff7 	beqz	v0,0x586674
+  586698:	00008821 	move	s1,zero
+  58669c:	0c16276a 	jal	0x589da8
+  5866a0:	00000000 	nop
+  5866a4:	5040fff4 	beqzl	v0,0x586678
+  5866a8:	8fbf0024 	lw	ra,36(sp)
+  5866ac:	3c04006d 	lui	a0,0x6d
+  5866b0:	3c05006e 	lui	a1,0x6e
+  5866b4:	248434fc 	addiu	a0,a0,13564
+  5866b8:	24a5d890 	addiu	a1,a1,-10096
+  5866bc:	0c101b74 	jal	0x406dd0
+  5866c0:	240600e6 	li	a2,230
+  5866c4:	0816199e 	j	0x586678
+  5866c8:	8fbf0024 	lw	ra,36(sp)
+  5866cc:	3c020075 	lui	v0,0x75
+  5866d0:	8c42cf58 	lw	v0,-12456(v0)
+  5866d4:	14400005 	bnez	v0,0x5866ec
+  5866d8:	00000000 	nop
+  5866dc:	0c101f7c 	jal	0x407df0
+  5866e0:	02002021 	move	a0,s0
+  5866e4:	0816199e 	j	0x586678
+  5866e8:	8fbf0024 	lw	ra,36(sp)
+  5866ec:	0c16276a 	jal	0x589da8
+  5866f0:	00000000 	nop
+  5866f4:	1040fff9 	beqz	v0,0x5866dc
+  5866f8:	3c04006d 	lui	a0,0x6d
+  5866fc:	3c05006e 	lui	a1,0x6e
+  586700:	248447f0 	addiu	a0,a0,18416
+  586704:	24a5d890 	addiu	a1,a1,-10096
+  586708:	0c101b74 	jal	0x406dd0
+  58670c:	240600ee 	li	a2,238
+  586710:	081619b7 	j	0x5866dc
+  586714:	00000000 	nop
+	...

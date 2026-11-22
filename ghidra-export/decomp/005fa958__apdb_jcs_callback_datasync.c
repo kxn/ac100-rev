@@ -1,0 +1,51 @@
+// func _apdb_jcs_callback_datasync @ 005fa958 size=328
+
+void _apdb_jcs_callback_datasync(undefined4 param_1)
+
+{
+  int iVar1;
+  int iVar2;
+  undefined4 uVar3;
+  void *__src;
+  undefined8 uVar4;
+  void *local_18;
+  size_t local_14;
+  
+  local_18 = (void *)0x0;
+  local_14 = 0;
+  iVar1 = json_object_object_get(param_1,&DAT_006cd710);
+  if (iVar1 != 0) {
+    iVar2 = json_object_get_type(iVar1);
+    if (iVar2 == 3) {
+      local_14 = json_object_get_int(iVar1);
+      goto LAB_005fa9c8;
+    }
+    iVar2 = json_object_get_type();
+    if (iVar2 == 2) {
+      uVar4 = json_object_get_double(iVar1);
+      local_14 = __fixdfsi((int)((ulonglong)uVar4 >> 0x20),(int)uVar4);
+      goto LAB_005fa9c8;
+    }
+  }
+  if (jcs_err_switch != 0) {
+    printf("[JCS_ERR]%s()/%d Warning: Get int with error obj or value type is unmatch.\n",
+           "_apdb_jcs_callback_datasync",5000);
+  }
+  local_14 = 0xffffffff;
+LAB_005fa9c8:
+  local_18 = (void *)FUN_00408450(local_14,0x1389);
+  if (local_18 == (void *)0x0) {
+    if (apdb_err_switch != 0) {
+      printf("[APDB_ERROR]%s()/line %d : malloc failed\n","_apdb_jcs_callback_datasync",0x138c);
+    }
+  }
+  else {
+    uVar3 = json_object_object_get(param_1,"data_msg");
+    __src = (void *)json_object_get_string(uVar3);
+    memcpy(local_18,__src,local_14);
+    apdb_datasync_handle(&local_18);
+    FUN_00407df0(local_18);
+  }
+  return;
+}
+

@@ -1,0 +1,21 @@
+; func sso_type_is_sangfor @ 0x0043a890 size=0x50
+  43a890:	27bdffd8 	addiu	sp,sp,-40
+  43a894:	2405ffff 	li	a1,-1
+  43a898:	afb10020 	sw	s1,32(sp)
+  43a89c:	3c110076 	lui	s1,0x76
+  43a8a0:	afbf0024 	sw	ra,36(sp)
+  43a8a4:	afb0001c 	sw	s0,28(sp)
+  43a8a8:	0c1020b4 	jal	0x4082d0
+  43a8ac:	8e24a2dc 	lw	a0,-23844(s1)
+  43a8b0:	3c020076 	lui	v0,0x76
+  43a8b4:	8e24a2dc 	lw	a0,-23844(s1)
+  43a8b8:	0c101fcc 	jal	0x407f30
+  43a8bc:	8c50a2d4 	lw	s0,-23852(v0)
+  43a8c0:	8fbf0024 	lw	ra,36(sp)
+  43a8c4:	3a100001 	xori	s0,s0,0x1
+  43a8c8:	8fb10020 	lw	s1,32(sp)
+  43a8cc:	2e100001 	sltiu	s0,s0,1
+  43a8d0:	02001021 	move	v0,s0
+  43a8d4:	8fb0001c 	lw	s0,28(sp)
+  43a8d8:	03e00008 	jr	ra
+  43a8dc:	27bd0028 	addiu	sp,sp,40

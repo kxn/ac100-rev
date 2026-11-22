@@ -1,0 +1,24 @@
+; func snapshot_list_destroy @ 0x00589280 size=0x5c
+  589280:	27bdffd8 	addiu	sp,sp,-40
+  589284:	2402ffff 	li	v0,-1
+  589288:	afb10020 	sw	s1,32(sp)
+  58928c:	00808821 	move	s1,a0
+  589290:	afbf0024 	sw	ra,36(sp)
+  589294:	14800007 	bnez	a0,0x5892b4
+  589298:	afb0001c 	sw	s0,28(sp)
+  58929c:	081624b3 	j	0x5892cc
+  5892a0:	8fbf0024 	lw	ra,36(sp)
+  5892a4:	0c102140 	jal	0x408500
+  5892a8:	02002021 	move	a0,s0
+  5892ac:	0c165547 	jal	0x59551c
+  5892b0:	02002021 	move	a0,s0
+  5892b4:	0c10206c 	jal	0x4081b0
+  5892b8:	02202021 	move	a0,s1
+  5892bc:	1440fff9 	bnez	v0,0x5892a4
+  5892c0:	00408021 	move	s0,v0
+  5892c4:	00001021 	move	v0,zero
+  5892c8:	8fbf0024 	lw	ra,36(sp)
+  5892cc:	8fb10020 	lw	s1,32(sp)
+  5892d0:	8fb0001c 	lw	s0,28(sp)
+  5892d4:	03e00008 	jr	ra
+  5892d8:	27bd0028 	addiu	sp,sp,40

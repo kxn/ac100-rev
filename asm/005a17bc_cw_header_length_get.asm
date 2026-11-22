@@ -1,0 +1,25 @@
+; func cw_header_length_get @ 0x005a17bc size=0x60
+  5a17bc:	27bdffd8 	addiu	sp,sp,-40
+  5a17c0:	00802821 	move	a1,a0
+  5a17c4:	afbf0024 	sw	ra,36(sp)
+  5a17c8:	1080000a 	beqz	a0,0x5a17f4
+  5a17cc:	afa00018 	sw	zero,24(sp)
+  5a17d0:	27a40018 	addiu	a0,sp,24
+  5a17d4:	0c101c8c 	jal	0x407230
+  5a17d8:	24060004 	li	a2,4
+  5a17dc:	8fa20018 	lw	v0,24(sp)
+  5a17e0:	7c4224c0 	ext	v0,v0,0x13,0x5
+  5a17e4:	00021080 	sll	v0,v0,0x2
+  5a17e8:	8fbf0024 	lw	ra,36(sp)
+  5a17ec:	03e00008 	jr	ra
+  5a17f0:	27bd0028 	addiu	sp,sp,40
+  5a17f4:	3c040069 	lui	a0,0x69
+  5a17f8:	3c05006e 	lui	a1,0x6e
+  5a17fc:	3c07006e 	lui	a3,0x6e
+  5a1800:	2484d3ac 	addiu	a0,a0,-11348
+  5a1804:	24a56464 	addiu	a1,a1,25700
+  5a1808:	24060214 	li	a2,532
+  5a180c:	0c101b74 	jal	0x406dd0
+  5a1810:	24e7608c 	addiu	a3,a3,24716
+  5a1814:	081685fa 	j	0x5a17e8
+  5a1818:	00001021 	move	v0,zero

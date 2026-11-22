@@ -1,0 +1,48 @@
+; func apmngr_debug_telnet_config @ 0x00532524 size=0xbc
+  532524:	27bdffc0 	addiu	sp,sp,-64
+  532528:	afb10038 	sw	s1,56(sp)
+  53252c:	00808821 	move	s1,a0
+  532530:	27a40020 	addiu	a0,sp,32
+  532534:	afb00034 	sw	s0,52(sp)
+  532538:	afbf003c 	sw	ra,60(sp)
+  53253c:	30b0ffff 	andi	s0,a1,0xffff
+  532540:	afa00020 	sw	zero,32(sp)
+  532544:	afa00024 	sw	zero,36(sp)
+  532548:	afa00028 	sw	zero,40(sp)
+  53254c:	0c16683d 	jal	0x59a0f4
+  532550:	afa0002c 	sw	zero,44(sp)
+  532554:	14400010 	bnez	v0,0x532598
+  532558:	00000000 	nop
+  53255c:	27a40020 	addiu	a0,sp,32
+  532560:	afa00010 	sw	zero,16(sp)
+  532564:	24050001 	li	a1,1
+  532568:	24060001 	li	a2,1
+  53256c:	0c14e1a1 	jal	0x538684
+  532570:	3c07015f 	lui	a3,0x15f
+  532574:	27a40020 	addiu	a0,sp,32
+  532578:	02202821 	move	a1,s1
+  53257c:	0c156350 	jal	0x558d40
+  532580:	02003021 	move	a2,s0
+  532584:	10400004 	beqz	v0,0x532598
+  532588:	3c020075 	lui	v0,0x75
+  53258c:	8042bea4 	lb	v0,-16732(v0)
+  532590:	14400008 	bnez	v0,0x5325b4
+  532594:	00000000 	nop
+  532598:	0c166906 	jal	0x59a418
+  53259c:	27a40020 	addiu	a0,sp,32
+  5325a0:	8fbf003c 	lw	ra,60(sp)
+  5325a4:	8fb10038 	lw	s1,56(sp)
+  5325a8:	8fb00034 	lw	s0,52(sp)
+  5325ac:	03e00008 	jr	ra
+  5325b0:	27bd0040 	addiu	sp,sp,64
+  5325b4:	0c16276a 	jal	0x589da8
+  5325b8:	00000000 	nop
+  5325bc:	1040fff6 	beqz	v0,0x532598
+  5325c0:	3c04006c 	lui	a0,0x6c
+  5325c4:	3c05006c 	lui	a1,0x6c
+  5325c8:	24845dac 	addiu	a0,a0,23980
+  5325cc:	24a57e24 	addiu	a1,a1,32292
+  5325d0:	0c101b74 	jal	0x406dd0
+  5325d4:	24060e36 	li	a2,3638
+  5325d8:	0814c966 	j	0x532598
+  5325dc:	00000000 	nop

@@ -1,0 +1,50 @@
+; func apupd_update_wtp_entry_delete_by_mac @ 0x0065a1d4 size=0xc4
+  65a1d4:	3c02007d 	lui	v0,0x7d
+  65a1d8:	27bdffe0 	addiu	sp,sp,-32
+  65a1dc:	00802821 	move	a1,a0
+  65a1e0:	8c44c7a8 	lw	a0,-14424(v0)
+  65a1e4:	afbf001c 	sw	ra,28(sp)
+  65a1e8:	0c101fe8 	jal	0x407fa0
+  65a1ec:	afb00018 	sw	s0,24(sp)
+  65a1f0:	50400019 	beqzl	v0,0x65a258
+  65a1f4:	3c020076 	lui	v0,0x76
+  65a1f8:	0c196484 	jal	0x659210
+  65a1fc:	00402021 	move	a0,v0
+  65a200:	2403ffff 	li	v1,-1
+  65a204:	10430006 	beq	v0,v1,0x65a220
+  65a208:	00008021 	move	s0,zero
+  65a20c:	8fbf001c 	lw	ra,28(sp)
+  65a210:	02001021 	move	v0,s0
+  65a214:	8fb00018 	lw	s0,24(sp)
+  65a218:	03e00008 	jr	ra
+  65a21c:	27bd0020 	addiu	sp,sp,32
+  65a220:	3c020076 	lui	v0,0x76
+  65a224:	8c428c08 	lw	v0,-29688(v0)
+  65a228:	1040fff8 	beqz	v0,0x65a20c
+  65a22c:	2410ffff 	li	s0,-1
+  65a230:	0c16276a 	jal	0x589da8
+  65a234:	00000000 	nop
+  65a238:	5040fff5 	beqzl	v0,0x65a210
+  65a23c:	8fbf001c 	lw	ra,28(sp)
+  65a240:	3c040071 	lui	a0,0x71
+  65a244:	3c050072 	lui	a1,0x72
+  65a248:	24844cbc 	addiu	a0,a0,19644
+  65a24c:	24a5a0ac 	addiu	a1,a1,-24404
+  65a250:	081968a2 	j	0x65a288
+  65a254:	24060538 	li	a2,1336
+  65a258:	8c428c08 	lw	v0,-29688(v0)
+  65a25c:	1040ffeb 	beqz	v0,0x65a20c
+  65a260:	2410ffff 	li	s0,-1
+  65a264:	0c16276a 	jal	0x589da8
+  65a268:	00000000 	nop
+  65a26c:	5040ffe8 	beqzl	v0,0x65a210
+  65a270:	8fbf001c 	lw	ra,28(sp)
+  65a274:	3c040072 	lui	a0,0x72
+  65a278:	3c050072 	lui	a1,0x72
+  65a27c:	2484861c 	addiu	a0,a0,-31204
+  65a280:	24a5a0ac 	addiu	a1,a1,-24404
+  65a284:	24060531 	li	a2,1329
+  65a288:	0c101b74 	jal	0x406dd0
+  65a28c:	00000000 	nop
+  65a290:	08196884 	j	0x65a210
+  65a294:	8fbf001c 	lw	ra,28(sp)

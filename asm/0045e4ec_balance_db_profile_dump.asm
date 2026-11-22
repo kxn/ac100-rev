@@ -1,0 +1,27 @@
+; func balance_db_profile_dump @ 0x0045e4ec size=0x68
+  45e4ec:	27bdffe0 	addiu	sp,sp,-32
+  45e4f0:	afb00018 	sw	s0,24(sp)
+  45e4f4:	3c100076 	lui	s0,0x76
+  45e4f8:	afbf001c 	sw	ra,28(sp)
+  45e4fc:	8e027044 	lw	v0,28740(s0)
+  45e500:	10400010 	beqz	v0,0x45e544
+  45e504:	3c040069 	lui	a0,0x69
+  45e508:	0c101dd4 	jal	0x407750
+  45e50c:	2484a598 	addiu	a0,a0,-23144
+  45e510:	3c040069 	lui	a0,0x69
+  45e514:	8e027044 	lw	v0,28740(s0)
+  45e518:	2484a5ac 	addiu	a0,a0,-23124
+  45e51c:	0c101b74 	jal	0x406dd0
+  45e520:	8c450000 	lw	a1,0(v0)
+  45e524:	3c040069 	lui	a0,0x69
+  45e528:	8e027044 	lw	v0,28740(s0)
+  45e52c:	8fbf001c 	lw	ra,28(sp)
+  45e530:	2484a5c4 	addiu	a0,a0,-23100
+  45e534:	8fb00018 	lw	s0,24(sp)
+  45e538:	27bd0020 	addiu	sp,sp,32
+  45e53c:	08101b74 	j	0x406dd0
+  45e540:	8c450004 	lw	a1,4(v0)
+  45e544:	8fbf001c 	lw	ra,28(sp)
+  45e548:	8fb00018 	lw	s0,24(sp)
+  45e54c:	03e00008 	jr	ra
+  45e550:	27bd0020 	addiu	sp,sp,32

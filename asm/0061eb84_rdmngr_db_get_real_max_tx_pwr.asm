@@ -1,0 +1,44 @@
+; func rdmngr_db_get_real_max_tx_pwr @ 0x0061eb84 size=0xac
+  61eb84:	2403ffff 	li	v1,-1
+  61eb88:	10a30014 	beq	a1,v1,0x61ebdc
+  61eb8c:	3c020076 	lui	v0,0x76
+  61eb90:	8c4398ec 	lw	v1,-26388(v0)
+  61eb94:	24060028 	li	a2,40
+  61eb98:	00001021 	move	v0,zero
+  61eb9c:	08187aeb 	j	0x61ebac
+  61eba0:	246717a4 	addiu	a3,v1,6052
+  61eba4:	10460020 	beq	v0,a2,0x61ec28
+  61eba8:	00000000 	nop
+  61ebac:	000240c0 	sll	t0,v0,0x3
+  61ebb0:	00e84021 	addu	t0,a3,t0
+  61ebb4:	8d080024 	lw	t0,36(t0)
+  61ebb8:	54a8fffa 	bnel	a1,t0,0x61eba4
+  61ebbc:	24420001 	addiu	v0,v0,1
+  61ebc0:	24420004 	addiu	v0,v0,4
+  61ebc4:	000210c0 	sll	v0,v0,0x3
+  61ebc8:	00621821 	addu	v1,v1,v0
+  61ebcc:	8c6217ac 	lw	v0,6060(v1)
+  61ebd0:	0044182a 	slt	v1,v0,a0
+  61ebd4:	03e00008 	jr	ra
+  61ebd8:	0083100a 	movz	v0,a0,v1
+  61ebdc:	8c4898ec 	lw	t0,-26388(v0)
+  61ebe0:	00001821 	move	v1,zero
+  61ebe4:	24070140 	li	a3,320
+  61ebe8:	00801021 	move	v0,a0
+  61ebec:	250817a4 	addiu	t0,t0,6052
+  61ebf0:	01032821 	addu	a1,t0,v1
+  61ebf4:	8ca90024 	lw	t1,36(a1)
+  61ebf8:	11200006 	beqz	t1,0x61ec14
+  61ebfc:	24630008 	addiu	v1,v1,8
+  61ec00:	14c00004 	bnez	a2,0x61ec14
+  61ec04:	00000000 	nop
+  61ec08:	8ca50028 	lw	a1,40(a1)
+  61ec0c:	0045482a 	slt	t1,v0,a1
+  61ec10:	00a9100b 	movn	v0,a1,t1
+  61ec14:	1467fff7 	bne	v1,a3,0x61ebf4
+  61ec18:	01032821 	addu	a1,t0,v1
+  61ec1c:	0082182a 	slt	v1,a0,v0
+  61ec20:	03e00008 	jr	ra
+  61ec24:	0083100b 	movn	v0,a0,v1
+  61ec28:	03e00008 	jr	ra
+  61ec2c:	2402ffff 	li	v0,-1

@@ -1,0 +1,27 @@
+; func _wserv_entry_hash_cmp_func @ 0x005eb038 size=0x68
+  5eb038:	27bdffd8 	addiu	sp,sp,-40
+  5eb03c:	00001021 	move	v0,zero
+  5eb040:	afb10020 	sw	s1,32(sp)
+  5eb044:	00a08821 	move	s1,a1
+  5eb048:	afb0001c 	sw	s0,28(sp)
+  5eb04c:	00808021 	move	s0,a0
+  5eb050:	10800008 	beqz	a0,0x5eb074
+  5eb054:	afbf0024 	sw	ra,36(sp)
+  5eb058:	10a00006 	beqz	a1,0x5eb074
+  5eb05c:	24840130 	addiu	a0,a0,304
+  5eb060:	0c101f44 	jal	0x407d10
+  5eb064:	24a50004 	addiu	a1,a1,4
+  5eb068:	10400007 	beqz	v0,0x5eb088
+  5eb06c:	00001821 	move	v1,zero
+  5eb070:	00601021 	move	v0,v1
+  5eb074:	8fbf0024 	lw	ra,36(sp)
+  5eb078:	8fb10020 	lw	s1,32(sp)
+  5eb07c:	8fb0001c 	lw	s0,28(sp)
+  5eb080:	03e00008 	jr	ra
+  5eb084:	27bd0028 	addiu	sp,sp,40
+  5eb088:	8a02012c 	lwl	v0,300(s0)
+  5eb08c:	8e230000 	lw	v1,0(s1)
+  5eb090:	9a02012f 	lwr	v0,303(s0)
+  5eb094:	00431826 	xor	v1,v0,v1
+  5eb098:	0817ac1c 	j	0x5eb070
+  5eb09c:	2c630001 	sltiu	v1,v1,1

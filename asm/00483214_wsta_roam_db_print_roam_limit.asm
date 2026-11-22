@@ -1,0 +1,6 @@
+; func wsta_roam_db_print_roam_limit @ 0x00483214 size=0x14
+  483214:	3c020076 	lui	v0,0x76
+  483218:	3c040069 	lui	a0,0x69
+  48321c:	8c457568 	lw	a1,30056(v0)
+  483220:	08101b74 	j	0x406dd0
+  483224:	24844800 	addiu	a0,a0,18432

@@ -1,0 +1,24 @@
+; func cloud_mngt_AC_notice_param_add @ 0x0048bddc size=0x5c
+  48bddc:	27bdffe0 	addiu	sp,sp,-32
+  48bde0:	afb00018 	sw	s0,24(sp)
+  48bde4:	00808021 	move	s0,a0
+  48bde8:	3c040076 	lui	a0,0x76
+  48bdec:	afbf001c 	sw	ra,28(sp)
+  48bdf0:	0c101c2c 	jal	0x4070b0
+  48bdf4:	24847848 	addiu	a0,a0,30792
+  48bdf8:	3c050069 	lui	a1,0x69
+  48bdfc:	02002021 	move	a0,s0
+  48be00:	24a57f00 	addiu	a1,a1,32512
+  48be04:	0c101d78 	jal	0x4075e0
+  48be08:	00403021 	move	a2,v0
+  48be0c:	3c040076 	lui	a0,0x76
+  48be10:	0c101c2c 	jal	0x4070b0
+  48be14:	248477e0 	addiu	a0,a0,30688
+  48be18:	3c050069 	lui	a1,0x69
+  48be1c:	02002021 	move	a0,s0
+  48be20:	8fbf001c 	lw	ra,28(sp)
+  48be24:	8fb00018 	lw	s0,24(sp)
+  48be28:	24a57f0c 	addiu	a1,a1,32524
+  48be2c:	27bd0020 	addiu	sp,sp,32
+  48be30:	08101d78 	j	0x4075e0
+  48be34:	00403021 	move	a2,v0

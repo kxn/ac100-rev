@@ -1,0 +1,56 @@
+; func cw_80211_multidomain_capability_create @ 0x00566fa4 size=0xdc
+  566fa4:	27bdffd8 	addiu	sp,sp,-40
+  566fa8:	24050008 	li	a1,8
+  566fac:	afb0001c 	sw	s0,28(sp)
+  566fb0:	afbf0024 	sw	ra,36(sp)
+  566fb4:	0c15c8cc 	jal	0x572330
+  566fb8:	afb10020 	sw	s1,32(sp)
+  566fbc:	1040000d 	beqz	v0,0x566ff4
+  566fc0:	00408021 	move	s0,v0
+  566fc4:	24040408 	li	a0,1032
+  566fc8:	24050008 	li	a1,8
+  566fcc:	0c15c943 	jal	0x57250c
+  566fd0:	00403021 	move	a2,v0
+  566fd4:	10400017 	beqz	v0,0x567034
+  566fd8:	00408821 	move	s1,v0
+  566fdc:	8fbf0024 	lw	ra,36(sp)
+  566fe0:	02201021 	move	v0,s1
+  566fe4:	8fb10020 	lw	s1,32(sp)
+  566fe8:	8fb0001c 	lw	s0,28(sp)
+  566fec:	03e00008 	jr	ra
+  566ff0:	27bd0028 	addiu	sp,sp,40
+  566ff4:	3c020075 	lui	v0,0x75
+  566ff8:	8c42cf58 	lw	v0,-12456(v0)
+  566ffc:	1040fff7 	beqz	v0,0x566fdc
+  567000:	00008821 	move	s1,zero
+  567004:	0c16276a 	jal	0x589da8
+  567008:	00000000 	nop
+  56700c:	5040fff4 	beqzl	v0,0x566fe0
+  567010:	8fbf0024 	lw	ra,36(sp)
+  567014:	3c04006d 	lui	a0,0x6d
+  567018:	3c05006d 	lui	a1,0x6d
+  56701c:	248434fc 	addiu	a0,a0,13564
+  567020:	24a54a40 	addiu	a1,a1,19008
+  567024:	0c101b74 	jal	0x406dd0
+  567028:	240600c1 	li	a2,193
+  56702c:	08159bf8 	j	0x566fe0
+  567030:	8fbf0024 	lw	ra,36(sp)
+  567034:	3c020075 	lui	v0,0x75
+  567038:	8c42cf58 	lw	v0,-12456(v0)
+  56703c:	14400005 	bnez	v0,0x567054
+  567040:	00000000 	nop
+  567044:	0c101f7c 	jal	0x407df0
+  567048:	02002021 	move	a0,s0
+  56704c:	08159bf8 	j	0x566fe0
+  567050:	8fbf0024 	lw	ra,36(sp)
+  567054:	0c16276a 	jal	0x589da8
+  567058:	00000000 	nop
+  56705c:	1040fff9 	beqz	v0,0x567044
+  567060:	3c04006d 	lui	a0,0x6d
+  567064:	3c05006d 	lui	a1,0x6d
+  567068:	248447f0 	addiu	a0,a0,18416
+  56706c:	24a54a40 	addiu	a1,a1,19008
+  567070:	0c101b74 	jal	0x406dd0
+  567074:	240600c9 	li	a2,201
+  567078:	08159c11 	j	0x567044
+  56707c:	00000000 	nop

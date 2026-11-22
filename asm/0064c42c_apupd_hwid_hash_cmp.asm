@@ -1,0 +1,31 @@
+; func apupd_hwid_hash_cmp @ 0x0064c42c size=0x78
+  64c42c:	27bdffe0 	addiu	sp,sp,-32
+  64c430:	afbf001c 	sw	ra,28(sp)
+  64c434:	1080000b 	beqz	a0,0x64c464
+  64c438:	afb00018 	sw	s0,24(sp)
+  64c43c:	10a0000a 	beqz	a1,0x64c468
+  64c440:	3c020076 	lui	v0,0x76
+  64c444:	0c101e4c 	jal	0x407930
+  64c448:	24060010 	li	a2,16
+  64c44c:	2c500001 	sltiu	s0,v0,1
+  64c450:	8fbf001c 	lw	ra,28(sp)
+  64c454:	02001021 	move	v0,s0
+  64c458:	8fb00018 	lw	s0,24(sp)
+  64c45c:	03e00008 	jr	ra
+  64c460:	27bd0020 	addiu	sp,sp,32
+  64c464:	3c020076 	lui	v0,0x76
+  64c468:	8c428c08 	lw	v0,-29688(v0)
+  64c46c:	1040fff8 	beqz	v0,0x64c450
+  64c470:	00008021 	move	s0,zero
+  64c474:	0c16276a 	jal	0x589da8
+  64c478:	00000000 	nop
+  64c47c:	5040fff5 	beqzl	v0,0x64c454
+  64c480:	8fbf001c 	lw	ra,28(sp)
+  64c484:	3c040071 	lui	a0,0x71
+  64c488:	3c050072 	lui	a1,0x72
+  64c48c:	24840720 	addiu	a0,a0,1824
+  64c490:	24a5a194 	addiu	a1,a1,-24172
+  64c494:	0c101b74 	jal	0x406dd0
+  64c498:	24060217 	li	a2,535
+  64c49c:	08193115 	j	0x64c454
+  64c4a0:	8fbf001c 	lw	ra,28(sp)

@@ -1,0 +1,65 @@
+; func wserv_sqlite_uninit @ 0x005f92c8 size=0x100
+  5f92c8:	27bdffd8 	addiu	sp,sp,-40
+  5f92cc:	afb1001c 	sw	s1,28(sp)
+  5f92d0:	3c11007d 	lui	s1,0x7d
+  5f92d4:	afbf0024 	sw	ra,36(sp)
+  5f92d8:	2622bf88 	addiu	v0,s1,-16504
+  5f92dc:	afb20020 	sw	s2,32(sp)
+  5f92e0:	afb00018 	sw	s0,24(sp)
+  5f92e4:	8c430018 	lw	v1,24(v0)
+  5f92e8:	5460001e 	bnezl	v1,0x5f9364
+  5f92ec:	8c44001c 	lw	a0,28(v0)
+  5f92f0:	3c12007d 	lui	s2,0x7d
+  5f92f4:	0817e4c8 	j	0x5f9320
+  5f92f8:	2652bf8c 	addiu	s2,s2,-16500
+  5f92fc:	0c102140 	jal	0x408500
+  5f9300:	02002021 	move	a0,s0
+  5f9304:	8e040010 	lw	a0,16(s0)
+  5f9308:	10800003 	beqz	a0,0x5f9318
+  5f930c:	00000000 	nop
+  5f9310:	0c101f7c 	jal	0x407df0
+  5f9314:	00000000 	nop
+  5f9318:	0c101f7c 	jal	0x407df0
+  5f931c:	02002021 	move	a0,s0
+  5f9320:	0c10206c 	jal	0x4081b0
+  5f9324:	02402021 	move	a0,s2
+  5f9328:	1440fff4 	bnez	v0,0x5f92fc
+  5f932c:	00408021 	move	s0,v0
+  5f9330:	2630bf88 	addiu	s0,s1,-16504
+  5f9334:	0c102088 	jal	0x408220
+  5f9338:	8e040014 	lw	a0,20(s0)
+  5f933c:	0c1020d8 	jal	0x408360
+  5f9340:	8e040010 	lw	a0,16(s0)
+  5f9344:	00001021 	move	v0,zero
+  5f9348:	8fbf0024 	lw	ra,36(sp)
+  5f934c:	8fb20020 	lw	s2,32(sp)
+  5f9350:	8fb00018 	lw	s0,24(sp)
+  5f9354:	ae20bf88 	sw	zero,-16504(s1)
+  5f9358:	8fb1001c 	lw	s1,28(sp)
+  5f935c:	03e00008 	jr	ra
+  5f9360:	27bd0028 	addiu	sp,sp,40
+  5f9364:	0c101da0 	jal	0x407680
+  5f9368:	24050003 	li	a1,3
+  5f936c:	10400005 	beqz	v0,0x5f9384
+  5f9370:	00408021 	move	s0,v0
+  5f9374:	3c020075 	lui	v0,0x75
+  5f9378:	8c42fe70 	lw	v0,-400(v0)
+  5f937c:	14400004 	bnez	v0,0x5f9390
+  5f9380:	00000000 	nop
+  5f9384:	2622bf88 	addiu	v0,s1,-16504
+  5f9388:	0817e4bc 	j	0x5f92f0
+  5f938c:	ac400018 	sw	zero,24(v0)
+  5f9390:	0c16276a 	jal	0x589da8
+  5f9394:	00000000 	nop
+  5f9398:	1040fffb 	beqz	v0,0x5f9388
+  5f939c:	2622bf88 	addiu	v0,s1,-16504
+  5f93a0:	3c040070 	lui	a0,0x70
+  5f93a4:	3c050070 	lui	a1,0x70
+  5f93a8:	2484b8a0 	addiu	a0,a0,-18272
+  5f93ac:	24a5bb70 	addiu	a1,a1,-17552
+  5f93b0:	240605f6 	li	a2,1526
+  5f93b4:	0c101b74 	jal	0x406dd0
+  5f93b8:	02003821 	move	a3,s0
+  5f93bc:	2622bf88 	addiu	v0,s1,-16504
+  5f93c0:	0817e4bc 	j	0x5f92f0
+  5f93c4:	ac400018 	sw	zero,24(v0)

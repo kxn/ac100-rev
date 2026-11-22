@@ -1,0 +1,45 @@
+; func unregister_sub_device_report_handle @ 0x0050c988 size=0xb0
+  50c988:	27bdffd8 	addiu	sp,sp,-40
+  50c98c:	24a2ffff 	addiu	v0,a1,-1
+  50c990:	2c420004 	sltiu	v0,v0,4
+  50c994:	afb20020 	sw	s2,32(sp)
+  50c998:	afb1001c 	sw	s1,28(sp)
+  50c99c:	00809021 	move	s2,a0
+  50c9a0:	afbf0024 	sw	ra,36(sp)
+  50c9a4:	2411ffff 	li	s1,-1
+  50c9a8:	10400016 	beqz	v0,0x50ca04
+  50c9ac:	afb00018 	sw	s0,24(sp)
+  50c9b0:	2410000c 	li	s0,12
+  50c9b4:	70b02802 	mul	a1,a1,s0
+  50c9b8:	3c100077 	lui	s0,0x77
+  50c9bc:	26108934 	addiu	s0,s0,-30412
+  50c9c0:	02058021 	addu	s0,s0,a1
+  50c9c4:	0c101ff8 	jal	0x407fe0
+  50c9c8:	02002021 	move	a0,s0
+  50c9cc:	1040000e 	beqz	v0,0x50ca08
+  50c9d0:	8fbf0024 	lw	ra,36(sp)
+  50c9d4:	0c10206c 	jal	0x4081b0
+  50c9d8:	02002021 	move	a0,s0
+  50c9dc:	0814327e 	j	0x50c9f8
+  50c9e0:	00000000 	nop
+  50c9e4:	8e02000c 	lw	v0,12(s0)
+  50c9e8:	1052000d 	beq	v0,s2,0x50ca20
+  50c9ec:	02002021 	move	a0,s0
+  50c9f0:	0c1021a0 	jal	0x408680
+  50c9f4:	00000000 	nop
+  50c9f8:	1440fffa 	bnez	v0,0x50c9e4
+  50c9fc:	00408021 	move	s0,v0
+  50ca00:	2411ffff 	li	s1,-1
+  50ca04:	8fbf0024 	lw	ra,36(sp)
+  50ca08:	02201021 	move	v0,s1
+  50ca0c:	8fb20020 	lw	s2,32(sp)
+  50ca10:	8fb1001c 	lw	s1,28(sp)
+  50ca14:	8fb00018 	lw	s0,24(sp)
+  50ca18:	03e00008 	jr	ra
+  50ca1c:	27bd0028 	addiu	sp,sp,40
+  50ca20:	0c102140 	jal	0x408500
+  50ca24:	00008821 	move	s1,zero
+  50ca28:	0c101f7c 	jal	0x407df0
+  50ca2c:	02002021 	move	a0,s0
+  50ca30:	08143282 	j	0x50ca08
+  50ca34:	8fbf0024 	lw	ra,36(sp)

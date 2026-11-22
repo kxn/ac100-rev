@@ -1,0 +1,27 @@
+; func stats_print_pkt_info_stat @ 0x006748d8 size=0x68
+  6748d8:	27bdffd8 	addiu	sp,sp,-40
+  6748dc:	3c050072 	lui	a1,0x72
+  6748e0:	afb0001c 	sw	s0,28(sp)
+  6748e4:	3c10007d 	lui	s0,0x7d
+  6748e8:	afb10020 	sw	s1,32(sp)
+  6748ec:	3c110072 	lui	s1,0x72
+  6748f0:	24a50e94 	addiu	a1,a1,3732
+  6748f4:	afbf0024 	sw	ra,36(sp)
+  6748f8:	8e06ca10 	lw	a2,-13808(s0)
+  6748fc:	26240e70 	addiu	a0,s1,3696
+  674900:	0c101b74 	jal	0x406dd0
+  674904:	2610ca10 	addiu	s0,s0,-13808
+  674908:	3c050072 	lui	a1,0x72
+  67490c:	8e060004 	lw	a2,4(s0)
+  674910:	26240e70 	addiu	a0,s1,3696
+  674914:	0c101b74 	jal	0x406dd0
+  674918:	24a50e9c 	addiu	a1,a1,3740
+  67491c:	3c050072 	lui	a1,0x72
+  674920:	26240e70 	addiu	a0,s1,3696
+  674924:	8e060008 	lw	a2,8(s0)
+  674928:	8fbf0024 	lw	ra,36(sp)
+  67492c:	24a50ea4 	addiu	a1,a1,3748
+  674930:	8fb10020 	lw	s1,32(sp)
+  674934:	8fb0001c 	lw	s0,28(sp)
+  674938:	08101b74 	j	0x406dd0
+  67493c:	27bd0028 	addiu	sp,sp,40

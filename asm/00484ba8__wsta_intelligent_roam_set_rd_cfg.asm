@@ -1,0 +1,23 @@
+; func _wsta_intelligent_roam_set_rd_cfg @ 0x00484ba8 size=0x58
+  484ba8:	3c020076 	lui	v0,0x76
+  484bac:	27bdffd8 	addiu	sp,sp,-40
+  484bb0:	80427532 	lb	v0,30002(v0)
+  484bb4:	afb10020 	sw	s1,32(sp)
+  484bb8:	00a08821 	move	s1,a1
+  484bbc:	afb0001c 	sw	s0,28(sp)
+  484bc0:	00808021 	move	s0,a0
+  484bc4:	10400007 	beqz	v0,0x484be4
+  484bc8:	afbf0024 	sw	ra,36(sp)
+  484bcc:	3c040069 	lui	a0,0x69
+  484bd0:	3c050069 	lui	a1,0x69
+  484bd4:	24845474 	addiu	a0,a0,21620
+  484bd8:	24a56e08 	addiu	a1,a1,28168
+  484bdc:	0c101b74 	jal	0x406dd0
+  484be0:	24060adc 	li	a2,2780
+  484be4:	02002021 	move	a0,s0
+  484be8:	8fbf0024 	lw	ra,36(sp)
+  484bec:	02202821 	move	a1,s1
+  484bf0:	8fb0001c 	lw	s0,28(sp)
+  484bf4:	8fb10020 	lw	s1,32(sp)
+  484bf8:	08121200 	j	0x484800
+  484bfc:	27bd0028 	addiu	sp,sp,40

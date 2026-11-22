@@ -1,0 +1,21 @@
+; func _uac_rdmngr_rd_state_cmp @ 0x00624130 size=0x50
+  624130:	27bdffe0 	addiu	sp,sp,-32
+  624134:	24020001 	li	v0,1
+  624138:	afb00018 	sw	s0,24(sp)
+  62413c:	00808021 	move	s0,a0
+  624140:	afbf001c 	sw	ra,28(sp)
+  624144:	1200000a 	beqz	s0,0x624170
+  624148:	00a02021 	move	a0,a1
+  62414c:	10a00009 	beqz	a1,0x624174
+  624150:	8fbf001c 	lw	ra,28(sp)
+  624154:	3c05006e 	lui	a1,0x6e
+  624158:	0c101e14 	jal	0x407850
+  62415c:	24a59470 	addiu	a1,a1,-27536
+  624160:	82030048 	lb	v1,72(s0)
+  624164:	2c420001 	sltiu	v0,v0,1
+  624168:	00431026 	xor	v0,v0,v1
+  62416c:	0002102b 	sltu	v0,zero,v0
+  624170:	8fbf001c 	lw	ra,28(sp)
+  624174:	8fb00018 	lw	s0,24(sp)
+  624178:	03e00008 	jr	ra
+  62417c:	27bd0020 	addiu	sp,sp,32

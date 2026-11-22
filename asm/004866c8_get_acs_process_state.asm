@@ -1,0 +1,19 @@
+; func get_acs_process_state @ 0x004866c8 size=0x48
+  4866c8:	27bdffd8 	addiu	sp,sp,-40
+  4866cc:	2405ffff 	li	a1,-1
+  4866d0:	afb0001c 	sw	s0,28(sp)
+  4866d4:	3c100076 	lui	s0,0x76
+  4866d8:	afbf0024 	sw	ra,36(sp)
+  4866dc:	afb10020 	sw	s1,32(sp)
+  4866e0:	0c1020b4 	jal	0x4082d0
+  4866e4:	8e0475c0 	lw	a0,30144(s0)
+  4866e8:	3c020076 	lui	v0,0x76
+  4866ec:	8e0475c0 	lw	a0,30144(s0)
+  4866f0:	0c101fcc 	jal	0x407f30
+  4866f4:	8c5175c4 	lw	s1,30148(v0)
+  4866f8:	8fbf0024 	lw	ra,36(sp)
+  4866fc:	02201021 	move	v0,s1
+  486700:	8fb0001c 	lw	s0,28(sp)
+  486704:	8fb10020 	lw	s1,32(sp)
+  486708:	03e00008 	jr	ra
+  48670c:	27bd0028 	addiu	sp,sp,40

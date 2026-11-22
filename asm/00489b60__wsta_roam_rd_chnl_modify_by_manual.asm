@@ -1,0 +1,41 @@
+; func _wsta_roam_rd_chnl_modify_by_manual @ 0x00489b60 size=0xa0
+  489b60:	3c020076 	lui	v0,0x76
+  489b64:	27bdffd8 	addiu	sp,sp,-40
+  489b68:	80427532 	lb	v0,30002(v0)
+  489b6c:	afb00020 	sw	s0,32(sp)
+  489b70:	00c08021 	move	s0,a2
+  489b74:	afbf0024 	sw	ra,36(sp)
+  489b78:	14400014 	bnez	v0,0x489bcc
+  489b7c:	a3a00018 	sb	zero,24(sp)
+  489b80:	0c187930 	jal	0x61e4c0
+  489b84:	8604000c 	lh	a0,12(s0)
+  489b88:	24060001 	li	a2,1
+  489b8c:	8605000c 	lh	a1,12(s0)
+  489b90:	7c022420 	seb	a0,v0
+  489b94:	0c120b7f 	jal	0x482dfc
+  489b98:	a3a40018 	sb	a0,24(sp)
+  489b9c:	14400006 	bnez	v0,0x489bb8
+  489ba0:	2402ffff 	li	v0,-1
+  489ba4:	8603000c 	lh	v1,12(s0)
+  489ba8:	10620003 	beq	v1,v0,0x489bb8
+  489bac:	83a20018 	lb	v0,24(sp)
+  489bb0:	1440000f 	bnez	v0,0x489bf0
+  489bb4:	00000000 	nop
+  489bb8:	8fbf0024 	lw	ra,36(sp)
+  489bbc:	00001021 	move	v0,zero
+  489bc0:	8fb00020 	lw	s0,32(sp)
+  489bc4:	03e00008 	jr	ra
+  489bc8:	27bd0028 	addiu	sp,sp,40
+  489bcc:	3c040069 	lui	a0,0x69
+  489bd0:	8607000c 	lh	a3,12(s0)
+  489bd4:	3c050069 	lui	a1,0x69
+  489bd8:	24846820 	addiu	a0,a0,26656
+  489bdc:	24a571dc 	addiu	a1,a1,29148
+  489be0:	0c101b74 	jal	0x406dd0
+  489be4:	24060d9f 	li	a2,3487
+  489be8:	081226e0 	j	0x489b80
+  489bec:	00000000 	nop
+  489bf0:	0c1226d3 	jal	0x489b4c
+  489bf4:	27a40018 	addiu	a0,sp,24
+  489bf8:	081226ef 	j	0x489bbc
+  489bfc:	8fbf0024 	lw	ra,36(sp)

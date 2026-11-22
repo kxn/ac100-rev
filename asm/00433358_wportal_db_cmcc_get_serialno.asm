@@ -1,0 +1,33 @@
+; func wportal_db_cmcc_get_serialno @ 0x00433358 size=0x80
+  433358:	27bdffd8 	addiu	sp,sp,-40
+  43335c:	afb0001c 	sw	s0,28(sp)
+  433360:	3c100076 	lui	s0,0x76
+  433364:	a7a40028 	sh	a0,40(sp)
+  433368:	afb10020 	sw	s1,32(sp)
+  43336c:	00a08821 	move	s1,a1
+  433370:	afbf0024 	sw	ra,36(sp)
+  433374:	2405ffff 	li	a1,-1
+  433378:	0c1020b4 	jal	0x4082d0
+  43337c:	8e04a194 	lw	a0,-24172(s0)
+  433380:	3c020076 	lui	v0,0x76
+  433384:	27a50028 	addiu	a1,sp,40
+  433388:	0c102030 	jal	0x4080c0
+  43338c:	8c44a198 	lw	a0,-24168(v0)
+  433390:	1040000d 	beqz	v0,0x4333c8
+  433394:	00000000 	nop
+  433398:	24060020 	li	a2,32
+  43339c:	02202021 	move	a0,s1
+  4333a0:	0c101c8c 	jal	0x407230
+  4333a4:	00402821 	move	a1,v0
+  4333a8:	0c101fcc 	jal	0x407f30
+  4333ac:	8e04a194 	lw	a0,-24172(s0)
+  4333b0:	00001021 	move	v0,zero
+  4333b4:	8fbf0024 	lw	ra,36(sp)
+  4333b8:	8fb10020 	lw	s1,32(sp)
+  4333bc:	8fb0001c 	lw	s0,28(sp)
+  4333c0:	03e00008 	jr	ra
+  4333c4:	27bd0028 	addiu	sp,sp,40
+  4333c8:	0c101fcc 	jal	0x407f30
+  4333cc:	8e04a194 	lw	a0,-24172(s0)
+  4333d0:	0810cced 	j	0x4333b4
+  4333d4:	2402ffff 	li	v0,-1

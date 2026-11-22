@@ -1,0 +1,20 @@
+; func apmngr_db_telnet_port_set @ 0x0053cb9c size=0x4c
+  53cb9c:	27bdffd8 	addiu	sp,sp,-40
+  53cba0:	2405ffff 	li	a1,-1
+  53cba4:	afb0001c 	sw	s0,28(sp)
+  53cba8:	3c10007c 	lui	s0,0x7c
+  53cbac:	afb10020 	sw	s1,32(sp)
+  53cbb0:	3091ffff 	andi	s1,a0,0xffff
+  53cbb4:	afbf0024 	sw	ra,36(sp)
+  53cbb8:	0c1020b4 	jal	0x4082d0
+  53cbbc:	8e045874 	lw	a0,22644(s0)
+  53cbc0:	3c02007c 	lui	v0,0x7c
+  53cbc4:	8e045874 	lw	a0,22644(s0)
+  53cbc8:	0c101fcc 	jal	0x407f30
+  53cbcc:	a45158b4 	sh	s1,22708(v0)
+  53cbd0:	00001021 	move	v0,zero
+  53cbd4:	8fbf0024 	lw	ra,36(sp)
+  53cbd8:	8fb10020 	lw	s1,32(sp)
+  53cbdc:	8fb0001c 	lw	s0,28(sp)
+  53cbe0:	03e00008 	jr	ra
+  53cbe4:	27bd0028 	addiu	sp,sp,40

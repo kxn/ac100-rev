@@ -1,0 +1,23 @@
+; func wsta_roam_db_global_stats_clear @ 0x004825f4 size=0x58
+  4825f4:	27bdffd8 	addiu	sp,sp,-40
+  4825f8:	2405ffff 	li	a1,-1
+  4825fc:	afb0001c 	sw	s0,28(sp)
+  482600:	3c100076 	lui	s0,0x76
+  482604:	afbf0024 	sw	ra,36(sp)
+  482608:	26027540 	addiu	v0,s0,30016
+  48260c:	afb10020 	sw	s1,32(sp)
+  482610:	8e047540 	lw	a0,30016(s0)
+  482614:	0c1020b4 	jal	0x4082d0
+  482618:	8c51001c 	lw	s1,28(v0)
+  48261c:	00002821 	move	a1,zero
+  482620:	24060078 	li	a2,120
+  482624:	0c101cf0 	jal	0x4073c0
+  482628:	02202021 	move	a0,s1
+  48262c:	0c101fcc 	jal	0x407f30
+  482630:	8e047540 	lw	a0,30016(s0)
+  482634:	00001021 	move	v0,zero
+  482638:	8fbf0024 	lw	ra,36(sp)
+  48263c:	8fb10020 	lw	s1,32(sp)
+  482640:	8fb0001c 	lw	s0,28(sp)
+  482644:	03e00008 	jr	ra
+  482648:	27bd0028 	addiu	sp,sp,40

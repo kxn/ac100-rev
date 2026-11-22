@@ -1,0 +1,20 @@
+; func capwap_ac_session_hash_obj @ 0x0058fa78 size=0x4c
+  58fa78:	27bdffe0 	addiu	sp,sp,-32
+  58fa7c:	10800005 	beqz	a0,0x58fa94
+  58fa80:	afbf001c 	sw	ra,28(sp)
+  58fa84:	8fbf001c 	lw	ra,28(sp)
+  58fa88:	2484002c 	addiu	a0,a0,44
+  58fa8c:	08163e74 	j	0x58f9d0
+  58fa90:	27bd0020 	addiu	sp,sp,32
+  58fa94:	3c040069 	lui	a0,0x69
+  58fa98:	3c05006e 	lui	a1,0x6e
+  58fa9c:	3c07006e 	lui	a3,0x6e
+  58faa0:	2484d3ac 	addiu	a0,a0,-11348
+  58faa4:	24a5151c 	addiu	a1,a1,5404
+  58faa8:	2406006a 	li	a2,106
+  58faac:	0c101b74 	jal	0x406dd0
+  58fab0:	24e718e4 	addiu	a3,a3,6372
+  58fab4:	00001021 	move	v0,zero
+  58fab8:	8fbf001c 	lw	ra,28(sp)
+  58fabc:	03e00008 	jr	ra
+  58fac0:	27bd0020 	addiu	sp,sp,32

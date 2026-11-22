@@ -1,0 +1,37 @@
+; func apmngr_db_get_cur_using_region_code @ 0x00541894 size=0x90
+  541894:	27bdffd8 	addiu	sp,sp,-40
+  541898:	2405ffff 	li	a1,-1
+  54189c:	afb10020 	sw	s1,32(sp)
+  5418a0:	3c11007c 	lui	s1,0x7c
+  5418a4:	afb0001c 	sw	s0,28(sp)
+  5418a8:	3090ffff 	andi	s0,a0,0xffff
+  5418ac:	afbf0024 	sw	ra,36(sp)
+  5418b0:	0c1020b4 	jal	0x4082d0
+  5418b4:	8e245874 	lw	a0,22644(s1)
+  5418b8:	3c02007c 	lui	v0,0x7c
+  5418bc:	3404c350 	li	a0,0xc350
+  5418c0:	240302d8 	li	v1,728
+  5418c4:	0204302b 	sltu	a2,s0,a0
+  5418c8:	8c45587c 	lw	a1,22652(v0)
+  5418cc:	14c00009 	bnez	a2,0x5418f4
+  5418d0:	72031002 	mul	v0,s0,v1
+  5418d4:	02041023 	subu	v0,s0,a0
+  5418d8:	3c04007c 	lui	a0,0x7c
+  5418dc:	8c865870 	lw	a2,22640(a0)
+  5418e0:	3c04007c 	lui	a0,0x7c
+  5418e4:	00461021 	addu	v0,v0,a2
+  5418e8:	8c865880 	lw	a2,22656(a0)
+  5418ec:	00461021 	addu	v0,v0,a2
+  5418f0:	70431002 	mul	v0,v0,v1
+  5418f4:	00a28021 	addu	s0,a1,v0
+  5418f8:	12000002 	beqz	s0,0x541904
+  5418fc:	00000000 	nop
+  541900:	921002d1 	lbu	s0,721(s0)
+  541904:	0c101fcc 	jal	0x407f30
+  541908:	8e245874 	lw	a0,22644(s1)
+  54190c:	02001021 	move	v0,s0
+  541910:	8fbf0024 	lw	ra,36(sp)
+  541914:	8fb10020 	lw	s1,32(sp)
+  541918:	8fb0001c 	lw	s0,28(sp)
+  54191c:	03e00008 	jr	ra
+  541920:	27bd0028 	addiu	sp,sp,40

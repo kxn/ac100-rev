@@ -1,0 +1,52 @@
+; func cloud_mngt_msg_report_test @ 0x0049d48c size=0xcc
+  49d48c:	2482fffd 	addiu	v0,a0,-3
+  49d490:	2c430011 	sltiu	v1,v0,17
+  49d494:	14600007 	bnez	v1,0x49d4b4
+  49d498:	00803821 	move	a3,a0
+  49d49c:	3c020073 	lui	v0,0x73
+  49d4a0:	80421825 	lb	v0,6181(v0)
+  49d4a4:	54400027 	bnezl	v0,0x49d544
+  49d4a8:	3c04006a 	lui	a0,0x6a
+  49d4ac:	03e00008 	jr	ra
+  49d4b0:	00000000 	nop
+  49d4b4:	3c03006a 	lui	v1,0x6a
+  49d4b8:	00021080 	sll	v0,v0,0x2
+  49d4bc:	2463b470 	addiu	v1,v1,-19344
+  49d4c0:	00621021 	addu	v0,v1,v0
+  49d4c4:	8c420000 	lw	v0,0(v0)
+  49d4c8:	00400008 	jr	v0
+  49d4cc:	00000000 	nop
+  49d4d0:	081255da 	j	0x495768
+  49d4d4:	24040001 	li	a0,1
+  49d4d8:	081255da 	j	0x495768
+  49d4dc:	00002021 	move	a0,zero
+  49d4e0:	08126b4f 	j	0x49ad3c
+  49d4e4:	00000000 	nop
+  49d4e8:	3c020076 	lui	v0,0x76
+  49d4ec:	8c4277dc 	lw	v0,30684(v0)
+  49d4f0:	1040ffee 	beqz	v0,0x49d4ac
+  49d4f4:	00000000 	nop
+  49d4f8:	08125d0f 	j	0x49743c
+  49d4fc:	00000000 	nop
+  49d500:	3c020076 	lui	v0,0x76
+  49d504:	8c4277dc 	lw	v0,30684(v0)
+  49d508:	1040ffe8 	beqz	v0,0x49d4ac
+  49d50c:	00000000 	nop
+  49d510:	08126bca 	j	0x49af28
+  49d514:	00000000 	nop
+  49d518:	08126c23 	j	0x49b08c
+  49d51c:	00000000 	nop
+  49d520:	0812577f 	j	0x495dfc
+  49d524:	24040001 	li	a0,1
+  49d528:	24040001 	li	a0,1
+  49d52c:	081256a0 	j	0x495a80
+  49d530:	24050001 	li	a1,1
+  49d534:	0812754b 	j	0x49d52c
+  49d538:	24040002 	li	a0,2
+  49d53c:	0812754b 	j	0x49d52c
+  49d540:	24040003 	li	a0,3
+  49d544:	3c05006a 	lui	a1,0x6a
+  49d548:	24848dbc 	addiu	a0,a0,-29252
+  49d54c:	24a5bee8 	addiu	a1,a1,-16664
+  49d550:	08101b74 	j	0x406dd0
+  49d554:	24062182 	li	a2,8578

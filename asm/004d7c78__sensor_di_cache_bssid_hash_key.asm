@@ -1,0 +1,24 @@
+; func _sensor_di_cache_bssid_hash_key @ 0x004d7c78 size=0x5c
+  4d7c78:	27bdffe0 	addiu	sp,sp,-32
+  4d7c7c:	10800006 	beqz	a0,0x4d7c98
+  4d7c80:	afbf001c 	sw	ra,28(sp)
+  4d7c84:	8fbf001c 	lw	ra,28(sp)
+  4d7c88:	24050006 	li	a1,6
+  4d7c8c:	00003021 	move	a2,zero
+  4d7c90:	081020f4 	j	0x4083d0
+  4d7c94:	27bd0020 	addiu	sp,sp,32
+  4d7c98:	3c020073 	lui	v0,0x73
+  4d7c9c:	8c421ad0 	lw	v0,6864(v0)
+  4d7ca0:	14400005 	bnez	v0,0x4d7cb8
+  4d7ca4:	3c04006b 	lui	a0,0x6b
+  4d7ca8:	8fbf001c 	lw	ra,28(sp)
+  4d7cac:	00001021 	move	v0,zero
+  4d7cb0:	03e00008 	jr	ra
+  4d7cb4:	27bd0020 	addiu	sp,sp,32
+  4d7cb8:	3c05006b 	lui	a1,0x6b
+  4d7cbc:	2484a204 	addiu	a0,a0,-24060
+  4d7cc0:	24a5cf9c 	addiu	a1,a1,-12388
+  4d7cc4:	0c101b74 	jal	0x406dd0
+  4d7cc8:	2406015e 	li	a2,350
+  4d7ccc:	08135f2b 	j	0x4d7cac
+  4d7cd0:	8fbf001c 	lw	ra,28(sp)

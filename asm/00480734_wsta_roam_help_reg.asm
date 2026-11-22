@@ -1,0 +1,6 @@
+; func wsta_roam_help_reg @ 0x00480734 size=0x14
+  480734:	3c040069 	lui	a0,0x69
+  480738:	3c050069 	lui	a1,0x69
+  48073c:	24843af8 	addiu	a0,a0,15096
+  480740:	081755c1 	j	0x5d5704
+  480744:	24a53b0c 	addiu	a1,a1,15116

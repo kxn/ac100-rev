@@ -1,0 +1,19 @@
+; func wportal_debug_show_nginx_basic_info @ 0x004358c4 size=0x48
+  4358c4:	27bdfee0 	addiu	sp,sp,-288
+  4358c8:	24060100 	li	a2,256
+  4358cc:	27a40018 	addiu	a0,sp,24
+  4358d0:	afbf011c 	sw	ra,284(sp)
+  4358d4:	0c101cf0 	jal	0x4073c0
+  4358d8:	00002821 	move	a1,zero
+  4358dc:	3c050068 	lui	a1,0x68
+  4358e0:	27a40018 	addiu	a0,sp,24
+  4358e4:	0c101d5c 	jal	0x407570
+  4358e8:	24a5f8cc 	addiu	a1,a1,-1844
+  4358ec:	3c040068 	lui	a0,0x68
+  4358f0:	0c101dd4 	jal	0x407750
+  4358f4:	2484f8e4 	addiu	a0,a0,-1820
+  4358f8:	0c10d568 	jal	0x4355a0
+  4358fc:	27a40018 	addiu	a0,sp,24
+  435900:	8fbf011c 	lw	ra,284(sp)
+  435904:	03e00008 	jr	ra
+  435908:	27bd0120 	addiu	sp,sp,288

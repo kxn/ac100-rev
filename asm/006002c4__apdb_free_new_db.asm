@@ -1,0 +1,20 @@
+; func _apdb_free_new_db @ 0x006002c4 size=0x4c
+  6002c4:	27bdffd8 	addiu	sp,sp,-40
+  6002c8:	afb0001c 	sw	s0,28(sp)
+  6002cc:	3c10007d 	lui	s0,0x7d
+  6002d0:	afb10020 	sw	s1,32(sp)
+  6002d4:	afbf0024 	sw	ra,36(sp)
+  6002d8:	8e04c298 	lw	a0,-15720(s0)
+  6002dc:	10800004 	beqz	a0,0x6002f0
+  6002e0:	3c11007d 	lui	s1,0x7d
+  6002e4:	0c180062 	jal	0x600188
+  6002e8:	8e25c294 	lw	a1,-15724(s1)
+  6002ec:	ae00c298 	sw	zero,-15720(s0)
+  6002f0:	3c02007d 	lui	v0,0x7d
+  6002f4:	8fbf0024 	lw	ra,36(sp)
+  6002f8:	8fb0001c 	lw	s0,28(sp)
+  6002fc:	ae20c294 	sw	zero,-15724(s1)
+  600300:	ac40c29c 	sw	zero,-15716(v0)
+  600304:	8fb10020 	lw	s1,32(sp)
+  600308:	03e00008 	jr	ra
+  60030c:	27bd0028 	addiu	sp,sp,40

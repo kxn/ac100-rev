@@ -1,0 +1,27 @@
+; func help @ 0x005d581c size=0x68
+  5d581c:	3c04007d 	lui	a0,0x7d
+  5d5820:	27bdffd8 	addiu	sp,sp,-40
+  5d5824:	2484bc5c 	addiu	a0,a0,-17316
+  5d5828:	afb10020 	sw	s1,32(sp)
+  5d582c:	3c11006f 	lui	s1,0x6f
+  5d5830:	afb0001c 	sw	s0,28(sp)
+  5d5834:	afbf0024 	sw	ra,36(sp)
+  5d5838:	0c10206c 	jal	0x4081b0
+  5d583c:	26313148 	addiu	s1,s1,12616
+  5d5840:	00408021 	move	s0,v0
+  5d5844:	1200000b 	beqz	s0,0x5d5874
+  5d5848:	8fbf0024 	lw	ra,36(sp)
+  5d584c:	2605006c 	addiu	a1,s0,108
+  5d5850:	2606000c 	addiu	a2,s0,12
+  5d5854:	0c101b74 	jal	0x406dd0
+  5d5858:	02202021 	move	a0,s1
+  5d585c:	0c1021a0 	jal	0x408680
+  5d5860:	02002021 	move	a0,s0
+  5d5864:	00408021 	move	s0,v0
+  5d5868:	1600fff9 	bnez	s0,0x5d5850
+  5d586c:	2605006c 	addiu	a1,s0,108
+  5d5870:	8fbf0024 	lw	ra,36(sp)
+  5d5874:	8fb10020 	lw	s1,32(sp)
+  5d5878:	8fb0001c 	lw	s0,28(sp)
+  5d587c:	03e00008 	jr	ra
+  5d5880:	27bd0028 	addiu	sp,sp,40

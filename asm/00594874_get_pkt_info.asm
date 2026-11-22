@@ -1,0 +1,35 @@
+; func get_pkt_info @ 0x00594874 size=0x88
+  594874:	3c02007c 	lui	v0,0x7c
+  594878:	27bdffd8 	addiu	sp,sp,-40
+  59487c:	8c4259b0 	lw	v0,22960(v0)
+  594880:	afb10020 	sw	s1,32(sp)
+  594884:	00a08821 	move	s1,a1
+  594888:	afb0001c 	sw	s0,28(sp)
+  59488c:	00808021 	move	s0,a0
+  594890:	14400012 	bnez	v0,0x5948dc
+  594894:	afbf0024 	sw	ra,36(sp)
+  594898:	1200000b 	beqz	s0,0x5948c8
+  59489c:	2402ffff 	li	v0,-1
+  5948a0:	12200009 	beqz	s1,0x5948c8
+  5948a4:	26040048 	addiu	a0,s0,72
+  5948a8:	8e220010 	lw	v0,16(s1)
+  5948ac:	2605003c 	addiu	a1,s0,60
+  5948b0:	02203021 	move	a2,s1
+  5948b4:	ae020034 	sw	v0,52(s0)
+  5948b8:	92220014 	lbu	v0,20(s1)
+  5948bc:	0c162423 	jal	0x58908c
+  5948c0:	a2020032 	sb	v0,50(s0)
+  5948c4:	00001021 	move	v0,zero
+  5948c8:	8fbf0024 	lw	ra,36(sp)
+  5948cc:	8fb10020 	lw	s1,32(sp)
+  5948d0:	8fb0001c 	lw	s0,28(sp)
+  5948d4:	03e00008 	jr	ra
+  5948d8:	27bd0028 	addiu	sp,sp,40
+  5948dc:	3c04006e 	lui	a0,0x6e
+  5948e0:	3c05006e 	lui	a1,0x6e
+  5948e4:	24842598 	addiu	a0,a0,9624
+  5948e8:	24a528c0 	addiu	a1,a1,10432
+  5948ec:	0c101b74 	jal	0x406dd0
+  5948f0:	240600a8 	li	a2,168
+  5948f4:	08165226 	j	0x594898
+  5948f8:	00000000 	nop

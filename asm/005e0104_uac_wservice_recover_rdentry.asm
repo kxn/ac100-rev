@@ -1,0 +1,40 @@
+; func uac_wservice_recover_rdentry @ 0x005e0104 size=0x9c
+  5e0104:	27bdffd8 	addiu	sp,sp,-40
+  5e0108:	3c05005e 	lui	a1,0x5e
+  5e010c:	2404ffff 	li	a0,-1
+  5e0110:	24a5cef0 	addiu	a1,a1,-12560
+  5e0114:	afbf0024 	sw	ra,36(sp)
+  5e0118:	27a60018 	addiu	a2,sp,24
+  5e011c:	afb00020 	sw	s0,32(sp)
+  5e0120:	0c14e0b9 	jal	0x5382e4
+  5e0124:	afa00018 	sw	zero,24(sp)
+  5e0128:	24030001 	li	v1,1
+  5e012c:	1043000d 	beq	v0,v1,0x5e0164
+  5e0130:	3c020075 	lui	v0,0x75
+  5e0134:	8fa20018 	lw	v0,24(sp)
+  5e0138:	14400006 	bnez	v0,0x5e0154
+  5e013c:	00008021 	move	s0,zero
+  5e0140:	8fbf0024 	lw	ra,36(sp)
+  5e0144:	02001021 	move	v0,s0
+  5e0148:	8fb00020 	lw	s0,32(sp)
+  5e014c:	03e00008 	jr	ra
+  5e0150:	27bd0028 	addiu	sp,sp,40
+  5e0154:	0c102100 	jal	0x408400
+  5e0158:	00000000 	nop
+  5e015c:	08178051 	j	0x5e0144
+  5e0160:	8fbf0024 	lw	ra,36(sp)
+  5e0164:	8c42fe70 	lw	v0,-400(v0)
+  5e0168:	1040fff5 	beqz	v0,0x5e0140
+  5e016c:	2410ffff 	li	s0,-1
+  5e0170:	0c16276a 	jal	0x589da8
+  5e0174:	00000000 	nop
+  5e0178:	5040fff2 	beqzl	v0,0x5e0144
+  5e017c:	8fbf0024 	lw	ra,36(sp)
+  5e0180:	3c04006f 	lui	a0,0x6f
+  5e0184:	3c05006f 	lui	a1,0x6f
+  5e0188:	24845c68 	addiu	a0,a0,23656
+  5e018c:	24a57110 	addiu	a1,a1,28944
+  5e0190:	0c101b74 	jal	0x406dd0
+  5e0194:	240616f8 	li	a2,5880
+  5e0198:	08178051 	j	0x5e0144
+  5e019c:	8fbf0024 	lw	ra,36(sp)

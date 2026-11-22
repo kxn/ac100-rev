@@ -1,0 +1,52 @@
+; func _dhcpdef_sqlite_exec @ 0x00471340 size=0xcc
+  471340:	27bdffd8 	addiu	sp,sp,-40
+  471344:	1080001e 	beqz	a0,0x4713c0
+  471348:	afbf0024 	sw	ra,36(sp)
+  47134c:	10a00004 	beqz	a1,0x471360
+  471350:	3c020073 	lui	v0,0x73
+  471354:	8fbf0024 	lw	ra,36(sp)
+  471358:	08101f58 	j	0x407d60
+  47135c:	27bd0028 	addiu	sp,sp,40
+  471360:	8c421480 	lw	v0,5248(v0)
+  471364:	10400006 	beqz	v0,0x471380
+  471368:	8fbf0024 	lw	ra,36(sp)
+  47136c:	0c16276a 	jal	0x589da8
+  471370:	00000000 	nop
+  471374:	14400005 	bnez	v0,0x47138c
+  471378:	3c020069 	lui	v0,0x69
+  47137c:	8fbf0024 	lw	ra,36(sp)
+  471380:	2402ffff 	li	v0,-1
+  471384:	03e00008 	jr	ra
+  471388:	27bd0028 	addiu	sp,sp,40
+  47138c:	3c040069 	lui	a0,0x69
+  471390:	3c050069 	lui	a1,0x69
+  471394:	3c060069 	lui	a2,0x69
+  471398:	2442ee2c 	addiu	v0,v0,-4564
+  47139c:	2484ba60 	addiu	a0,a0,-17824
+  4713a0:	24a5ba54 	addiu	a1,a1,-17836
+  4713a4:	afa20010 	sw	v0,16(sp)
+  4713a8:	24c6f604 	addiu	a2,a2,-2556
+  4713ac:	2407019d 	li	a3,413
+  4713b0:	0c101b74 	jal	0x406dd0
+  4713b4:	00000000 	nop
+  4713b8:	0811c4e0 	j	0x471380
+  4713bc:	8fbf0024 	lw	ra,36(sp)
+  4713c0:	3c020073 	lui	v0,0x73
+  4713c4:	8c421480 	lw	v0,5248(v0)
+  4713c8:	1040ffed 	beqz	v0,0x471380
+  4713cc:	8fbf0024 	lw	ra,36(sp)
+  4713d0:	0c16276a 	jal	0x589da8
+  4713d4:	00000000 	nop
+  4713d8:	5040ffe9 	beqzl	v0,0x471380
+  4713dc:	8fbf0024 	lw	ra,36(sp)
+  4713e0:	3c020069 	lui	v0,0x69
+  4713e4:	3c040069 	lui	a0,0x69
+  4713e8:	2442efe4 	addiu	v0,v0,-4124
+  4713ec:	3c050069 	lui	a1,0x69
+  4713f0:	3c060069 	lui	a2,0x69
+  4713f4:	afa20010 	sw	v0,16(sp)
+  4713f8:	2484ba60 	addiu	a0,a0,-17824
+  4713fc:	24a5ba54 	addiu	a1,a1,-17836
+  471400:	24c6f604 	addiu	a2,a2,-2556
+  471404:	0811c4ec 	j	0x4713b0
+  471408:	2407019c 	li	a3,412

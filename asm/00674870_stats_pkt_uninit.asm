@@ -1,0 +1,27 @@
+; func stats_pkt_uninit @ 0x00674870 size=0x68
+  674870:	3c060067 	lui	a2,0x67
+  674874:	27bdffe0 	addiu	sp,sp,-32
+  674878:	24040009 	li	a0,9
+  67487c:	24050050 	li	a1,80
+  674880:	afb00018 	sw	s0,24(sp)
+  674884:	afbf001c 	sw	ra,28(sp)
+  674888:	0c1666f8 	jal	0x599be0
+  67488c:	24c640f0 	addiu	a2,a2,16624
+  674890:	10400005 	beqz	v0,0x6748a8
+  674894:	00408021 	move	s0,v0
+  674898:	3c020076 	lui	v0,0x76
+  67489c:	80428cd0 	lb	v0,-29488(v0)
+  6748a0:	14400006 	bnez	v0,0x6748bc
+  6748a4:	3c040072 	lui	a0,0x72
+  6748a8:	8fbf001c 	lw	ra,28(sp)
+  6748ac:	02001021 	move	v0,s0
+  6748b0:	8fb00018 	lw	s0,24(sp)
+  6748b4:	03e00008 	jr	ra
+  6748b8:	27bd0020 	addiu	sp,sp,32
+  6748bc:	3c050072 	lui	a1,0x72
+  6748c0:	24840e20 	addiu	a0,a0,3616
+  6748c4:	24a50fd4 	addiu	a1,a1,4052
+  6748c8:	0c101b74 	jal	0x406dd0
+  6748cc:	2406026b 	li	a2,619
+  6748d0:	0819d22b 	j	0x6748ac
+  6748d4:	8fbf001c 	lw	ra,28(sp)

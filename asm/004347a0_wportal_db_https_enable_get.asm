@@ -1,0 +1,30 @@
+; func wportal_db_https_enable_get @ 0x004347a0 size=0x74
+  4347a0:	27bdffe0 	addiu	sp,sp,-32
+  4347a4:	afbf001c 	sw	ra,28(sp)
+  4347a8:	1080000a 	beqz	a0,0x4347d4
+  4347ac:	afb00018 	sw	s0,24(sp)
+  4347b0:	3c020076 	lui	v0,0x76
+  4347b4:	00008021 	move	s0,zero
+  4347b8:	9042a1b0 	lbu	v0,-24144(v0)
+  4347bc:	a0820000 	sb	v0,0(a0)
+  4347c0:	8fbf001c 	lw	ra,28(sp)
+  4347c4:	02001021 	move	v0,s0
+  4347c8:	8fb00018 	lw	s0,24(sp)
+  4347cc:	03e00008 	jr	ra
+  4347d0:	27bd0020 	addiu	sp,sp,32
+  4347d4:	3c020073 	lui	v0,0x73
+  4347d8:	8c421230 	lw	v0,4656(v0)
+  4347dc:	1040fff8 	beqz	v0,0x4347c0
+  4347e0:	2410ffff 	li	s0,-1
+  4347e4:	0c16276a 	jal	0x589da8
+  4347e8:	00000000 	nop
+  4347ec:	5040fff5 	beqzl	v0,0x4347c4
+  4347f0:	8fbf001c 	lw	ra,28(sp)
+  4347f4:	3c040068 	lui	a0,0x68
+  4347f8:	3c050068 	lui	a1,0x68
+  4347fc:	2484e5e0 	addiu	a0,a0,-6688
+  434800:	24a5ec44 	addiu	a1,a1,-5052
+  434804:	0c101b74 	jal	0x406dd0
+  434808:	24061d7d 	li	a2,7549
+  43480c:	0810d1f1 	j	0x4347c4
+  434810:	8fbf001c 	lw	ra,28(sp)

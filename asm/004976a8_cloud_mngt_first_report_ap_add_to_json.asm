@@ -1,0 +1,16 @@
+; func cloud_mngt_first_report_ap_add_to_json @ 0x004976a8 size=0x3c
+  4976a8:	1080000a 	beqz	a0,0x4976d4
+  4976ac:	00000000 	nop
+  4976b0:	808301c5 	lb	v1,453(a0)
+  4976b4:	14600007 	bnez	v1,0x4976d4
+  4976b8:	00000000 	nop
+  4976bc:	8c83003c 	lw	v1,60(a0)
+  4976c0:	10600004 	beqz	v1,0x4976d4
+  4976c4:	00000000 	nop
+  4976c8:	8c82000c 	lw	v0,12(a0)
+  4976cc:	14400003 	bnez	v0,0x4976dc
+  4976d0:	00000000 	nop
+  4976d4:	03e00008 	jr	ra
+  4976d8:	00001021 	move	v0,zero
+  4976dc:	08124861 	j	0x492184
+  4976e0:	00000000 	nop

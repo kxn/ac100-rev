@@ -1,0 +1,30 @@
+; func rdmngr_db_free_radio_cfg_linked_strategy @ 0x0062404c size=0x74
+  62404c:	3c02007d 	lui	v0,0x7d
+  624050:	27bdffe0 	addiu	sp,sp,-32
+  624054:	8c42c63c 	lw	v0,-14788(v0)
+  624058:	afb00018 	sw	s0,24(sp)
+  62405c:	00808021 	move	s0,a0
+  624060:	14400008 	bnez	v0,0x624084
+  624064:	afbf001c 	sw	ra,28(sp)
+  624068:	12000012 	beqz	s0,0x6240b4
+  62406c:	8fbf001c 	lw	ra,28(sp)
+  624070:	02002021 	move	a0,s0
+  624074:	8fbf001c 	lw	ra,28(sp)
+  624078:	8fb00018 	lw	s0,24(sp)
+  62407c:	08101f7c 	j	0x407df0
+  624080:	27bd0020 	addiu	sp,sp,32
+  624084:	0c16276a 	jal	0x589da8
+  624088:	00000000 	nop
+  62408c:	1040fff6 	beqz	v0,0x624068
+  624090:	3c040071 	lui	a0,0x71
+  624094:	3c050071 	lui	a1,0x71
+  624098:	2484a6f4 	addiu	a0,a0,-22796
+  62409c:	24a5afa0 	addiu	a1,a1,-20576
+  6240a0:	0c101b74 	jal	0x406dd0
+  6240a4:	240616fa 	li	a2,5882
+  6240a8:	1600fff2 	bnez	s0,0x624074
+  6240ac:	02002021 	move	a0,s0
+  6240b0:	8fbf001c 	lw	ra,28(sp)
+  6240b4:	8fb00018 	lw	s0,24(sp)
+  6240b8:	03e00008 	jr	ra
+  6240bc:	27bd0020 	addiu	sp,sp,32

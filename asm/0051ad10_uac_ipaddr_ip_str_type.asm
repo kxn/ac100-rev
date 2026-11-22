@@ -1,0 +1,30 @@
+; func uac_ipaddr_ip_str_type @ 0x0051ad10 size=0x68
+  51ad10:	3c1c0024 	lui	gp,0x24
+  51ad14:	279c63f0 	addiu	gp,gp,25584
+  51ad18:	0399e021 	addu	gp,gp,t9
+  51ad1c:	27bdffe0 	addiu	sp,sp,-32
+  51ad20:	8f998770 	lw	t9,-30864(gp)
+  51ad24:	2405002e 	li	a1,46
+  51ad28:	afbc0010 	sw	gp,16(sp)
+  51ad2c:	afb00018 	sw	s0,24(sp)
+  51ad30:	afbf001c 	sw	ra,28(sp)
+  51ad34:	0320f809 	jalr	t9
+  51ad38:	00808021 	move	s0,a0
+  51ad3c:	24030001 	li	v1,1
+  51ad40:	10400006 	beqz	v0,0x51ad5c
+  51ad44:	8fbc0010 	lw	gp,16(sp)
+  51ad48:	8fbf001c 	lw	ra,28(sp)
+  51ad4c:	00601021 	move	v0,v1
+  51ad50:	8fb00018 	lw	s0,24(sp)
+  51ad54:	03e00008 	jr	ra
+  51ad58:	27bd0020 	addiu	sp,sp,32
+  51ad5c:	8f998770 	lw	t9,-30864(gp)
+  51ad60:	2405003a 	li	a1,58
+  51ad64:	0320f809 	jalr	t9
+  51ad68:	02002021 	move	a0,s0
+  51ad6c:	24030002 	li	v1,2
+  51ad70:	1000fff5 	b	0x51ad48
+  51ad74:	0002180a 	movz	v1,zero,v0
+	...
+  51ad88:	3c190052 	lui	t9,0x52
+  51ad8c:	2739ad90 	addiu	t9,t9,-21104

@@ -1,0 +1,31 @@
+; func _stats_rd_disable_cb @ 0x00672c90 size=0x78
+  672c90:	27bdffd8 	addiu	sp,sp,-40
+  672c94:	afbf0024 	sw	ra,36(sp)
+  672c98:	afb20020 	sw	s2,32(sp)
+  672c9c:	00809021 	move	s2,a0
+  672ca0:	afb1001c 	sw	s1,28(sp)
+  672ca4:	0c186b9a 	jal	0x61ae68
+  672ca8:	afb00018 	sw	s0,24(sp)
+  672cac:	0c1506a9 	jal	0x541aa4
+  672cb0:	3051ffff 	andi	s1,v0,0xffff
+  672cb4:	0222102a 	slt	v0,s1,v0
+  672cb8:	14400009 	bnez	v0,0x672ce0
+  672cbc:	00003021 	move	a2,zero
+  672cc0:	0c1506a9 	jal	0x541aa4
+  672cc4:	00000000 	nop
+  672cc8:	0c1506b2 	jal	0x541ac8
+  672ccc:	00408021 	move	s0,v0
+  672cd0:	02028021 	addu	s0,s0,v0
+  672cd4:	0230802a 	slt	s0,s1,s0
+  672cd8:	16000004 	bnez	s0,0x672cec
+  672cdc:	00003021 	move	a2,zero
+  672ce0:	02202021 	move	a0,s1
+  672ce4:	0c19c2a1 	jal	0x670a84
+  672ce8:	3245000f 	andi	a1,s2,0xf
+  672cec:	8fbf0024 	lw	ra,36(sp)
+  672cf0:	00001021 	move	v0,zero
+  672cf4:	8fb20020 	lw	s2,32(sp)
+  672cf8:	8fb1001c 	lw	s1,28(sp)
+  672cfc:	8fb00018 	lw	s0,24(sp)
+  672d00:	03e00008 	jr	ra
+  672d04:	27bd0028 	addiu	sp,sp,40

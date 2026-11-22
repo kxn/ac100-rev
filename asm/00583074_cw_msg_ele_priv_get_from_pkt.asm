@@ -1,0 +1,41 @@
+; func cw_msg_ele_priv_get_from_pkt @ 0x00583074 size=0xa0
+  583074:	27bdffd8 	addiu	sp,sp,-40
+  583078:	00001021 	move	v0,zero
+  58307c:	afb1001c 	sw	s1,28(sp)
+  583080:	30b1ffff 	andi	s1,a1,0xffff
+  583084:	afbf0024 	sw	ra,36(sp)
+  583088:	afb20020 	sw	s2,32(sp)
+  58308c:	10800010 	beqz	a0,0x5830d0
+  583090:	afb00018 	sw	s0,24(sp)
+  583094:	2484001c 	addiu	a0,a0,28
+  583098:	0c10206c 	jal	0x4081b0
+  58309c:	24120025 	li	s2,37
+  5830a0:	00408021 	move	s0,v0
+  5830a4:	1200000a 	beqz	s0,0x5830d0
+  5830a8:	00001021 	move	v0,zero
+  5830ac:	9602000c 	lhu	v0,12(s0)
+  5830b0:	5052000d 	beql	v0,s2,0x5830e8
+  5830b4:	8e040010 	lw	a0,16(s0)
+  5830b8:	0c1021a0 	jal	0x408680
+  5830bc:	02002021 	move	a0,s0
+  5830c0:	00408021 	move	s0,v0
+  5830c4:	5600fffa 	bnezl	s0,0x5830b0
+  5830c8:	9602000c 	lhu	v0,12(s0)
+  5830cc:	00001021 	move	v0,zero
+  5830d0:	8fbf0024 	lw	ra,36(sp)
+  5830d4:	8fb20020 	lw	s2,32(sp)
+  5830d8:	8fb1001c 	lw	s1,28(sp)
+  5830dc:	8fb00018 	lw	s0,24(sp)
+  5830e0:	03e00008 	jr	ra
+  5830e4:	27bd0028 	addiu	sp,sp,40
+  5830e8:	0c10206c 	jal	0x4081b0
+  5830ec:	24840008 	addiu	a0,a0,8
+  5830f0:	1040fff1 	beqz	v0,0x5830b8
+  5830f4:	00000000 	nop
+  5830f8:	9443000c 	lhu	v1,12(v0)
+  5830fc:	1071fff5 	beq	v1,s1,0x5830d4
+  583100:	8fbf0024 	lw	ra,36(sp)
+  583104:	0c1021a0 	jal	0x408680
+  583108:	00402021 	move	a0,v0
+  58310c:	08160c3c 	j	0x5830f0
+  583110:	00000000 	nop

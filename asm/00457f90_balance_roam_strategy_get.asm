@@ -1,0 +1,40 @@
+; func balance_roam_strategy_get @ 0x00457f90 size=0x9c
+  457f90:	27bdffc8 	addiu	sp,sp,-56
+  457f94:	afb00030 	sw	s0,48(sp)
+  457f98:	00808021 	move	s0,a0
+  457f9c:	27a40018 	addiu	a0,sp,24
+  457fa0:	afbf0034 	sw	ra,52(sp)
+  457fa4:	afa00018 	sw	zero,24(sp)
+  457fa8:	afa0001c 	sw	zero,28(sp)
+  457fac:	afa00020 	sw	zero,32(sp)
+  457fb0:	afa00024 	sw	zero,36(sp)
+  457fb4:	afa00028 	sw	zero,40(sp)
+  457fb8:	0c117168 	jal	0x45c5a0
+  457fbc:	afa0002c 	sw	zero,44(sp)
+  457fc0:	1040000a 	beqz	v0,0x457fec
+  457fc4:	8fa30018 	lw	v1,24(sp)
+  457fc8:	3c020073 	lui	v0,0x73
+  457fcc:	8c4213e0 	lw	v0,5088(v0)
+  457fd0:	1440000a 	bnez	v0,0x457ffc
+  457fd4:	00000000 	nop
+  457fd8:	8fbf0034 	lw	ra,52(sp)
+  457fdc:	02001021 	move	v0,s0
+  457fe0:	8fb00030 	lw	s0,48(sp)
+  457fe4:	03e00008 	jr	ra
+  457fe8:	27bd0038 	addiu	sp,sp,56
+  457fec:	24020001 	li	v0,1
+  457ff0:	38630001 	xori	v1,v1,0x1
+  457ff4:	08115ff6 	j	0x457fd8
+  457ff8:	0043800a 	movz	s0,v0,v1
+  457ffc:	0c16276a 	jal	0x589da8
+  458000:	00000000 	nop
+  458004:	5040fff5 	beqzl	v0,0x457fdc
+  458008:	8fbf0034 	lw	ra,52(sp)
+  45800c:	3c040068 	lui	a0,0x68
+  458010:	3c050069 	lui	a1,0x69
+  458014:	24847658 	addiu	a0,a0,30296
+  458018:	24a5870c 	addiu	a1,a1,-30964
+  45801c:	0c101b74 	jal	0x406dd0
+  458020:	240604b3 	li	a2,1203
+  458024:	08115ff7 	j	0x457fdc
+  458028:	8fbf0034 	lw	ra,52(sp)

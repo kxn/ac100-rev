@@ -1,0 +1,20 @@
+; func uac_wsta_get_wserv_entry @ 0x00632eb0 size=0x4c
+  632eb0:	27bdffe0 	addiu	sp,sp,-32
+  632eb4:	30a500ff 	andi	a1,a1,0xff
+  632eb8:	30c600ff 	andi	a2,a2,0xff
+  632ebc:	afb00018 	sw	s0,24(sp)
+  632ec0:	afbf001c 	sw	ra,28(sp)
+  632ec4:	0c17741b 	jal	0x5dd06c
+  632ec8:	00e08021 	move	s0,a3
+  632ecc:	2403ffff 	li	v1,-1
+  632ed0:	10430006 	beq	v0,v1,0x632eec
+  632ed4:	00402021 	move	a0,v0
+  632ed8:	02002821 	move	a1,s0
+  632edc:	8fbf001c 	lw	ra,28(sp)
+  632ee0:	8fb00018 	lw	s0,24(sp)
+  632ee4:	0817744b 	j	0x5dd12c
+  632ee8:	27bd0020 	addiu	sp,sp,32
+  632eec:	8fbf001c 	lw	ra,28(sp)
+  632ef0:	8fb00018 	lw	s0,24(sp)
+  632ef4:	03e00008 	jr	ra
+  632ef8:	27bd0020 	addiu	sp,sp,32

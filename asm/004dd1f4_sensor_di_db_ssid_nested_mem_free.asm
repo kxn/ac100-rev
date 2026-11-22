@@ -1,0 +1,31 @@
+; func sensor_di_db_ssid_nested_mem_free @ 0x004dd1f4 size=0x78
+  4dd1f4:	27bdffd8 	addiu	sp,sp,-40
+  4dd1f8:	afb00018 	sw	s0,24(sp)
+  4dd1fc:	00808021 	move	s0,a0
+  4dd200:	afbf0024 	sw	ra,36(sp)
+  4dd204:	afb20020 	sw	s2,32(sp)
+  4dd208:	10800012 	beqz	a0,0x4dd254
+  4dd20c:	afb1001c 	sw	s1,28(sp)
+  4dd210:	8c820040 	lw	v0,64(a0)
+  4dd214:	00008821 	move	s1,zero
+  4dd218:	14400007 	bnez	v0,0x4dd238
+  4dd21c:	241200f8 	li	s2,248
+  4dd220:	08137496 	j	0x4dd258
+  4dd224:	8fbf0024 	lw	ra,36(sp)
+  4dd228:	72321002 	mul	v0,s1,s2
+  4dd22c:	26310001 	addiu	s1,s1,1
+  4dd230:	0c13746e 	jal	0x4dd1b8
+  4dd234:	00822021 	addu	a0,a0,v0
+  4dd238:	8602003c 	lh	v0,60(s0)
+  4dd23c:	0222102a 	slt	v0,s1,v0
+  4dd240:	1440fff9 	bnez	v0,0x4dd228
+  4dd244:	8e040040 	lw	a0,64(s0)
+  4dd248:	0c101f7c 	jal	0x407df0
+  4dd24c:	00000000 	nop
+  4dd250:	ae000040 	sw	zero,64(s0)
+  4dd254:	8fbf0024 	lw	ra,36(sp)
+  4dd258:	8fb20020 	lw	s2,32(sp)
+  4dd25c:	8fb1001c 	lw	s1,28(sp)
+  4dd260:	8fb00018 	lw	s0,24(sp)
+  4dd264:	03e00008 	jr	ra
+  4dd268:	27bd0028 	addiu	sp,sp,40

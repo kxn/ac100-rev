@@ -1,0 +1,27 @@
+; func _mesh_re_ip_update @ 0x00408e3c size=0x68
+  408e3c:	27bdffd8 	addiu	sp,sp,-40
+  408e40:	afb00020 	sw	s0,32(sp)
+  408e44:	00808021 	move	s0,a0
+  408e48:	afbf0024 	sw	ra,36(sp)
+  408e4c:	afa5002c 	sw	a1,44(sp)
+  408e50:	afa60030 	sw	a2,48(sp)
+  408e54:	1080000f 	beqz	a0,0x408e94
+  408e58:	afa70034 	sw	a3,52(sp)
+  408e5c:	8fa20038 	lw	v0,56(sp)
+  408e60:	94840010 	lhu	a0,16(a0)
+  408e64:	afa20010 	sw	v0,16(sp)
+  408e68:	8fa2003c 	lw	v0,60(sp)
+  408e6c:	0c14ef3e 	jal	0x53bcf8
+  408e70:	afa20014 	sw	v0,20(sp)
+  408e74:	26040048 	addiu	a0,s0,72
+  408e78:	8fa5002c 	lw	a1,44(sp)
+  408e7c:	8fa60030 	lw	a2,48(sp)
+  408e80:	8fa70034 	lw	a3,52(sp)
+  408e84:	8fbf0024 	lw	ra,36(sp)
+  408e88:	8fb00020 	lw	s0,32(sp)
+  408e8c:	081951b4 	j	0x6546d0
+  408e90:	27bd0028 	addiu	sp,sp,40
+  408e94:	8fbf0024 	lw	ra,36(sp)
+  408e98:	8fb00020 	lw	s0,32(sp)
+  408e9c:	03e00008 	jr	ra
+  408ea0:	27bd0028 	addiu	sp,sp,40

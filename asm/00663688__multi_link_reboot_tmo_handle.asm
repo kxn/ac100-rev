@@ -1,0 +1,25 @@
+; func _multi_link_reboot_tmo_handle @ 0x00663688 size=0x60
+  663688:	27bdffd0 	addiu	sp,sp,-48
+  66368c:	24040003 	li	a0,3
+  663690:	afbf002c 	sw	ra,44(sp)
+  663694:	0c14b935 	jal	0x52e4d4
+  663698:	00002821 	move	a1,zero
+  66369c:	10400010 	beqz	v0,0x6636e0
+  6636a0:	8fbf002c 	lw	ra,44(sp)
+  6636a4:	3c020072 	lui	v0,0x72
+  6636a8:	afa00010 	sw	zero,16(sp)
+  6636ac:	3c060066 	lui	a2,0x66
+  6636b0:	2442bc94 	addiu	v0,v0,-17260
+  6636b4:	2404001e 	li	a0,30
+  6636b8:	afa20014 	sw	v0,20(sp)
+  6636bc:	00002821 	move	a1,zero
+  6636c0:	2402023c 	li	v0,572
+  6636c4:	24c63688 	addiu	a2,a2,13960
+  6636c8:	00003821 	move	a3,zero
+  6636cc:	0c1020d0 	jal	0x408340
+  6636d0:	afa20018 	sw	v0,24(sp)
+  6636d4:	3c030076 	lui	v1,0x76
+  6636d8:	ac628c84 	sw	v0,-29564(v1)
+  6636dc:	8fbf002c 	lw	ra,44(sp)
+  6636e0:	03e00008 	jr	ra
+  6636e4:	27bd0030 	addiu	sp,sp,48

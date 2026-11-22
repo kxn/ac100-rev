@@ -1,0 +1,19 @@
+; func dhcpdef_db_apbind_entry_count @ 0x00469520 size=0x48
+  469520:	27bdffd8 	addiu	sp,sp,-40
+  469524:	2405ffff 	li	a1,-1
+  469528:	afb0001c 	sw	s0,28(sp)
+  46952c:	3c100076 	lui	s0,0x76
+  469530:	afbf0024 	sw	ra,36(sp)
+  469534:	26107090 	addiu	s0,s0,28816
+  469538:	afb10020 	sw	s1,32(sp)
+  46953c:	0c1020b4 	jal	0x4082d0
+  469540:	8e040004 	lw	a0,4(s0)
+  469544:	8e040004 	lw	a0,4(s0)
+  469548:	0c101fcc 	jal	0x407f30
+  46954c:	8e110014 	lw	s1,20(s0)
+  469550:	8fbf0024 	lw	ra,36(sp)
+  469554:	02201021 	move	v0,s1
+  469558:	8fb10020 	lw	s1,32(sp)
+  46955c:	8fb0001c 	lw	s0,28(sp)
+  469560:	03e00008 	jr	ra
+  469564:	27bd0028 	addiu	sp,sp,40

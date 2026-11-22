@@ -1,0 +1,27 @@
+; func WHEEL_MD5_TIMER_GET @ 0x0051c814 size=0x68
+  51c814:	3c1c0024 	lui	gp,0x24
+  51c818:	279c48ec 	addiu	gp,gp,18668
+  51c81c:	0399e021 	addu	gp,gp,t9
+  51c820:	27bdffe0 	addiu	sp,sp,-32
+  51c824:	8f9982f8 	lw	t9,-32008(gp)
+  51c828:	afbc0010 	sw	gp,16(sp)
+  51c82c:	afb00018 	sw	s0,24(sp)
+  51c830:	2739c79c 	addiu	t9,t9,-14436
+  51c834:	00808021 	move	s0,a0
+  51c838:	afbf001c 	sw	ra,28(sp)
+  51c83c:	0411ffd7 	bal	0x51c79c
+  51c840:	7c849800 	ext	a0,a0,0x0,0x14
+  51c844:	1040000a 	beqz	v0,0x51c870
+  51c848:	8fbf001c 	lw	ra,28(sp)
+  51c84c:	90430054 	lbu	v1,84(v0)
+  51c850:	30630001 	andi	v1,v1,0x1
+  51c854:	50600006 	beqzl	v1,0x51c870
+  51c858:	00001021 	move	v0,zero
+  51c85c:	8c43000c 	lw	v1,12(v0)
+  51c860:	00708026 	xor	s0,v1,s0
+  51c864:	00108502 	srl	s0,s0,0x14
+  51c868:	0010100b 	movn	v0,zero,s0
+  51c86c:	8fbf001c 	lw	ra,28(sp)
+  51c870:	8fb00018 	lw	s0,24(sp)
+  51c874:	03e00008 	jr	ra
+  51c878:	27bd0020 	addiu	sp,sp,32

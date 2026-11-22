@@ -1,0 +1,47 @@
+; func _apupd_remove_group_in_model_entry @ 0x0064c088 size=0xb8
+  64c088:	8c820018 	lw	v0,24(a0)
+  64c08c:	30420001 	andi	v0,v0,0x1
+  64c090:	14400029 	bnez	v0,0x64c138
+  64c094:	00001821 	move	v1,zero
+  64c098:	8ca80004 	lw	t0,4(a1)
+  64c09c:	8ca20000 	lw	v0,0(a1)
+  64c0a0:	24070001 	li	a3,1
+  64c0a4:	0068282a 	slt	a1,v1,t0
+  64c0a8:	10a00023 	beqz	a1,0x64c138
+  64c0ac:	00000000 	nop
+  64c0b0:	8c850018 	lw	a1,24(a0)
+  64c0b4:	30a50001 	andi	a1,a1,0x1
+  64c0b8:	54a00010 	bnezl	a1,0x64c0fc
+  64c0bc:	94460000 	lhu	a2,0(v0)
+  64c0c0:	94450000 	lhu	a1,0(v0)
+  64c0c4:	2ca60200 	sltiu	a2,a1,512
+  64c0c8:	50c00019 	beqzl	a2,0x64c130
+  64c0cc:	24630001 	addiu	v1,v1,1
+  64c0d0:	24a50001 	addiu	a1,a1,1
+  64c0d4:	00053143 	sra	a2,a1,0x5
+  64c0d8:	24c60006 	addiu	a2,a2,6
+  64c0dc:	00063080 	sll	a2,a2,0x2
+  64c0e0:	00863021 	addu	a2,a0,a2
+  64c0e4:	8cc60000 	lw	a2,0(a2)
+  64c0e8:	00a62806 	srlv	a1,a2,a1
+  64c0ec:	30a50001 	andi	a1,a1,0x1
+  64c0f0:	50a0000f 	beqzl	a1,0x64c130
+  64c0f4:	24630001 	addiu	v1,v1,1
+  64c0f8:	94460000 	lhu	a2,0(v0)
+  64c0fc:	2cc50200 	sltiu	a1,a2,512
+  64c100:	10a0000b 	beqz	a1,0x64c130
+  64c104:	24630001 	addiu	v1,v1,1
+  64c108:	24c60001 	addiu	a2,a2,1
+  64c10c:	00062943 	sra	a1,a2,0x5
+  64c110:	00c73004 	sllv	a2,a3,a2
+  64c114:	24a50006 	addiu	a1,a1,6
+  64c118:	00063027 	nor	a2,zero,a2
+  64c11c:	00052880 	sll	a1,a1,0x2
+  64c120:	00852821 	addu	a1,a0,a1
+  64c124:	8ca90000 	lw	t1,0(a1)
+  64c128:	00c93024 	and	a2,a2,t1
+  64c12c:	aca60000 	sw	a2,0(a1)
+  64c130:	08193029 	j	0x64c0a4
+  64c134:	24420002 	addiu	v0,v0,2
+  64c138:	03e00008 	jr	ra
+  64c13c:	00000000 	nop

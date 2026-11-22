@@ -1,0 +1,20 @@
+; func apmngr_support_capacity_init @ 0x0052a9a4 size=0x4c
+  52a9a4:	3c02007c 	lui	v0,0x7c
+  52a9a8:	3c032000 	lui	v1,0x2000
+  52a9ac:	8c445484 	lw	a0,21636(v0)
+  52a9b0:	24631900 	addiu	v1,v1,6400
+  52a9b4:	00831825 	or	v1,a0,v1
+  52a9b8:	ac435484 	sw	v1,21636(v0)
+  52a9bc:	24425484 	addiu	v0,v0,21636
+  52a9c0:	3c030c00 	lui	v1,0xc00
+  52a9c4:	8c450004 	lw	a1,4(v0)
+  52a9c8:	24630c04 	addiu	v1,v1,3076
+  52a9cc:	8c440008 	lw	a0,8(v0)
+  52a9d0:	00a31825 	or	v1,a1,v1
+  52a9d4:	ac430004 	sw	v1,4(v0)
+  52a9d8:	3c03000a 	lui	v1,0xa
+  52a9dc:	3463a6e2 	ori	v1,v1,0xa6e2
+  52a9e0:	00831825 	or	v1,a0,v1
+  52a9e4:	ac430008 	sw	v1,8(v0)
+  52a9e8:	03e00008 	jr	ra
+  52a9ec:	00001021 	move	v0,zero

@@ -1,0 +1,23 @@
+; func cw_ac_descriptor_len_get @ 0x0056cc30 size=0x58
+  56cc30:	27bdffe0 	addiu	sp,sp,-32
+  56cc34:	afb00018 	sw	s0,24(sp)
+  56cc38:	00008021 	move	s0,zero
+  56cc3c:	1080000d 	beqz	a0,0x56cc74
+  56cc40:	afbf001c 	sw	ra,28(sp)
+  56cc44:	2484000c 	addiu	a0,a0,12
+  56cc48:	0c10206c 	jal	0x4081b0
+  56cc4c:	2410000c 	li	s0,12
+  56cc50:	10400009 	beqz	v0,0x56cc78
+  56cc54:	8fbf001c 	lw	ra,28(sp)
+  56cc58:	94430012 	lhu	v1,18(v0)
+  56cc5c:	00402021 	move	a0,v0
+  56cc60:	24630008 	addiu	v1,v1,8
+  56cc64:	0c1021a0 	jal	0x408680
+  56cc68:	02038021 	addu	s0,s0,v1
+  56cc6c:	1440fffa 	bnez	v0,0x56cc58
+  56cc70:	3210ffff 	andi	s0,s0,0xffff
+  56cc74:	8fbf001c 	lw	ra,28(sp)
+  56cc78:	02001021 	move	v0,s0
+  56cc7c:	8fb00018 	lw	s0,24(sp)
+  56cc80:	03e00008 	jr	ra
+  56cc84:	27bd0020 	addiu	sp,sp,32

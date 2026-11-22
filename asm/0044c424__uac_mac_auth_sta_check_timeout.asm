@@ -1,0 +1,24 @@
+; func _uac_mac_auth_sta_check_timeout @ 0x0044c424 size=0x5c
+  44c424:	3c020076 	lui	v0,0x76
+  44c428:	27bdffe0 	addiu	sp,sp,-32
+  44c42c:	8c426fe0 	lw	v0,28640(v0)
+  44c430:	10400007 	beqz	v0,0x44c450
+  44c434:	afbf001c 	sw	ra,28(sp)
+  44c438:	3c040068 	lui	a0,0x68
+  44c43c:	3c050068 	lui	a1,0x68
+  44c440:	248441e0 	addiu	a0,a0,16864
+  44c444:	24a55250 	addiu	a1,a1,21072
+  44c448:	0c101b74 	jal	0x406dd0
+  44c44c:	240600c5 	li	a2,197
+  44c450:	3c020073 	lui	v0,0x73
+  44c454:	2403ffff 	li	v1,-1
+  44c458:	0c18dd7a 	jal	0x6375e8
+  44c45c:	ac4313ac 	sw	v1,5036(v0)
+  44c460:	3c060045 	lui	a2,0x45
+  44c464:	8fbf001c 	lw	ra,28(sp)
+  44c468:	00002021 	move	a0,zero
+  44c46c:	24c6c480 	addiu	a2,a2,-15232
+  44c470:	00003821 	move	a3,zero
+  44c474:	27bd0020 	addiu	sp,sp,32
+  44c478:	0818e0c8 	j	0x638320
+  44c47c:	00402821 	move	a1,v0

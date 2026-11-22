@@ -1,0 +1,31 @@
+; func WHEEL_TIMER_GET_BY_ID @ 0x00524abc size=0x78
+  524abc:	3c1c0024 	lui	gp,0x24
+  524ac0:	279cc644 	addiu	gp,gp,-14780
+  524ac4:	0399e021 	addu	gp,gp,t9
+  524ac8:	8f8280ac 	lw	v0,-32596(gp)
+  524acc:	24060001 	li	a2,1
+  524ad0:	8f838368 	lw	v1,-31896(gp)
+  524ad4:	8c452064 	lw	a1,8292(v0)
+  524ad8:	00a62804 	sllv	a1,a2,a1
+  524adc:	24a2ffff 	addiu	v0,a1,-1
+  524ae0:	0082382a 	slt	a3,a0,v0
+  524ae4:	14e0000e 	bnez	a3,0x524b20
+  524ae8:	24633bd4 	addiu	v1,v1,15316
+  524aec:	8c671818 	lw	a3,6168(v1)
+  524af0:	00471021 	addu	v0,v0,a3
+  524af4:	0082382a 	slt	a3,a0,v0
+  524af8:	10e00007 	beqz	a3,0x524b18
+  524afc:	00001021 	move	v0,zero
+  524b00:	00c52823 	subu	a1,a2,a1
+  524b04:	8c621814 	lw	v0,6164(v1)
+  524b08:	00852021 	addu	a0,a0,a1
+  524b0c:	00042080 	sll	a0,a0,0x2
+  524b10:	00442021 	addu	a0,v0,a0
+  524b14:	8c820000 	lw	v0,0(a0)
+  524b18:	03e00008 	jr	ra
+  524b1c:	00000000 	nop
+  524b20:	2402006c 	li	v0,108
+  524b24:	70822002 	mul	a0,a0,v0
+  524b28:	8c621810 	lw	v0,6160(v1)
+  524b2c:	03e00008 	jr	ra
+  524b30:	00441021 	addu	v0,v0,a0

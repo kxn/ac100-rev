@@ -1,0 +1,35 @@
+; func wips_channel_get @ 0x004c7dd8 size=0x88
+  4c7dd8:	10a0001a 	beqz	a1,0x4c7e44
+  4c7ddc:	00001021 	move	v0,zero
+  4c7de0:	3c06006b 	lui	a2,0x6b
+  4c7de4:	24080020 	li	t0,32
+  4c7de8:	24c680a8 	addiu	a2,a2,-32600
+  4c7dec:	24ca0098 	addiu	t2,a2,152
+  4c7df0:	10ca0014 	beq	a2,t2,0x4c7e44
+  4c7df4:	24070001 	li	a3,1
+  4c7df8:	8cc30000 	lw	v1,0(a2)
+  4c7dfc:	010001f4 	teq	t0,zero,0x7
+  4c7e00:	0068001a 	div	zero,v1,t0
+  4c7e04:	246b001f 	addiu	t3,v1,31
+  4c7e08:	286c0000 	slti	t4,v1,0
+  4c7e0c:	006c580a 	movz	t3,v1,t4
+  4c7e10:	000b5943 	sra	t3,t3,0x5
+  4c7e14:	000b5880 	sll	t3,t3,0x2
+  4c7e18:	008b5821 	addu	t3,a0,t3
+  4c7e1c:	8d6b0000 	lw	t3,0(t3)
+  4c7e20:	00004810 	mfhi	t1
+  4c7e24:	01276004 	sllv	t4,a3,t1
+  4c7e28:	018b5824 	and	t3,t4,t3
+  4c7e2c:	012b4806 	srlv	t1,t3,t1
+  4c7e30:	11270006 	beq	t1,a3,0x4c7e4c
+  4c7e34:	00024880 	sll	t1,v0,0x2
+  4c7e38:	24c60004 	addiu	a2,a2,4
+  4c7e3c:	54caffef 	bnel	a2,t2,0x4c7dfc
+  4c7e40:	8cc30000 	lw	v1,0(a2)
+  4c7e44:	03e00008 	jr	ra
+  4c7e48:	00000000 	nop
+  4c7e4c:	24c60004 	addiu	a2,a2,4
+  4c7e50:	00a94821 	addu	t1,a1,t1
+  4c7e54:	24420001 	addiu	v0,v0,1
+  4c7e58:	08131f8f 	j	0x4c7e3c
+  4c7e5c:	ad230000 	sw	v1,0(t1)

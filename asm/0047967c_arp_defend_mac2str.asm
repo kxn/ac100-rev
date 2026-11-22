@@ -1,0 +1,22 @@
+; func arp_defend_mac2str @ 0x0047967c size=0x54
+  47967c:	27bdffc8 	addiu	sp,sp,-56
+  479680:	afbf0034 	sw	ra,52(sp)
+  479684:	90820001 	lbu	v0,1(a0)
+  479688:	90870000 	lbu	a3,0(a0)
+  47968c:	afa20010 	sw	v0,16(sp)
+  479690:	90820002 	lbu	v0,2(a0)
+  479694:	afa20014 	sw	v0,20(sp)
+  479698:	90820003 	lbu	v0,3(a0)
+  47969c:	afa20018 	sw	v0,24(sp)
+  4796a0:	90820004 	lbu	v0,4(a0)
+  4796a4:	afa2001c 	sw	v0,28(sp)
+  4796a8:	90820005 	lbu	v0,5(a0)
+  4796ac:	00a02021 	move	a0,a1
+  4796b0:	00c02821 	move	a1,a2
+  4796b4:	3c060069 	lui	a2,0x69
+  4796b8:	afa20020 	sw	v0,32(sp)
+  4796bc:	0c101dec 	jal	0x4077b0
+  4796c0:	24c6baac 	addiu	a2,a2,-17748
+  4796c4:	8fbf0034 	lw	ra,52(sp)
+  4796c8:	03e00008 	jr	ra
+  4796cc:	27bd0038 	addiu	sp,sp,56

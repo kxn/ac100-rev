@@ -1,0 +1,24 @@
+; func wportal_db_username_hash_for_nsa_dump @ 0x00433f98 size=0x5c
+  433f98:	27bdffe0 	addiu	sp,sp,-32
+  433f9c:	3c040068 	lui	a0,0x68
+  433fa0:	afb00018 	sw	s0,24(sp)
+  433fa4:	3c100076 	lui	s0,0x76
+  433fa8:	afbf001c 	sw	ra,28(sp)
+  433fac:	0c101dd4 	jal	0x407750
+  433fb0:	2484e308 	addiu	a0,a0,-7416
+  433fb4:	2405ffff 	li	a1,-1
+  433fb8:	0c1020b4 	jal	0x4082d0
+  433fbc:	8e04a154 	lw	a0,-24236(s0)
+  433fc0:	3c020076 	lui	v0,0x76
+  433fc4:	3c050043 	lui	a1,0x43
+  433fc8:	00003021 	move	a2,zero
+  433fcc:	8c44a118 	lw	a0,-24296(v0)
+  433fd0:	0c10215c 	jal	0x408570
+  433fd4:	24a5b318 	addiu	a1,a1,-19688
+  433fd8:	0c101fcc 	jal	0x407f30
+  433fdc:	8e04a154 	lw	a0,-24236(s0)
+  433fe0:	2404000a 	li	a0,10
+  433fe4:	8fbf001c 	lw	ra,28(sp)
+  433fe8:	8fb00018 	lw	s0,24(sp)
+  433fec:	08101ce4 	j	0x407390
+  433ff0:	27bd0020 	addiu	sp,sp,32

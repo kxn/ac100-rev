@@ -1,0 +1,23 @@
+; func rate_db_11a_multicast_rate_get @ 0x0055df2c size=0x58
+  55df2c:	27bdffd8 	addiu	sp,sp,-40
+  55df30:	2405ffff 	li	a1,-1
+  55df34:	afb10020 	sw	s1,32(sp)
+  55df38:	3c11007c 	lui	s1,0x7c
+  55df3c:	afb0001c 	sw	s0,28(sp)
+  55df40:	00808021 	move	s0,a0
+  55df44:	afbf0024 	sw	ra,36(sp)
+  55df48:	0c1020b4 	jal	0x4082d0
+  55df4c:	8e245930 	lw	a0,22832(s1)
+  55df50:	3c02007c 	lui	v0,0x7c
+  55df54:	02002821 	move	a1,s0
+  55df58:	0c157bba 	jal	0x55eee8
+  55df5c:	8c445934 	lw	a0,22836(v0)
+  55df60:	8e245930 	lw	a0,22832(s1)
+  55df64:	0c101fcc 	jal	0x407f30
+  55df68:	00408021 	move	s0,v0
+  55df6c:	02001021 	move	v0,s0
+  55df70:	8fbf0024 	lw	ra,36(sp)
+  55df74:	8fb10020 	lw	s1,32(sp)
+  55df78:	8fb0001c 	lw	s0,28(sp)
+  55df7c:	03e00008 	jr	ra
+  55df80:	27bd0028 	addiu	sp,sp,40

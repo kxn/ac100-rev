@@ -1,0 +1,20 @@
+; func wserv_calloc @ 0x005e8d84 size=0x4c
+  5e8d84:	27bdffd8 	addiu	sp,sp,-40
+  5e8d88:	2406010c 	li	a2,268
+  5e8d8c:	afb10020 	sw	s1,32(sp)
+  5e8d90:	00808821 	move	s1,a0
+  5e8d94:	afb0001c 	sw	s0,28(sp)
+  5e8d98:	afbf0024 	sw	ra,36(sp)
+  5e8d9c:	0c1020a8 	jal	0x4082a0
+  5e8da0:	00a08021 	move	s0,a1
+  5e8da4:	10400005 	beqz	v0,0x5e8dbc
+  5e8da8:	72118002 	mul	s0,s0,s1
+  5e8dac:	3c03007d 	lui	v1,0x7d
+  5e8db0:	8c64bf70 	lw	a0,-16528(v1)
+  5e8db4:	02048021 	addu	s0,s0,a0
+  5e8db8:	ac70bf70 	sw	s0,-16528(v1)
+  5e8dbc:	8fbf0024 	lw	ra,36(sp)
+  5e8dc0:	8fb10020 	lw	s1,32(sp)
+  5e8dc4:	8fb0001c 	lw	s0,28(sp)
+  5e8dc8:	03e00008 	jr	ra
+  5e8dcc:	27bd0028 	addiu	sp,sp,40

@@ -1,0 +1,33 @@
+; func cw_ac_session_get_ip @ 0x00590160 size=0x80
+  590160:	27bdffe0 	addiu	sp,sp,-32
+  590164:	00801021 	move	v0,a0
+  590168:	00a02021 	move	a0,a1
+  59016c:	10400014 	beqz	v0,0x5901c0
+  590170:	afbf001c 	sw	ra,28(sp)
+  590174:	50a00008 	beqzl	a1,0x590198
+  590178:	3c040069 	lui	a0,0x69
+  59017c:	2445002c 	addiu	a1,v0,44
+  590180:	0c101c8c 	jal	0x407230
+  590184:	24060014 	li	a2,20
+  590188:	00001021 	move	v0,zero
+  59018c:	8fbf001c 	lw	ra,28(sp)
+  590190:	03e00008 	jr	ra
+  590194:	27bd0020 	addiu	sp,sp,32
+  590198:	3c05006e 	lui	a1,0x6e
+  59019c:	3c070067 	lui	a3,0x67
+  5901a0:	2484d3ac 	addiu	a0,a0,-11348
+  5901a4:	24a51578 	addiu	a1,a1,5496
+  5901a8:	24060195 	li	a2,405
+  5901ac:	24e77c24 	addiu	a3,a3,31780
+  5901b0:	0c101b74 	jal	0x406dd0
+  5901b4:	00000000 	nop
+  5901b8:	08164063 	j	0x59018c
+  5901bc:	2402ffff 	li	v0,-1
+  5901c0:	3c040069 	lui	a0,0x69
+  5901c4:	3c05006e 	lui	a1,0x6e
+  5901c8:	3c07006e 	lui	a3,0x6e
+  5901cc:	2484d3ac 	addiu	a0,a0,-11348
+  5901d0:	24a51578 	addiu	a1,a1,5496
+  5901d4:	24060194 	li	a2,404
+  5901d8:	0816406c 	j	0x5901b0
+  5901dc:	24e7e7a4 	addiu	a3,a3,-6236

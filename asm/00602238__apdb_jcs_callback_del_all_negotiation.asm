@@ -1,0 +1,27 @@
+; func _apdb_jcs_callback_del_all_negotiation @ 0x00602238 size=0x68
+  602238:	3c04000f 	lui	a0,0xf
+  60223c:	27bdffe0 	addiu	sp,sp,-32
+  602240:	3c02007d 	lui	v0,0x7d
+  602244:	24030001 	li	v1,1
+  602248:	24844240 	addiu	a0,a0,16960
+  60224c:	afbf001c 	sw	ra,28(sp)
+  602250:	ac43bfc0 	sw	v1,-16448(v0)
+  602254:	afb00018 	sw	s0,24(sp)
+  602258:	0c101c98 	jal	0x407260
+  60225c:	00a08021 	move	s0,a1
+  602260:	0c184802 	jal	0x612008
+  602264:	00000000 	nop
+  602268:	0c183830 	jal	0x60e0c0
+  60226c:	00000000 	nop
+  602270:	0c180731 	jal	0x601cc4
+  602274:	00000000 	nop
+  602278:	0c101d34 	jal	0x4074d0
+  60227c:	00402021 	move	a0,v0
+  602280:	3c05006d 	lui	a1,0x6d
+  602284:	02002021 	move	a0,s0
+  602288:	8fbf001c 	lw	ra,28(sp)
+  60228c:	8fb00018 	lw	s0,24(sp)
+  602290:	24a5eb84 	addiu	a1,a1,-5244
+  602294:	27bd0020 	addiu	sp,sp,32
+  602298:	08101d78 	j	0x4075e0
+  60229c:	00403021 	move	a2,v0

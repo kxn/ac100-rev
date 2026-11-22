@@ -1,0 +1,21 @@
+; func send_tdcp_request_test @ 0x005125dc size=0x50
+  5125dc:	27bdfde0 	addiu	sp,sp,-544
+  5125e0:	3c05006c 	lui	a1,0x6c
+  5125e4:	27a40018 	addiu	a0,sp,24
+  5125e8:	24a5fdcc 	addiu	a1,a1,-564
+  5125ec:	afbf021c 	sw	ra,540(sp)
+  5125f0:	0c101c8c 	jal	0x407230
+  5125f4:	24060043 	li	a2,67
+  5125f8:	27a4005b 	addiu	a0,sp,91
+  5125fc:	00002821 	move	a1,zero
+  512600:	0c101cf0 	jal	0x4073c0
+  512604:	240601bd 	li	a2,445
+  512608:	3c05006c 	lui	a1,0x6c
+  51260c:	27a60018 	addiu	a2,sp,24
+  512610:	00002021 	move	a0,zero
+  512614:	24a5fbb4 	addiu	a1,a1,-1100
+  512618:	0c1446e1 	jal	0x511b84
+  51261c:	24070005 	li	a3,5
+  512620:	8fbf021c 	lw	ra,540(sp)
+  512624:	03e00008 	jr	ra
+  512628:	27bd0220 	addiu	sp,sp,544

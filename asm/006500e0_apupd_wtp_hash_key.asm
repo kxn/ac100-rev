@@ -1,0 +1,28 @@
+; func apupd_wtp_hash_key @ 0x006500e0 size=0x6c
+  6500e0:	27bdffe0 	addiu	sp,sp,-32
+  6500e4:	10800006 	beqz	a0,0x650100
+  6500e8:	afbf001c 	sw	ra,28(sp)
+  6500ec:	8fbf001c 	lw	ra,28(sp)
+  6500f0:	24050006 	li	a1,6
+  6500f4:	00003021 	move	a2,zero
+  6500f8:	081020f4 	j	0x4083d0
+  6500fc:	27bd0020 	addiu	sp,sp,32
+  650100:	3c020076 	lui	v0,0x76
+  650104:	8c428c08 	lw	v0,-29688(v0)
+  650108:	14400004 	bnez	v0,0x65011c
+  65010c:	8fbf001c 	lw	ra,28(sp)
+  650110:	00001021 	move	v0,zero
+  650114:	03e00008 	jr	ra
+  650118:	27bd0020 	addiu	sp,sp,32
+  65011c:	0c16276a 	jal	0x589da8
+  650120:	00000000 	nop
+  650124:	5040fffa 	beqzl	v0,0x650110
+  650128:	8fbf001c 	lw	ra,28(sp)
+  65012c:	3c040071 	lui	a0,0x71
+  650130:	3c050072 	lui	a1,0x72
+  650134:	24840720 	addiu	a0,a0,1824
+  650138:	24a5a1e4 	addiu	a1,a1,-24092
+  65013c:	0c101b74 	jal	0x406dd0
+  650140:	2406024b 	li	a2,587
+  650144:	08194044 	j	0x650110
+  650148:	8fbf001c 	lw	ra,28(sp)

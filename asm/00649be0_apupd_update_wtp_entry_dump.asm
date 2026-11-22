@@ -1,0 +1,27 @@
+; func apupd_update_wtp_entry_dump @ 0x00649be0 size=0x68
+  649be0:	27bdffd0 	addiu	sp,sp,-48
+  649be4:	afb00028 	sw	s0,40(sp)
+  649be8:	00808021 	move	s0,a0
+  649bec:	3c040071 	lui	a0,0x71
+  649bf0:	afbf002c 	sw	ra,44(sp)
+  649bf4:	0c101dd4 	jal	0x407750
+  649bf8:	24843f10 	addiu	a0,a0,16144
+  649bfc:	3c040071 	lui	a0,0x71
+  649c00:	9202001b 	lbu	v0,27(s0)
+  649c04:	92050018 	lbu	a1,24(s0)
+  649c08:	2484eb64 	addiu	a0,a0,-5276
+  649c0c:	92060019 	lbu	a2,25(s0)
+  649c10:	9207001a 	lbu	a3,26(s0)
+  649c14:	afa20010 	sw	v0,16(sp)
+  649c18:	9202001c 	lbu	v0,28(s0)
+  649c1c:	afa20014 	sw	v0,20(sp)
+  649c20:	9202001d 	lbu	v0,29(s0)
+  649c24:	0c101b74 	jal	0x406dd0
+  649c28:	afa20018 	sw	v0,24(sp)
+  649c2c:	3c040071 	lui	a0,0x71
+  649c30:	8e050020 	lw	a1,32(s0)
+  649c34:	8fbf002c 	lw	ra,44(sp)
+  649c38:	24843f2c 	addiu	a0,a0,16172
+  649c3c:	8fb00028 	lw	s0,40(sp)
+  649c40:	08101b74 	j	0x406dd0
+  649c44:	27bd0030 	addiu	sp,sp,48

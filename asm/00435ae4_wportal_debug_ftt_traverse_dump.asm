@@ -1,0 +1,20 @@
+; func wportal_debug_ftt_traverse_dump @ 0x00435ae4 size=0x4c
+  435ae4:	3c040068 	lui	a0,0x68
+  435ae8:	27bdffd8 	addiu	sp,sp,-40
+  435aec:	2484fa14 	addiu	a0,a0,-1516
+  435af0:	afbf0024 	sw	ra,36(sp)
+  435af4:	0c101dd4 	jal	0x407750
+  435af8:	afa00018 	sw	zero,24(sp)
+  435afc:	3c040043 	lui	a0,0x43
+  435b00:	27a50018 	addiu	a1,sp,24
+  435b04:	0c10bbeb 	jal	0x42efac
+  435b08:	248451a0 	addiu	a0,a0,20896
+  435b0c:	3c040068 	lui	a0,0x68
+  435b10:	8fa50018 	lw	a1,24(sp)
+  435b14:	0c101b74 	jal	0x406dd0
+  435b18:	2484fa28 	addiu	a0,a0,-1496
+  435b1c:	0c101ce4 	jal	0x407390
+  435b20:	2404000a 	li	a0,10
+  435b24:	8fbf0024 	lw	ra,36(sp)
+  435b28:	03e00008 	jr	ra
+  435b2c:	27bd0028 	addiu	sp,sp,40

@@ -1,0 +1,56 @@
+; func _uac_dhcpdef_recover_firm_aps @ 0x00466100 size=0xdc
+  466100:	27bdffd0 	addiu	sp,sp,-48
+  466104:	3c050046 	lui	a1,0x46
+  466108:	3c04ff7f 	lui	a0,0xff7f
+  46610c:	24a5395c 	addiu	a1,a1,14684
+  466110:	afbf002c 	sw	ra,44(sp)
+  466114:	27a60020 	addiu	a2,sp,32
+  466118:	afb00028 	sw	s0,40(sp)
+  46611c:	3484ffff 	ori	a0,a0,0xffff
+  466120:	0c14e0b9 	jal	0x5382e4
+  466124:	afa00020 	sw	zero,32(sp)
+  466128:	24030001 	li	v1,1
+  46612c:	1043001b 	beq	v0,v1,0x46619c
+  466130:	3c020073 	lui	v0,0x73
+  466134:	3c020076 	lui	v0,0x76
+  466138:	8c427080 	lw	v0,28800(v0)
+  46613c:	14400006 	bnez	v0,0x466158
+  466140:	00008021 	move	s0,zero
+  466144:	8fbf002c 	lw	ra,44(sp)
+  466148:	02001021 	move	v0,s0
+  46614c:	8fb00028 	lw	s0,40(sp)
+  466150:	03e00008 	jr	ra
+  466154:	27bd0030 	addiu	sp,sp,48
+  466158:	0c16276a 	jal	0x589da8
+  46615c:	00000000 	nop
+  466160:	5040fff9 	beqzl	v0,0x466148
+  466164:	8fbf002c 	lw	ra,44(sp)
+  466168:	8fa20020 	lw	v0,32(sp)
+  46616c:	3c040069 	lui	a0,0x69
+  466170:	3c050069 	lui	a1,0x69
+  466174:	3c060069 	lui	a2,0x69
+  466178:	2484cbe8 	addiu	a0,a0,-13336
+  46617c:	afa20010 	sw	v0,16(sp)
+  466180:	24a5ba54 	addiu	a1,a1,-17836
+  466184:	24c6ce4c 	addiu	a2,a2,-12724
+  466188:	24070977 	li	a3,2423
+  46618c:	0c101b74 	jal	0x406dd0
+  466190:	00000000 	nop
+  466194:	08119852 	j	0x466148
+  466198:	8fbf002c 	lw	ra,44(sp)
+  46619c:	8c421480 	lw	v0,5248(v0)
+  4661a0:	1040ffe8 	beqz	v0,0x466144
+  4661a4:	24100001 	li	s0,1
+  4661a8:	0c16276a 	jal	0x589da8
+  4661ac:	00000000 	nop
+  4661b0:	5040ffe5 	beqzl	v0,0x466148
+  4661b4:	8fbf002c 	lw	ra,44(sp)
+  4661b8:	3c040069 	lui	a0,0x69
+  4661bc:	afb00010 	sw	s0,16(sp)
+  4661c0:	3c050069 	lui	a1,0x69
+  4661c4:	3c060069 	lui	a2,0x69
+  4661c8:	2484cba4 	addiu	a0,a0,-13404
+  4661cc:	24a5ba54 	addiu	a1,a1,-17836
+  4661d0:	24c6ce4c 	addiu	a2,a2,-12724
+  4661d4:	08119863 	j	0x46618c
+  4661d8:	24070973 	li	a3,2419

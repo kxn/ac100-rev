@@ -1,0 +1,21 @@
+; func _sensor_di_db_get_sensor_node_from_cached_list @ 0x004dc56c size=0x50
+  4dc56c:	27bdffe0 	addiu	sp,sp,-32
+  4dc570:	afb00018 	sw	s0,24(sp)
+  4dc574:	00808021 	move	s0,a0
+  4dc578:	3c040077 	lui	a0,0x77
+  4dc57c:	afbf001c 	sw	ra,28(sp)
+  4dc580:	0c10206c 	jal	0x4081b0
+  4dc584:	24848600 	addiu	a0,a0,-31232
+  4dc588:	10400009 	beqz	v0,0x4dc5b0
+  4dc58c:	8fbf001c 	lw	ra,28(sp)
+  4dc590:	8c43000c 	lw	v1,12(v0)
+  4dc594:	12030006 	beq	s0,v1,0x4dc5b0
+  4dc598:	8fbf001c 	lw	ra,28(sp)
+  4dc59c:	0c1021a0 	jal	0x408680
+  4dc5a0:	00402021 	move	a0,v0
+  4dc5a4:	5440fffb 	bnezl	v0,0x4dc594
+  4dc5a8:	8c43000c 	lw	v1,12(v0)
+  4dc5ac:	8fbf001c 	lw	ra,28(sp)
+  4dc5b0:	8fb00018 	lw	s0,24(sp)
+  4dc5b4:	03e00008 	jr	ra
+  4dc5b8:	27bd0020 	addiu	sp,sp,32

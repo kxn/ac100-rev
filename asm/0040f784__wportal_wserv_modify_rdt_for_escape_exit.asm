@@ -1,0 +1,40 @@
+; func _wportal_wserv_modify_rdt_for_escape_exit @ 0x0040f784 size=0x9c
+  40f784:	3c020076 	lui	v0,0x76
+  40f788:	27bdffd0 	addiu	sp,sp,-48
+  40f78c:	8c42a0b8 	lw	v0,-24392(v0)
+  40f790:	afb10028 	sw	s1,40(sp)
+  40f794:	00c08821 	move	s1,a2
+  40f798:	afb00024 	sw	s0,36(sp)
+  40f79c:	00808021 	move	s0,a0
+  40f7a0:	14400011 	bnez	v0,0x40f7e8
+  40f7a4:	afbf002c 	sw	ra,44(sp)
+  40f7a8:	0c186b9a 	jal	0x61ae68
+  40f7ac:	8e040000 	lw	a0,0(s0)
+  40f7b0:	3c070042 	lui	a3,0x42
+  40f7b4:	92050003 	lbu	a1,3(s0)
+  40f7b8:	00402021 	move	a0,v0
+  40f7bc:	92060004 	lbu	a2,4(s0)
+  40f7c0:	24e7d600 	addiu	a3,a3,-10752
+  40f7c4:	afb10010 	sw	s1,16(sp)
+  40f7c8:	0c18e387 	jal	0x638e1c
+  40f7cc:	30a5000f 	andi	a1,a1,0xf
+  40f7d0:	00001021 	move	v0,zero
+  40f7d4:	8fbf002c 	lw	ra,44(sp)
+  40f7d8:	8fb10028 	lw	s1,40(sp)
+  40f7dc:	8fb00024 	lw	s0,36(sp)
+  40f7e0:	03e00008 	jr	ra
+  40f7e4:	27bd0030 	addiu	sp,sp,48
+  40f7e8:	0c16276a 	jal	0x589da8
+  40f7ec:	00000000 	nop
+  40f7f0:	1040ffed 	beqz	v0,0x40f7a8
+  40f7f4:	3c040067 	lui	a0,0x67
+  40f7f8:	92020004 	lbu	v0,4(s0)
+  40f7fc:	3c050068 	lui	a1,0x68
+  40f800:	8e070000 	lw	a3,0(s0)
+  40f804:	24847310 	addiu	a0,a0,29456
+  40f808:	24a5c56c 	addiu	a1,a1,-14996
+  40f80c:	afa20010 	sw	v0,16(sp)
+  40f810:	0c101b74 	jal	0x406dd0
+  40f814:	24061e64 	li	a2,7780
+  40f818:	08103dea 	j	0x40f7a8
+  40f81c:	00000000 	nop

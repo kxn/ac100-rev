@@ -1,0 +1,35 @@
+; func apmngr_db_template_get @ 0x00540b20 size=0x88
+  540b20:	27bdffd8 	addiu	sp,sp,-40
+  540b24:	afb1001c 	sw	s1,28(sp)
+  540b28:	3c11007c 	lui	s1,0x7c
+  540b2c:	afa40028 	sw	a0,40(sp)
+  540b30:	afb00018 	sw	s0,24(sp)
+  540b34:	00a08021 	move	s0,a1
+  540b38:	afbf0024 	sw	ra,36(sp)
+  540b3c:	2405ffff 	li	a1,-1
+  540b40:	afb20020 	sw	s2,32(sp)
+  540b44:	02209021 	move	s2,s1
+  540b48:	8e245874 	lw	a0,22644(s1)
+  540b4c:	0c1020b4 	jal	0x4082d0
+  540b50:	2411ffff 	li	s1,-1
+  540b54:	3c02007c 	lui	v0,0x7c
+  540b58:	27a50028 	addiu	a1,sp,40
+  540b5c:	0c101fe8 	jal	0x407fa0
+  540b60:	8c4458b8 	lw	a0,22712(v0)
+  540b64:	10400007 	beqz	v0,0x540b84
+  540b68:	00000000 	nop
+  540b6c:	12000005 	beqz	s0,0x540b84
+  540b70:	00008821 	move	s1,zero
+  540b74:	240602d8 	li	a2,728
+  540b78:	02002021 	move	a0,s0
+  540b7c:	0c101c8c 	jal	0x407230
+  540b80:	00402821 	move	a1,v0
+  540b84:	0c101fcc 	jal	0x407f30
+  540b88:	8e445874 	lw	a0,22644(s2)
+  540b8c:	02201021 	move	v0,s1
+  540b90:	8fbf0024 	lw	ra,36(sp)
+  540b94:	8fb20020 	lw	s2,32(sp)
+  540b98:	8fb1001c 	lw	s1,28(sp)
+  540b9c:	8fb00018 	lw	s0,24(sp)
+  540ba0:	03e00008 	jr	ra
+  540ba4:	27bd0028 	addiu	sp,sp,40

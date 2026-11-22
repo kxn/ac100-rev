@@ -1,0 +1,29 @@
+; func cw_priv_sta_ip_list_length @ 0x005c6010 size=0x70
+  5c6010:	10800017 	beqz	a0,0x5c6070
+  5c6014:	00001021 	move	v0,zero
+  5c6018:	8c850000 	lw	a1,0(a0)
+  5c601c:	10a00014 	beqz	a1,0x5c6070
+  5c6020:	24020004 	li	v0,4
+  5c6024:	00001821 	move	v1,zero
+  5c6028:	2409001c 	li	t1,28
+  5c602c:	24080001 	li	t0,1
+  5c6030:	08171813 	j	0x5c604c
+  5c6034:	24070002 	li	a3,2
+  5c6038:	50c7000f 	beql	a2,a3,0x5c6078
+  5c603c:	24420017 	addiu	v0,v0,23
+  5c6040:	24630001 	addiu	v1,v1,1
+  5c6044:	1065000a 	beq	v1,a1,0x5c6070
+  5c6048:	00000000 	nop
+  5c604c:	70693002 	mul	a2,v1,t1
+  5c6050:	8c8a0004 	lw	t2,4(a0)
+  5c6054:	01463021 	addu	a2,t2,a2
+  5c6058:	90c60008 	lbu	a2,8(a2)
+  5c605c:	14c8fff6 	bne	a2,t0,0x5c6038
+  5c6060:	00000000 	nop
+  5c6064:	2442000b 	addiu	v0,v0,11
+  5c6068:	08171810 	j	0x5c6040
+  5c606c:	3042ffff 	andi	v0,v0,0xffff
+  5c6070:	03e00008 	jr	ra
+  5c6074:	00000000 	nop
+  5c6078:	08171810 	j	0x5c6040
+  5c607c:	3042ffff 	andi	v0,v0,0xffff

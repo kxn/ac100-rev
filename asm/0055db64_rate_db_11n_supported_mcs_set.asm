@@ -1,0 +1,23 @@
+; func rate_db_11n_supported_mcs_set @ 0x0055db64 size=0x58
+  55db64:	27bdffd8 	addiu	sp,sp,-40
+  55db68:	2405ffff 	li	a1,-1
+  55db6c:	afb10020 	sw	s1,32(sp)
+  55db70:	3c11007c 	lui	s1,0x7c
+  55db74:	afb0001c 	sw	s0,28(sp)
+  55db78:	00808021 	move	s0,a0
+  55db7c:	afbf0024 	sw	ra,36(sp)
+  55db80:	0c1020b4 	jal	0x4082d0
+  55db84:	8e245930 	lw	a0,22832(s1)
+  55db88:	3c02007c 	lui	v0,0x7c
+  55db8c:	02002821 	move	a1,s0
+  55db90:	0c157b69 	jal	0x55eda4
+  55db94:	8c445934 	lw	a0,22836(v0)
+  55db98:	8e245930 	lw	a0,22832(s1)
+  55db9c:	0c101fcc 	jal	0x407f30
+  55dba0:	00408021 	move	s0,v0
+  55dba4:	02001021 	move	v0,s0
+  55dba8:	8fbf0024 	lw	ra,36(sp)
+  55dbac:	8fb10020 	lw	s1,32(sp)
+  55dbb0:	8fb0001c 	lw	s0,28(sp)
+  55dbb4:	03e00008 	jr	ra
+  55dbb8:	27bd0028 	addiu	sp,sp,40

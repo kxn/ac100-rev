@@ -1,0 +1,24 @@
+; func uac_timer_destroy @ 0x00525d10 size=0x5c
+  525d10:	3c1c0024 	lui	gp,0x24
+  525d14:	279cb3f0 	addiu	gp,gp,-19472
+  525d18:	0399e021 	addu	gp,gp,t9
+  525d1c:	8f828368 	lw	v0,-31896(gp)
+  525d20:	27bdffe0 	addiu	sp,sp,-32
+  525d24:	8f998620 	lw	t9,-31200(gp)
+  525d28:	24050003 	li	a1,3
+  525d2c:	afbc0010 	sw	gp,16(sp)
+  525d30:	afbf001c 	sw	ra,28(sp)
+  525d34:	0320f809 	jalr	t9
+  525d38:	8c44541c 	lw	a0,21532(v0)
+  525d3c:	24050003 	li	a1,3
+  525d40:	8fbc0010 	lw	gp,16(sp)
+  525d44:	8f828368 	lw	v0,-31896(gp)
+  525d48:	8f998620 	lw	t9,-31200(gp)
+  525d4c:	0320f809 	jalr	t9
+  525d50:	8c445420 	lw	a0,21536(v0)
+  525d54:	8fbc0010 	lw	gp,16(sp)
+  525d58:	8fbf001c 	lw	ra,28(sp)
+  525d5c:	8f9982f8 	lw	t9,-32008(gp)
+  525d60:	27394fdc 	addiu	t9,t9,20444
+  525d64:	1000fc9d 	b	0x524fdc
+  525d68:	27bd0020 	addiu	sp,sp,32

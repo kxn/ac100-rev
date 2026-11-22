@@ -1,0 +1,38 @@
+; func cw_user_defined_send_pkt_destroy @ 0x005882ec size=0x94
+  5882ec:	27bdffe0 	addiu	sp,sp,-32
+  5882f0:	afb00018 	sw	s0,24(sp)
+  5882f4:	00808021 	move	s0,a0
+  5882f8:	1080000c 	beqz	a0,0x58832c
+  5882fc:	afbf001c 	sw	ra,28(sp)
+  588300:	8c820000 	lw	v0,0(a0)
+  588304:	10400009 	beqz	v0,0x58832c
+  588308:	2442ffff 	addiu	v0,v0,-1
+  58830c:	ac820000 	sw	v0,0(a0)
+  588310:	3c02007c 	lui	v0,0x7c
+  588314:	8c425988 	lw	v0,22920(v0)
+  588318:	1440000c 	bnez	v0,0x58834c
+  58831c:	00000000 	nop
+  588320:	8e020000 	lw	v0,0(s0)
+  588324:	10400005 	beqz	v0,0x58833c
+  588328:	02002021 	move	a0,s0
+  58832c:	8fbf001c 	lw	ra,28(sp)
+  588330:	8fb00018 	lw	s0,24(sp)
+  588334:	03e00008 	jr	ra
+  588338:	27bd0020 	addiu	sp,sp,32
+  58833c:	8fbf001c 	lw	ra,28(sp)
+  588340:	8fb00018 	lw	s0,24(sp)
+  588344:	08101f7c 	j	0x407df0
+  588348:	27bd0020 	addiu	sp,sp,32
+  58834c:	0c16276a 	jal	0x589da8
+  588350:	00000000 	nop
+  588354:	5040fff3 	beqzl	v0,0x588324
+  588358:	8e020000 	lw	v0,0(s0)
+  58835c:	3c04006e 	lui	a0,0x6e
+  588360:	8e070000 	lw	a3,0(s0)
+  588364:	3c05006e 	lui	a1,0x6e
+  588368:	2484dff4 	addiu	a0,a0,-8204
+  58836c:	24a5e2d4 	addiu	a1,a1,-7468
+  588370:	0c101b74 	jal	0x406dd0
+  588374:	24060517 	li	a2,1303
+  588378:	081620c9 	j	0x588324
+  58837c:	8e020000 	lw	v0,0(s0)

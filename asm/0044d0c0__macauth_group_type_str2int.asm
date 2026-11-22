@@ -1,0 +1,22 @@
+; func _macauth_group_type_str2int @ 0x0044d0c0 size=0x54
+  44d0c0:	3c050068 	lui	a1,0x68
+  44d0c4:	27bdffe0 	addiu	sp,sp,-32
+  44d0c8:	24a54710 	addiu	a1,a1,18192
+  44d0cc:	afb00018 	sw	s0,24(sp)
+  44d0d0:	afbf001c 	sw	ra,28(sp)
+  44d0d4:	0c101f44 	jal	0x407d10
+  44d0d8:	00808021 	move	s0,a0
+  44d0dc:	10400008 	beqz	v0,0x44d100
+  44d0e0:	00001821 	move	v1,zero
+  44d0e4:	3c050068 	lui	a1,0x68
+  44d0e8:	02002021 	move	a0,s0
+  44d0ec:	0c101f44 	jal	0x407d10
+  44d0f0:	24a5471c 	addiu	a1,a1,18204
+  44d0f4:	24030001 	li	v1,1
+  44d0f8:	2404ffff 	li	a0,-1
+  44d0fc:	0082180b 	movn	v1,a0,v0
+  44d100:	8fbf001c 	lw	ra,28(sp)
+  44d104:	00601021 	move	v0,v1
+  44d108:	8fb00018 	lw	s0,24(sp)
+  44d10c:	03e00008 	jr	ra
+  44d110:	27bd0020 	addiu	sp,sp,32

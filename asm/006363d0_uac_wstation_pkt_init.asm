@@ -1,0 +1,36 @@
+; func uac_wstation_pkt_init @ 0x006363d0 size=0x8c
+  6363d0:	3c060063 	lui	a2,0x63
+  6363d4:	27bdffe0 	addiu	sp,sp,-32
+  6363d8:	24040009 	li	a0,9
+  6363dc:	24050064 	li	a1,100
+  6363e0:	afb00018 	sw	s0,24(sp)
+  6363e4:	afbf001c 	sw	ra,28(sp)
+  6363e8:	0c16671e 	jal	0x599c78
+  6363ec:	24c660ec 	addiu	a2,a2,24812
+  6363f0:	10400015 	beqz	v0,0x636448
+  6363f4:	00408021 	move	s0,v0
+  6363f8:	3c020076 	lui	v0,0x76
+  6363fc:	8c428bf4 	lw	v0,-29708(v0)
+  636400:	14400005 	bnez	v0,0x636418
+  636404:	8fbf001c 	lw	ra,28(sp)
+  636408:	02001021 	move	v0,s0
+  63640c:	8fb00018 	lw	s0,24(sp)
+  636410:	03e00008 	jr	ra
+  636414:	27bd0020 	addiu	sp,sp,32
+  636418:	0c16276a 	jal	0x589da8
+  63641c:	00000000 	nop
+  636420:	5040fff9 	beqzl	v0,0x636408
+  636424:	8fbf001c 	lw	ra,28(sp)
+  636428:	3c040071 	lui	a0,0x71
+  63642c:	3c050071 	lui	a1,0x71
+  636430:	2484e6e8 	addiu	a0,a0,-6424
+  636434:	24a5eb14 	addiu	a1,a1,-5356
+  636438:	0c101b74 	jal	0x406dd0
+  63643c:	240603dd 	li	a2,989
+  636440:	0818d902 	j	0x636408
+  636444:	8fbf001c 	lw	ra,28(sp)
+  636448:	3c04007d 	lui	a0,0x7d
+  63644c:	0c146b62 	jal	0x51ad88
+  636450:	2484ca94 	addiu	a0,a0,-13676
+  636454:	0818d902 	j	0x636408
+  636458:	8fbf001c 	lw	ra,28(sp)

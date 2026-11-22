@@ -1,0 +1,55 @@
+; func _wsta_roam_jcs_intelligent_wireless_network_set @ 0x0047f4d8 size=0xd8
+  47f4d8:	27bdffd8 	addiu	sp,sp,-40
+  47f4dc:	afb10020 	sw	s1,32(sp)
+  47f4e0:	00a08821 	move	s1,a1
+  47f4e4:	3c050069 	lui	a1,0x69
+  47f4e8:	afb0001c 	sw	s0,28(sp)
+  47f4ec:	afbf0024 	sw	ra,36(sp)
+  47f4f0:	0c101eac 	jal	0x407ab0
+  47f4f4:	24a542c8 	addiu	a1,a1,17096
+  47f4f8:	1040000b 	beqz	v0,0x47f528
+  47f4fc:	00408021 	move	s0,v0
+  47f500:	0c101bfc 	jal	0x406ff0
+  47f504:	00402021 	move	a0,v0
+  47f508:	24030003 	li	v1,3
+  47f50c:	1043001d 	beq	v0,v1,0x47f584
+  47f510:	02002021 	move	a0,s0
+  47f514:	0c101bfc 	jal	0x406ff0
+  47f518:	00000000 	nop
+  47f51c:	24030002 	li	v1,2
+  47f520:	1043001c 	beq	v0,v1,0x47f594
+  47f524:	00000000 	nop
+  47f528:	3c020075 	lui	v0,0x75
+  47f52c:	8c42be90 	lw	v0,-16752(v0)
+  47f530:	10400007 	beqz	v0,0x47f550
+  47f534:	2410ffff 	li	s0,-1
+  47f538:	3c040067 	lui	a0,0x67
+  47f53c:	3c050069 	lui	a1,0x69
+  47f540:	24846a80 	addiu	a0,a0,27264
+  47f544:	24a53efc 	addiu	a1,a1,16124
+  47f548:	0c101b74 	jal	0x406dd0
+  47f54c:	240600e6 	li	a2,230
+  47f550:	0c122702 	jal	0x489c08
+  47f554:	02002021 	move	a0,s0
+  47f558:	0c101d34 	jal	0x4074d0
+  47f55c:	00402021 	move	a0,v0
+  47f560:	3c05006e 	lui	a1,0x6e
+  47f564:	02202021 	move	a0,s1
+  47f568:	8fbf0024 	lw	ra,36(sp)
+  47f56c:	8fb10020 	lw	s1,32(sp)
+  47f570:	24a57528 	addiu	a1,a1,29992
+  47f574:	8fb0001c 	lw	s0,28(sp)
+  47f578:	27bd0028 	addiu	sp,sp,40
+  47f57c:	08101d78 	j	0x4075e0
+  47f580:	00403021 	move	a2,v0
+  47f584:	0c101d10 	jal	0x407440
+  47f588:	00000000 	nop
+  47f58c:	0811fd54 	j	0x47f550
+  47f590:	00408021 	move	s0,v0
+  47f594:	0c101c54 	jal	0x407150
+  47f598:	02002021 	move	a0,s0
+  47f59c:	00602821 	move	a1,v1
+  47f5a0:	0c101e28 	jal	0x4078a0
+  47f5a4:	00402021 	move	a0,v0
+  47f5a8:	0811fd54 	j	0x47f550
+  47f5ac:	00408021 	move	s0,v0

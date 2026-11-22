@@ -1,0 +1,27 @@
+; func _uac_print_cookie @ 0x00523880 size=0x68
+  523880:	3c1c0024 	lui	gp,0x24
+  523884:	279cd880 	addiu	gp,gp,-10112
+  523888:	0399e021 	addu	gp,gp,t9
+  52388c:	27bdffd0 	addiu	sp,sp,-48
+  523890:	8f9987d0 	lw	t9,-30768(gp)
+  523894:	00802821 	move	a1,a0
+  523898:	afbc0020 	sw	gp,32(sp)
+  52389c:	24a50004 	addiu	a1,a1,4
+  5238a0:	afbf002c 	sw	ra,44(sp)
+  5238a4:	8c820030 	lw	v0,48(a0)
+  5238a8:	8c86002c 	lw	a2,44(a0)
+  5238ac:	8c870028 	lw	a3,40(a0)
+  5238b0:	afa20010 	sw	v0,16(sp)
+  5238b4:	8c820034 	lw	v0,52(a0)
+  5238b8:	afa20014 	sw	v0,20(sp)
+  5238bc:	8c820038 	lw	v0,56(a0)
+  5238c0:	afa20018 	sw	v0,24(sp)
+  5238c4:	8c82003c 	lw	v0,60(a0)
+  5238c8:	8f848028 	lw	a0,-32728(gp)
+  5238cc:	afa2001c 	sw	v0,28(sp)
+  5238d0:	0320f809 	jalr	t9
+  5238d4:	24843cc0 	addiu	a0,a0,15552
+  5238d8:	00001021 	move	v0,zero
+  5238dc:	8fbf002c 	lw	ra,44(sp)
+  5238e0:	03e00008 	jr	ra
+  5238e4:	27bd0030 	addiu	sp,sp,48

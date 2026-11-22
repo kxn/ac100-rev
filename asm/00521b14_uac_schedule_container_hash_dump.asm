@@ -1,0 +1,32 @@
+; func uac_schedule_container_hash_dump @ 0x00521b14 size=0x78
+  521b14:	3c1c0024 	lui	gp,0x24
+  521b18:	279cf5ec 	addiu	gp,gp,-2580
+  521b1c:	0399e021 	addu	gp,gp,t9
+  521b20:	27bdffe0 	addiu	sp,sp,-32
+  521b24:	8f9985f8 	lw	t9,-31240(gp)
+  521b28:	afbc0010 	sw	gp,16(sp)
+  521b2c:	afb00018 	sw	s0,24(sp)
+  521b30:	00808021 	move	s0,a0
+  521b34:	afbf001c 	sw	ra,28(sp)
+  521b38:	8f848028 	lw	a0,-32728(gp)
+  521b3c:	0320f809 	jalr	t9
+  521b40:	2484370c 	addiu	a0,a0,14092
+  521b44:	8fbc0010 	lw	gp,16(sp)
+  521b48:	8f998148 	lw	t9,-32440(gp)
+  521b4c:	0411e5ae 	bal	0x51b208
+  521b50:	26040034 	addiu	a0,s0,52
+  521b54:	8fbc0010 	lw	gp,16(sp)
+  521b58:	00402821 	move	a1,v0
+  521b5c:	8f848028 	lw	a0,-32728(gp)
+  521b60:	8f9987d0 	lw	t9,-30768(gp)
+  521b64:	0320f809 	jalr	t9
+  521b68:	24843750 	addiu	a0,a0,14160
+  521b6c:	8fbc0010 	lw	gp,16(sp)
+  521b70:	8fbf001c 	lw	ra,28(sp)
+  521b74:	8fb00018 	lw	s0,24(sp)
+  521b78:	27bd0020 	addiu	sp,sp,32
+  521b7c:	8f8480a4 	lw	a0,-32604(gp)
+  521b80:	8f9985f8 	lw	t9,-31240(gp)
+  521b84:	03200008 	jr	t9
+  521b88:	248414f4 	addiu	a0,a0,5364
+  521b8c:	00000000 	nop

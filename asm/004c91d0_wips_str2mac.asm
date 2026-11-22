@@ -1,0 +1,19 @@
+; func wips_str2mac @ 0x004c91d0 size=0x48
+  4c91d0:	27bdffd0 	addiu	sp,sp,-48
+  4c91d4:	24a20002 	addiu	v0,a1,2
+  4c91d8:	00a03021 	move	a2,a1
+  4c91dc:	afa20010 	sw	v0,16(sp)
+  4c91e0:	24a20003 	addiu	v0,a1,3
+  4c91e4:	24c70001 	addiu	a3,a2,1
+  4c91e8:	afbf002c 	sw	ra,44(sp)
+  4c91ec:	afa20014 	sw	v0,20(sp)
+  4c91f0:	24a20004 	addiu	v0,a1,4
+  4c91f4:	afa20018 	sw	v0,24(sp)
+  4c91f8:	24a20005 	addiu	v0,a1,5
+  4c91fc:	3c05006a 	lui	a1,0x6a
+  4c9200:	afa2001c 	sw	v0,28(sp)
+  4c9204:	0c101ed8 	jal	0x407b60
+  4c9208:	24a57124 	addiu	a1,a1,28964
+  4c920c:	8fbf002c 	lw	ra,44(sp)
+  4c9210:	03e00008 	jr	ra
+  4c9214:	27bd0030 	addiu	sp,sp,48

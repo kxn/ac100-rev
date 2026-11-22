@@ -1,0 +1,32 @@
+; func apupd_update_wtp_hash_cmp @ 0x0064c3b0 size=0x7c
+  64c3b0:	27bdffe0 	addiu	sp,sp,-32
+  64c3b4:	afbf001c 	sw	ra,28(sp)
+  64c3b8:	1080000c 	beqz	a0,0x64c3ec
+  64c3bc:	afb00018 	sw	s0,24(sp)
+  64c3c0:	10a0000b 	beqz	a1,0x64c3f0
+  64c3c4:	3c020076 	lui	v0,0x76
+  64c3c8:	24840018 	addiu	a0,a0,24
+  64c3cc:	0c101e4c 	jal	0x407930
+  64c3d0:	24060006 	li	a2,6
+  64c3d4:	2c500001 	sltiu	s0,v0,1
+  64c3d8:	8fbf001c 	lw	ra,28(sp)
+  64c3dc:	02001021 	move	v0,s0
+  64c3e0:	8fb00018 	lw	s0,24(sp)
+  64c3e4:	03e00008 	jr	ra
+  64c3e8:	27bd0020 	addiu	sp,sp,32
+  64c3ec:	3c020076 	lui	v0,0x76
+  64c3f0:	8c428c08 	lw	v0,-29688(v0)
+  64c3f4:	1040fff8 	beqz	v0,0x64c3d8
+  64c3f8:	00008021 	move	s0,zero
+  64c3fc:	0c16276a 	jal	0x589da8
+  64c400:	00000000 	nop
+  64c404:	5040fff5 	beqzl	v0,0x64c3dc
+  64c408:	8fbf001c 	lw	ra,28(sp)
+  64c40c:	3c040071 	lui	a0,0x71
+  64c410:	3c050072 	lui	a1,0x72
+  64c414:	24840720 	addiu	a0,a0,1824
+  64c418:	24a5a0ec 	addiu	a1,a1,-24340
+  64c41c:	0c101b74 	jal	0x406dd0
+  64c420:	240602fb 	li	a2,763
+  64c424:	081930f7 	j	0x64c3dc
+  64c428:	8fbf001c 	lw	ra,28(sp)

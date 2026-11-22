@@ -1,0 +1,20 @@
+; func cw_ac_data_size_get @ 0x00589c7c size=0x4c
+  589c7c:	3c02007c 	lui	v0,0x7c
+  589c80:	27bdffe0 	addiu	sp,sp,-32
+  589c84:	8c42599c 	lw	v0,22940(v0)
+  589c88:	10400005 	beqz	v0,0x589ca0
+  589c8c:	afbf001c 	sw	ra,28(sp)
+  589c90:	8c420018 	lw	v0,24(v0)
+  589c94:	8fbf001c 	lw	ra,28(sp)
+  589c98:	03e00008 	jr	ra
+  589c9c:	27bd0020 	addiu	sp,sp,32
+  589ca0:	3c040069 	lui	a0,0x69
+  589ca4:	3c05006e 	lui	a1,0x6e
+  589ca8:	3c07006b 	lui	a3,0x6b
+  589cac:	2484d3ac 	addiu	a0,a0,-11348
+  589cb0:	24a510b8 	addiu	a1,a1,4280
+  589cb4:	24060a4c 	li	a2,2636
+  589cb8:	0c101b74 	jal	0x406dd0
+  589cbc:	24e7a958 	addiu	a3,a3,-22184
+  589cc0:	08162725 	j	0x589c94
+  589cc4:	00001021 	move	v0,zero

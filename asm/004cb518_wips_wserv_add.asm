@@ -1,0 +1,26 @@
+; func wips_wserv_add @ 0x004cb518 size=0x64
+  4cb518:	27bdfde8 	addiu	sp,sp,-536
+  4cb51c:	00001021 	move	v0,zero
+  4cb520:	27a30010 	addiu	v1,sp,16
+  4cb524:	afbf0214 	sw	ra,532(sp)
+  4cb528:	afa40218 	sw	a0,536(sp)
+  4cb52c:	afa5021c 	sw	a1,540(sp)
+  4cb530:	afa60220 	sw	a2,544(sp)
+  4cb534:	afa70224 	sw	a3,548(sp)
+  4cb538:	2c4401f5 	sltiu	a0,v0,501
+  4cb53c:	10800008 	beqz	a0,0x4cb560
+  4cb540:	8fa40218 	lw	a0,536(sp)
+  4cb544:	27a60228 	addiu	a2,sp,552
+  4cb548:	00622021 	addu	a0,v1,v0
+  4cb54c:	00c22821 	addu	a1,a2,v0
+  4cb550:	24420001 	addiu	v0,v0,1
+  4cb554:	90a50000 	lbu	a1,0(a1)
+  4cb558:	08132d4e 	j	0x4cb538
+  4cb55c:	a0850000 	sb	a1,0(a0)
+  4cb560:	8fa5021c 	lw	a1,540(sp)
+  4cb564:	8fa60220 	lw	a2,544(sp)
+  4cb568:	0c132cfa 	jal	0x4cb3e8
+  4cb56c:	8fa70224 	lw	a3,548(sp)
+  4cb570:	8fbf0214 	lw	ra,532(sp)
+  4cb574:	03e00008 	jr	ra
+  4cb578:	27bd0218 	addiu	sp,sp,536

@@ -1,0 +1,55 @@
+; func _uac_wserv_packet_cur_id_get_by_ap_id @ 0x005d881c size=0xd8
+  5d881c:	27bdffd8 	addiu	sp,sp,-40
+  5d8820:	afb20020 	sw	s2,32(sp)
+  5d8824:	00c09021 	move	s2,a2
+  5d8828:	afb1001c 	sw	s1,28(sp)
+  5d882c:	00a08821 	move	s1,a1
+  5d8830:	afb00018 	sw	s0,24(sp)
+  5d8834:	00808021 	move	s0,a0
+  5d8838:	04800006 	bltz	a0,0x5d8854
+  5d883c:	afbf0024 	sw	ra,36(sp)
+  5d8840:	0c1506a9 	jal	0x541aa4
+  5d8844:	00000000 	nop
+  5d8848:	0202102a 	slt	v0,s0,v0
+  5d884c:	14400010 	bnez	v0,0x5d8890
+  5d8850:	00000000 	nop
+  5d8854:	3c02007d 	lui	v0,0x7d
+  5d8858:	8c42bee4 	lw	v0,-16668(v0)
+  5d885c:	10400005 	beqz	v0,0x5d8874
+  5d8860:	2411ffff 	li	s1,-1
+  5d8864:	0c16276a 	jal	0x589da8
+  5d8868:	00000000 	nop
+  5d886c:	14400019 	bnez	v0,0x5d88d4
+  5d8870:	3c04006f 	lui	a0,0x6f
+  5d8874:	8fbf0024 	lw	ra,36(sp)
+  5d8878:	02201021 	move	v0,s1
+  5d887c:	8fb20020 	lw	s2,32(sp)
+  5d8880:	8fb1001c 	lw	s1,28(sp)
+  5d8884:	8fb00018 	lw	s0,24(sp)
+  5d8888:	03e00008 	jr	ra
+  5d888c:	27bd0028 	addiu	sp,sp,40
+  5d8890:	1220fff1 	beqz	s1,0x5d8858
+  5d8894:	3c02007d 	lui	v0,0x7d
+  5d8898:	1240fff0 	beqz	s2,0x5d885c
+  5d889c:	8c42bee4 	lw	v0,-16668(v0)
+  5d88a0:	2402000c 	li	v0,12
+  5d88a4:	72028002 	mul	s0,s0,v0
+  5d88a8:	3c020076 	lui	v0,0x76
+  5d88ac:	8c4398e8 	lw	v1,-26392(v0)
+  5d88b0:	00701821 	addu	v1,v1,s0
+  5d88b4:	80630000 	lb	v1,0(v1)
+  5d88b8:	a2230000 	sb	v1,0(s1)
+  5d88bc:	00008821 	move	s1,zero
+  5d88c0:	8c4298e8 	lw	v0,-26392(v0)
+  5d88c4:	00508021 	addu	s0,v0,s0
+  5d88c8:	82020001 	lb	v0,1(s0)
+  5d88cc:	0817621d 	j	0x5d8874
+  5d88d0:	a2420000 	sb	v0,0(s2)
+  5d88d4:	3c05006f 	lui	a1,0x6f
+  5d88d8:	24843cac 	addiu	a0,a0,15532
+  5d88dc:	24a56d7c 	addiu	a1,a1,28028
+  5d88e0:	24060100 	li	a2,256
+  5d88e4:	0c101b74 	jal	0x406dd0
+  5d88e8:	02003821 	move	a3,s0
+  5d88ec:	0817621e 	j	0x5d8878
+  5d88f0:	8fbf0024 	lw	ra,36(sp)

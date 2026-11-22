@@ -1,0 +1,23 @@
+; func uac_time_secs @ 0x005242cc size=0x58
+  5242cc:	3c1c0024 	lui	gp,0x24
+  5242d0:	279cce34 	addiu	gp,gp,-12748
+  5242d4:	0399e021 	addu	gp,gp,t9
+  5242d8:	27bdffd8 	addiu	sp,sp,-40
+  5242dc:	8f9987a0 	lw	t9,-30816(gp)
+  5242e0:	24040001 	li	a0,1
+  5242e4:	afbc0010 	sw	gp,16(sp)
+  5242e8:	afbf0024 	sw	ra,36(sp)
+  5242ec:	0320f809 	jalr	t9
+  5242f0:	27a50018 	addiu	a1,sp,24
+  5242f4:	14400006 	bnez	v0,0x524310
+  5242f8:	8fbc0010 	lw	gp,16(sp)
+  5242fc:	8fa30018 	lw	v1,24(sp)
+  524300:	8fbf0024 	lw	ra,36(sp)
+  524304:	000317c3 	sra	v0,v1,0x1f
+  524308:	03e00008 	jr	ra
+  52430c:	27bd0028 	addiu	sp,sp,40
+  524310:	8f998598 	lw	t9,-31336(gp)
+  524314:	0320f809 	jalr	t9
+  524318:	00002021 	move	a0,zero
+  52431c:	1000fff8 	b	0x524300
+  524320:	00401821 	move	v1,v0

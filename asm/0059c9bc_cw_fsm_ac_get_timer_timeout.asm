@@ -1,0 +1,32 @@
+; func cw_fsm_ac_get_timer_timeout @ 0x0059c9bc size=0x7c
+  59c9bc:	2ca3000c 	sltiu	v1,a1,12
+  59c9c0:	10600011 	beqz	v1,0x59ca08
+  59c9c4:	2402ffff 	li	v0,-1
+  59c9c8:	24a2ffff 	addiu	v0,a1,-1
+  59c9cc:	2c420002 	sltiu	v0,v0,2
+  59c9d0:	1440000f 	bnez	v0,0x59ca10
+  59c9d4:	3c020075 	lui	v0,0x75
+  59c9d8:	24020005 	li	v0,5
+  59c9dc:	10a2000c 	beq	a1,v0,0x59ca10
+  59c9e0:	3c020075 	lui	v0,0x75
+  59c9e4:	24020003 	li	v0,3
+  59c9e8:	10a20009 	beq	a1,v0,0x59ca10
+  59c9ec:	3c020075 	lui	v0,0x75
+  59c9f0:	24020004 	li	v0,4
+  59c9f4:	50a20006 	beql	a1,v0,0x59ca10
+  59c9f8:	3c020075 	lui	v0,0x75
+  59c9fc:	24030009 	li	v1,9
+  59ca00:	10a30008 	beq	a1,v1,0x59ca24
+  59ca04:	00001021 	move	v0,zero
+  59ca08:	03e00008 	jr	ra
+  59ca0c:	00000000 	nop
+  59ca10:	00052880 	sll	a1,a1,0x2
+  59ca14:	2442cfac 	addiu	v0,v0,-12372
+  59ca18:	00a22821 	addu	a1,a1,v0
+  59ca1c:	03e00008 	jr	ra
+  59ca20:	8ca20000 	lw	v0,0(a1)
+  59ca24:	8c8200d0 	lw	v0,208(a0)
+  59ca28:	2403ffff 	li	v1,-1
+  59ca2c:	0002202a 	slt	a0,zero,v0
+  59ca30:	03e00008 	jr	ra
+  59ca34:	0064100a 	movz	v0,v1,a0

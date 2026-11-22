@@ -1,0 +1,30 @@
+; func cw_ac_session_get @ 0x005900ec size=0x74
+  5900ec:	27bdffe0 	addiu	sp,sp,-32
+  5900f0:	10800013 	beqz	a0,0x590140
+  5900f4:	afbf001c 	sw	ra,28(sp)
+  5900f8:	50a00005 	beqzl	a1,0x590110
+  5900fc:	3c040069 	lui	a0,0x69
+  590100:	8fbf001c 	lw	ra,28(sp)
+  590104:	27bd0020 	addiu	sp,sp,32
+  590108:	08101fe8 	j	0x407fa0
+  59010c:	8c840058 	lw	a0,88(a0)
+  590110:	3c05006e 	lui	a1,0x6e
+  590114:	3c07006e 	lui	a3,0x6e
+  590118:	2484d3ac 	addiu	a0,a0,-11348
+  59011c:	24a51564 	addiu	a1,a1,5476
+  590120:	24060183 	li	a2,387
+  590124:	24e71bbc 	addiu	a3,a3,7100
+  590128:	0c101b74 	jal	0x406dd0
+  59012c:	00000000 	nop
+  590130:	00001021 	move	v0,zero
+  590134:	8fbf001c 	lw	ra,28(sp)
+  590138:	03e00008 	jr	ra
+  59013c:	27bd0020 	addiu	sp,sp,32
+  590140:	3c040069 	lui	a0,0x69
+  590144:	3c05006e 	lui	a1,0x6e
+  590148:	3c07006e 	lui	a3,0x6e
+  59014c:	2484d3ac 	addiu	a0,a0,-11348
+  590150:	24a51564 	addiu	a1,a1,5476
+  590154:	24060182 	li	a2,386
+  590158:	0816404a 	j	0x590128
+  59015c:	24e7e7a4 	addiu	a3,a3,-6236

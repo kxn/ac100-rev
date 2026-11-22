@@ -1,0 +1,34 @@
+; func capwap_dtls_data_create @ 0x00597890 size=0x84
+  597890:	27bdffe0 	addiu	sp,sp,-32
+  597894:	24040070 	li	a0,112
+  597898:	afb00018 	sw	s0,24(sp)
+  59789c:	afbf001c 	sw	ra,28(sp)
+  5978a0:	0c102114 	jal	0x408450
+  5978a4:	24050171 	li	a1,369
+  5978a8:	1040000a 	beqz	v0,0x5978d4
+  5978ac:	00408021 	move	s0,v0
+  5978b0:	00002821 	move	a1,zero
+  5978b4:	24060070 	li	a2,112
+  5978b8:	0c101cf0 	jal	0x4073c0
+  5978bc:	00402021 	move	a0,v0
+  5978c0:	8fbf001c 	lw	ra,28(sp)
+  5978c4:	02001021 	move	v0,s0
+  5978c8:	8fb00018 	lw	s0,24(sp)
+  5978cc:	03e00008 	jr	ra
+  5978d0:	27bd0020 	addiu	sp,sp,32
+  5978d4:	3c020075 	lui	v0,0x75
+  5978d8:	8c42cf58 	lw	v0,-12456(v0)
+  5978dc:	1040fff9 	beqz	v0,0x5978c4
+  5978e0:	8fbf001c 	lw	ra,28(sp)
+  5978e4:	0c16276a 	jal	0x589da8
+  5978e8:	00000000 	nop
+  5978ec:	1040fff5 	beqz	v0,0x5978c4
+  5978f0:	8fbf001c 	lw	ra,28(sp)
+  5978f4:	3c04006e 	lui	a0,0x6e
+  5978f8:	3c05006e 	lui	a1,0x6e
+  5978fc:	24842b94 	addiu	a0,a0,11156
+  597900:	24a53548 	addiu	a1,a1,13640
+  597904:	0c101b74 	jal	0x406dd0
+  597908:	24060173 	li	a2,371
+  59790c:	08165e30 	j	0x5978c0
+  597910:	00000000 	nop

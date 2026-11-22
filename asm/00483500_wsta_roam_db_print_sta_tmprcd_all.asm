@@ -1,0 +1,27 @@
+; func wsta_roam_db_print_sta_tmprcd_all @ 0x00483500 size=0x68
+  483500:	27bdffd8 	addiu	sp,sp,-40
+  483504:	2405ffff 	li	a1,-1
+  483508:	afb10020 	sw	s1,32(sp)
+  48350c:	3c110076 	lui	s1,0x76
+  483510:	afb0001c 	sw	s0,28(sp)
+  483514:	26307540 	addiu	s0,s1,30016
+  483518:	afbf0024 	sw	ra,36(sp)
+  48351c:	0c1020b4 	jal	0x4082d0
+  483520:	8e247540 	lw	a0,30016(s1)
+  483524:	0c101fb4 	jal	0x407ed0
+  483528:	8e040020 	lw	a0,32(s0)
+  48352c:	3c040069 	lui	a0,0x69
+  483530:	00402821 	move	a1,v0
+  483534:	0c101b74 	jal	0x406dd0
+  483538:	248449e8 	addiu	a0,a0,18920
+  48353c:	3c050048 	lui	a1,0x48
+  483540:	8e040020 	lw	a0,32(s0)
+  483544:	00003021 	move	a2,zero
+  483548:	0c10215c 	jal	0x408570
+  48354c:	24a50b9c 	addiu	a1,a1,2972
+  483550:	8e247540 	lw	a0,30016(s1)
+  483554:	8fbf0024 	lw	ra,36(sp)
+  483558:	8fb10020 	lw	s1,32(sp)
+  48355c:	8fb0001c 	lw	s0,28(sp)
+  483560:	08101fcc 	j	0x407f30
+  483564:	27bd0028 	addiu	sp,sp,40

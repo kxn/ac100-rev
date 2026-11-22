@@ -1,0 +1,25 @@
+; func cw_priv_image_update_result_assemble @ 0x005b3e10 size=0x60
+  5b3e10:	27bdffd8 	addiu	sp,sp,-40
+  5b3e14:	afbf0024 	sw	ra,36(sp)
+  5b3e18:	afb20020 	sw	s2,32(sp)
+  5b3e1c:	afb1001c 	sw	s1,28(sp)
+  5b3e20:	00a08821 	move	s1,a1
+  5b3e24:	afb00018 	sw	s0,24(sp)
+  5b3e28:	00808021 	move	s0,a0
+  5b3e2c:	8ca20010 	lw	v0,16(a1)
+  5b3e30:	94920004 	lhu	s2,4(a0)
+  5b3e34:	0c15c7ea 	jal	0x571fa8
+  5b3e38:	8c450000 	lw	a1,0(v0)
+  5b3e3c:	96020004 	lhu	v0,4(s0)
+  5b3e40:	9623000e 	lhu	v1,14(s1)
+  5b3e44:	8fbf0024 	lw	ra,36(sp)
+  5b3e48:	00529023 	subu	s2,v0,s2
+  5b3e4c:	8fb1001c 	lw	s1,28(sp)
+  5b3e50:	8fb00018 	lw	s0,24(sp)
+  5b3e54:	02431026 	xor	v0,s2,v1
+  5b3e58:	8fb20020 	lw	s2,32(sp)
+  5b3e5c:	2403ffff 	li	v1,-1
+  5b3e60:	27bd0028 	addiu	sp,sp,40
+  5b3e64:	0002180a 	movz	v1,zero,v0
+  5b3e68:	03e00008 	jr	ra
+  5b3e6c:	00601021 	move	v0,v1

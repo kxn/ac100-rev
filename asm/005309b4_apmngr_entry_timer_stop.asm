@@ -1,0 +1,35 @@
+; func apmngr_entry_timer_stop @ 0x005309b4 size=0x88
+  5309b4:	3c02007c 	lui	v0,0x7c
+  5309b8:	27bdffd0 	addiu	sp,sp,-48
+  5309bc:	80425482 	lb	v0,21634(v0)
+  5309c0:	afb10028 	sw	s1,40(sp)
+  5309c4:	3091ffff 	andi	s1,a0,0xffff
+  5309c8:	afb00024 	sw	s0,36(sp)
+  5309cc:	00a08021 	move	s0,a1
+  5309d0:	1440000c 	bnez	v0,0x530a04
+  5309d4:	afbf002c 	sw	ra,44(sp)
+  5309d8:	00003021 	move	a2,zero
+  5309dc:	02202021 	move	a0,s1
+  5309e0:	0c14f734 	jal	0x53dcd0
+  5309e4:	02002821 	move	a1,s0
+  5309e8:	02202021 	move	a0,s1
+  5309ec:	02002821 	move	a1,s0
+  5309f0:	8fbf002c 	lw	ra,44(sp)
+  5309f4:	8fb10028 	lw	s1,40(sp)
+  5309f8:	8fb00024 	lw	s0,36(sp)
+  5309fc:	0814f69b 	j	0x53da6c
+  530a00:	27bd0030 	addiu	sp,sp,48
+  530a04:	0c16276a 	jal	0x589da8
+  530a08:	00000000 	nop
+  530a0c:	5040fff3 	beqzl	v0,0x5309dc
+  530a10:	00003021 	move	a2,zero
+  530a14:	3c04006c 	lui	a0,0x6c
+  530a18:	afb00010 	sw	s0,16(sp)
+  530a1c:	3c05006c 	lui	a1,0x6c
+  530a20:	248469a0 	addiu	a0,a0,27040
+  530a24:	24a57c98 	addiu	a1,a1,31896
+  530a28:	24060c68 	li	a2,3176
+  530a2c:	0c101b74 	jal	0x406dd0
+  530a30:	02203821 	move	a3,s1
+  530a34:	0814c277 	j	0x5309dc
+  530a38:	00003021 	move	a2,zero

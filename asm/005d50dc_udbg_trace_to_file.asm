@@ -1,0 +1,26 @@
+; func udbg_trace_to_file @ 0x005d50dc size=0x64
+  5d50dc:	27bdff80 	addiu	sp,sp,-128
+  5d50e0:	00002821 	move	a1,zero
+  5d50e4:	27a40018 	addiu	a0,sp,24
+  5d50e8:	afb00078 	sw	s0,120(sp)
+  5d50ec:	24060060 	li	a2,96
+  5d50f0:	afbf007c 	sw	ra,124(sp)
+  5d50f4:	0c101cf0 	jal	0x4073c0
+  5d50f8:	3c100075 	lui	s0,0x75
+  5d50fc:	00002821 	move	a1,zero
+  5d5100:	0c101df8 	jal	0x4077e0
+  5d5104:	2604fdec 	addiu	a0,s0,-532
+  5d5108:	10400007 	beqz	v0,0x5d5128
+  5d510c:	3c05006c 	lui	a1,0x6c
+  5d5110:	27a40018 	addiu	a0,sp,24
+  5d5114:	24a50720 	addiu	a1,a1,1824
+  5d5118:	0c101ebc 	jal	0x407af0
+  5d511c:	2606fdec 	addiu	a2,s0,-532
+  5d5120:	0c101d74 	jal	0x4075d0
+  5d5124:	27a40018 	addiu	a0,sp,24
+  5d5128:	0c175414 	jal	0x5d5050
+  5d512c:	2604fdec 	addiu	a0,s0,-532
+  5d5130:	8fbf007c 	lw	ra,124(sp)
+  5d5134:	8fb00078 	lw	s0,120(sp)
+  5d5138:	03e00008 	jr	ra
+  5d513c:	27bd0080 	addiu	sp,sp,128

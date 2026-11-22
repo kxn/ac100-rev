@@ -1,0 +1,29 @@
+; func balance_wtp_hash_obj @ 0x0045bec4 size=0x70
+  45bec4:	27bdffe0 	addiu	sp,sp,-32
+  45bec8:	10800007 	beqz	a0,0x45bee8
+  45becc:	afbf001c 	sw	ra,28(sp)
+  45bed0:	8fbf001c 	lw	ra,28(sp)
+  45bed4:	24840008 	addiu	a0,a0,8
+  45bed8:	24050006 	li	a1,6
+  45bedc:	00003021 	move	a2,zero
+  45bee0:	081020f4 	j	0x4083d0
+  45bee4:	27bd0020 	addiu	sp,sp,32
+  45bee8:	3c020073 	lui	v0,0x73
+  45beec:	8c4213e0 	lw	v0,5088(v0)
+  45bef0:	14400004 	bnez	v0,0x45bf04
+  45bef4:	8fbf001c 	lw	ra,28(sp)
+  45bef8:	00001021 	move	v0,zero
+  45befc:	03e00008 	jr	ra
+  45bf00:	27bd0020 	addiu	sp,sp,32
+  45bf04:	0c16276a 	jal	0x589da8
+  45bf08:	00000000 	nop
+  45bf0c:	5040fffa 	beqzl	v0,0x45bef8
+  45bf10:	8fbf001c 	lw	ra,28(sp)
+  45bf14:	3c040068 	lui	a0,0x68
+  45bf18:	3c050069 	lui	a1,0x69
+  45bf1c:	24847440 	addiu	a0,a0,29760
+  45bf20:	24a5a7dc 	addiu	a1,a1,-22564
+  45bf24:	0c101b74 	jal	0x406dd0
+  45bf28:	24060063 	li	a2,99
+  45bf2c:	08116fbe 	j	0x45bef8
+  45bf30:	8fbf001c 	lw	ra,28(sp)

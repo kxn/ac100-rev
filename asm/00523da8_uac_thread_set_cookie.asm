@@ -1,0 +1,23 @@
+; func uac_thread_set_cookie @ 0x00523da8 size=0x58
+  523da8:	3c1c0024 	lui	gp,0x24
+  523dac:	279cd358 	addiu	gp,gp,-11432
+  523db0:	0399e021 	addu	gp,gp,t9
+  523db4:	8f828368 	lw	v0,-31896(gp)
+  523db8:	27bdffe0 	addiu	sp,sp,-32
+  523dbc:	8f9982b8 	lw	t9,-32072(gp)
+  523dc0:	afbc0010 	sw	gp,16(sp)
+  523dc4:	afb00018 	sw	s0,24(sp)
+  523dc8:	00808021 	move	s0,a0
+  523dcc:	afbf001c 	sw	ra,28(sp)
+  523dd0:	0411ffef 	bal	0x523d90
+  523dd4:	8c443bbc 	lw	a0,15292(v0)
+  523dd8:	10400006 	beqz	v0,0x523df4
+  523ddc:	8fbf001c 	lw	ra,28(sp)
+  523de0:	8c430034 	lw	v1,52(v0)
+  523de4:	ac500030 	sw	s0,48(v0)
+  523de8:	24630001 	addiu	v1,v1,1
+  523dec:	ac430034 	sw	v1,52(v0)
+  523df0:	8fbf001c 	lw	ra,28(sp)
+  523df4:	8fb00018 	lw	s0,24(sp)
+  523df8:	03e00008 	jr	ra
+  523dfc:	27bd0020 	addiu	sp,sp,32

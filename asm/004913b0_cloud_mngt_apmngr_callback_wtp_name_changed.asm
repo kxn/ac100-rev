@@ -1,0 +1,35 @@
+; func cloud_mngt_apmngr_callback_wtp_name_changed @ 0x004913b0 size=0x88
+  4913b0:	27bdffd8 	addiu	sp,sp,-40
+  4913b4:	afb10020 	sw	s1,32(sp)
+  4913b8:	3c110076 	lui	s1,0x76
+  4913bc:	afb0001c 	sw	s0,28(sp)
+  4913c0:	afbf0024 	sw	ra,36(sp)
+  4913c4:	82227892 	lb	v0,30866(s1)
+  4913c8:	14400013 	bnez	v0,0x491418
+  4913cc:	00808021 	move	s0,a0
+  4913d0:	0c124484 	jal	0x491210
+  4913d4:	02002021 	move	a0,s0
+  4913d8:	00408021 	move	s0,v0
+  4913dc:	82227892 	lb	v0,30866(s1)
+  4913e0:	10400008 	beqz	v0,0x491404
+  4913e4:	8fbf0024 	lw	ra,36(sp)
+  4913e8:	3c04006a 	lui	a0,0x6a
+  4913ec:	3c05006a 	lui	a1,0x6a
+  4913f0:	24848eb4 	addiu	a0,a0,-29004
+  4913f4:	24a5b7ac 	addiu	a1,a1,-18516
+  4913f8:	0c101b74 	jal	0x406dd0
+  4913fc:	24060d75 	li	a2,3445
+  491400:	8fbf0024 	lw	ra,36(sp)
+  491404:	02001021 	move	v0,s0
+  491408:	8fb10020 	lw	s1,32(sp)
+  49140c:	8fb0001c 	lw	s0,28(sp)
+  491410:	03e00008 	jr	ra
+  491414:	27bd0028 	addiu	sp,sp,40
+  491418:	3c04006a 	lui	a0,0x6a
+  49141c:	3c05006a 	lui	a1,0x6a
+  491420:	24848e64 	addiu	a0,a0,-29084
+  491424:	24a5b7ac 	addiu	a1,a1,-18516
+  491428:	0c101b74 	jal	0x406dd0
+  49142c:	24060d73 	li	a2,3443
+  491430:	081244f4 	j	0x4913d0
+  491434:	00000000 	nop

@@ -1,0 +1,24 @@
+; func cw_header_flag_l_get @ 0x005a1e0c size=0x5c
+  5a1e0c:	27bdffd8 	addiu	sp,sp,-40
+  5a1e10:	00802821 	move	a1,a0
+  5a1e14:	afbf0024 	sw	ra,36(sp)
+  5a1e18:	10800009 	beqz	a0,0x5a1e40
+  5a1e1c:	afa00018 	sw	zero,24(sp)
+  5a1e20:	27a40018 	addiu	a0,sp,24
+  5a1e24:	0c101c8c 	jal	0x407230
+  5a1e28:	24060004 	li	a2,4
+  5a1e2c:	8fa20018 	lw	v0,24(sp)
+  5a1e30:	7c420180 	ext	v0,v0,0x6,0x1
+  5a1e34:	8fbf0024 	lw	ra,36(sp)
+  5a1e38:	03e00008 	jr	ra
+  5a1e3c:	27bd0028 	addiu	sp,sp,40
+  5a1e40:	3c040069 	lui	a0,0x69
+  5a1e44:	3c05006e 	lui	a1,0x6e
+  5a1e48:	3c07006e 	lui	a3,0x6e
+  5a1e4c:	2484d3ac 	addiu	a0,a0,-11348
+  5a1e50:	24a565ac 	addiu	a1,a1,26028
+  5a1e54:	24060353 	li	a2,851
+  5a1e58:	0c101b74 	jal	0x406dd0
+  5a1e5c:	24e7608c 	addiu	a3,a3,24716
+  5a1e60:	0816878d 	j	0x5a1e34
+  5a1e64:	00001021 	move	v0,zero
