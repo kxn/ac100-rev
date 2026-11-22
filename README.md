@@ -33,6 +33,12 @@ go test ./...           # packet fixtures in ghidra-export/data are exercised
 AC100_REV_ROOT=/path/to/checkout go test ./...   # optional override
 ```
 
+Needs Go 1.26+ and network access for the first module download — nothing
+else. To rebuild the reverse-engineering corpus from the binary (annotated
+disassembly, Ghidra pseudocode, registries) or to keep reversing, see
+**`docs/setup.md`** (full toolchain walkthrough: objdump/Ghidra versions,
+exact commands, env vars, known pitfalls).
+
 The daemon reads its runtime data from a data directory (see
 `cmd/acd` flags): `identity.json` / `profile.ini` / `apdb.json` /
 `rate-default.bin`. `profile.ini` values marked `(recon)` are

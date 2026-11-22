@@ -14,7 +14,7 @@ RE_DIR = Path(__import__("os").environ.get("AC100_REV_ROOT",
     str(Path(__file__).resolve().parents[1])))
 ASM = RE_DIR / "asm"
 
-DATA = (RE_DIR.parent / "work" / "rootfs" / "usr/sbin/uac").read_bytes()
+DATA = (RE_DIR / "firmware" / "usr/sbin" / "uac").read_bytes()
 LOAD1_VA, LOAD1_SZ = 0x400000, 0x321164
 LOAD2_VA, LOAD2_OFF, LOAD2_SZ = 0x731164, 0x321164, 0x28774
 
