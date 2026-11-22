@@ -12,7 +12,9 @@ all former not-impl placeholders closed), and the AC-side decision
 engines: wsta_roam centralized steering (0x58 trigger → RCPI normalize →
 filter → vendor rate estimation → admission → 0x59 result, with the
 `estimate_snr_rate_table_2g/5g` + `nsdTable` data extracted from the AC
-binary into `uacgo/data/estimate-rate-tables.bin`), the balance
+binary into `uacgo/data/estimate-rate-tables.bin`; rate-estimation
+semantics follow **AC300** — nf −85 / gate −84 / bw up to 160M — with
+AC100's classic constants selectable via `RateModel`), the balance
 admission engine, 11r PMK distribution, the RRM/ACS engine (state
 machine + DCA + TPC + ACS channel selection; 0x5c/0x5d/0x9b/0x9c
 wiring), the mac_auth admission tree, and the defense config push

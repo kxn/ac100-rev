@@ -94,13 +94,14 @@ func TestEstimateCandidateRate(t *testing.T) {
 		t.Fatal(err)
 	}
 	caps := SteerCaps{Mode: 1, NSS: 1, BW: 0, MCS: 7}
-	// rcpi −50 with nf 0 (fallback −95) → snr 45 → HT20 cap 72
+	// AC300 semantics (default): nf fallback −85, gate rcpi < −84.
+	// rcpi −50 → snr 35 → HT20 cap 72
 	if got := tbl.EstimateCandidateRate(caps, caps, -50, 0, 0, 0); got != 72 {
 		t.Fatalf("rate = %d, want 72", got)
 	}
-	// rcpi ≤ −95 → 0
-	if got := tbl.EstimateCandidateRate(caps, caps, -96, -95, 0, 0); got != 0 {
-		t.Fatalf("low rcpi = %d, want 0", got)
+	// gate: rcpi −85 is below AC300's estimable floor
+	if got := tbl.EstimateCandidateRate(caps, caps, -85, 0, 0, 0); got != 0 {
+		t.Fatalf("gate = %d, want 0", got)
 	}
 	// mesh harmonic cap: 72 and 72 → 36
 	if got := tbl.EstimateCandidateRate(caps, caps, -50, 0, 0, 72); got != 36 {
@@ -109,5 +110,46 @@ func TestEstimateCandidateRate(t *testing.T) {
 	// caps intersection: STA 1ss, WLAN 2ss → 1ss; STA HT, WLAN legacy → legacy
 	if got := tbl.EstimateCandidateRate(caps, SteerCaps{Mode: 0, NSS: 2, BW: 1}, -50, 0, 0, 0); got != 33 {
 		t.Fatalf("min caps = %d, want 33", got)
+	}
+}
+
+// TestRateModelSemantics pins the AC100 vs AC300 estimation differences
+// (SNR base and gate) and the capability range model.
+func TestRateModelSemantics(t *testing.T) {
+	tbl, err := LoadEstimateRateTables(testroot.Root() + "/uacgo/data/estimate-rate-tables.bin")
+	if err != nil {
+		t.Fatal(err)
+	}
+	caps := SteerCaps{Mode: 1, NSS: 1, BW: 0, MCS: 7}
+	// same rcpi, different SNR base: AC300 snr=25 → 67; AC100 snr=35 → 72
+	if got := tbl.EstimateCandidateRateModel(AC300RateModel, caps, caps, -60, 0, 0, 0); got != 67 {
+		t.Fatalf("AC300 rcpi-60 = %d, want 67", got)
+	}
+	if got := tbl.EstimateCandidateRateModel(AC100RateModel, caps, caps, -60, 0, 0, 0); got != 72 {
+		t.Fatalf("AC100 rcpi-60 = %d, want 72", got)
+	}
+	// gate: −85 is estimable on AC100 (snr 10 → 21) but not on AC300
+	if got := tbl.EstimateCandidateRateModel(AC100RateModel, caps, caps, -85, 0, 0, 0); got != 21 {
+		t.Fatalf("AC100 rcpi-85 = %d, want 21", got)
+	}
+	if got := tbl.EstimateCandidateRateModel(AC300RateModel, caps, caps, -85, 0, 0, 0); got != 0 {
+		t.Fatalf("AC300 rcpi-85 = %d, want 0", got)
+	}
+	// capability ranges: 80MHz bw is within AC300 but out of AC100's
+	// 20/40 range → AC100 falls back to the per-band defaults
+	wide := SteerCaps{Mode: 2, NSS: 2, BW: 2, MCS: 9}
+	if got := AC300RateModel.NormalizeCaps(wide, 1); got != wide {
+		t.Fatalf("AC300 normalize = %+v", got)
+	}
+	if got := AC100RateModel.NormalizeCaps(wide, 1); got != (SteerCaps{BW: 2, NSS: 2, Mode: 2, MCS: 9}) {
+		t.Fatalf("AC100 normalize 5G = %+v", got)
+	}
+	// invalid caps fall back to the per-band defaults on both models
+	bad := SteerCaps{Mode: 9, NSS: 0, BW: 0, MCS: 30}
+	if got := AC300RateModel.NormalizeCaps(bad, 1); got != (SteerCaps{BW: 2, NSS: 2, Mode: 2, MCS: 9}) {
+		t.Fatalf("default 5G = %+v", got)
+	}
+	if got := AC300RateModel.NormalizeCaps(bad, 0); got != (SteerCaps{BW: 0, NSS: 1, Mode: 1, MCS: 7}) {
+		t.Fatalf("default 2G = %+v", got)
 	}
 }

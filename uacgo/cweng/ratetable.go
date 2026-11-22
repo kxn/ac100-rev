@@ -190,6 +190,56 @@ func (t *RateTables) EstimateRateFromSNR(snr uint8, caps SteerCaps, band uint8) 
 	return uint16(total)
 }
 
+// RateModel captures the model-specific constants of the estimation
+// chain (SNR base, low-signal gate, capability ranges). AC300/NAC
+// semantics are the default; AC100 is selectable. Evidence: MIPS
+// disassembly of wss_steer_candidate_rate_estimate (AC100 `addiu 0x5f`
+// + `slti -0x5e` vs AC300 `addiu 0x55` + `slti -0x54`) and the range
+// checks of _sta_caps_calculate / _wlan_caps_calculate (bw 2档→4档,
+// wlan cap 0xd→0xf) — notes/tl-ac300-policy-diff.md.
+type RateModel struct {
+	Name       string
+	NoiseFloor int8 // nf fallback when the radio stats lack one
+	MinRCPI    int8 // gate: rcpi < MinRCPI => not estimable (0)
+	// capability ranges accepted from the handshake parse; anything
+	// outside falls back to the per-band defaults (NormalizeCaps).
+	StaMCSMax  uint8 // sta side MCS upper bound (inclusive)
+	WlanMCSMax uint8 // wlan side MCS upper bound (inclusive)
+	BWMax      uint8 // negotiated bw upper bound (inclusive)
+}
+
+// AC300RateModel is the current-generation semantics (AC300 and
+// NAC10000S share it): nf −85, gate −84, bw up to 20/40/80/160.
+var AC300RateModel = RateModel{
+	Name: "AC300", NoiseFloor: -85, MinRCPI: -84,
+	StaMCSMax: 13, WlanMCSMax: 14, BWMax: 3,
+}
+
+// AC100RateModel is the classic semantics: nf −95, gate −94, bw 20/40.
+var AC100RateModel = RateModel{
+	Name: "AC100", NoiseFloor: -95, MinRCPI: -94,
+	StaMCSMax: 13, WlanMCSMax: 12, BWMax: 1,
+}
+
+// NormalizeCaps validates one parsed capability set against the model
+// ranges (the "out of range, use default" paths of _sta_caps_calculate
+// @0x48a928 / _wlan_caps_calculate @0x48ab30). Per-band defaults from
+// the decomp (unchanged on AC300): 5G {bw=2,nss=2,mode=2,mcs=9},
+// 2G {bw=0,nss=1,mode=1,mcs=7}.
+func (m RateModel) NormalizeCaps(c SteerCaps, band uint8) SteerCaps {
+	nssOK := c.NSS >= 1 && c.NSS <= 16
+	modeOK := c.Mode <= 4
+	mcsOK := c.MCS <= m.StaMCSMax && c.MCS <= m.WlanMCSMax
+	bwOK := c.BW <= m.BWMax
+	if nssOK && modeOK && mcsOK && bwOK {
+		return c
+	}
+	if band == 1 {
+		return SteerCaps{BW: 2, NSS: 2, Mode: 2, MCS: 9}
+	}
+	return SteerCaps{BW: 0, NSS: 1, Mode: 1, MCS: 7}
+}
+
 func minU8(a, b uint8) uint8 {
 	if a < b {
 		return a

@@ -212,18 +212,26 @@ func SelectNeighbors(cfg SteerConfig, adm AdmissionChecker, sta [6]byte,
 }
 
 // EstimateCandidateRate mirrors wss_steer_candidate_rate_estimate
-// @0x48b644: min caps → SNR → table rate → mesh backhaul harmonic cap.
-// rcpi is the normalized dBm value (NormalizeRCPI output). nf is the
-// target radio's noise floor (0 → −95, matching get_estimate_by_stat).
-// meshRate2Cap > 0 means the target is a mesh RE and its backhaul caps
-// the throughput. Returns −1 when the pair is not estimable.
+// @0x48b644 with the AC300 semantics (AC300RateModel). rcpi is the
+// normalized dBm value (NormalizeRCPI output). nf is the target radio's
+// noise floor (0 → model fallback). meshRate2Cap > 0 means the target
+// is a mesh RE and its backhaul caps the throughput.
 func (t *RateTables) EstimateCandidateRate(sta, wlan SteerCaps, rcpi int8, nf int8, band uint8, meshRate2Cap int) int {
-	caps := MinCaps(sta, wlan)
-	if rcpi <= -95 {
+	return t.EstimateCandidateRateModel(AC300RateModel, sta, wlan, rcpi, nf, band, meshRate2Cap)
+}
+
+// EstimateCandidateRateModel is the parameterized core: normalized caps
+// (handshake range checks) → min caps → SNR (rcpi − nf, model fallback)
+// → table rate → mesh backhaul harmonic cap. AC300 gates rcpi < −84
+// ("SNR is too low", `slti -0x54`) and assumes nf −85 (`addiu 0x55`);
+// AC100 gated at −94 (`slti -0x5e`) with nf −95 (`addiu 0x5f`).
+func (t *RateTables) EstimateCandidateRateModel(m RateModel, sta, wlan SteerCaps, rcpi int8, nf int8, band uint8, meshRate2Cap int) int {
+	caps := MinCaps(m.NormalizeCaps(sta, band), m.NormalizeCaps(wlan, band))
+	if rcpi < m.MinRCPI {
 		return 0 // "SNR is too low"
 	}
 	if nf == 0 {
-		nf = -95
+		nf = m.NoiseFloor
 	}
 	snr := uint8(rcpi - nf)
 	if snr == 0 {
