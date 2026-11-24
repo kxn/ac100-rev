@@ -133,4 +133,4 @@ config apmng_ftp
 
 
 config sta_bind_info
-	option max_ageing_time '300'
+	option max_aging_time '300'
