@@ -1,0 +1,5 @@
+config settings 'settings'
+	option enable 'on'
+	option backhaul_enable '0'
+	option backhaul_wserv_id '0'
+	option counter_notify_again '0'

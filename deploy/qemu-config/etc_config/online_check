@@ -1,0 +1,4 @@
+config lan 'lan'
+	option mode '0'
+	option gateway '0'
+	option dns '0'

@@ -1,0 +1,2 @@
+config settings 'settings'
+	option alloc_target '0'

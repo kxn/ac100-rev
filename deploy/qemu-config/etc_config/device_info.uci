@@ -1,0 +1,8 @@
+# 设备身份 —— uac_com_get_dev_vendor() 只接受以下三个 vendor_id 取值：
+#   0x00010001 -> 1 (TP-LINK)   0x00020001 -> 2 (MERCURY)   0x00000001 -> 0
+# 其余取值判为 vendor 3 并打印 invalid vendor_name，随后 apdb_init 失败。
+config info 'info'
+	option vendor_id '0x00000001'
+	option device_model 'TL-AC100'
+	option hw_version '6.0'
+	option enable_dns '0'

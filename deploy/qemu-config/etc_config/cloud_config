@@ -1,0 +1,89 @@
+config new_firmware 'new_firmware'
+	option fw_new_notify '0'
+	option fw_update_type '0'
+	option not_show '0'
+
+config device_legality 'device_legality'
+	option illegal '0'
+	option illegal_type '0'
+	option reconnect_time '0'
+
+config device_status 'device_status'
+	option bind_status '0'
+	option login_status '0'
+	option account_status '0'
+
+config upgrade_info 'upgrade_info'
+	option type '0'
+	option version '0'
+	option release_date '0'
+	option download_url '0'
+	option location '0'
+	option release_log '0'
+	option release_log_url '0'
+	option global_flag '0'
+
+config info 'info'
+	option alias '0'
+	option device_secret '0'
+
+config bind_tip 'bind_tip'
+	option not_show '0'
+
+config brand_mac 'brand_mac'
+	option renew_time '0'
+	option check_value '0'
+
+config bind_info 'bind_info'
+	option bind_status '0'
+	option first_check_bind '0'
+	option site_id '0'
+	option site_name '0'
+
+config static 'static'
+	option switch '0'
+	option report_time '0'
+
+config conf_app 'conf_app'
+	option switch '0'
+	option report_time '0'
+
+config conf_web 'conf_web'
+	option switch '0'
+	option report_time '0'
+
+config conn_dev 'conn_dev'
+	option switch '0'
+	option report_time '0'
+
+config surr_dev 'surr_dev'
+	option switch '0'
+	option report_time '0'
+
+config conf_mngt 'conf_mngt'
+	option mngt_switch 'on'
+
+config cloud_switch 'cloud_switch'
+	option enable 'on'
+
+config group_info 'group_info'
+	option group_id '0'
+
+config report_setting 'report_setting'
+	option time_interval '0'
+	option report_switch 'on'
+
+config ui_notify_info 'ui_notify_info'
+	option top_bar_notify_again '0'
+	option setting_function_selected '0'
+
+config tums_info 'tums_info'
+	option username '0'
+	option server '0'
+	option port '0'
+	option enable 'on'
+	option mfrs_id '0'
+	option comment '0'
+
+config cloud_type 'cloud_type'
+	option cloud_type '0'

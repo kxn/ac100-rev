@@ -1,0 +1,7 @@
+config settings 'settings'
+	option interval '0'
+	option max_load '0'
+	option protocol '0'
+	option state '0'
+	option content '0'
+	option apgroup '0'

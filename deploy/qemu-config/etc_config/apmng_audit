@@ -1,0 +1,3 @@
+config settings 'settings'
+	option enable 'on'
+	option remote_ip '0'

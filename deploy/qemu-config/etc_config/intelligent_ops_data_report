@@ -1,0 +1,2 @@
+config apmng_set 'apmng_set'
+	option module_switch 'on'

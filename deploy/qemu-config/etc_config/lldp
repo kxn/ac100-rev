@@ -1,0 +1,2 @@
+config conf_mngt 'conf_mngt'
+	option mngt_switch 'on'

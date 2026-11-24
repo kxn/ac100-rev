@@ -1,0 +1,5 @@
+config config_id 'config_id'
+	option config_id '0'
+
+config config_sync 'config_sync'
+	option apmng_set '0'

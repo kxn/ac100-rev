@@ -1,0 +1,5 @@
+config settings 'settings'
+	option enable 'on'
+	option 5g_threshold '0'
+	option dif_threshold '0'
+	option max_fail_num '0'

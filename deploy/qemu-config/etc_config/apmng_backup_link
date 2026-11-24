@@ -1,0 +1,5 @@
+config settings 'settings'
+	option enable 'on'
+	option priority '0'
+	option backup_ip '0'
+	option backup_ip6 '0'

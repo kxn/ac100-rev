@@ -1,0 +1,4 @@
+config admin 'admin'
+	option password '0'
+	option username '0'
+	option encrypt_type '0'

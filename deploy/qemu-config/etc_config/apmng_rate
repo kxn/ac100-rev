@@ -1,0 +1,26 @@
+config rate_11a 'rate_11a'
+	option 11a_base '0'
+	option 11a_supp '0'
+	option 11a_mult '0'
+
+config rate_11b 'rate_11b'
+	option 11b_base '0'
+	option 11b_supp '0'
+	option 11b_mult '0'
+
+config rate_11g 'rate_11g'
+	option 11g_base '0'
+	option 11g_supp '0'
+	option 11g_mult '0'
+
+config rate_11n 'rate_11n'
+	option 11n_base '0'
+	option 11n_supp '0'
+
+config rate_11ac 'rate_11ac'
+	option 11ac_base '0'
+	option 11ac_supp '0'
+
+config rate_11ax 'rate_11ax'
+	option 11ax_base '0'
+	option 11ax_supp '0'

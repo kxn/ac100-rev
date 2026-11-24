@@ -1,0 +1,134 @@
+config get_new_token 'get_new_token'
+	option owner '0'
+	option action_status '0'
+	option err_code '0'
+
+config check_fw_ver 'check_fw_ver'
+	option owner '0'
+	option action_status '0'
+	option err_code '0'
+
+config download_fw 'download_fw'
+	option owner '0'
+	option action_status '0'
+	option err_code '0'
+
+config download_file 'download_file'
+	option owner '0'
+	option action_status '0'
+	option err_code '0'
+
+config get_account_stat 'get_account_stat'
+	option owner '0'
+	option action_status '0'
+	option err_code '0'
+
+config reset_account_pwd 'reset_account_pwd'
+	option owner '0'
+	option action_status '0'
+	option err_code '0'
+
+config modify_account_pwd 'modify_account_pwd'
+	option owner '0'
+	option action_status '0'
+	option err_code '0'
+
+config get_reg_verify_code 'get_reg_verify_code'
+	option owner '0'
+	option action_status '0'
+	option err_code '0'
+
+config get_reset_pwd_verify_code 'get_reset_pwd_verify_code'
+	option owner '0'
+	option action_status '0'
+	option err_code '0'
+
+config check_reg_verify_code 'check_reg_verify_code'
+	option owner '0'
+	option action_status '0'
+	option err_code '0'
+
+config check_reset_pwd_verify_code 'check_reset_pwd_verify_code'
+	option owner '0'
+	option action_status '0'
+	option err_code '0'
+
+config notify_event 'notify_event'
+	option owner '0'
+	option action_status '0'
+	option err_code '0'
+
+config bind 'bind'
+	option owner '0'
+	option action_status '0'
+	option err_code '0'
+
+config login 'login'
+	option owner '0'
+	option action_status '0'
+	option err_code '0'
+
+config resend_email 'resend_email'
+	option owner '0'
+	option action_status '0'
+	option err_code '0'
+
+config unbind 'unbind'
+	option owner '0'
+	option action_status '0'
+	option err_code '0'
+
+config register 'register'
+	option owner '0'
+	option action_status '0'
+	option err_code '0'
+
+config get_plugins 'get_plugins'
+	option owner '0'
+	option action_status '0'
+	option err_code '0'
+
+config get_can_update_plugins 'get_can_update_plugins'
+	option owner '0'
+	option action_status '0'
+	option err_code '0'
+
+config get_not_installed_plugins 'get_not_installed_plugins'
+	option owner '0'
+	option action_status '0'
+	option err_code '0'
+
+config check_plugin_update 'check_plugin_update'
+	option owner '0'
+	option action_status '0'
+	option err_code '0'
+
+config get_plugin_info 'get_plugin_info'
+	option owner '0'
+	option action_status '0'
+	option err_code '0'
+
+config download_plugin 'download_plugin'
+	option owner '0'
+	option action_status '0'
+	option err_code '0'
+
+config synchronize_plugin 'synchronize_plugin'
+	option owner '0'
+	option action_status '0'
+	option err_code '0'
+
+config plugin_service 'plugin_service'
+	option owner '0'
+	option action_status '0'
+	option err_code '0'
+
+config client_info 'client_info'
+	option connect_status '0'
+	option reconnect_time '0'
+	option disconnect_reason '0'
+	option fw_download_progress '0'
+	option fw_download_status '0'
+
+config offline 'offline'
+	option offline_reason '0'
