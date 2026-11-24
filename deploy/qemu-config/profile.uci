@@ -31,6 +31,7 @@ config ac_capwap
 	option cacert_file_path '/etc/cacert.pem'
 	option privkey_file_path '/etc/privkey.pem'
 
+
 config ac_apupd
 	option max_all_model_size '1024000'
 	option max_download_software '1024000'
@@ -39,25 +40,31 @@ config ac_apupd
 	option max_update_model '100'
 	option max_update_wtp '1000'
 
+
 config ac_arp_defend
 	option max_arp '1024'
 	option max_bind_num '1024'
+
 
 config ac_dhcp_defend
 	option max_server '64'
 	option max_svr_per_ap '8'
 
+
 config apmng_client
 	option max_wstation '2048'
+
 
 config apmng_rf
 	option cfg_dft_mngt_frame_2g_rate '1'
 	option cfg_dft_mngt_frame_5g_rate '1'
 	option rd_chnl_collect_interval '300'
 
+
 config apmng_roam
 	option high_performance_ap_cnt '100'
 	option high_performance_sta_cnt '1000'
+
 
 config apmng_set
 	option support_nms_ap_max '16'
@@ -68,33 +75,62 @@ config apmng_set
 	option sensor_max '8'
 	option discover_sensor_max '8'
 
+
 config apmng_upgrade
 	option large_firmware_threshold '10240'
 	option sub_file_size '1024'
+
+	option reserved_memory_size '1024'
 
 config mac_auth
 	option max_group '392'
 	option max_mac '168'
 	option max_vlan '64'
 
+
 config radio_mngr
 	option max_radio_per_ap '2'
 	option max_wlan_per_radio '16'
+
 
 config sensor
 	option di_cache_max '64'
 	option st_test_case_max '64'
 
+
 config wheel_timer
 	option id_len '8'
+
 
 config wportal
 	option cmcc_thread_num '4'
 	option free_strategy_max '16'
 	option portal_max '64'
 	option sessmngr_max '1024'
-	option wechat_wifi_server_host ''
+	option wechat_wifi_server_host 'weixin.qq.com'
+
 
 config wservice_mngr
 	option max_wservice '16'
 
+
+
+config switch
+	option max_vlan_pool '64'
+
+
+config apmng_bluetooth_set
+	option rule_max '16'
+	option iot_server_max '16'
+
+
+config apmng_ftp_set
+	option rule_max '16'
+
+
+config apmng_ftp
+	option rule_max '16'
+
+
+config sta_bind_info
+	option max_ageing_time '300'

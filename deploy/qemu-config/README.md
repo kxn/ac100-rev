@@ -31,9 +31,24 @@
 6. `uc.conf` 是 cfgsync 白名单，**不全**：`sub_proxy_*`、`dft_offline_selfmanage`、
    `http_port`/`https_port` 等 uac 会读但白名单里没有。
 
-## 当前进度
+## 当前进度（uac 已能跑过大半模块初始化）
 
-`uac` 在 QEMU 里已能跑完 profile 读取、apdb、apmngr 的全部 restore；
-停在 `rate_db_init()`：`option[11a_base] not found or type mismatch`
-（UCI 侧 `uci get apmng_rate.rate_11a.11a_base` 正常返回，说明是 uac 期望的
-类型不同——很可能是 list 或掩码串，待定）。
+已依次通过：profile → apdb → apmngr(settings/aplog/crashdump/diagnose) →
+bluetooth/ftp → rate_db → wservice(igmp) → wsta → apupd → wportal。
+
+迭代中又确认的坑：
+
+7. `apmng_rate` 里 `11a_base`/`11a_supp` 必须是 **list**，`11a_mult` 是标量；
+   `11n_*`/`11ac_*` 是标量。
+8. **同名段不能重复**：`get_profile` 以 `.type` 为键只保留第一个段，
+   重复段的键会被静默忽略（合并段是必须的）。
+9. 布尔型 UCI 选项（如 `apmng_wserv.igmp_settings.igmp_snooping_enable`、
+   `authentication.portal.https_enable`）同样走 onoff_map，必须是 `on`。
+
+剩余（当前停在这里）：
+
+- `event_params` 包结构未知：uac 需要 `getUciSection(10001020)` 这类**数字段名**。
+- `profile[sta_bind_info->max_ageing_time]` 仍取不到（段名待确认）。
+- `device_info.sw_version` 的格式（`uac_com_get_dev_sw`：解析 "x.y.z Build N Rel.M"）。
+- `wportal` 的 `dns_upd_intv` 与 sqlite 表 `portalTable`/`radiusTable`
+  （这些表正常由 uac 自己建，缺表可能只是初始化顺序问题）。
