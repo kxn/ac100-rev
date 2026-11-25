@@ -53,6 +53,7 @@ config ac_dhcp_defend
 
 config apmng_client
 	option max_wstation '2048'
+	option max_aging_time '300'
 
 
 config apmng_rf
@@ -61,9 +62,18 @@ config apmng_rf
 	option rd_chnl_collect_interval '300'
 
 
-config apmng_roam
+config apmng_roma
 	option high_performance_ap_cnt '100'
 	option high_performance_sta_cnt '1000'
+
+config apmng_roam
+	option rule_max '32'
+
+config apmng_balance
+	option rule_max '32'
+
+config apmng_rrm
+	option rule_max '50'
 
 
 config apmng_set
@@ -104,6 +114,9 @@ config wheel_timer
 
 config wportal
 	option cmcc_thread_num '4'
+	option ac_8021x_radius_auth_thread_num '4'
+	option radius_thread_num '4'
+	option ldap_thread_num '4'
 	option free_strategy_max '16'
 	option portal_max '64'
 	option sessmngr_max '1024'
@@ -130,7 +143,3 @@ config apmng_ftp_set
 
 config apmng_ftp
 	option rule_max '16'
-
-
-config sta_bind_info
-	option max_ageing_time '300'

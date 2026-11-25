@@ -1,0 +1,69 @@
+{
+	"vendor":	0,
+	"ap_item_list":	[{
+			"id":	1600617717,
+			"ap_name":	"TL-XAP3006GC-PoE/DC易展版",
+			"vendor":	0,
+			"fwid_list":	[{
+					"cap_index":	0,
+					"fwid":	"FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF",
+					"ap_index":	0
+				}, {
+					"cap_index":	1,
+					"fwid":	"07DE67DF3314B8C0A6E1D10D1A745D12",
+					"ap_index":	0
+				}],
+			"ap_list":	[{
+					"ap_name":	"TL-XAP3006GC-PoE/DC易展版",
+					"device_type":	"CEILINGMOUNTAP",
+					"version":	0,
+					"id":	1600617717,
+					"vendor":	0,
+					"support_cloud_upgrade":	true,
+					"is_mesh_device":	true,
+					"hardware_id":	"5B5D0CD80F9E99AE7539125034AA5742",
+					"models":	[{
+							"hwver":	"2.0",
+							"radios":	{
+								"2.4G_1":	{
+									"max_ssid":	7,
+									"max_stations":	128,
+									"max_tx_power":	30,
+									"min_tx_power":	3,
+									"dft_tx_power":	30,
+									"max_tx_stream":	2,
+									"max_rx_stream":	2,
+									"radio_func_type":	0,
+									"support_11ax":	true,
+									"support_WPA3":	true
+								},
+								"5.0G_2":	{
+									"max_ssid":	7,
+									"max_stations":	128,
+									"max_tx_power":	29,
+									"min_tx_power":	3,
+									"dft_tx_power":	29,
+									"max_tx_stream":	2,
+									"max_rx_stream":	2,
+									"mutex_channel":	"36,40,44,48,52,56,60,64,149,153,157,161",
+									"radio_func_type":	0,
+									"support_11ac":	true,
+									"support_11ax":	true,
+									"support_160M":	true,
+									"support_WPA3":	true
+								}
+							},
+							"ext_radios":	{
+						}
+						}]
+				}],
+			"cap_list":	[{
+					"id":	1600617717,
+					"support_usb":	0,
+					"support_ftp":	0,
+					"support_bluetooth_gw":	0,
+					"support_bluetooth_om":	0,
+					"support_bluetooth_esl":	0
+				}]
+		}]
+}

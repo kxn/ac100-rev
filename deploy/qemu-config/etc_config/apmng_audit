@@ -1,3 +1,6 @@
 config settings 'settings'
 	option enable 'on'
-	option remote_ip '0'
+	option remote_ip '127.0.0.1'
+	option server_type 'local'
+	option sniffing_report_interval '60'
+	option sniffing_report_max '500'

@@ -1,4 +1,5 @@
 config sys 'sys'
+	option dev_alias 'TL-AC100'
 	option timezone '0'
 	option is_factory 'off'
 	option has_set_pwd 'on'

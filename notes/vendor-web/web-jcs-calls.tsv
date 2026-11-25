@@ -1,0 +1,372 @@
+controller	line	function	lua_client	jcs_name	operation	data_expression	other_process_expression
+usr/lib/lua/luci/controller/admin/apmng_arpdefend.lua	85	set_ap_list	jcsUI2uac	arp_defend_ap	2 SET	i	
+usr/lib/lua/luci/controller/admin/apmng_arpdefend.lua	117	do_clear_ap_list	jcsUI2uac	arp_defend_ap	2 SET	d	
+usr/lib/lua/luci/controller/admin/apmng_arpdefend.lua	156	get_ap_list	jcsUI2uac	arp_defend_ap	3 GET	n	
+usr/lib/lua/luci/controller/admin/apmng_arpdefend.lua	270	N	jcsUI2uac	arp_defend_ap	2 SET	i	
+usr/lib/lua/luci/controller/admin/apmng_arpdefend.lua	320	set_arp_list_data	jcsUI2uac	arp_defend_arp	2 SET	i	
+usr/lib/lua/luci/controller/admin/apmng_arpdefend.lua	351	add_arp_list_data	jcsUI2uac	arp_defend_arp	0 ADD	i	
+usr/lib/lua/luci/controller/admin/apmng_arpdefend.lua	387	del_arp_list_data	jcsUI2uac	arp_defend_arp	1 DEL	s	
+usr/lib/lua/luci/controller/admin/apmng_arpdefend.lua	454	do_settings	jcsUI2uac	arp_defend_setting	2 SET	n	
+usr/lib/lua/luci/controller/admin/apmng_arpdefend.lua	482	set_arp_scan	jcsUI2uac	arp_defend_do_scan	2 SET	n	
+usr/lib/lua/luci/controller/admin/apmng_arpdefend.lua	492	get_arp_scan_list	jcsUI2uac	arp_defend_scan	3 GET	i	
+usr/lib/lua/luci/controller/admin/apmng_audit.lua	13	do_settings	jcsUI2uac	ac_audit	2 SET	l	
+usr/lib/lua/luci/controller/admin/apmng_balance.lua	73	balance_rule_list_get	jcsUI2uac	ac_balance	3 GET	a	
+usr/lib/lua/luci/controller/admin/apmng_balance.lua	97	balance_rule_list_add	jcsUI2uac	ac_balance	0 ADD	n	
+usr/lib/lua/luci/controller/admin/apmng_balance.lua	117	balance_rule_list_del	jcsUI2uac	ac_balance	1 DEL	i	
+usr/lib/lua/luci/controller/admin/apmng_balance.lua	139	balance_rule_list_set	jcsUI2uac	ac_balance	2 SET	t	
+usr/lib/lua/luci/controller/admin/apmng_band_navigation.lua	33	do_settings	jcsUI2uac	apmng_band_navigation	2 SET	e	
+usr/lib/lua/luci/controller/admin/apmng_bcast_storm_ctrl.lua	71	apply_settings	jcsUI2uac	bcast_storm_ctrl	2 SET	t	
+usr/lib/lua/luci/controller/admin/apmng_bluetooth_set.lua	73	iot_server_list_get	jcsUI2uac	iot_server_list	3 GET	r	
+usr/lib/lua/luci/controller/admin/apmng_bluetooth_set.lua	91	bluetooth_rule_list_get	jcsUI2uac	bluetooth_network_rule_list	3 GET	i	
+usr/lib/lua/luci/controller/admin/apmng_bluetooth_set.lua	178	bluetooth_rule_list_set	jcsUI2uac	bluetooth_network_rule_list	2 SET	_	
+usr/lib/lua/luci/controller/admin/apmng_bluetooth_set.lua	263	iot_server_list_set	jcsUI2uac	iot_server_list	2 SET	_	
+usr/lib/lua/luci/controller/admin/apmng_bluetooth_set.lua	286	bluetooth_rule_list_del	jcsUI2uac	bluetooth_network_rule_list	1 DEL	_	
+usr/lib/lua/luci/controller/admin/apmng_bluetooth_set.lua	307	iot_server_list_del	jcsUI2uac	iot_server_list	1 DEL	r	
+usr/lib/lua/luci/controller/admin/apmng_bluetooth_set.lua	390	bluetooth_rule_list_add	jcsUI2uac	bluetooth_network_rule_list	0 ADD	_	
+usr/lib/lua/luci/controller/admin/apmng_bluetooth_set.lua	470	iot_server_list_add	jcsUI2uac	iot_server_list	0 ADD	_	
+usr/lib/lua/luci/controller/admin/apmng_client.lua	21	backup_wstation_client	jcsUI2uac	wstation_backup	3 GET	{}	
+usr/lib/lua/luci/controller/admin/apmng_client.lua	88	client_list_data_get	jcsUI2uac	wstation	3 GET	l	
+usr/lib/lua/luci/controller/admin/apmng_client.lua	133	client_list_data_del	jcsUI2uac	wstation	1 DEL	e	
+usr/lib/lua/luci/controller/admin/apmng_client.lua	134	client_list_data_del	jcsUI2uac	wstation_mac	1 DEL	e	
+usr/lib/lua/luci/controller/admin/apmng_client.lua	144	get_client_rssi_data	jcsUI2uac	client_rssi_data	3 GET	e[1]	
+usr/lib/lua/luci/controller/admin/apmng_dhcp_defense.lua	125	add_dhcp_filter	jcsUI2uac	~dhcpdef_svr (A)	0 ADD	_	
+usr/lib/lua/luci/controller/admin/apmng_dhcp_defense.lua	212	del_dhcp_filter	jcsUI2uac	dhcpdef_svr	1 DEL	f	
+usr/lib/lua/luci/controller/admin/apmng_dhcp_defense.lua	263	set_apbind_list	jcsUI2uac	~dhcpdef_apbind_svr (O)	2 SET	a	
+usr/lib/lua/luci/controller/admin/apmng_dhcp_defense.lua	312	set_dhcp_filter	jcsUI2uac	~dhcpdef_svr (A)	2 SET	n	
+usr/lib/lua/luci/controller/admin/apmng_dhcp_defense.lua	355	get_ap_list	jcsUI2uac	~dhcpdef_apbind (E)	3 GET	n	
+usr/lib/lua/luci/controller/admin/apmng_dhcp_defense.lua	392	set_ap_list	jcsUI2uac	~dhcpdef_apbind (E)	2 SET	a	
+usr/lib/lua/luci/controller/admin/apmng_dhcp_defense.lua	420	clear_apbind_list	jcsUI2uac	~dhcpdef_apbind (E)	2 SET	i	
+usr/lib/lua/luci/controller/admin/apmng_ftp.lua	31	ftp_server_list_get	jcsUI2uac	ftp_server_list	3 GET	i	
+usr/lib/lua/luci/controller/admin/apmng_ftp.lua	67	ftp_server_list_set	jcsUI2uac	ftp_server_list	2 SET	r	
+usr/lib/lua/luci/controller/admin/apmng_ftp.lua	101	ftp_server_list_add	jcsUI2uac	ftp_server_list	0 ADD	r	
+usr/lib/lua/luci/controller/admin/apmng_ftp.lua	126	ftp_server_list_del	jcsUI2uac	ftp_server_list	1 DEL	n	
+usr/lib/lua/luci/controller/admin/apmng_ftp.lua	148	ftp_status_list_get	jcsUI2uac	ftp_status_list	3 GET	n	
+usr/lib/lua/luci/controller/admin/apmng_mesh.lua	11	re_node_list_get	jcsUI2uac	ac_mesh_topology	3 GET	r	
+usr/lib/lua/luci/controller/admin/apmng_mesh.lua	27	unfirmed_ap_list_get	jcsUI2uac	ac_mesh_discover_list	3 GET	a	
+usr/lib/lua/luci/controller/admin/apmng_mesh.lua	40	select_mesh_ap	jcsUI2uac	ac_mesh_discover_cap_change	2 SET	_	
+usr/lib/lua/luci/controller/admin/apmng_mesh.lua	54	add_mesh_ap	jcsUI2uac	ac_mesh_trigger_pair	2 SET	n	
+usr/lib/lua/luci/controller/admin/apmng_mesh.lua	56	add_all_mesh_ap	jcsUI2uac	ac_mesh_trigger_pair_all	2 SET	{}	
+usr/lib/lua/luci/controller/admin/apmng_mesh.lua	62	scan_new_device	jcsUI2uac	ac_mesh_trigger_discover	2 SET	{}	
+usr/lib/lua/luci/controller/admin/apmng_mesh.lua	68	scan_new_device	jcsUI2uac	ac_mesh_stop_discover	2 SET	{}	
+usr/lib/lua/luci/controller/admin/apmng_mesh.lua	73	scan_new_device_status_get	jcsUI2uac	ac_mesh_discover_status	3 GET	{}	
+usr/lib/lua/luci/controller/admin/apmng_mesh.lua	104	do_settings	jcsUI2uac	ac_mesh_global_settings	2 SET	_	
+usr/lib/lua/luci/controller/admin/apmng_mesh.lua	116	sync_mesh_switch_handler	jcsUI2uac	ac_mesh_global_settings	2 SET	e	
+usr/lib/lua/luci/controller/admin/apmng_passthrough.lua	37	handle_apmng_passthrough	jcsUI2uac	ac_passthrough	2 SET	e	
+usr/lib/lua/luci/controller/admin/apmng_passthrough.lua	54	handle_apmng_passthrough	jcsUI2uac	ac_passthrough	3 GET	e	
+usr/lib/lua/luci/controller/admin/apmng_rate.lua	70	do_rate	jcsUI2uac	ac_rate	2 SET	e	
+usr/lib/lua/luci/controller/admin/apmng_report.lua	8	apply_settings	jcsUI2uac	ac_report	2 SET	r	
+usr/lib/lua/luci/controller/admin/apmng_report.lua	31	del_group_callback	jcsUI2uac	ac_report	2 SET	r	
+usr/lib/lua/luci/controller/admin/apmng_rf.lua	1273	load_rf	jcsUI2uac	rf_mngr	2 SET	e	
+usr/lib/lua/luci/controller/admin/apmng_rf.lua	1294	load_rf	jcsUI2uac	rf_mngr	2 SET	e	
+usr/lib/lua/luci/controller/admin/apmng_rf.lua	1332	backup_rf	jcsUI2uac	backup_rf_mngr_entry	3 GET	{}	
+usr/lib/lua/luci/controller/admin/apmng_rf.lua	1396	set_rf_handle	jcsUI2uac	rf_mngr	2 SET	_	
+usr/lib/lua/luci/controller/admin/apmng_rf.lua	1412	set_rf_handle	jcsUI2uac	rf_mngr	2 SET	_	
+usr/lib/lua/luci/controller/admin/apmng_rf.lua	1428	set_rf_handle	jcsUI2uac	rf_mngr	2 SET	_	
+usr/lib/lua/luci/controller/admin/apmng_rf.lua	1494	get_rf	jcsUI2uac	rf_mngr	3 GET	t	
+usr/lib/lua/luci/controller/admin/apmng_rf.lua	1541	get_edca_scence_spe	jcsUI2uac	edca_config	3 GET	_	
+usr/lib/lua/luci/controller/admin/apmng_rf.lua	1571	get_edca_rule	jcsUI2uac	edca_rule	3 GET	_	
+usr/lib/lua/luci/controller/admin/apmng_rf.lua	1585	add_edca_rule	jcsUI2uac	edca_rule	0 ADD	e	
+usr/lib/lua/luci/controller/admin/apmng_rf.lua	1599	set_edca_rule	jcsUI2uac	edca_rule	2 SET	e	
+usr/lib/lua/luci/controller/admin/apmng_rf.lua	1630	delete_edca_rule	jcsUI2uac	edca_rule	1 DEL	t	
+usr/lib/lua/luci/controller/admin/apmng_rf.lua	1647	get_multi_rf	jcsUI2uac	rf_mngr	3 GET	l	
+usr/lib/lua/luci/controller/admin/apmng_rf.lua	1678	rf_template_export	jcsUI2uac	rf_mngr_template_export	3 GET	{}	
+usr/lib/lua/luci/controller/admin/apmng_rf.lua	1700	handle_cloud_cfg_to_local_event	jcsUI2uac	rf_mngr	2 SET	t	
+usr/lib/lua/luci/controller/admin/apmng_rf.lua	1734	get_raio_mode_spe	jcsUI2uac	jcs_radio_mode_entry	3 GET	_	
+usr/lib/lua/luci/controller/admin/apmng_roam.lua	88	do_settings	jcsUI2uac	ac_roam	2 SET	e	
+usr/lib/lua/luci/controller/admin/apmng_roam.lua	106	get_real_wireless_network_mode	jcsUI2uac	roam_wireless_network_mode	3 GET	t	
+usr/lib/lua/luci/controller/admin/apmng_roam.lua	116	roam_list_add	jcsUI2uac	ac_roam_list	0 ADD	t	
+usr/lib/lua/luci/controller/admin/apmng_roam.lua	144	roam_list_del	jcsUI2uac	ac_roam_list	1 DEL	l	
+usr/lib/lua/luci/controller/admin/apmng_roam.lua	154	exist_unsupport_wireless_network_mode_ap	jcsUI2uac	roam_exist_unsupport_ap	3 GET	e	
+usr/lib/lua/luci/controller/admin/apmng_roam.lua	162	default_roam_get	jcsUI2uac	ac_roam_list	3 GET	t	
+usr/lib/lua/luci/controller/admin/apmng_roam.lua	195	roam_list_get	jcsUI2uac	ac_roam_list	3 GET	t	
+usr/lib/lua/luci/controller/admin/apmng_roam.lua	220	roam_list_set	jcsUI2uac	ac_roam_list	2 SET	t	
+usr/lib/lua/luci/controller/admin/apmng_rrm.lua	62	before_settings	jcsUI2uac	ac_rrmpara	2 SET	r	
+usr/lib/lua/luci/controller/admin/apmng_rrm.lua	129	rrm_status_read	jcsUI2uac	ac_rrm_state	3 GET	l	
+usr/lib/lua/luci/controller/admin/apmng_rrm.lua	138	set_manualrrm	jcsUI2uac	ac_manualrrm	2 SET	r	
+usr/lib/lua/luci/controller/admin/apmng_rrm.lua	158	set_autorrm	jcsUI2uac	ac_autorrm	2 SET	{}	
+usr/lib/lua/luci/controller/admin/apmng_rrm.lua	171	set_autorrm_list	jcsUI2uac	ac_autorrm_list	2 SET	r	
+usr/lib/lua/luci/controller/admin/apmng_rrm.lua	220	rrm_close_autorrm	jcsUI2uac	ac_rrmpara	2 SET	e	
+usr/lib/lua/luci/controller/admin/apmng_rrm.lua	224	radio_or_wserv_cfg_set_check	jcsUI2uac	ac_rrm_state	3 GET	l	
+usr/lib/lua/luci/controller/admin/apmng_rrm.lua	289	rrm_setting_list_get	jcsUI2uac	ac_rrm_list	3 GET	_	
+usr/lib/lua/luci/controller/admin/apmng_rrm.lua	310	rrm_setting_list_add	jcsUI2uac	ac_rrm_list	0 ADD	r	
+usr/lib/lua/luci/controller/admin/apmng_rrm.lua	329	rrm_setting_list_del	jcsUI2uac	ac_rrm_list	1 DEL	l	
+usr/lib/lua/luci/controller/admin/apmng_rrm.lua	350	rrm_setting_list_set	jcsUI2uac	ac_rrm_list	2 SET	_	
+usr/lib/lua/luci/controller/admin/apmng_sensor.lua	117	local_set_sensor_settings	jcsUI2uac	sensor_global	2 SET	_	
+usr/lib/lua/luci/controller/admin/apmng_sensor.lua	154	before_settings	jcsUI2uac	sensor_global	2 SET	t	
+usr/lib/lua/luci/controller/admin/apmng_sensor.lua	177	before_settings	jcsUI2uac	sensor_global	2 SET	t	
+usr/lib/lua/luci/controller/admin/apmng_sensor.lua	207	sensor_discover_trigger	jcsUI2uac	sensor_discover_trigger	2 SET	_	
+usr/lib/lua/luci/controller/admin/apmng_sensor.lua	216	sensor_list_added_get	jcsUI2uac	sensor_list_added	3 GET	l	
+usr/lib/lua/luci/controller/admin/apmng_sensor.lua	227	sensor_manage_status_get	jcsUI2uac	sensor_manage_status	3 GET	_	
+usr/lib/lua/luci/controller/admin/apmng_sensor.lua	245	get_sensor_test_ssid_list	jcsUI2uac	sensor_test_ssid_list	3 GET	l	
+usr/lib/lua/luci/controller/admin/apmng_sensor.lua	268	get_sensor_test_summary	jcsUI2uac	sensor_test_summary	3 GET	r	
+usr/lib/lua/luci/controller/admin/apmng_sensor.lua	282	get_sensor_test_summary_new	jcsUI2uac	sensor_test_summary_new	3 GET	l	
+usr/lib/lua/luci/controller/admin/apmng_sensor.lua	309	get_sensor_test_result	jcsUI2uac	sensor_test_result	3 GET	l	
+usr/lib/lua/luci/controller/admin/apmng_sensor.lua	325	get_sensor_test_detail_result	jcsUI2uac	sensor_test_detail_result	3 GET	t	
+usr/lib/lua/luci/controller/admin/apmng_sensor.lua	454	set_sensor_test_case	jcsUI2uac	sensor_test_case_list	2 SET	t	
+usr/lib/lua/luci/controller/admin/apmng_sensor.lua	505	add_sensor_test_case	jcsUI2uac	sensor_test_case_list	0 ADD	t	
+usr/lib/lua/luci/controller/admin/apmng_sensor.lua	525	del_sensor_test_case	jcsUI2uac	sensor_test_case_list	1 DEL	s	
+usr/lib/lua/luci/controller/admin/apmng_sensor.lua	533	group_delete_event_sensor_test_handle	jcsUI2uac	sensor_test_group_delete_event_handle	2 SET	{group_id=e}	
+usr/lib/lua/luci/controller/admin/apmng_sensor.lua	537	wserv_delete_event_sensor_test_handle	jcsUI2uac	sensor_test_wserv_delete_event_handle	2 SET	{serv_id=e}	
+usr/lib/lua/luci/controller/admin/apmng_sensor.lua	538	get_sensor_test_digest	jcsUI2uac	sensor_test_digest	3 GET	t	
+usr/lib/lua/luci/controller/admin/apmng_sensor.lua	544	deep_inspection_status	jcsUI2uac	deep_inspection_status	3 GET	t	
+usr/lib/lua/luci/controller/admin/apmng_sensor.lua	554	get_deep_inspection_setting	jcsUI2uac	get_deep_inspection_setting	3 GET	l	
+usr/lib/lua/luci/controller/admin/apmng_sensor.lua	564	set_deep_inspection_setting	jcsUI2uac	set_deep_inspection_setting	2 SET	t	
+usr/lib/lua/luci/controller/admin/apmng_sensor.lua	589	get_deep_inspection_scan_mode_change	jcsUI2uac	get_deep_inspection_scan_mode_change	3 GET	l	
+usr/lib/lua/luci/controller/admin/apmng_sensor.lua	602	set_deep_inspection_scan_mode_change	jcsUI2uac	set_deep_inspection_scan_mode_change	2 SET	t	
+usr/lib/lua/luci/controller/admin/apmng_sensor.lua	613	get_deep_inspection_freq_waterfall	jcsUI2uac	deep_inspection_multi_chnl_waterfall	3 GET	a	
+usr/lib/lua/luci/controller/admin/apmng_sensor.lua	637	get_deep_inspection_freq_density	jcsUI2uac	deep_inspection_multi_chnl_density	3 GET	l	
+usr/lib/lua/luci/controller/admin/apmng_sensor.lua	654	get_deep_inspection_chnl_usage_list	jcsUI2uac	deep_inspection_chnl_usage_list	3 GET	t	
+usr/lib/lua/luci/controller/admin/apmng_sensor.lua	664	get_deep_inspection_multi_chnl_rssi	jcsUI2uac	deep_inspection_multi_chnl_rssi	3 GET	a	
+usr/lib/lua/luci/controller/admin/apmng_sensor.lua	681	get_deep_inspection_selected_chnl_usage	jcsUI2uac	deep_inspection_selected_chnl_usage	3 GET	t	
+usr/lib/lua/luci/controller/admin/apmng_sensor.lua	691	get_deep_inspection_ssid_usage_detail	jcsUI2uac	deep_inspection_ssid_usage_detail	3 GET	t	
+usr/lib/lua/luci/controller/admin/apmng_sensor.lua	708	get_deep_inspection_bssid_usage_detail	jcsUI2uac	deep_inspection_bssid_usage_detail	3 GET	t	
+usr/lib/lua/luci/controller/admin/apmng_sensor.lua	725	get_deep_inspection_sta_usage_detail	jcsUI2uac	deep_inspection_sta_usage_detail	3 GET	t	
+usr/lib/lua/luci/controller/admin/apmng_sensor.lua	735	get_deep_inspection_pkt_usage_detail	jcsUI2uac	deep_inspection_pkt_usage_detail	3 GET	t	
+usr/lib/lua/luci/controller/admin/apmng_sensor.lua	745	get_deep_checkup_pkt_ssid_list	jcsUI2uac	deep_checkup_pkt_ssid_list	3 GET	d	
+usr/lib/lua/luci/controller/admin/apmng_sensor.lua	766	get_deep_checkup_pkt_bssid_list	jcsUI2uac	deep_checkup_pkt_bssid_list	3 GET	a	
+usr/lib/lua/luci/controller/admin/apmng_sensor.lua	792	get_deep_checkup_pkt_sta_list	jcsUI2uac	deep_checkup_pkt_sta_list	3 GET	d	
+usr/lib/lua/luci/controller/admin/apmng_sensor.lua	819	get_wips_info	jcsUI2uac	wips_event_info	3 GET	l	
+usr/lib/lua/luci/controller/admin/apmng_sensor.lua	838	get_wips_detail	jcsUI2uac	wips_event_detail	3 GET	_	
+usr/lib/lua/luci/controller/admin/apmng_sensor.lua	851	get_whitelist	jcsUI2uac	whitelist	3 GET	t	
+usr/lib/lua/luci/controller/admin/apmng_sensor.lua	882	wips_counter_switch	jcsUI2uac	wips_event_info	2 SET	t	
+usr/lib/lua/luci/controller/admin/apmng_sensor.lua	884	_get_wips_statistics_date	jcsUI2uac	wips_statistics	3 GET	e	
+usr/lib/lua/luci/controller/admin/apmng_sensor.lua	912	get_wips_statistics_num	jcsUI2uac	wips_statistics_num	3 GET	{}	
+usr/lib/lua/luci/controller/admin/apmng_sensor.lua	918	wips_add_to_whitelist	jcsUI2uac	wips_event_info	2 SET	t	
+usr/lib/lua/luci/controller/admin/apmng_sensor.lua	942	add_whitelist_data	jcsUI2uac	whitelist	0 ADD	t	
+usr/lib/lua/luci/controller/admin/apmng_sensor.lua	955	del_whitelist_data	jcsUI2uac	whitelist	1 DEL	t	
+usr/lib/lua/luci/controller/admin/apmng_set.lua	199	do_settings	jcsUI2uac	~apmngr_global (it)	2 SET	_	
+usr/lib/lua/luci/controller/admin/apmng_set.lua	221	do_aplog_setting	jcsUI2uac	~apmngr_aplog (ct)	2 SET	_	
+usr/lib/lua/luci/controller/admin/apmng_set.lua	243	do_crashdump_setting	jcsUI2uac	~apmngr_crashdump (st)	2 SET	_	
+usr/lib/lua/luci/controller/admin/apmng_set.lua	352	group_list_data_add	jcsUI2uac	~apmngr_group (M)	0 ADD	_	
+usr/lib/lua/luci/controller/admin/apmng_set.lua	386	group_list_data_del	jcsUI2uac	~apmngr_group (M)	1 DEL	r	
+usr/lib/lua/luci/controller/admin/apmng_set.lua	431	group_list_data_set	jcsUI2uac	~apmngr_group (M)	2 SET	_	
+usr/lib/lua/luci/controller/admin/apmng_set.lua	478	apdb_info_list_get	jcsUI2uac	apmngr_apdb_info	3 GET	r	
+usr/lib/lua/luci/controller/admin/apmng_set.lua	525	ap_list_data_get	jcsUI2uac	ap_log_timer_start	2 SET	{}	
+usr/lib/lua/luci/controller/admin/apmng_set.lua	552	ap_list_data_get	jcsUI2uac	apmngr_entry	3 GET	r	
+usr/lib/lua/luci/controller/admin/apmng_set.lua	564	get_ap_vlan	jcsUI2uac	ap_vlan_info	3 GET	{["entry_id"]=a}	
+usr/lib/lua/luci/controller/admin/apmng_set.lua	587	fit_ap_vlan_data_get	jcsUI2uac	ap_vlan_info	3 GET	{["start"]=l,["size"]=tostring(_)}	
+usr/lib/lua/luci/controller/admin/apmng_set.lua	630	ap_list_data_add	jcsUI2uac	~apmngr_entry (S)	0 ADD	_	
+usr/lib/lua/luci/controller/admin/apmng_set.lua	690	ap_list_data_del	jcsUI2uac	~apmngr_entry (S)	1 DEL	{['template']=m,['ap']=d,['ap_tmp']=p}	
+usr/lib/lua/luci/controller/admin/apmng_set.lua	695	k	jcsUI2uac	apupd_upgrade_status	3 GET	_	
+usr/lib/lua/luci/controller/admin/apmng_set.lua	707	v	jcsUI2uac	~apmngr_group_join (z)	2 SET	a	
+usr/lib/lua/luci/controller/admin/apmng_set.lua	715	C	jcsUI2uac	~apmngr_firm (pt)	2 SET	_	
+usr/lib/lua/luci/controller/admin/apmng_set.lua	728	D	jcsUI2uac	~apmngr_entry (S)	2 SET	a	
+usr/lib/lua/luci/controller/admin/apmng_set.lua	898	T	jcsUI2uac	~apmngr_entry (S)	2 SET	a	
+usr/lib/lua/luci/controller/admin/apmng_set.lua	982	ap_replace_rule_set	jcsUI2uac	ap_replace_rule	2 SET	a	
+usr/lib/lua/luci/controller/admin/apmng_set.lua	1083	ap_list_data_copy	jcsUI2uac	~apmngr_entry_copy (ye)	2 SET	e	
+usr/lib/lua/luci/controller/admin/apmng_set.lua	1104	ap_list_data_copy	jcsUI2uac	~apmngr_entry_copy (ye)	2 SET	e	
+usr/lib/lua/luci/controller/admin/apmng_set.lua	1156	ap_backup	jcsUI2uac	apmngr_entry_backup	3 GET	{}	
+usr/lib/lua/luci/controller/admin/apmng_set.lua	1213	V	jcsUI2uac	~apmngr_group (M)	0 ADD	_	
+usr/lib/lua/luci/controller/admin/apmng_set.lua	1366	D	jcsUI2uac	~apmngr_group_join (z)	2 SET	a	
+usr/lib/lua/luci/controller/admin/apmng_set.lua	1373	k	jcsUI2uac	~apmngr_group_join (z)	2 SET	e	
+usr/lib/lua/luci/controller/admin/apmng_set.lua	1568	ap_load	jcsUI2uac	~apmngr_entry (S)	2 SET	_	
+usr/lib/lua/luci/controller/admin/apmng_set.lua	1637	p	jcsUI2uac	cloud_mngt_clear_config_id	2 SET	e	
+usr/lib/lua/luci/controller/admin/apmng_set.lua	1640	handle_cloud_notify_report	jcsUI2uac	client_report_switch	2 SET	e	
+usr/lib/lua/luci/controller/admin/apmng_set.lua	1643	_	jcsUI2uac	ap_report_switch	2 SET	e	
+usr/lib/lua/luci/controller/admin/apmng_set.lua	1659	authorize_ap_list_get	jcsUI2uac	apmngr_entry_authorize	3 GET	n	
+usr/lib/lua/luci/controller/admin/apmng_set.lua	1684	authorize_ap_set	jcsUI2uac	apmngr_entry_authorize	2 SET	_	
+usr/lib/lua/luci/controller/admin/apmng_set.lua	1694	handle_stats_report_changed_event	jcsUI2uac	ac_statics	2 SET	r	
+usr/lib/lua/luci/controller/admin/apmng_set.lua	1696	handle_cloud_unbind	jcsUI2uac	notify_unbind	2 SET	e	
+usr/lib/lua/luci/controller/admin/apmng_set.lua	1743	handle_cloud_type_event	jcsUI2uac	ac_statics	2 SET	_	
+usr/lib/lua/luci/controller/admin/apmng_set.lua	1865	ap_calibrate_load	jcsUI2uac	ap_calibrate	2 SET	f	
+usr/lib/lua/luci/controller/admin/apmng_set.lua	1876	ap_replace_load	jcsUI2uac	ap_replace_config	2 SET	{["file_name"]=n}	
+usr/lib/lua/luci/controller/admin/apmng_set.lua	1900	do_ap_capture_settings	jcsUI2uac	ap_capture_settings	2 SET	_	
+usr/lib/lua/luci/controller/admin/apmng_set.lua	1931	ap_capture_list_data_get	jcsUI2uac	ap_capture_list	3 GET	a	
+usr/lib/lua/luci/controller/admin/apmng_set.lua	1967	ap_capture_list_data_set	jcsUI2uac	ap_capture_list	2 SET	_	
+usr/lib/lua/luci/controller/admin/apmng_set.lua	1987	ap_capture_list_data_add	jcsUI2uac	ap_capture_list	0 ADD	_	
+usr/lib/lua/luci/controller/admin/apmng_set.lua	2014	ap_capture_list_data_del	jcsUI2uac	ap_capture_list	1 DEL	r	
+usr/lib/lua/luci/controller/admin/apmng_set.lua	2166	ap_log_display_list_data_get	jcsUI2uac	ap_log_display_list	3 GET	_	
+usr/lib/lua/luci/controller/admin/apmng_set.lua	2178	ap_log_download_list_data_get	jcsUI2uac	ap_log_download_list	3 GET	r	
+usr/lib/lua/luci/controller/admin/apmng_set.lua	2196	ap_log_download_list_data_add	jcsUI2uac	ap_log_download_list	0 ADD	a	
+usr/lib/lua/luci/controller/admin/apmng_set.lua	2201	ap_log_download_start	jcsUI2uac	ap_log_download_start	2 SET	_	
+usr/lib/lua/luci/controller/admin/apmng_set.lua	2220	ap_log_download_status_data_get	jcsUI2uac	ap_log_download_status	3 GET	n	
+usr/lib/lua/luci/controller/admin/apmng_set.lua	2225	ap_log_file_backup	jcsUI2uac	ap_log_export_cb	2 SET	{}	
+usr/lib/lua/luci/controller/admin/apmng_set.lua	2244	ap_log_config_list_data_add	jcsUI2uac	ap_log_debug_list	0 ADD	n	
+usr/lib/lua/luci/controller/admin/apmng_set.lua	2255	ap_log_config_list_data_get	jcsUI2uac	ap_log_debug_list	3 GET	l	
+usr/lib/lua/luci/controller/admin/apmng_set.lua	2276	ap_log_config_bind_set	jcsUI2uac	ap_log_debug_cfg_bind	2 SET	_	
+usr/lib/lua/luci/controller/admin/apmng_set.lua	2290	ap_location_detect_start	jcsUI2uac	ap_location_cfg	2 SET	n	
+usr/lib/lua/luci/controller/admin/apmng_set.lua	2307	do_cruise_setting	jcsUI2uac	apmngr_cruise_setting	2 SET	_	
+usr/lib/lua/luci/controller/admin/apmng_set.lua	2324	port_list_data_get	jcsUI2uac	port_list	3 GET	a	
+usr/lib/lua/luci/controller/admin/apmng_set.lua	2376	port_list_data_set	jcsUI2uac	port_list	2 SET	_	
+usr/lib/lua/luci/controller/admin/apmng_set_status.lua	6	ap_status_get	jcsUI2uac	ap_exceed_status	3 GET	{}	
+usr/lib/lua/luci/controller/admin/apmng_set_status.lua	12	unknown_ap_list_get	jcsUI2uac	unsupport_ap_get	3 GET	{}	
+usr/lib/lua/luci/controller/admin/apmng_status.lua	24	ap_reboot	jcsUI2uac	ap_status_evt	2 SET	{['evt']="reboot",['entry_id']=t}	
+usr/lib/lua/luci/controller/admin/apmng_status.lua	34	ap_reset	jcsUI2uac	ap_status_evt	2 SET	{['evt']="reset",['entry_id']=a}	
+usr/lib/lua/luci/controller/admin/apmng_status.lua	93	get_ap_list_data	jcsUI2uac	ap_status	3 GET	l	
+usr/lib/lua/luci/controller/admin/apmng_status.lua	128	get_online_model_list_data	jcsUI2uac	apmngr_online_model	3 GET	l	
+usr/lib/lua/luci/controller/admin/apmng_status.lua	153	get_ap_ssid_list_data	jcsUI2uac	ap_status_ssid	3 GET	a	
+usr/lib/lua/luci/controller/admin/apmng_status.lua	163	get_ap_count_trend	jcsUI2uac	ap_count_trend	3 GET	t	
+usr/lib/lua/luci/controller/admin/apmng_status.lua	171	get_ap_link_status	jcsUI2uac	ap_count	3 GET	t	
+usr/lib/lua/luci/controller/admin/apmng_status.lua	195	set_ap_list_data	jcsUI2uac	ap_status_evt	2 SET	{['evt']=s[tonumber(l)+1],['entry_id']=t}	
+usr/lib/lua/luci/controller/admin/apmng_status.lua	215	set_ap_list_data	jcsUI2uac	ap_telnet_status_evt	2 SET	{['evt']=c[tonumber(_)+1],['entry_id']=t}	
+usr/lib/lua/luci/controller/admin/apmng_status.lua	235	set_ap_list_data	jcsUI2uac	ap_crashdump_status_evt	2 SET	{['evt']=d[tonumber(r)+1],['entry_id']=t}	
+usr/lib/lua/luci/controller/admin/apmng_status.lua	324	ap_status_backup	jcsUI2uac	apmngr_status_backup	3 GET	{}	
+usr/lib/lua/luci/controller/admin/apmng_upgrade.lua	103	get_upgrade_status	jcsUI2uac	apupd_status	3 GET	a	
+usr/lib/lua/luci/controller/admin/apmng_upgrade.lua	134	get_batch_ap_list_data	jcsUI2uac	apupd_model	3 GET	l	
+usr/lib/lua/luci/controller/admin/apmng_upgrade.lua	188	set_batch_ap_list_data	jcsUI2uac	apupd_model	2 SET	n	
+usr/lib/lua/luci/controller/admin/apmng_upgrade.lua	254	add_batch_ap_list_data	jcsUI2uac	apupd_model	0 ADD	t	
+usr/lib/lua/luci/controller/admin/apmng_upgrade.lua	304	del_batch_ap_list_data	jcsUI2uac	apupd_model	1 DEL	i	
+usr/lib/lua/luci/controller/admin/apmng_upgrade.lua	345	get_single_upgrade_status	jcsUI2uac	apupd_wtp	2 SET	l	
+usr/lib/lua/luci/controller/admin/apmng_upgrade.lua	376	get_ap_list_data	jcsUI2uac	apupd_wtp	3 GET	l	
+usr/lib/lua/luci/controller/admin/apmng_upgrade.lua	406	get_fail_log_data	jcsUI2uac	apupd_log	3 GET	r	
+usr/lib/lua/luci/controller/admin/apmng_upgrade.lua	423	fail_log_clear	jcsUI2uac	apupd_log	1 DEL	l	
+usr/lib/lua/luci/controller/admin/apmng_upgrade.lua	439	get_upgrade_progress_data	jcsUI2uac	apupd_wtp	3 GET	t	
+usr/lib/lua/luci/controller/admin/apmng_upgrade.lua	462	get_apupd_large_image_status	jcsUI2uac	apupd_large_image_status	3 GET	r	
+usr/lib/lua/luci/controller/admin/apmng_upgrade.lua	484	online_upgrade_start	jcsUI2uac	apupd_wtp	2 SET	t	
+usr/lib/lua/luci/controller/admin/apmng_upgrade.lua	500	get_firmed_model_list	jcsUI2uac	ap_firmed_model	3 GET	r	
+usr/lib/lua/luci/controller/admin/apmng_upgrade.lua	528	check_allow_update	jcsUI2uac	apupd_check_allow_update	3 GET	{model_id=l,upgrade_type=t}	
+usr/lib/lua/luci/controller/admin/apmng_upgrade.lua	552	remove_group_in_batch_list_item	jcsUI2uac	apupd_group_delete	2 SET	{group_id=e}	
+usr/lib/lua/luci/controller/admin/apmng_upgrade.lua	556	check_image_import	jcsUI2uac	apupd_image_check	3 GET	{file_size=t.file_size}	
+usr/lib/lua/luci/controller/admin/apmng_upgrade.lua	574	set_apupd_large_image_status	jcsUI2uac	apupd_large_image_status	2 SET	r	
+usr/lib/lua/luci/controller/admin/apmng_usb.lua	13	usb_settings_get	jcsUI2uac	usb_settings	3 GET	e	
+usr/lib/lua/luci/controller/admin/apmng_usb.lua	41	usb_settings_set	jcsUI2uac	usb_settings	2 SET	i	
+usr/lib/lua/luci/controller/admin/apmng_wserv.lua	210	set_igmp_settings_data	jcsUI2uac	F	2 SET	_	
+usr/lib/lua/luci/controller/admin/apmng_wserv.lua	612	R	jcsUI2uac	wservice	2 SET	_	
+usr/lib/lua/luci/controller/admin/apmng_wserv.lua	633	b	jcsUI2uac	wservice	2 SET	i	
+usr/lib/lua/luci/controller/admin/apmng_wserv.lua	777	add_wserv_list_data	jcsUI2uac	wservice	0 ADD	r	
+usr/lib/lua/luci/controller/admin/apmng_wserv.lua	835	del_wserv_list_data	jcsUI2uac	wservice	1 DEL	g	
+usr/lib/lua/luci/controller/admin/apmng_wserv.lua	905	get_rf_bind_list_data	jcsUI2uac	wservice	3 GET	_	
+usr/lib/lua/luci/controller/admin/apmng_wserv.lua	978	set_rf_bind_list_data	jcsUI2uac	wservice	2 SET	n	
+usr/lib/lua/luci/controller/admin/apmng_wserv.lua	1023	handle_reset_cloud_cfg_event	jcsUI2uac	wservice	1 DEL	i	
+usr/lib/lua/luci/controller/admin/apmng_wserv.lua	1146	add_igmp_ip_list	jcsUI2uac	wservice_ip	0 ADD	n	
+usr/lib/lua/luci/controller/admin/apmng_wserv.lua	1202	delete_igmp_ip_list	jcsUI2uac	wservice_ip	1 DEL	a	
+usr/lib/lua/luci/controller/admin/apmng_wserv.lua	1209	g	jcsUI2uac	wservice_ip	2 SET	i	
+usr/lib/lua/luci/controller/admin/apmng_wserv.lua	1266	set_igmp_ip_list	jcsUI2uac	wservice_ip	2 SET	n	
+usr/lib/lua/luci/controller/admin/apmng_wserv.lua	1270	add_vlan_pool_entry	jcsUI2uac	~vlan_pool (q)	0 ADD	_	
+usr/lib/lua/luci/controller/admin/apmng_wserv.lua	1278	set_vlan_pool_entry	jcsUI2uac	~vlan_pool (q)	2 SET	_	
+usr/lib/lua/luci/controller/admin/apmng_wserv.lua	1284	del_vlan_pool_entry	jcsUI2uac	~vlan_pool (q)	1 DEL	_	
+usr/lib/lua/luci/controller/admin/apmng_wserv.lua	1293	wserv_check_vlan_pool_id_str	jcsUI2uac	vlan_id_str_check	3 GET	n	
+usr/lib/lua/luci/controller/admin/apmng_wserv.lua	1306	wserv_check_vlan_pool_del	jcsUI2uac	vlan_pool_del_check	3 GET	_	
+usr/lib/lua/luci/controller/admin/apmng_wserv.lua	1319	enable_all_active_wserv	jcsUI2uac	wservice	2 SET	n	
+usr/lib/lua/luci/controller/admin/apmng_wserv.lua	1332	disable_all_active_wserv	jcsUI2uac	wservice	2 SET	n	
+usr/lib/lua/luci/controller/admin/apmng_wserv.lua	1376	add_ppsk_group_list	jcsUI2uac	ppsk_group	0 ADD	_	
+usr/lib/lua/luci/controller/admin/apmng_wserv.lua	1405	set_ppsk_group_list	jcsUI2uac	ppsk_group	2 SET	_	
+usr/lib/lua/luci/controller/admin/apmng_wserv.lua	1458	delete_ppsk_group_list	jcsUI2uac	ppsk_group	1 DEL	s	
+usr/lib/lua/luci/controller/admin/apmng_wserv.lua	1500	get_ppsk_user_list	jcsUI2uac	ppsk_user	3 GET	_	
+usr/lib/lua/luci/controller/admin/apmng_wserv.lua	1530	add_ppsk_user_list	jcsUI2uac	ppsk_user	0 ADD	_	
+usr/lib/lua/luci/controller/admin/apmng_wserv.lua	1592	set_ppsk_user_list	jcsUI2uac	ppsk_user	2 SET	_	
+usr/lib/lua/luci/controller/admin/apmng_wserv.lua	1593	set_ppsk_user_list	jcsUI2uac	ppsk_user	2 SET	_	
+usr/lib/lua/luci/controller/admin/apmng_wserv.lua	1644	delete_ppsk_user_list	jcsUI2uac	ppsk_user	1 DEL	s	
+usr/lib/lua/luci/controller/admin/apmng_wserv.lua	1647	ppsk_user_backup	jcsUI2uac	ppsk_user_backup	3 GET	{["is_backup"]=1}	
+usr/lib/lua/luci/controller/admin/apmng_wserv.lua	1657	ppsk_user_template	jcsUI2uac	ppsk_user_backup	3 GET	{["is_backup"]=0}	
+usr/lib/lua/luci/controller/admin/apmng_wserv.lua	1689	import_ppsk_status_set	jcsUI2uac	ppsk_user_import_set	2 SET	n	
+usr/lib/lua/luci/controller/admin/apmng_wserv.lua	1787	enable_wserv_radius_server	jcsUI2uac	wservice	2 SET	_	
+usr/lib/lua/luci/controller/admin/apmng_wserv.lua	1802	disable_wserv_radius_server	jcsUI2uac	wservice	2 SET	_	
+usr/lib/lua/luci/controller/admin/cloud.lua	400	set_fast_report	jcsUI2uac	cloud_mngt_fast_report	2 SET	n	
+usr/lib/lua/luci/controller/admin/cloud.lua	403	handle_system_alias_event	jcsUI2uac	ac_alias_changed	2 SET	n	
+usr/lib/lua/luci/controller/admin/cloud.lua	407	handle_config_id_event	jcsUI2uac	ac_config_id_changed	2 SET	t	
+usr/lib/lua/luci/controller/admin/cloud.lua	527	cloud_sync_local_module	jcsUI2uac	cloud_mngt_sync_module_config_report	2 SET	e	
+usr/lib/lua/luci/controller/admin/diagnose.lua	341	apdb_backup	jcsUI2uac	aplist_get	3 GET	{}	
+usr/lib/lua/luci/controller/admin/diagnose.lua	352	clear_diagnose_data	jcsUI2uac	nego_del	1 DEL	{}	
+usr/lib/lua/luci/controller/admin/diagnose.lua	374	do_settings	jcsUI2uac	diagnose_global	2 SET	e	
+usr/lib/lua/luci/controller/admin/event_report.lua	7	handle_nms_report_event_cfg_changed	jcsUI2uac	wstation	2 SET	t	
+usr/lib/lua/luci/controller/admin/event_report.lua	11	handle_nms_report_enable	jcsUI2uac	uac_nms_report_switch	2 SET	t	
+usr/lib/lua/luci/controller/admin/forward.lua	19	handle_forward	jcsUI2uac	ac_forward	2 SET	a	
+usr/lib/lua/luci/controller/admin/forward.lua	22	handle_forward	jcsUI2uac	ac_forward	3 GET	e	
+usr/lib/lua/luci/controller/admin/free_auth_strategy.lua	185	d	jcsUI2uac	~wportal (s)	0 ADD	e	
+usr/lib/lua/luci/controller/admin/free_auth_strategy.lua	416	g	jcsUI2uac	~wportal (s)	1 DEL	e	
+usr/lib/lua/luci/controller/admin/free_auth_strategy.lua	545	T	jcsUI2uac	~wportal (s)	1 DEL	e	
+usr/lib/lua/luci/controller/admin/free_auth_strategy.lua	627	I	jcsUI2uac	~wportal (s)	1 DEL	r	
+usr/lib/lua/luci/controller/admin/free_auth_strategy.lua	635	I	jcsUI2uac	~wportal (s)	1 DEL	r	
+usr/lib/lua/luci/controller/admin/host_management.lua	58	T	jcsUI2uac	macauth_blacklist	3 GET	i	
+usr/lib/lua/luci/controller/admin/host_management.lua	169	host_info_data_get	jcsUI2uac	journey_sta_list	3 GET	t	
+usr/lib/lua/luci/controller/admin/host_management.lua	170	host_info_data_get	jcsUI2uac	host_info	3 GET	t	
+usr/lib/lua/luci/controller/admin/host_management.lua	202	host_info_data_get	jcsUI2uac	host_info	3 GET	t	
+usr/lib/lua/luci/controller/admin/host_management.lua	262	j	jcsUI2uac	wsta_bind_info	0 ADD	l	
+usr/lib/lua/luci/controller/admin/host_management.lua	293	c	jcsUI2uac	wsta_bind_info	2 SET	a	
+usr/lib/lua/luci/controller/admin/host_management.lua	471	u	jcsUI2uac	macauth_blacklist	3 GET	d	
+usr/lib/lua/luci/controller/admin/host_management.lua	535	host_info_data_del	jcsUI2uac	wsta_bind_info	1 DEL	i	
+usr/lib/lua/luci/controller/admin/host_management.lua	553	sta_blacklist_backup	jcsUI2uac	macauth_blacklist	3 GET	i	
+usr/lib/lua/luci/controller/admin/host_management.lua	571	sta_blacklist_load	jcsUI2uac	macauth_blacklist	3 GET	c	
+usr/lib/lua/luci/controller/admin/host_management.lua	622	host_info_backup	jcsUI2uac	host_info_back	3 GET	{}	
+usr/lib/lua/luci/controller/admin/host_management.lua	654	do_settings	jcsUI2uac	wstation_recognize	2 SET	t	
+usr/lib/lua/luci/controller/admin/host_management.lua	662	host_info_time_out_handle	jcsUI2uac	wsta_bind_info_net_rule	2 SET	e	
+usr/lib/lua/luci/controller/admin/host_management.lua	668	do_disconnect	jcsUI2uac	wstation_disconnect	2 SET	i	
+usr/lib/lua/luci/controller/admin/host_management.lua	709	isolate_rule_list_get	jcsUI2uac	wsta_iso_group	3 GET	l	
+usr/lib/lua/luci/controller/admin/host_management.lua	724	isolate_rule_list_set	jcsUI2uac	wsta_iso_group	2 SET	i	
+usr/lib/lua/luci/controller/admin/host_management.lua	736	isolate_rule_list_del	jcsUI2uac	wsta_iso_group	1 DEL	i	
+usr/lib/lua/luci/controller/admin/host_management.lua	747	isolate_rule_list_add	jcsUI2uac	wsta_iso_group	0 ADD	i	
+usr/lib/lua/luci/controller/admin/host_management.lua	773	journey_event_list_get	jcsUI2uac	journey_event_list	3 GET	l	
+usr/lib/lua/luci/controller/admin/host_management.lua	794	journey_phase_list_get	jcsUI2uac	journey_event_phase	3 GET	o	
+usr/lib/lua/luci/controller/admin/ldap.lua	141	add_ldap	jcsUI2uac	~wportal (s)	0 ADD	_	
+usr/lib/lua/luci/controller/admin/ldap.lua	148	del_ldap_server_connection	jcsUI2uac	~ldap_check (R)	1 DEL	_	
+usr/lib/lua/luci/controller/admin/ldap.lua	174	set_ldap	jcsUI2uac	~wportal (s)	2 SET	_	
+usr/lib/lua/luci/controller/admin/ldap.lua	201	del_ldap	jcsUI2uac	~wportal (s)	1 DEL	e	
+usr/lib/lua/luci/controller/admin/ldap.lua	232	test_ldap_connect	jcsUI2uac	~ldap_test (E)	2 SET	n	
+usr/lib/lua/luci/controller/admin/lldp.lua	27	get_lldp_info	jcsUI2uac	uac_lldp	2 SET	f	
+usr/lib/lua/luci/controller/admin/lldp.lua	52	get_lldp_info	jcsUI2uac	uac_lldp	3 GET	f	
+usr/lib/lua/luci/controller/admin/mac_auth.lua	120	mac_addr_list_add	jcsUI2uac	macauth_mac	0 ADD	l	
+usr/lib/lua/luci/controller/admin/mac_auth.lua	140	mac_addr_list_del	jcsUI2uac	macauth_mac	1 DEL	l	
+usr/lib/lua/luci/controller/admin/mac_auth.lua	144	mac_addr_list_del	jcsUI2uac	macauth_mac_for_group	1 DEL	l	
+usr/lib/lua/luci/controller/admin/mac_auth.lua	151	mac_addr_list_del	jcsUI2uac	macauth_mac_for_group	1 DEL	l	
+usr/lib/lua/luci/controller/admin/mac_auth.lua	162	mac_addr_list_del	jcsUI2uac	macauth_mac_for_group	1 DEL	l	
+usr/lib/lua/luci/controller/admin/mac_auth.lua	189	mac_addr_list_set	jcsUI2uac	macauth_mac	2 SET	i	
+usr/lib/lua/luci/controller/admin/mac_auth.lua	270	mac_load	jcsUI2uac	macauth_mac	0 ADD	_	
+usr/lib/lua/luci/controller/admin/mac_auth.lua	279	mac_load	jcsUI2uac	macauth_mac	2 SET	_	
+usr/lib/lua/luci/controller/admin/mac_auth.lua	337	mac_name_update_handle	jcsUI2uac	macauth_mac	2 SET	i	
+usr/lib/lua/luci/controller/admin/mac_group.lua	104	del_mac_group_bind_ssid_by_serv_id	jcsUI2uac	macauth_group_for_ssid	1 DEL	n	
+usr/lib/lua/luci/controller/admin/mac_group.lua	286	set_auth_mode	jcsUI2uac	macauth_type	2 SET	e	
+usr/lib/lua/luci/controller/admin/mac_group.lua	467	mac_auth_load	jcsUI2uac	macauth_group	3 GET	_	
+usr/lib/lua/luci/controller/admin/mac_group.lua	475	mac_auth_load	jcsUI2uac	macauth_group_for_ssid	0 ADD	t	
+usr/lib/lua/luci/controller/admin/mac_group.lua	476	mac_auth_load	jcsUI2uac	macauth_group	0 ADD	t	
+usr/lib/lua/luci/controller/admin/mac_group.lua	493	mac_auth_load	jcsUI2uac	macauth_group_for_ssid	2 SET	t	
+usr/lib/lua/luci/controller/admin/mac_group.lua	494	mac_auth_load	jcsUI2uac	macauth_group	2 SET	t	
+usr/lib/lua/luci/controller/admin/mac_group.lua	602	mac_auth_ssid_bind_list_get	jcsUI2uac	macauth_group	3 GET	n	
+usr/lib/lua/luci/controller/admin/mac_group.lua	628	mac_auth_list_add	jcsUI2uac	macauth_group	3 GET	_	
+usr/lib/lua/luci/controller/admin/mac_group.lua	637	mac_auth_list_add	jcsUI2uac	macauth_group_for_ssid	0 ADD	n	
+usr/lib/lua/luci/controller/admin/mac_group.lua	638	mac_auth_list_add	jcsUI2uac	macauth_group	0 ADD	n	
+usr/lib/lua/luci/controller/admin/mac_group.lua	674	mac_auth_list_del	jcsUI2uac	r==s and'macauth_group_for_ssid'or'macauth_group'	1 DEL	t	
+usr/lib/lua/luci/controller/admin/mac_group.lua	712	mac_auth_list_set	jcsUI2uac	macauth_group_for_ssid	2 SET	n	
+usr/lib/lua/luci/controller/admin/mac_group.lua	743	mac_auth_list_set	jcsUI2uac	macauth_group	2 SET	n	
+usr/lib/lua/luci/controller/admin/mac_group.lua	778	mac_auth_list_set	jcsUI2uac	macauth_group_for_ssid	2 SET	n	
+usr/lib/lua/luci/controller/admin/mac_group.lua	813	mac_auth_list_set	jcsUI2uac	macauth_group	2 SET	n	
+usr/lib/lua/luci/controller/admin/mac_group.lua	902	mac_group_check_vlan_pool_id_str	jcsUI2uac	macauth_vlan_str_check	3 GET	_	
+usr/lib/lua/luci/controller/admin/nonsense.lua	32	get_nonsense	jcsUI2uac	~wportal (s)	3 GET	e	
+usr/lib/lua/luci/controller/admin/nonsense.lua	56	kick_nonsense_station_by_mac	jcsUI2uac	~wportal (s)	1 DEL	e	
+usr/lib/lua/luci/controller/admin/nonsense.lua	59	backup_nsa_user	jcsUI2uac	nsa_user_backup	3 GET	{}	
+usr/lib/lua/luci/controller/admin/portal_auth.lua	823	uac_config_add	jcsUI2uac	~wportal (h)	0 ADD	e	
+usr/lib/lua/luci/controller/admin/portal_auth.lua	846	uac_config_set	jcsUI2uac	~wportal (h)	2 SET	e	
+usr/lib/lua/luci/controller/admin/portal_auth.lua	865	uac_config_set	jcsUI2uac	~wportal (h)	2 SET	e	
+usr/lib/lua/luci/controller/admin/portal_auth.lua	879	uac_config_del	jcsUI2uac	~wportal (h)	1 DEL	e	
+usr/lib/lua/luci/controller/admin/portal_auth.lua	882	uac_config_del	jcsUI2uac	~wportal (h)	1 DEL	e	
+usr/lib/lua/luci/controller/admin/portal_auth.lua	998	auth_station_manage_for_set	jcsUI2uac	~wportal (h)	1 DEL	_	
+usr/lib/lua/luci/controller/admin/portal_auth.lua	1001	auth_station_manage_for_set	jcsUI2uac	~wportal (h)	1 DEL	a	
+usr/lib/lua/luci/controller/admin/portal_auth.lua	1016	auth_station_manage_for_del	jcsUI2uac	~wportal (h)	1 DEL	e	
+usr/lib/lua/luci/controller/admin/portal_auth.lua	1017	auth_station_manage_for_del	jcsUI2uac	~wportal (h)	1 DEL	e	
+usr/lib/lua/luci/controller/admin/portal_auth.lua	1125	portal_list_add	jcsUI2uac	~wportal (h)	3 GET	_	
+usr/lib/lua/luci/controller/admin/portal_auth.lua	1351	portal_list_set	jcsUI2uac	~wportal (h)	3 GET	_	
+usr/lib/lua/luci/controller/admin/portal_auth.lua	1557	check_del_wechat_domain	jcsUI2uac	cloud_mngt_sync_module_config_report	2 SET	e	
+usr/lib/lua/luci/controller/admin/portal_auth.lua	1873	get_portal_user_data	jcsUI2uac	wportal_user_data	3 GET	_	
+usr/lib/lua/luci/controller/admin/portal_auth.lua	2234	portal_auth_handle_cloud_bind_event	jcsUI2uac	~wportal (h)	1 DEL	_	
+usr/lib/lua/luci/controller/admin/portal_auth.lua	2236	portal_auth_handle_cloud_bind_event	jcsUI2uac	~wportal (h)	2 SET	_	
+usr/lib/lua/luci/controller/admin/portal_auth.lua	2263	portal_clear_config_for_cloud_online	jcsUI2uac	~wportal (h)	1 DEL	_	
+usr/lib/lua/luci/controller/admin/portal_auth.lua	2271	portal_clear_config_for_cloud_online	jcsUI2uac	~wportal (h)	2 SET	e	
+usr/lib/lua/luci/controller/admin/portal_auth.lua	2287	portal_clear_config_for_cloud_offline	jcsUI2uac	~wportal (h)	2 SET	e	
+usr/lib/lua/luci/controller/admin/portal_auth.lua	2294	portal_clear_config_for_cloud_offline	jcsUI2uac	~wportal (h)	2 SET	e	
+usr/lib/lua/luci/controller/admin/portal_auth.lua	2305	portal_clear_config_for_cloud_offline	jcsUI2uac	~wportal (h)	1 DEL	_	
+usr/lib/lua/luci/controller/admin/portal_auth.lua	2310	portal_clear_config_for_cloud_offline	jcsUI2uac	~wportal (h)	2 SET	e	
+usr/lib/lua/luci/controller/admin/portal_auth.lua	2320	portal_clear_config_for_cloud_offline	jcsUI2uac	~wportal (h)	2 SET	e	
+usr/lib/lua/luci/controller/admin/portal_auth.lua	2342	portal_reserve_config_for_cloud_offline	jcsUI2uac	~wportal (h)	2 SET	_	
+usr/lib/lua/luci/controller/admin/portal_auth.lua	2418	check_vlan_pool_id_str	jcsUI2uac	wportal	3 GET	_	
+usr/lib/lua/luci/controller/admin/portal_para.lua	72	set_portal_para	jcsUI2uac	~wportal (c)	2 SET	e	
+usr/lib/lua/luci/controller/admin/portal_para.lua	82	set_portal_para	jcsUI2uac	~wportal (c)	2 SET	e	
+usr/lib/lua/luci/controller/admin/portal_para.lua	91	set_portal_para	jcsUI2uac	~wportal (c)	2 SET	e	
+usr/lib/lua/luci/controller/admin/portal_para.lua	99	set_portal_para	jcsUI2uac	~wportal (c)	1 DEL	t	
+usr/lib/lua/luci/controller/admin/portal_para.lua	101	set_portal_para	jcsUI2uac	~wportal (c)	2 SET	t	
+usr/lib/lua/luci/controller/admin/portal_para.lua	121	set_portal_para	jcsUI2uac	~wportal (c)	2 SET	e	
+usr/lib/lua/luci/controller/admin/portal_para.lua	128	set_portal_para	jcsUI2uac	~wportal (c)	2 SET	e	
+usr/lib/lua/luci/controller/admin/portal_para.lua	132	set_portal_para	jcsUI2uac	~wportal (c)	2 SET	e	
+usr/lib/lua/luci/controller/admin/portal_para.lua	148	set_portal_para	jcsUI2uac	~wportal (c)	2 SET	e	
+usr/lib/lua/luci/controller/admin/portal_para.lua	175	set_portal_para	jcsUI2uac	escape_radius_config	2 SET	r	
+usr/lib/lua/luci/controller/admin/radius.lua	128	add_radius	jcsUI2uac	~wportal (l)	0 ADD	e	
+usr/lib/lua/luci/controller/admin/radius.lua	152	set_radius	jcsUI2uac	~wportal (l)	2 SET	n	
+usr/lib/lua/luci/controller/admin/radius.lua	177	del_radius	jcsUI2uac	~wportal (l)	1 DEL	r	
+usr/lib/lua/luci/controller/admin/sessmngr.lua	14	backup_authed_user	jcsUI2uac	wportal_backup	3 GET	{}	
+usr/lib/lua/luci/controller/admin/sessmngr.lua	79	get_auth_session	jcsUI2uac	wportal	3 GET	_	
+usr/lib/lua/luci/controller/admin/sessmngr.lua	134	notify_uac_del_auth_session	jcsUI2uac	auth_session_list	1 DEL	e	
+usr/lib/lua/luci/controller/admin/system.lua	156	start_report_sub_device_info_handle	jcsUI2uac	start_report_sub_device_info	2 SET	e	
+usr/lib/lua/luci/controller/admin/usermngr.lua	738	set_user	jcsUI2uac	~wportal (U)	1 DEL	e	
+usr/lib/lua/luci/controller/admin/usermngr.lua	742	set_user	jcsUI2uac	~wportal (U)	1 DEL	e	
+usr/lib/lua/luci/controller/admin/usermngr.lua	765	del_user	jcsUI2uac	~wportal (U)	1 DEL	e	
+usr/lib/lua/luci/controller/admin/usermngr.lua	766	del_user	jcsUI2uac	~wportal (U)	1 DEL	e	
+usr/lib/lua/luci/controller/admin/usermngr.lua	823	get_user_group	jcsUI2uac	wportal	3 GET	e	

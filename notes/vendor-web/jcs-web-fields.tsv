@@ -1,0 +1,269 @@
+name	op	fields	sources
+F	2	igmp_2g_rate,igmp_2g_rate_type,igmp_5g_rate,igmp_5g_rate_type,igmp_drop_unknown,igmp_max_resp_time,igmp_multi_to_unicast,igmp_query_interval,igmp_snooping_enable,is_set_snp	apmng_wserv.lua:210
+ac_alias_changed	2		cloud.lua:403
+ac_audit	2	enable,remote_ip	apmng_audit.lua:13
+ac_autorrm	2		apmng_rrm.lua:158
+ac_autorrm_list	2		apmng_rrm.lua:171
+ac_balance	0	ap_ids,dif_threshold,enable,group_ids,id,index_field,max_fail_num,mode,name,rssi_threshold,usr_threshold	apmng_balance.lua:97
+ac_balance	1	id	apmng_balance.lua:117
+ac_balance	2	ap_ids,dif_threshold,enable,group_ids,id,index_field,max_fail_num,mode,name,rssi_threshold,usr_threshold	apmng_balance.lua:139
+ac_balance	3	[e],size,start	apmng_balance.lua:73
+ac_config_id_changed	2		cloud.lua:407
+ac_forward	2	requests	forward.lua:19
+ac_forward	3	device_type,extend_dev_ids,request_id	forward.lua:22
+ac_manualrrm	2		apmng_rrm.lua:138
+ac_mesh_discover_cap_change	2		apmng_mesh.lua:40
+ac_mesh_discover_list	3	size,start	apmng_mesh.lua:27
+ac_mesh_discover_status	3		apmng_mesh.lua:73
+ac_mesh_global_settings	2	backhaul_key,backhaul_ssid,bh_work_mode,enable,re_auto_switch,re_recover_flag,web_password	apmng_mesh.lua:104;apmng_mesh.lua:116
+ac_mesh_stop_discover	2		apmng_mesh.lua:68
+ac_mesh_topology	3		apmng_mesh.lua:11
+ac_mesh_trigger_discover	2		apmng_mesh.lua:62
+ac_mesh_trigger_pair	2	dev_info	apmng_mesh.lua:54
+ac_mesh_trigger_pair_all	2		apmng_mesh.lua:56
+ac_passthrough	2	ap_mac,filepath,get_rsponse_info_sync,need_result,request_id,request_info	apmng_passthrough.lua:37
+ac_passthrough	3	ap_mac,filepath,get_rsponse_info_sync,need_result,request_id,request_info	apmng_passthrough.lua:54
+ac_rate	2	rate_11a,rate_11a.,rate_11ac,rate_11ac.,rate_11ax,rate_11ax.,rate_11b,rate_11b.,rate_11g,rate_11g.,rate_11n,rate_11n.	apmng_rate.lua:70
+ac_report	2	active_ap_only,apgroup,apgroup.[BinaryExpression],content,interval,max_load,protocol,server_address,server_port,state	apmng_report.lua:31;apmng_report.lua:8
+ac_roam	2	,[r],blacklist_restrict_time,roaming_dif,stats_interval,threshold_check_interval	apmng_roam.lua:88
+ac_roam_list	0	[r]	apmng_roam.lua:116
+ac_roam_list	1	[e],id	apmng_roam.lua:144
+ac_roam_list	2	[e]	apmng_roam.lua:220
+ac_roam_list	3	,[e],[r]	apmng_roam.lua:162;apmng_roam.lua:195
+ac_rrm_list	0	id	apmng_rrm.lua:310
+ac_rrm_list	1	id	apmng_rrm.lua:329
+ac_rrm_list	2	ap_ids,autorrm_enable,autorrm_timeobj,bw_2g,bw_5g,chnl_2g_set,chnl_5g1_set,chnl_enable,freq_enable,group_ids,id,index_field,max_pwr_2g,max_pwr_5g,min_pwr_2g,min_pwr_5g,name,pwr_enable,pwr_threshold_2g,pwr_threshold_5g	apmng_rrm.lua:350
+ac_rrm_list	3	[e],size,start	apmng_rrm.lua:289
+ac_rrm_state	3		apmng_rrm.lua:129;apmng_rrm.lua:224
+ac_rrmpara	2	[CONFIG_RRM_GLOBAL_AUTORRM_DATE_STR],[p],[u]	apmng_rrm.lua:220;apmng_rrm.lua:62
+ac_statics	2	[tostring(...)],clientStats,devStats,radioStats,vapStats	apmng_set.lua:1694;apmng_set.lua:1743
+ap_calibrate	2	file_name	apmng_set.lua:1865
+ap_capture_list	0	id	apmng_set.lua:1987
+ap_capture_list	1	id	apmng_set.lua:2014
+ap_capture_list	2	enable,id,operation	apmng_set.lua:1967
+ap_capture_list	3	size,start	apmng_set.lua:1931
+ap_capture_settings	2	enable,remote_capture_port	apmng_set.lua:1900
+ap_count	3		apmng_status.lua:171
+ap_count_trend	3		apmng_status.lua:163
+ap_crashdump_status_evt	2	null	apmng_status.lua:235
+ap_exceed_status	3		apmng_set_status.lua:6
+ap_firmed_model	3	search_name,search_value,size,start	apmng_upgrade.lua:500
+ap_location_cfg	2	ap_mac,led	apmng_set.lua:2290
+ap_log_debug_cfg_bind	2	ap_ids,log_config_id,status	apmng_set.lua:2276
+ap_log_debug_list	0	debug_level,debug_switch,log_send_switch,model_str,server_ip	apmng_set.lua:2244
+ap_log_debug_list	3	ap_id	apmng_set.lua:2255
+ap_log_display_list	3	ids,search_name,search_type,search_value,size,start	apmng_set.lua:2166
+ap_log_download_list	0	ap_id,log_file_ids	apmng_set.lua:2196
+ap_log_download_list	3		apmng_set.lua:2178
+ap_log_download_start	2		apmng_set.lua:2201
+ap_log_download_status	3	ap_id,log_file_fragment,log_file_id,log_file_name	apmng_set.lua:2220
+ap_log_export_cb	2		apmng_set.lua:2225
+ap_log_timer_start	2		apmng_set.lua:525
+ap_replace_config	2	null	apmng_set.lua:1876
+ap_replace_rule	2	source_mac,target_mac	apmng_set.lua:982
+ap_report_switch	2	site_id,status	apmng_set.lua:1643
+ap_status	3	ap_role,ap_status,filter,group_id,search_name,search_type,search_value,size,sort,start	apmng_status.lua:93
+ap_status_evt	2	null	apmng_status.lua:195;apmng_status.lua:24;apmng_status.lua:34
+ap_status_ssid	3	entry_id,size,start	apmng_status.lua:153
+ap_telnet_status_evt	2	null	apmng_status.lua:215
+ap_vlan_info	3	null	apmng_set.lua:564;apmng_set.lua:587
+aplist_get	3		diagnose.lua:341
+apmng_band_navigation	2	,dif_threshold,enable,max_fail_num	apmng_band_navigation.lua:33
+apmngr_apdb_info	3		apmng_set.lua:478
+apmngr_aplog	2	[F],[V],[Y],[j],[q],[x]	apmng_set.lua:221
+apmngr_crashdump	2	[K],[Q],[Z],[_e],[te]	apmng_set.lua:243
+apmngr_cruise_setting	2	enable,scan_interval,scan_time	apmng_set.lua:2307
+apmngr_entry	0	,ap_role,entry_id,status	apmng_set.lua:630
+apmngr_entry	1	null	apmng_set.lua:690
+apmngr_entry	2	[BinaryExpression],[n.ap_entry_edit_option[e]],ap_mesh_switch,entry_id,entry_name,entry_type,errno,mac,model_id,multi_ids,rf_change_enable,software_ver	apmng_set.lua:1568;apmng_set.lua:728;apmng_set.lua:898
+apmngr_entry	3	ap_role,condition,entry_type,filters,group_id,size,sort,start	apmng_set.lua:552
+apmngr_entry_authorize	2	entry_id,operation	apmng_set.lua:1684
+apmngr_entry_authorize	3	size,start	apmng_set.lua:1659
+apmngr_entry_backup	3		apmng_set.lua:1156
+apmngr_entry_copy	2	ap_ids,copy_ap_id,entry_id,replace	apmng_set.lua:1083;apmng_set.lua:1104
+apmngr_firm	2	[e]	apmng_set.lua:715
+apmngr_global	2	apmngr_status,auto_firm,auto_reboot,reboot_day,reboot_time	apmng_set.lua:199
+apmngr_group	0	entry_name,group_id,name	apmng_set.lua:1213;apmng_set.lua:352
+apmngr_group	1	group_id	apmng_set.lua:386
+apmngr_group	2	group_id	apmng_set.lua:431
+apmngr_group_join	2	null	apmng_set.lua:1366;apmng_set.lua:1373;apmng_set.lua:707
+apmngr_online_model	3	group_id,search_name,search_value,size,start	apmng_status.lua:128
+apmngr_status_backup	3		apmng_status.lua:324
+apupd_check_allow_update	3	model_id,upgrade_type	apmng_upgrade.lua:528
+apupd_group_delete	2	group_id	apmng_upgrade.lua:552
+apupd_image_check	3	file_size	apmng_upgrade.lua:556
+apupd_large_image_status	2	mac,model_id	apmng_upgrade.lua:574
+apupd_large_image_status	3	mac,model_id	apmng_upgrade.lua:462
+apupd_log	1	model_id	apmng_upgrade.lua:423
+apupd_log	3	ap_role,model_id,size,start	apmng_upgrade.lua:406
+apupd_model	0	ap_list,group_id,is_large_fw,is_sys,model_id,total_image_piece,total_image_size,total_md5,upgrade_date,upgrade_datetime_type,upgrade_start_time,upgrade_type	apmng_upgrade.lua:254
+apupd_model	1	model_id	apmng_upgrade.lua:304
+apupd_model	2	auto_to_manual,model_id,upgrade_date,upgrade_datetime_type,upgrade_start_time,upgrade_type	apmng_upgrade.lua:188
+apupd_model	3	is_mesh_device,model_id,product_type,product_type.[BinaryExpression],size,start,status,upgrade_type	apmng_upgrade.lua:134
+apupd_status	3		apmng_upgrade.lua:103
+apupd_upgrade_status	3	entry_ids	apmng_set.lua:695
+apupd_wtp	2	is_large_fw,mac,total_image_piece,total_image_size,total_md5,upgrade_type	apmng_upgrade.lua:345;apmng_upgrade.lua:484
+apupd_wtp	3	ap_role,group_id,mac,model_id,size,start,state	apmng_upgrade.lua:376;apmng_upgrade.lua:439
+arp_defend_ap	2	ap_id,arp_id,operation	apmng_arpdefend.lua:117;apmng_arpdefend.lua:270;apmng_arpdefend.lua:85
+arp_defend_ap	3	group_id,limit,offset,search_name,search_type,search_value	apmng_arpdefend.lua:156
+arp_defend_arp	0	arp_id,description,ip,is_scan_add,mac	apmng_arpdefend.lua:351
+arp_defend_arp	1	arp_id	apmng_arpdefend.lua:387
+arp_defend_arp	2	arp_id,description,ip,mac	apmng_arpdefend.lua:320
+arp_defend_do_scan	2	group_id_str	apmng_arpdefend.lua:482
+arp_defend_scan	3	limit,offset	apmng_arpdefend.lua:492
+arp_defend_setting	2	defend_mode,wired_port_switch,wireless_port_switch	apmng_arpdefend.lua:454
+auth_session_list	1		sessmngr.lua:134
+backup_rf_mngr_entry	3		apmng_rf.lua:1332
+bcast_storm_ctrl	2	arp_limit_type,arp_proxy_switch,arp_proxy_to_unicast_switch,arp_proxy_type,arp_rate_limit,dhcp_limit_type,dhcp_rate_limit,dhcpv6_limit_type,dhcpv6_rate_limit,enable,icmpv6_ns_limit_type,icmpv6_ns_rate_limit,icmpv6_rs_limit_type,icmpv6_rs_rate_limit,igmp_limit_type,igmp_rate_limit,mdns_proxy_switch,mdns_proxy_to_unicast_switch,nd_proxy_switch,nd_proxy_to_unicast_switch,nd_proxy_type,other_broadcast_limit_type,other_broadcast_rate_limit,other_multicast_limit_type,other_multicast_rate_limit,proto_list,storm_rate	apmng_bcast_storm_ctrl.lua:71
+bluetooth_network_rule_list	0	ap_ids,ap_ids[],broadcast_channel_set,broadcast_channel_set[],broadcast_deduplicate_enable,broadcast_filter_data_type,broadcast_filter_data_type[],broadcast_filter_enable,broadcast_filter_enable[],broadcast_filter_match_data,broadcast_filter_match_data[],broadcast_filter_match_method,broadcast_filter_match_method[],group_ids,group_ids[],gw_work_mode,mode,name,operation_password,operation_username,rssi_deduplicate_enable,rssi_threshold,server_id	apmng_bluetooth_set.lua:390
+bluetooth_network_rule_list	1	id	apmng_bluetooth_set.lua:286
+bluetooth_network_rule_list	2	ap_ids,ap_ids[],broadcast_channel_set,broadcast_channel_set[],broadcast_deduplicate_enable,broadcast_filter_data_type,broadcast_filter_data_type[],broadcast_filter_enable,broadcast_filter_enable[],broadcast_filter_match_data,broadcast_filter_match_data[],broadcast_filter_match_method,broadcast_filter_match_method[],group_ids,group_ids[],gw_work_mode,id,mode,name,operation_password,operation_username,rssi_deduplicate_enable,rssi_threshold,server_id	apmng_bluetooth_set.lua:178
+bluetooth_network_rule_list	3	[t],size,start	apmng_bluetooth_set.lua:91
+client_report_switch	2	status	apmng_set.lua:1640
+client_rssi_data	3		apmng_client.lua:144
+cloud_mngt_clear_config_id	2		apmng_set.lua:1637
+cloud_mngt_fast_report	2		cloud.lua:400
+cloud_mngt_sync_module_config_report	2	,name	cloud.lua:527;portal_auth.lua:1557
+deep_checkup_pkt_bssid_list	3		apmng_sensor.lua:766
+deep_checkup_pkt_ssid_list	3		apmng_sensor.lua:745
+deep_checkup_pkt_sta_list	3		apmng_sensor.lua:792
+deep_inspection_bssid_usage_detail	3	chnl,entry_id,ssid_id	apmng_sensor.lua:708
+deep_inspection_chnl_usage_list	3	entry_id	apmng_sensor.lua:654
+deep_inspection_multi_chnl_density	3	entry_id	apmng_sensor.lua:637
+deep_inspection_multi_chnl_rssi	3	entry_id	apmng_sensor.lua:664
+deep_inspection_multi_chnl_waterfall	3	,entry_id	apmng_sensor.lua:613
+deep_inspection_pkt_usage_detail	3	chnl,entry_id,ssid_id	apmng_sensor.lua:735
+deep_inspection_selected_chnl_usage	3	chnl,entry_id	apmng_sensor.lua:681
+deep_inspection_ssid_usage_detail	3	chnl,entry_id	apmng_sensor.lua:691
+deep_inspection_sta_usage_detail	3	chnl,entry_id,ssid_id	apmng_sensor.lua:725
+deep_inspection_status	3		apmng_sensor.lua:544
+dhcpdef_apbind	2	ap_id,operation	apmng_dhcp_defense.lua:392;apmng_dhcp_defense.lua:420
+dhcpdef_apbind	3	group_id,limit,offset,search_name,search_type,search_value	apmng_dhcp_defense.lua:355
+dhcpdef_apbind_svr	2	ap_id,operation,svr_id	apmng_dhcp_defense.lua:263
+dhcpdef_svr	0	addr_type,name,svr_addr,svr_id	apmng_dhcp_defense.lua:125
+dhcpdef_svr	1	svr_id	apmng_dhcp_defense.lua:212
+dhcpdef_svr	2	addr_type,name,operation,svr_addr,svr_id	apmng_dhcp_defense.lua:312
+diagnose_global	2	enable,telnet_port	diagnose.lua:374
+edca_config	3	ap_id,rf_id,size,start	apmng_rf.lua:1541
+edca_rule	0	ap_be_aifs,ap_be_cwmax,ap_be_cwmin,ap_be_txop,ap_bk_aifs,ap_bk_cwmax,ap_bk_cwmin,ap_bk_txop,ap_id,ap_vi_aifs,ap_vi_cwmax,ap_vi_cwmin,ap_vi_txop,ap_vo_aifs,ap_vo_cwmax,ap_vo_cwmin,ap_vo_txop,edca_enable,edca_mode,edca_rule_id,edca_rule_name,freq_map,group_id,reset_edca_default,sta_be_aifs,sta_be_cwmax,sta_be_cwmin,sta_be_txop,sta_bk_aifs,sta_bk_cwmax,sta_bk_cwmin,sta_bk_txop,sta_vi_aifs,sta_vi_cwmax,sta_vi_cwmin,sta_vi_txop,sta_vo_aifs,sta_vo_cwmax,sta_vo_cwmin,sta_vo_txop,static_edca_type,wmm	apmng_rf.lua:1585
+edca_rule	1	ids	apmng_rf.lua:1630
+edca_rule	2	ap_be_aifs,ap_be_cwmax,ap_be_cwmin,ap_be_txop,ap_bk_aifs,ap_bk_cwmax,ap_bk_cwmin,ap_bk_txop,ap_id,ap_vi_aifs,ap_vi_cwmax,ap_vi_cwmin,ap_vi_txop,ap_vo_aifs,ap_vo_cwmax,ap_vo_cwmin,ap_vo_txop,edca_enable,edca_mode,edca_rule_id,edca_rule_name,freq_map,group_id,reset_edca_default,sta_be_aifs,sta_be_cwmax,sta_be_cwmin,sta_be_txop,sta_bk_aifs,sta_bk_cwmax,sta_bk_cwmin,sta_bk_txop,sta_vi_aifs,sta_vi_cwmax,sta_vi_cwmin,sta_vi_txop,sta_vo_aifs,sta_vo_cwmax,sta_vo_cwmin,sta_vo_txop,static_edca_type,wmm	apmng_rf.lua:1599
+edca_rule	3	edca_rule_name,ids,size,start	apmng_rf.lua:1571
+escape_radius_config	2	escape_enable,escape_interval,radius_detect_enable,radius_detect_password,radius_detect_username	portal_para.lua:175
+ftp_server_list	0	ap_ids,ap_ids[],group_ids,group_ids[],user_name,user_password	apmng_ftp.lua:101
+ftp_server_list	1	rule_id	apmng_ftp.lua:126
+ftp_server_list	2	ap_ids,ap_ids[],group_ids,group_ids[],rule_id,user_name,user_password	apmng_ftp.lua:67
+ftp_server_list	3	[e],size,start	apmng_ftp.lua:31
+ftp_status_list	3	rule_id	apmng_ftp.lua:148
+get_deep_inspection_scan_mode_change	3	entry_id	apmng_sensor.lua:589
+get_deep_inspection_setting	3		apmng_sensor.lua:554
+host_info	3	[e],ap_role,auth_type,bind_enable,data_type,mac_array,mac_count,operation_type,search_name,search_type,search_value,select_filter,size,sort,start	host_management.lua:170;host_management.lua:202
+host_info_back	3		host_management.lua:622
+iot_server_list	0	ca_file_path,client_id,is_encrypt,password,protocol,server_addr,server_port,server_type,topic_comment,topic_comment[],topic_data_type,topic_data_type[],topic_detail,topic_detail[],topic_feature,topic_feature[],username	apmng_bluetooth_set.lua:470
+iot_server_list	1	id	apmng_bluetooth_set.lua:307
+iot_server_list	2	ca_file_path,client_id,id,is_encrypt,password,protocol,server_addr,server_port,server_type,topic_comment,topic_comment[],topic_data_type,topic_data_type[],topic_detail,topic_detail[],topic_feature,topic_feature[],username	apmng_bluetooth_set.lua:263
+iot_server_list	3	[t]	apmng_bluetooth_set.lua:73
+jcs_radio_mode_entry	3	ap_ids,filter,size,start	apmng_rf.lua:1734
+journey_event_list	3	end_time,size,sta_mac,start,start_time	host_management.lua:773
+journey_event_phase	3	event_id	host_management.lua:794
+journey_sta_list	3	[e],ap_role,auth_type,bind_enable,data_type,mac_array,mac_count,operation_type,search_name,search_type,search_value,select_filter,size,sort,start	host_management.lua:169
+ldap_check	1		ldap.lua:148
+ldap_test	2		ldap.lua:232
+macauth_blacklist	3		host_management.lua:471;host_management.lua:553;host_management.lua:571;host_management.lua:58
+macauth_group	0	auth_type,bind_vlan_type,enable,id,mac_id_map,name,note,old_serv_id_map,old_ssid,old_vlan,operation,serv_id_map,type,vlan,vlan_pool_id	mac_group.lua:476;mac_group.lua:638
+macauth_group	2	auth_type,bind_vlan_type,enable,id,mac_id_map,name,note,old_serv_id_map,old_ssid,old_vlan,operation,serv_id_map,type,vlan,vlan_pool_id	mac_group.lua:494;mac_group.lua:743;mac_group.lua:813
+macauth_group	3	[BinaryExpression],type	mac_group.lua:467;mac_group.lua:602;mac_group.lua:628
+macauth_group_for_ssid	0	auth_type,bind_vlan_type,enable,id,mac_id_map,name,note,old_serv_id_map,old_ssid,old_vlan,operation,serv_id_map,type,vlan,vlan_pool_id	mac_group.lua:475;mac_group.lua:637
+macauth_group_for_ssid	1	id,name,serv_id_map,type,value	mac_group.lua:104
+macauth_group_for_ssid	2	auth_type,bind_vlan_type,enable,id,mac_id_map,name,note,old_serv_id_map,old_ssid,old_vlan,operation,serv_id_map,type,vlan,vlan_pool_id	mac_group.lua:493;mac_group.lua:712;mac_group.lua:778
+macauth_mac	0	id,mac,name	mac_auth.lua:120;mac_auth.lua:270
+macauth_mac	1	id	mac_auth.lua:140
+macauth_mac	2	id,mac,name	mac_auth.lua:189;mac_auth.lua:279;mac_auth.lua:337
+macauth_mac_for_group	1	id	mac_auth.lua:144;mac_auth.lua:151;mac_auth.lua:162
+macauth_type	2	auth_mode,type	mac_group.lua:286
+macauth_vlan_str_check	3		mac_group.lua:902
+nego_del	1		diagnose.lua:352
+notify_unbind	2		apmng_set.lua:1696
+nsa_user_backup	3		nonsense.lua:59
+port_list	2	ap_id_array,ap_mac_array,count,enable,port_id_array,pvid	apmng_set.lua:2376
+port_list	3	ap_id,ap_mac,id	apmng_set.lua:2324
+ppsk_group	0	group_id	apmng_wserv.lua:1376
+ppsk_group	1	group_id	apmng_wserv.lua:1458
+ppsk_group	2	group_id,name	apmng_wserv.lua:1405
+ppsk_user	0	expire_date,expire_time,group_id,id,passwd_type	apmng_wserv.lua:1530
+ppsk_user	1	id	apmng_wserv.lua:1644
+ppsk_user	2	id,ppsk_user_ids	apmng_wserv.lua:1592;apmng_wserv.lua:1593
+ppsk_user	3	bind_status,limit,offset,search_name,search_type,search_value,wserv_ids	apmng_wserv.lua:1500
+ppsk_user_backup	3	null	apmng_wserv.lua:1647;apmng_wserv.lua:1657
+ppsk_user_import_set	2	file_name,total_num,user_valid_type	apmng_wserv.lua:1689
+r==s and'macauth_group_for_ssid'or'macauth_group'	1	id,serv_id_map,vlan	mac_group.lua:674
+rf_mngr	2	airtime,antenna,ap_be_aifs,ap_be_cwmax,ap_be_cwmin,ap_be_txop,ap_bk_aifs,ap_bk_cwmax,ap_bk_cwmin,ap_bk_txop,ap_vi_aifs,ap_vi_cwmax,ap_vi_cwmin,ap_vi_txop,ap_vo_aifs,ap_vo_cwmax,ap_vo_cwmin,ap_vo_txop,bandwidth,bcn_intvl,brd_probe,channel,downlink_mumimo,downlink_ofdma,dtim_prd,edca_enable,edca_mode,enable_6g,enable_6g_psc,force_modify,frag_thr,freq_band,gi_mode,manage_frame_rate,max_usr,mode,multi_id_list,mutex_channel,operation,power_level,rail_high_speed_mode_switch,reject_diff,reject_enable,reject_limit,reset_edca_default,rf_check_circle,rf_chnl_dcs,rf_chnl_occup_threshold,rf_chnl_reselect,rf_chnl_tolerance,rf_name,rf_online_switch,rf_state,rssi_kick,rssi_kick_val,rssi_restrict,rssi_restrict_val,rts_thr,short_gi,sta_be_aifs,sta_be_cwmax,sta_be_cwmin,sta_be_txop,sta_bk_aifs,sta_bk_cwmax,sta_bk_cwmin,sta_bk_txop,sta_vi_aifs,sta_vi_cwmax,sta_vi_cwmin,sta_vi_txop,sta_vo_aifs,sta_vo_cwmax,sta_vo_cwmin,sta_vo_txop,static_edca_type,twt,uplink_mumimo,uplink_ofdma,wmm	apmng_rf.lua:1273;apmng_rf.lua:1294;apmng_rf.lua:1396;apmng_rf.lua:1412;apmng_rf.lua:1428;apmng_rf.lua:1700
+rf_mngr	3	ap_role,ap_status,group_id,search_cond,search_name,search_value,size,start	apmng_rf.lua:1494;apmng_rf.lua:1647
+rf_mngr_template_export	3		apmng_rf.lua:1678
+roam_exist_unsupport_ap	3	exist_unsupport_wireless_network_mode_ap	apmng_roam.lua:154
+roam_wireless_network_mode	3	wireless_network_mode	apmng_roam.lua:106
+sensor_discover_trigger	2		apmng_sensor.lua:207
+sensor_global	2	backhaul_enable,backhaul_encode,backhaul_key,backhaul_ssid,backhaul_ssidbrd,backhaul_wserv_id,enable,wserv_cfg_change	apmng_sensor.lua:117;apmng_sensor.lua:154;apmng_sensor.lua:177
+sensor_list_added	3		apmng_sensor.lua:216
+sensor_manage_status	3		apmng_sensor.lua:227
+sensor_test_case_list	0	,.[e],.[n],.[n].,sch_period,sch_time	apmng_sensor.lua:505
+sensor_test_case_list	1	test_case_id	apmng_sensor.lua:525
+sensor_test_case_list	2	,.[e],.[n],.[n].,sch_period,sch_time	apmng_sensor.lua:454
+sensor_test_detail_result	3		apmng_sensor.lua:325
+sensor_test_digest	3		apmng_sensor.lua:538
+sensor_test_group_delete_event_handle	2	group_id	apmng_sensor.lua:533
+sensor_test_result	3		apmng_sensor.lua:309
+sensor_test_ssid_list	3	,.[e],.[n]	apmng_sensor.lua:245
+sensor_test_summary	3		apmng_sensor.lua:268
+sensor_test_summary_new	3	,.[e]	apmng_sensor.lua:282
+sensor_test_wserv_delete_event_handle	2	serv_id	apmng_sensor.lua:537
+set_deep_inspection_scan_mode_change	2	chnl,entry_id,scan_mode	apmng_sensor.lua:602
+set_deep_inspection_setting	2	,.[e].entry_id,.[e].inspection_band,.[e].inspection_item	apmng_sensor.lua:564
+start_report_sub_device_info	2		system.lua:156
+uac_lldp	2	is_first	lldp.lua:27
+uac_lldp	3	is_first	lldp.lua:52
+uac_nms_report_switch	2		event_report.lua:11
+unsupport_ap_get	3		apmng_set_status.lua:12
+usb_settings	2	ap_ids,ap_ids[],enable,group_ids,group_ids[]	apmng_usb.lua:41
+usb_settings	3		apmng_usb.lua:13
+vlan_id_str_check	3		apmng_wserv.lua:1293
+vlan_pool	0		apmng_wserv.lua:1270
+vlan_pool	1		apmng_wserv.lua:1284
+vlan_pool	2		apmng_wserv.lua:1278
+vlan_pool_del_check	3		apmng_wserv.lua:1306
+whitelist	0	mac,ssid,ssid_encode	apmng_sensor.lua:942
+whitelist	1	whitelist_ids	apmng_sensor.lua:955
+whitelist	3	size,start	apmng_sensor.lua:851
+wips_event_detail	3	size,start,wips_info_id	apmng_sensor.lua:838
+wips_event_info	2	[],operation,wips_info_ids	apmng_sensor.lua:882;apmng_sensor.lua:918
+wips_event_info	3	entry_name,size,start,wips_info_id,wips_threat_classname,wips_threat_level	apmng_sensor.lua:819
+wips_statistics	3	type	apmng_sensor.lua:884
+wips_statistics_num	3		apmng_sensor.lua:912
+wportal	0	account_port,admin_dn,admin_passwd,auth_port,auth_type,base_dn,cloud_portal_url,cmcc_ac_name,cmcc_auth_server_type,cmcc_mac_auth,cmcc_url,dst_ip,dst_ip_mask,dst_port_end,dst_port_start,entry_id,fail_id,fail_url,id,index,match_type,method,name,nas_identifier,nas_ip,portal_page_switch,protocol,radius_auth_type,remote_mac_auth,remote_url,retry_count,retry_interval,serv_id,server_addr,server_name,session_timeout,share_key,src_ip,src_ip_mask,src_mac,src_port_end,src_port_start,src_vlan,type,url,user_filter,user_passwd_filter,vlan_id	free_auth_strategy.lua:185;ldap.lua:141;portal_auth.lua:823;radius.lua:128
+wportal	1	[BinaryExpression],auth_mode,auth_type,change,count,del_mode,del_user,entry_id,entry_id.[BinaryExpression],free_auth_id,index,interface,key,mac,match_type,method,name,name.[1],name.[BinaryExpression],portal_port,serv_id,serv_id.[1],sso_enable,sso_port,sso_server,sso_type,type,username,vlan_id,vlan_id.[1]	free_auth_strategy.lua:416;free_auth_strategy.lua:545;free_auth_strategy.lua:627;free_auth_strategy.lua:635;ldap.lua:201;nonsense.lua:56;portal_auth.lua:1001;portal_auth.lua:1016;portal_auth.lua:1017;portal_auth.lua:2234;portal_auth.lua:2263;portal_auth.lua:2305;portal_auth.lua:879;portal_auth.lua:882;portal_auth.lua:998;portal_para.lua:99;radius.lua:177;usermngr.lua:738;usermngr.lua:742;usermngr.lua:765;usermngr.lua:766
+wportal	2	[BinaryExpression],[e.radius_edit_option[_]],account_port,admin_dn,admin_passwd,age_enable,age_time,ageing_enable,ageing_time,auth_mode,auth_port,auth_type,base_dn,cloud_portal_url,cmcc_ac_name,cmcc_auth_server_type,cmcc_mac_auth,cmcc_port,cmcc_portal_port,cmcc_url,del_mode,entry_id,fail_id,fail_url,https_enable,id,index,key,method,nas_identifier,nas_ip,old_vlan_id,portal_page_switch,portal_port,radius_auth_type,remote_mac_auth,remote_url,retry_count,retry_interval,serv_id,server_addr,server_name,session_timeout,share_key,sso_config,sso_enable,sso_port,sso_server,sso_type,type,user_filter,user_passwd_filter,value,vlan_id	ldap.lua:174;portal_auth.lua:2236;portal_auth.lua:2271;portal_auth.lua:2287;portal_auth.lua:2294;portal_auth.lua:2310;portal_auth.lua:2320;portal_auth.lua:2342;portal_auth.lua:846;portal_auth.lua:865;portal_para.lua:101;portal_para.lua:121;portal_para.lua:128;portal_para.lua:132;portal_para.lua:148;portal_para.lua:72;portal_para.lua:82;portal_para.lua:91;radius.lua:152
+wportal	3	portal_id,search,search_arg,search_arg.auth_type,search_arg.search_name,search_arg.search_value,search_arg.value_type,search_arg.write_to_file,serv_id,size,sort,start,type,vlan	nonsense.lua:32;portal_auth.lua:1125;portal_auth.lua:1351;portal_auth.lua:2418;sessmngr.lua:79;usermngr.lua:823
+wportal_backup	3		sessmngr.lua:14
+wportal_user_data	3	duration	portal_auth.lua:1873
+wservice	0	auth,auto_bind,bw_ctrl_enable,bw_ctrl_mode,central_forward_switch,cipher,default_bind_freq,default_bind_vlan,desc,down_limit,enable,encryption,igmp_2g_rate,igmp_2g_rate_type,igmp_5g_rate,igmp_5g_rate_type,igmp_drop_unknown,igmp_max_resp_time,igmp_multi_to_unicast,igmp_query_interval,igmp_query_switch,igmp_snooping_enable,igmp_snooping_switch,isolate,key,key_update_intv,mlo_switch,ppsk_group,radius_acct_port,radius_auth_channel,radius_ip,radius_nas_id,radius_port,radius_pwd,radius_session_timeout,radius_vlan_enable,serv_id,ssid,ssid_code_type,ssid_id,ssidbrd,time_switch,up_limit	apmng_wserv.lua:777
+wservice	1	serv_id	apmng_wserv.lua:1023;apmng_wserv.lua:835
+wservice	2	auth,auto_bind,bw_ctrl_enable,bw_ctrl_mode,central_forward_switch,cipher,default_bind_freq,default_bind_vlan,desc,down_limit,enable,encryption,igmp_2g_rate,igmp_2g_rate_type,igmp_5g_rate,igmp_5g_rate_type,igmp_drop_unknown,igmp_max_resp_time,igmp_multi_to_unicast,igmp_query_interval,igmp_query_switch,igmp_snooping_enable,igmp_snooping_switch,isolate,key,key_update_intv,mlo_switch,operation,ppsk_group,radio_id,radius_acct_port,radius_auth_channel,radius_ip,radius_nas_id,radius_port,radius_pwd,radius_session_timeout,radius_vlan_enable,serv_id,ssid,ssid_code_type,ssid_id,ssidbrd,time_switch,up_limit,vlan_id	apmng_wserv.lua:1319;apmng_wserv.lua:1332;apmng_wserv.lua:1787;apmng_wserv.lua:1802;apmng_wserv.lua:612;apmng_wserv.lua:633;apmng_wserv.lua:978
+wservice	3	group_id,limit,offset,radio_id,search_cond,serv_id	apmng_wserv.lua:905
+wservice_ip	0	enable,id,ip_addr,relay	apmng_wserv.lua:1146
+wservice_ip	1	id	apmng_wserv.lua:1202
+wservice_ip	2	enable,id,ip_addr,is_set_enable,relay	apmng_wserv.lua:1209;apmng_wserv.lua:1266
+wsta_bind_info	0		host_management.lua:262
+wsta_bind_info	1	[BinaryExpression]	host_management.lua:535
+wsta_bind_info	2		host_management.lua:293
+wsta_bind_info_net_rule	2		host_management.lua:662
+wsta_iso_group	0	id	host_management.lua:747
+wsta_iso_group	1	id	host_management.lua:736
+wsta_iso_group	2	id	host_management.lua:724
+wsta_iso_group	3	[e],size,start	host_management.lua:709
+wstation	1	entry_id,mac	apmng_client.lua:133
+wstation	2	overload_threshold	event_report.lua:7
+wstation	3	[n],[n].name,ap_role,filter,filter.auth_type,group_id,size,sort,start	apmng_client.lua:88
+wstation_backup	3		apmng_client.lua:21
+wstation_disconnect	2		host_management.lua:668
+wstation_mac	1	entry_id,mac	apmng_client.lua:134
+wstation_recognize	2	brand,operating_system,prohibit_access_switch	host_management.lua:654

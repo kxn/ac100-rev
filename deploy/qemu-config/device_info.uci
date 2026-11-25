@@ -4,6 +4,7 @@
 config info 'info'
 	option vendor_id '0x00000001'
 	option device_model 'TL-AC100'
+	option device_type 'AC'
 	option hw_version '6.0'
-	option sw_version '1.0.3'
+	option sw_version '1.0.3 Build 260817 Rel.68871n'
 	option enable_dns '0'

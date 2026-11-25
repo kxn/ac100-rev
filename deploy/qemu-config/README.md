@@ -10,11 +10,12 @@
 
 | 文件 | 内容 |
 |---|---|
-| `profile.uci` | UCI `profile` 配置，从 uac 二进制的 `get_profile(section, option)` 调用点逆向（54 个键 / 15 段） |
+| `profile.uci` | UCI `profile` 配置，从 uac 二进制的 `get_profile(section, option)` 调用点逆向 |
 | `device_info.uci` | 设备身份，`vendor_id` 只接受 `0x00010001`/`0x00020001`/`0x00000001` |
 | `rate.uci` | `apmng_rate` 的参考写法（注意真实配置名是 `apmng_rate`） |
 | `gen_config.py` | 由 `uc.conf` 键名生成整棵 `/etc/config`，段名必须**具名** |
-| `etc_config/` | 当前最好的一组配置（uac 能跑过 apmngr 的全部 restore） |
+| `etc_config/` | 冷启动验证所用的 `/etc/config` 配置 |
+| `nms_report/event_params` | 独立 UCI 包，安装到 `/etc/nms_report/event_params` |
 
 ## 已确认的坑（每一条都是靠错误信息迭代出来的）
 
@@ -31,12 +32,7 @@
 6. `uc.conf` 是 cfgsync 白名单，**不全**：`sub_proxy_*`、`dft_offline_selfmanage`、
    `http_port`/`https_port` 等 uac 会读但白名单里没有。
 
-## 当前进度（uac 已能跑过大半模块初始化）
-
-已依次通过：profile → apdb → apmngr(settings/aplog/crashdump/diagnose) →
-bluetooth/ftp → rate_db → wservice(igmp) → wsta → apupd → wportal。
-
-迭代中又确认的坑：
+## 其他配置约束
 
 7. `apmng_rate` 里 `11a_base`/`11a_supp` 必须是 **list**，`11a_mult` 是标量；
    `11n_*`/`11ac_*` 是标量。
@@ -45,10 +41,5 @@ bluetooth/ftp → rate_db → wservice(igmp) → wsta → apupd → wportal。
 9. 布尔型 UCI 选项（如 `apmng_wserv.igmp_settings.igmp_snooping_enable`、
    `authentication.portal.https_enable`）同样走 onoff_map，必须是 `on`。
 
-剩余（当前停在这里）：
-
-- `event_params` 包结构未知：uac 需要 `getUciSection(10001020)` 这类**数字段名**。
-- `profile[sta_bind_info->max_ageing_time]` 仍取不到（段名待确认）。
-- `device_info.sw_version` 的格式（`uac_com_get_dev_sw`：解析 "x.y.z Build N Rel.M"）。
-- `wportal` 的 `dns_upd_intv` 与 sqlite 表 `portalTable`/`radiusTable`
-  （这些表正常由 uac 自己建，缺表可能只是初始化顺序问题）。
+从空数据库启动还需要厂商的 `ubusd`、`tddpd` 和 Portal 建表步骤。完整命令、函数地址
+和对照结果见 [QEMU 冷启动记录](../../notes/qemu-firmware.md)。

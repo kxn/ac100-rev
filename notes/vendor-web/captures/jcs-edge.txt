@@ -1,0 +1,12 @@
+# Edge-case probes against /tmp/jcs.ui.srv.uac (2026-11-24, QEMU vendor uac)
+# Client: vendor Lua uds + cjson, raw payloads sent to the UI endpoint.
+unknown_name  send=70  recv={}
+  server: [JCS_ERR]jcs_work_task()/341 No callback operation [name=no_such_iface,t=3] registered.
+op4           send=65  recv=<timeout 3s, EAGAIN>
+  server: [JCS_ERR]jcs_work_task()/279 Operation wrong, op=4.
+no_data       send=55  recv=<timeout 3s, EAGAIN>
+  server: [JCS_ERR]jcs_work_task()/267 Parse json string failed, no expected field.
+bad_json      send=8   recv=<timeout 3s, EAGAIN>
+  server: [JCS_ERR]jcs_work_task()/256 Invalid json string: {"name":
+array_data    send=65  recv={"online_num":0,"offline_num":1,"total_num":1,"ret":0}
+no_clt_path   send=36  recv=<timeout 2s, EAGAIN>

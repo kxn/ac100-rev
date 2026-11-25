@@ -1,4 +1,0 @@
-# uac 通过 initConfigPackage() 加载该包；缺失会直接报
-# "uci_load package[event_params] failed"。
-config event_params 'event_params'
-	option event_interval '10'
