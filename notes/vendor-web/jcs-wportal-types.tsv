@@ -1,0 +1,27 @@
+op	type	type_num	calls	fields	sources
+0	WPORTAL_JCS_ADD_FREESTRATEGY	2	1	dst_ip,dst_ip_mask,dst_port_end,dst_port_start,id,match_type,name,protocol,src_ip,src_ip_mask,src_mac,src_port_end,src_port_start,src_vlan,url	free_auth_strategy.lua:185
+0	WPORTAL_JCS_ADD_LDAP_SERVER	800	1	admin_dn,admin_passwd,auth_port,base_dn,entry_id,server_addr,server_name,user_filter,user_passwd_filter	ldap.lua:141
+0	WPORTAL_JCS_ADD_PAGE	1	1	auth_type,cloud_portal_url,cmcc_ac_name,cmcc_auth_server_type,cmcc_mac_auth,cmcc_url,fail_id,fail_url,id,portal_page_switch,remote_mac_auth,remote_url,serv_id,vlan_id	portal_auth.lua:823
+0	WPORTAL_JCS_ADD_RADIUS_SERVER	200	1	account_port,auth_port,entry_id,index,method,nas_identifier,nas_ip,radius_auth_type,retry_count,retry_interval,server_addr,session_timeout,share_key	radius.lua:128
+1	WPORTAL_JCS_DEL_ALL_RESOURCE	701	2	del_mode,free_auth_id,key,portal_port	portal_auth.lua:2263;portal_auth.lua:2305
+1	WPORTAL_JCS_DEL_AUTHED_USER_BY_MODE_ID	7	1	auth_type,interface,serv_id,vlan_id	portal_auth.lua:998
+1	WPORTAL_JCS_DEL_FREESTRATEGY	2	4	count,match_type,name	free_auth_strategy.lua:416;free_auth_strategy.lua:545;free_auth_strategy.lua:627;free_auth_strategy.lua:635
+1	WPORTAL_JCS_DEL_LDAP_SERVER	802	1	count,entry_id,method,name	ldap.lua:201
+1	WPORTAL_JCS_DEL_NSA	4	1	mac	nonsense.lua:56
+1	WPORTAL_JCS_DEL_NSA_BY_MODE_ID	8	3	auth_type,serv_id,vlan_id	portal_auth.lua:1001;portal_auth.lua:1016;portal_auth.lua:1017
+1	WPORTAL_JCS_DEL_NSA_BY_USERNAME	10	4	change,del_user,index,method,name,username	usermngr.lua:738;usermngr.lua:742;usermngr.lua:765;usermngr.lua:766
+1	WPORTAL_JCS_DEL_PAGE	1	2	count,serv_id,vlan_id	portal_auth.lua:879;portal_auth.lua:882
+1	WPORTAL_JCS_DEL_RADIUS_SERVER	202	1	count,entry_id	radius.lua:177
+1	WPORTAL_JCS_SET_AUTH_MODE	400	2	auth_mode,del_mode,sso_enable,sso_port,sso_server,sso_type	portal_auth.lua:2234;portal_para.lua:99
+2	WPORTAL_JCS_SET_AUTH_MODE	400	3	auth_mode,del_mode,entry_id,sso_enable,sso_port,sso_server,sso_type	portal_auth.lua:2236;portal_auth.lua:2271;portal_para.lua:101
+2	WPORTAL_JCS_SET_DEFAULT_PORTAL_PAGE_SWITCH	402	1	serv_id	portal_auth.lua:2342
+2	WPORTAL_JCS_SET_LDAP_SERVER	801	1	admin_dn,admin_passwd,auth_port,base_dn,entry_id,index,method,server_addr,server_name,user_filter,user_passwd_filter	ldap.lua:174
+2	WPORTAL_JCS_SET_PAGE	1	2	auth_type,cloud_portal_url,cmcc_ac_name,cmcc_auth_server_type,cmcc_mac_auth,cmcc_url,fail_id,fail_url,id,old_vlan_id,portal_page_switch,remote_mac_auth,remote_url,serv_id,vlan_id	portal_auth.lua:846;portal_auth.lua:865
+2	WPORTAL_JCS_SET_PORT	5	4	age_enable,age_time,auth_mode,entry_id,portal_port	portal_auth.lua:2287;portal_auth.lua:2294;portal_auth.lua:2310;portal_auth.lua:2320
+2	WPORTAL_JCS_SET_RADIUS_SERVER	201	1	account_port,auth_port,entry_id,index,method,nas_identifier,nas_ip,radius_auth_type,retry_count,retry_interval,server_addr,session_timeout,share_key	radius.lua:152
+2	WPORTAL_JCS_SET_SSO_CONFIG	401	7	age_enable,age_time,ageing_enable,ageing_time,cmcc_port,cmcc_portal_port,https_enable,key,portal_port,sso_config,value	portal_para.lua:121;portal_para.lua:128;portal_para.lua:132;portal_para.lua:148;portal_para.lua:72;portal_para.lua:82;portal_para.lua:91
+3	NGINX_STATUS_GET_AUTH_USER		1	search,search_arg,size,sort,start	sessmngr.lua:79
+3	WPORTAL_JCS_GET_AUTHED_USER	3	1	search,search_arg,size,start	usermngr.lua:823
+3	WPORTAL_JCS_GET_IS_EXIST_BY_VLAN	321	2	portal_id,serv_id,vlan	portal_auth.lua:1125;portal_auth.lua:1351
+3	WPORTAL_JCS_GET_NSA	4	1	search,search_arg,size,start	nonsense.lua:32
+3	WPORTAL_JCS_GET_VLAN_POOL_CHECK	322	1		portal_auth.lua:2418

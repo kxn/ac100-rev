@@ -1,0 +1,4 @@
+config main 'main'
+	option listen_http_lan '0'
+	option listen_https '0'
+	option https_switch 'on'

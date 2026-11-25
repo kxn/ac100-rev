@@ -1,0 +1,660 @@
+module	keyword	method_or_registration	handlers	direct_jcs_in_handlers	controller	line
+administration	system	module			usr/lib/lua/luci/controller/admin/administration.lua	17
+administration	modify_login_pwd	set	set_login_pwd:49		usr/lib/lua/luci/controller/admin/administration.lua	19
+administration	modify_login_pwd	section-name	check_login_pwd:27; nil; before_save_login_pwd:86		usr/lib/lua/luci/controller/admin/administration.lua	19
+administration	set_pwd_before_login	do	set_pwd_before_login:104		usr/lib/lua/luci/controller/admin/administration.lua	19
+system	service_port	section-name	check_service_port:145; apply_service_port:215; before_apply_service_port:171		usr/lib/lua/luci/controller/admin/administration.lua	19
+system	service_port	set	service_port_data_set:189		usr/lib/lua/luci/controller/admin/administration.lua	19
+administrator		module			usr/lib/lua/luci/controller/admin/administrator.lua	5
+administrator	account	section-type	check_account:70; account_after_proc:39; account_before_proc:128		usr/lib/lua/luci/controller/admin/administrator.lua	5
+administrator	account	get	account_list_get:72		usr/lib/lua/luci/controller/admin/administrator.lua	5
+administrator	unsafe_user	get	get_default_passwd_user:146		usr/lib/lua/luci/controller/admin/administrator.lua	5
+administrator	auth_status	get	get_auth_status:155		usr/lib/lua/luci/controller/admin/administrator.lua	5
+apmng_arpdefend		module			usr/lib/lua/luci/controller/admin/apmng_arpdefend.lua	414
+apmng_arpdefend	ap_list	get	get_ap_list:129	arp_defend_ap 3 GET n @156	usr/lib/lua/luci/controller/admin/apmng_arpdefend.lua	414
+apmng_arpdefend	ap_list	set	set_ap_list:64	arp_defend_ap 2 SET i @85	usr/lib/lua/luci/controller/admin/apmng_arpdefend.lua	414
+apmng_arpdefend	clear_all_bind	do	do_clear_ap_list:107	arp_defend_ap 2 SET d @117	usr/lib/lua/luci/controller/admin/apmng_arpdefend.lua	414
+apmng_arpdefend	usr_bind	get	get_arp_list:166		usr/lib/lua/luci/controller/admin/apmng_arpdefend.lua	414
+apmng_arpdefend	usr_bind	section-type	check_arp_list_data:410; do_set_arp_list_data:412; nil		usr/lib/lua/luci/controller/admin/apmng_arpdefend.lua	414
+apmng_arpdefend	usr_bind	set	set_arp_list_data:290	arp_defend_arp 2 SET i @320	usr/lib/lua/luci/controller/admin/apmng_arpdefend.lua	414
+apmng_arpdefend	usr_bind	add	add_arp_list_data:332	arp_defend_arp 0 ADD i @351	usr/lib/lua/luci/controller/admin/apmng_arpdefend.lua	414
+apmng_arpdefend	usr_bind	delete	del_arp_list_data:369	arp_defend_arp 1 DEL s @387	usr/lib/lua/luci/controller/admin/apmng_arpdefend.lua	414
+apmng_arpdefend	arp_settings	section-name	check_settings:434; do_settings:436; nil	arp_defend_setting 2 SET n @454	usr/lib/lua/luci/controller/admin/apmng_arpdefend.lua	414
+apmng_arpdefend	do_arp_scan	section-type	check_scan_arp_data:466; nil; nil		usr/lib/lua/luci/controller/admin/apmng_arpdefend.lua	414
+apmng_arpdefend	do_arp_scan	set	set_arp_scan:470	arp_defend_do_scan 2 SET n @482	usr/lib/lua/luci/controller/admin/apmng_arpdefend.lua	414
+apmng_arpdefend	arp_scan_list	get	get_arp_scan_list:488	arp_defend_scan 3 GET i @492	usr/lib/lua/luci/controller/admin/apmng_arpdefend.lua	414
+apmng_arpdefend	arp_scan_list	add	add_arp_scan_list:504		usr/lib/lua/luci/controller/admin/apmng_arpdefend.lua	414
+apmng_audit		module			usr/lib/lua/luci/controller/admin/apmng_audit.lua	3
+apmng_audit	settings	section-name	check_settings:5; do_settings:7; nil	ac_audit 2 SET l @13	usr/lib/lua/luci/controller/admin/apmng_audit.lua	3
+apmng_balance		module			usr/lib/lua/luci/controller/admin/apmng_balance.lua	29
+apmng_balance	rule_list	section-type	check_settings:30; nil; nil		usr/lib/lua/luci/controller/admin/apmng_balance.lua	29
+apmng_balance	rule_list	get	balance_rule_list_get:48	ac_balance 3 GET a @73	usr/lib/lua/luci/controller/admin/apmng_balance.lua	29
+apmng_balance	rule_list	set	balance_rule_list_set:123	ac_balance 2 SET t @139	usr/lib/lua/luci/controller/admin/apmng_balance.lua	29
+apmng_balance	rule_list	delete	balance_rule_list_del:109	ac_balance 1 DEL i @117	usr/lib/lua/luci/controller/admin/apmng_balance.lua	29
+apmng_balance	rule_list	add	balance_rule_list_add:82	ac_balance 0 ADD n @97	usr/lib/lua/luci/controller/admin/apmng_balance.lua	29
+apmng_band_navigation		module			usr/lib/lua/luci/controller/admin/apmng_band_navigation.lua	15
+apmng_band_navigation	settings	section-name	check_settings:17; do_settings:19; nil	apmng_band_navigation 2 SET e @33	usr/lib/lua/luci/controller/admin/apmng_band_navigation.lua	15
+apmng_bcast_storm_ctrl		module			usr/lib/lua/luci/controller/admin/apmng_bcast_storm_ctrl.lua	7
+apmng_bcast_storm_ctrl	settings	section-name	check_settings:9; apply_settings:27; nil	bcast_storm_ctrl 2 SET t @71	usr/lib/lua/luci/controller/admin/apmng_bcast_storm_ctrl.lua	7
+apmng_set		module			usr/lib/lua/luci/controller/admin/apmng_bluetooth_set.lua	17
+apmng_set	bluetooth_network_rule_list	section-type	check_bluetooth_rule_settings:37; nil; nil		usr/lib/lua/luci/controller/admin/apmng_bluetooth_set.lua	17
+apmng_set	bluetooth_network_rule_list	get	bluetooth_rule_list_get:79	bluetooth_network_rule_list 3 GET i @91	usr/lib/lua/luci/controller/admin/apmng_bluetooth_set.lua	17
+apmng_set	bluetooth_network_rule_list	set	bluetooth_rule_list_set:97	bluetooth_network_rule_list 2 SET _ @178	usr/lib/lua/luci/controller/admin/apmng_bluetooth_set.lua	17
+apmng_set	bluetooth_network_rule_list	delete	bluetooth_rule_list_del:273	bluetooth_network_rule_list 1 DEL _ @286	usr/lib/lua/luci/controller/admin/apmng_bluetooth_set.lua	17
+apmng_set	bluetooth_network_rule_list	add	bluetooth_rule_list_add:315	bluetooth_network_rule_list 0 ADD _ @390	usr/lib/lua/luci/controller/admin/apmng_bluetooth_set.lua	17
+apmng_set	iot_server_list	section-type	check_iot_server_settings:49; nil; nil		usr/lib/lua/luci/controller/admin/apmng_bluetooth_set.lua	17
+apmng_set	iot_server_list	get	iot_server_list_get:67	iot_server_list 3 GET r @73	usr/lib/lua/luci/controller/admin/apmng_bluetooth_set.lua	17
+apmng_set	iot_server_list	set	iot_server_list_set:197	iot_server_list 2 SET _ @263	usr/lib/lua/luci/controller/admin/apmng_bluetooth_set.lua	17
+apmng_set	iot_server_list	delete	iot_server_list_del:294	iot_server_list 1 DEL r @307	usr/lib/lua/luci/controller/admin/apmng_bluetooth_set.lua	17
+apmng_set	iot_server_list	add	iot_server_list_add:411	iot_server_list 0 ADD _ @470	usr/lib/lua/luci/controller/admin/apmng_bluetooth_set.lua	17
+apmng_client		module			usr/lib/lua/luci/controller/admin/apmng_client.lua	7
+apmng_client	client_list	get	client_list_data_get:43	wstation 3 GET l @88	usr/lib/lua/luci/controller/admin/apmng_client.lua	7
+apmng_client	client_list	set	client_list_data_set:118		usr/lib/lua/luci/controller/admin/apmng_client.lua	7
+apmng_client	client_list	delete	client_list_data_del:130	wstation 1 DEL e @133; wstation_mac 1 DEL e @134	usr/lib/lua/luci/controller/admin/apmng_client.lua	7
+apmng_client	client_rssi_data	get	get_client_rssi_data:143	client_rssi_data 3 GET e[1] @144	usr/lib/lua/luci/controller/admin/apmng_client.lua	7
+apmng_dhcp_defense		module			usr/lib/lua/luci/controller/admin/apmng_dhcp_defense.lua	475
+apmng_dhcp_defense	dhcp_filter	section-type	check_svr_list_type:471; do_svr_list_type:473; nil		usr/lib/lua/luci/controller/admin/apmng_dhcp_defense.lua	475
+apmng_dhcp_defense	dhcp_filter	get	get_dhcp_filter:131		usr/lib/lua/luci/controller/admin/apmng_dhcp_defense.lua	475
+apmng_dhcp_defense	dhcp_filter	set	set_dhcp_filter:281	~dhcpdef_svr (A) 2 SET n @312	usr/lib/lua/luci/controller/admin/apmng_dhcp_defense.lua	475
+apmng_dhcp_defense	dhcp_filter	add	add_dhcp_filter:102	~dhcpdef_svr (A) 0 ADD _ @125	usr/lib/lua/luci/controller/admin/apmng_dhcp_defense.lua	475
+apmng_dhcp_defense	dhcp_filter	delete	del_dhcp_filter:191	dhcpdef_svr 1 DEL f @212	usr/lib/lua/luci/controller/admin/apmng_dhcp_defense.lua	475
+apmng_dhcp_defense	ap_list	get	get_ap_list:318	~dhcpdef_apbind (E) 3 GET n @355	usr/lib/lua/luci/controller/admin/apmng_dhcp_defense.lua	475
+apmng_dhcp_defense	ap_list	set	set_ap_list:373	~dhcpdef_apbind (E) 2 SET a @392	usr/lib/lua/luci/controller/admin/apmng_dhcp_defense.lua	475
+apmng_dhcp_defense	clear_apbind_list	do	clear_apbind_list:410	~dhcpdef_apbind (E) 2 SET i @420	usr/lib/lua/luci/controller/admin/apmng_dhcp_defense.lua	475
+apmng_set		module			usr/lib/lua/luci/controller/admin/apmng_ftp.lua	15
+apmng_set	ftp_server_list	get	ftp_server_list_get:18	ftp_server_list 3 GET i @31	usr/lib/lua/luci/controller/admin/apmng_ftp.lua	15
+apmng_set	ftp_server_list	set	ftp_server_list_set:37	ftp_server_list 2 SET r @67	usr/lib/lua/luci/controller/admin/apmng_ftp.lua	15
+apmng_set	ftp_server_list	add	ftp_server_list_add:77	ftp_server_list 0 ADD r @101	usr/lib/lua/luci/controller/admin/apmng_ftp.lua	15
+apmng_set	ftp_server_list	delete	ftp_server_list_del:113	ftp_server_list 1 DEL n @126	usr/lib/lua/luci/controller/admin/apmng_ftp.lua	15
+apmng_set	ftp_status_list	get	ftp_status_list_get:134	ftp_status_list 3 GET n @148	usr/lib/lua/luci/controller/admin/apmng_ftp.lua	15
+apmng_set	ftp_server_list	section-type	check_ftp_settings:16; nil; nil		usr/lib/lua/luci/controller/admin/apmng_ftp.lua	15
+apmng_mesh	apmng_mesh	module			usr/lib/lua/luci/controller/admin/apmng_mesh.lua	3
+apmng_mesh	re_node_list	get	re_node_list_get:10	ac_mesh_topology 3 GET r @11	usr/lib/lua/luci/controller/admin/apmng_mesh.lua	3
+apmng_mesh	unfirmed_ap_list	get	unfirmed_ap_list_get:19	ac_mesh_discover_list 3 GET a @27	usr/lib/lua/luci/controller/admin/apmng_mesh.lua	3
+apmng_mesh	scan_new_device_status	get	scan_new_device_status_get:73	ac_mesh_discover_status 3 GET {} @73	usr/lib/lua/luci/controller/admin/apmng_mesh.lua	3
+apmng_mesh	select_mesh_ap	do	select_mesh_ap:38	ac_mesh_discover_cap_change 2 SET _ @40	usr/lib/lua/luci/controller/admin/apmng_mesh.lua	3
+apmng_mesh	add_mesh_ap	do	add_mesh_ap:42	ac_mesh_trigger_pair 2 SET n @54	usr/lib/lua/luci/controller/admin/apmng_mesh.lua	3
+apmng_mesh	add_all_mesh_ap	do	add_all_mesh_ap:56	ac_mesh_trigger_pair_all 2 SET {} @56	usr/lib/lua/luci/controller/admin/apmng_mesh.lua	3
+apmng_mesh	scan_new_device	do	scan_new_device:58	ac_mesh_trigger_discover 2 SET {} @62; ac_mesh_stop_discover 2 SET {} @68	usr/lib/lua/luci/controller/admin/apmng_mesh.lua	3
+apmng_mesh	settings	section-name	check_settings:94; do_settings:98; before_settings:96	ac_mesh_global_settings 2 SET _ @104	usr/lib/lua/luci/controller/admin/apmng_mesh.lua	3
+apmng_passthrough		module			usr/lib/lua/luci/controller/admin/apmng_passthrough.lua	3
+apmng_passthrough	passthrough_to_subdevice	do	handle_apmng_passthrough:4	ac_passthrough 2 SET e @37; ac_passthrough 3 GET e @54	usr/lib/lua/luci/controller/admin/apmng_passthrough.lua	3
+apmng_rate		module			usr/lib/lua/luci/controller/admin/apmng_rate.lua	9
+apmng_rate	*all*	section-name	check_rate:11; do_rate:21; nil	ac_rate 2 SET e @70	usr/lib/lua/luci/controller/admin/apmng_rate.lua	9
+apmng_report		module			usr/lib/lua/luci/controller/admin/apmng_report.lua	33
+apmng_report	settings	section-name	check_settings:3; apply_settings:5; nil	ac_report 2 SET r @8	usr/lib/lua/luci/controller/admin/apmng_report.lua	33
+apmng_rf	apmng_rf	module			usr/lib/lua/luci/controller/admin/apmng_rf.lua	1747
+apmng_rf	rf_entry	section-type	check_rf_type:1192; do_rf_type:1196; before_rf_type:1208		usr/lib/lua/luci/controller/admin/apmng_rf.lua	1747
+apmng_rf	rf_entry	get	get_rf:1448	rf_mngr 3 GET t @1494	usr/lib/lua/luci/controller/admin/apmng_rf.lua	1747
+apmng_rf	rf_entry	set	set_rf:1443		usr/lib/lua/luci/controller/admin/apmng_rf.lua	1747
+apmng_rf	edca_rule	section-type	check_edca_rule:1194; nil; nil		usr/lib/lua/luci/controller/admin/apmng_rf.lua	1747
+apmng_rf	edca_rule	add	add_edca_rule:1584	edca_rule 0 ADD e @1585	usr/lib/lua/luci/controller/admin/apmng_rf.lua	1747
+apmng_rf	edca_rule	set	set_edca_rule:1595	edca_rule 2 SET e @1599	usr/lib/lua/luci/controller/admin/apmng_rf.lua	1747
+apmng_rf	edca_rule	delete	delete_edca_rule:1608	edca_rule 1 DEL t @1630	usr/lib/lua/luci/controller/admin/apmng_rf.lua	1747
+apmng_rf	edca_rule	get	get_edca_rule:1554	edca_rule 3 GET _ @1571	usr/lib/lua/luci/controller/admin/apmng_rf.lua	1747
+apmng_rf	edca_preset_capability	get	get_edca_scence_spe:1521	edca_config 3 GET _ @1541	usr/lib/lua/luci/controller/admin/apmng_rf.lua	1747
+apmng_rf	load_rf	do	get_rf_load_url:1671		usr/lib/lua/luci/controller/admin/apmng_rf.lua	1747
+apmng_rf	backup_rf	do	get_rf_backup_url:1668		usr/lib/lua/luci/controller/admin/apmng_rf.lua	1747
+apmng_rf	apmng_rf_multi_set	do	set_multi_rf:1338		usr/lib/lua/luci/controller/admin/apmng_rf.lua	1747
+apmng_rf	apmng_rf_multi_get	do	get_multi_rf:1637	rf_mngr 3 GET l @1647	usr/lib/lua/luci/controller/admin/apmng_rf.lua	1747
+apmng_rf	radio_mode_spec_capability	get	get_raio_mode_spe:1714	jcs_radio_mode_entry 3 GET _ @1734	usr/lib/lua/luci/controller/admin/apmng_rf.lua	1747
+apmng_roam		module			usr/lib/lua/luci/controller/admin/apmng_roam.lua	230
+apmng_roam	roam	section-name	check_settings:26; do_settings:79; before_settings:62	ac_roam 2 SET e @88	usr/lib/lua/luci/controller/admin/apmng_roam.lua	230
+apmng_roam	roam_list	section-type	check_list_settings:28; nil; before_list_settings:92		usr/lib/lua/luci/controller/admin/apmng_roam.lua	230
+apmng_roam	roam_list	get	roam_list_get:179	ac_roam_list 3 GET t @195	usr/lib/lua/luci/controller/admin/apmng_roam.lua	230
+apmng_roam	roam_list	set	roam_list_set:208	ac_roam_list 2 SET t @220	usr/lib/lua/luci/controller/admin/apmng_roam.lua	230
+apmng_roam	roam_list	add	roam_list_add:110	ac_roam_list 0 ADD t @116	usr/lib/lua/luci/controller/admin/apmng_roam.lua	230
+apmng_roam	roam_list	delete	roam_list_del:128	ac_roam_list 1 DEL l @144	usr/lib/lua/luci/controller/admin/apmng_roam.lua	230
+apmng_roam	default_roam	get	default_roam_get:158	ac_roam_list 3 GET t @162	usr/lib/lua/luci/controller/admin/apmng_roam.lua	230
+apmng_roam	wireless_network_mode	section-name	check_mode_settings:102; nil; nil		usr/lib/lua/luci/controller/admin/apmng_roam.lua	230
+apmng_roam	wireless_network_mode	set	wireless_network_mode_set:104		usr/lib/lua/luci/controller/admin/apmng_roam.lua	230
+apmng_roam	real_wireless_network_mode	get	get_real_wireless_network_mode:106	roam_wireless_network_mode 3 GET t @106	usr/lib/lua/luci/controller/admin/apmng_roam.lua	230
+apmng_roam	unsupport_wireless_network_mode_ap	get	exist_unsupport_wireless_network_mode_ap:154	roam_exist_unsupport_ap 3 GET e @154	usr/lib/lua/luci/controller/admin/apmng_roam.lua	230
+apmng_rrm		module			usr/lib/lua/luci/controller/admin/apmng_rrm.lua	367
+apmng_rrm	settings	section-name	check_settings:32; nil; before_settings:40	ac_rrmpara 2 SET r @62	usr/lib/lua/luci/controller/admin/apmng_rrm.lua	367
+apmng_rrm	rrm_status	get	rrm_status_read:128	ac_rrm_state 3 GET l @129	usr/lib/lua/luci/controller/admin/apmng_rrm.lua	367
+apmng_rrm	manual_rrm	do	set_manualrrm:138	ac_manualrrm 2 SET r @138	usr/lib/lua/luci/controller/admin/apmng_rrm.lua	367
+apmng_rrm	autorrm_rule	section-type	nil; do_autorrm_rule_after:449; do_autorrm_rule_before:419		usr/lib/lua/luci/controller/admin/apmng_rrm.lua	367
+apmng_rrm	setting_list	section-type	check_rrm_list_data:231; nil; before_set_rrm_list:98		usr/lib/lua/luci/controller/admin/apmng_rrm.lua	368
+apmng_rrm	setting_list	get	rrm_setting_list_get:269	ac_rrm_list 3 GET _ @289	usr/lib/lua/luci/controller/admin/apmng_rrm.lua	368
+apmng_rrm	setting_list	set	rrm_setting_list_set:337	ac_rrm_list 2 SET _ @350	usr/lib/lua/luci/controller/admin/apmng_rrm.lua	368
+apmng_rrm	setting_list	delete	rrm_setting_list_del:322	ac_rrm_list 1 DEL l @329	usr/lib/lua/luci/controller/admin/apmng_rrm.lua	368
+apmng_rrm	setting_list	add	rrm_setting_list_add:298	ac_rrm_list 0 ADD r @310	usr/lib/lua/luci/controller/admin/apmng_rrm.lua	368
+apmng_sensor		module			usr/lib/lua/luci/controller/admin/apmng_sensor.lua	26
+apmng_sensor	settings	section-name	check_settings:95; do_settings:201; before_settings:125	sensor_global 2 SET t @154; sensor_global 2 SET t @177	usr/lib/lua/luci/controller/admin/apmng_sensor.lua	26
+apmng_sensor	sensor_discover_trigger	do	sensor_discover_trigger:203	sensor_discover_trigger 2 SET _ @207	usr/lib/lua/luci/controller/admin/apmng_sensor.lua	26
+apmng_sensor	sensor_list_added	get	sensor_list_added_get:213	sensor_list_added 3 GET l @216	usr/lib/lua/luci/controller/admin/apmng_sensor.lua	26
+apmng_sensor	sensor_manage_status	get	sensor_manage_status_get:227	sensor_manage_status 3 GET _ @227	usr/lib/lua/luci/controller/admin/apmng_sensor.lua	26
+apmng_sensor	sensor_test_ssid_list	get	get_sensor_test_ssid_list:234	sensor_test_ssid_list 3 GET l @245	usr/lib/lua/luci/controller/admin/apmng_sensor.lua	26
+apmng_sensor	sensor_test_result	get	get_sensor_test_result:299	sensor_test_result 3 GET l @309	usr/lib/lua/luci/controller/admin/apmng_sensor.lua	26
+apmng_sensor	sensor_test_summary	get	get_sensor_test_summary:265	sensor_test_summary 3 GET r @268	usr/lib/lua/luci/controller/admin/apmng_sensor.lua	26
+apmng_sensor	sensor_test_summary_new	get	get_sensor_test_summary_new:274	sensor_test_summary_new 3 GET l @282	usr/lib/lua/luci/controller/admin/apmng_sensor.lua	26
+apmng_sensor	sensor_test_digest	get	get_sensor_test_digest:538	sensor_test_digest 3 GET t @538	usr/lib/lua/luci/controller/admin/apmng_sensor.lua	26
+apmng_sensor	sensor_test_details	do	get_sensor_test_detail_result:324	sensor_test_detail_result 3 GET t @325	usr/lib/lua/luci/controller/admin/apmng_sensor.lua	26
+apmng_sensor	sensor_test_case_list	get	get_sensor_test_case_list:369		usr/lib/lua/luci/controller/admin/apmng_sensor.lua	26
+apmng_sensor	sensor_test_case_list	set	set_sensor_test_case:408	sensor_test_case_list 2 SET t @454	usr/lib/lua/luci/controller/admin/apmng_sensor.lua	26
+apmng_sensor	sensor_test_case_list	add	add_sensor_test_case:469	sensor_test_case_list 0 ADD t @505	usr/lib/lua/luci/controller/admin/apmng_sensor.lua	26
+apmng_sensor	sensor_test_case_list	delete	del_sensor_test_case:522	sensor_test_case_list 1 DEL s @525	usr/lib/lua/luci/controller/admin/apmng_sensor.lua	26
+apmng_sensor	deep_inspection_status	do	deep_inspection_status:544	deep_inspection_status 3 GET t @544	usr/lib/lua/luci/controller/admin/apmng_sensor.lua	26
+apmng_sensor	deep_inspection_setting	set	set_deep_inspection_setting:559	set_deep_inspection_setting 2 SET t @564	usr/lib/lua/luci/controller/admin/apmng_sensor.lua	26
+apmng_sensor	deep_inspection_setting	get	get_deep_inspection_setting:550	get_deep_inspection_setting 3 GET l @554	usr/lib/lua/luci/controller/admin/apmng_sensor.lua	26
+apmng_sensor	deep_inspection_sensor_scan_mode_change	get	get_deep_inspection_scan_mode_change:583	get_deep_inspection_scan_mode_change 3 GET l @589	usr/lib/lua/luci/controller/admin/apmng_sensor.lua	26
+apmng_sensor	deep_inspection_sensor_scan_mode_change	set	set_deep_inspection_scan_mode_change:595	set_deep_inspection_scan_mode_change 2 SET t @602	usr/lib/lua/luci/controller/admin/apmng_sensor.lua	26
+apmng_sensor	deep_inspection_freq_waterfall	get	get_deep_inspection_freq_waterfall:608	deep_inspection_multi_chnl_waterfall 3 GET a @613	usr/lib/lua/luci/controller/admin/apmng_sensor.lua	26
+apmng_sensor	deep_inspection_freq_density	get	get_deep_inspection_freq_density:635	deep_inspection_multi_chnl_density 3 GET l @637	usr/lib/lua/luci/controller/admin/apmng_sensor.lua	26
+apmng_sensor	deep_inspection_multi_chnls_usage	get	get_deep_inspection_chnl_usage_list:652	deep_inspection_chnl_usage_list 3 GET t @654	usr/lib/lua/luci/controller/admin/apmng_sensor.lua	26
+apmng_sensor	deep_inspection_multi_chnls_rssi	get	get_deep_inspection_multi_chnl_rssi:662	deep_inspection_multi_chnl_rssi 3 GET a @664	usr/lib/lua/luci/controller/admin/apmng_sensor.lua	26
+apmng_sensor	deep_inspection_selected_chnl_usage	get	get_deep_inspection_selected_chnl_usage:679	deep_inspection_selected_chnl_usage 3 GET t @681	usr/lib/lua/luci/controller/admin/apmng_sensor.lua	26
+apmng_sensor	deep_inspection_pkt_ssid_usage_detail	get	get_deep_inspection_ssid_usage_detail:689	deep_inspection_ssid_usage_detail 3 GET t @691	usr/lib/lua/luci/controller/admin/apmng_sensor.lua	26
+apmng_sensor	deep_inspection_pkt_bssid_usage_detail	get	get_deep_inspection_bssid_usage_detail:706	deep_inspection_bssid_usage_detail 3 GET t @708	usr/lib/lua/luci/controller/admin/apmng_sensor.lua	26
+apmng_sensor	deep_inspection_pkt_sta_usage_detail	get	get_deep_inspection_sta_usage_detail:723	deep_inspection_sta_usage_detail 3 GET t @725	usr/lib/lua/luci/controller/admin/apmng_sensor.lua	26
+apmng_sensor	deep_inspection_pkt_usage_detail	get	get_deep_inspection_pkt_usage_detail:733	deep_inspection_pkt_usage_detail 3 GET t @735	usr/lib/lua/luci/controller/admin/apmng_sensor.lua	26
+apmng_sensor	deep_checkup_pkt_ssid_list	get	get_deep_checkup_pkt_ssid_list:743	deep_checkup_pkt_ssid_list 3 GET d @745	usr/lib/lua/luci/controller/admin/apmng_sensor.lua	26
+apmng_sensor	deep_checkup_pkt_bssid_list	get	get_deep_checkup_pkt_bssid_list:760	deep_checkup_pkt_bssid_list 3 GET a @766	usr/lib/lua/luci/controller/admin/apmng_sensor.lua	26
+apmng_sensor	deep_checkup_pkt_sta_list	get	get_deep_checkup_pkt_sta_list:786	deep_checkup_pkt_sta_list 3 GET d @792	usr/lib/lua/luci/controller/admin/apmng_sensor.lua	26
+apmng_sensor	wips_info	get	get_wips_info:812	wips_event_info 3 GET l @819	usr/lib/lua/luci/controller/admin/apmng_sensor.lua	26
+apmng_sensor	wips_detail	get	get_wips_detail:832	wips_event_detail 3 GET _ @838	usr/lib/lua/luci/controller/admin/apmng_sensor.lua	26
+apmng_sensor	whitelist	get	get_whitelist:847	whitelist 3 GET t @851	usr/lib/lua/luci/controller/admin/apmng_sensor.lua	26
+apmng_sensor	wips_counter_switch	do	wips_counter_switch:870	wips_event_info 2 SET t @882	usr/lib/lua/luci/controller/admin/apmng_sensor.lua	26
+apmng_sensor	whitelist	add	add_whitelist_data:934	whitelist 0 ADD t @942	usr/lib/lua/luci/controller/admin/apmng_sensor.lua	26
+apmng_sensor	whitelist	delete	del_whitelist_data:953	whitelist 1 DEL t @955	usr/lib/lua/luci/controller/admin/apmng_sensor.lua	26
+apmng_sensor	wips_group_statistics	get	get_wips_group_sensor_statistics:891		usr/lib/lua/luci/controller/admin/apmng_sensor.lua	26
+apmng_sensor	wips_sensor_statistics	get	get_wips_group_sensor_statistics:891		usr/lib/lua/luci/controller/admin/apmng_sensor.lua	26
+apmng_sensor	wips_statistics	do	get_wips_statistics:886		usr/lib/lua/luci/controller/admin/apmng_sensor.lua	26
+apmng_sensor	wips_statistics_num	do	get_wips_statistics_num:912	wips_statistics_num 3 GET {} @912	usr/lib/lua/luci/controller/admin/apmng_sensor.lua	26
+apmng_set	apmng_set	module			usr/lib/lua/luci/controller/admin/apmng_set.lua	70
+apmng_set	settings	section-name	check_settings:148; do_settings:178; before_settings:162	~apmngr_global (it) 2 SET _ @199	usr/lib/lua/luci/controller/admin/apmng_set.lua	70
+apmng_set	aplog_setting	section-name	check_aplog_setting:201; do_aplog_setting:205; before_aplog_setting:203	~apmngr_aplog (ct) 2 SET _ @221	usr/lib/lua/luci/controller/admin/apmng_set.lua	70
+apmng_set	cruise_setting	section-name	check_cruise_setting:2295; do_cruise_setting:2299; before_cruise_setting:2297	apmngr_cruise_setting 2 SET _ @2307	usr/lib/lua/luci/controller/admin/apmng_set.lua	70
+apmng_set	crashdump_setting	section-name	check_crashdump_setting:229; do_crashdump_setting:233; before_crashdump_setting:231	~apmngr_crashdump (st) 2 SET _ @243	usr/lib/lua/luci/controller/admin/apmng_set.lua	70
+apmng_set	ap_capture_settings	section-name	check_ap_capture_settings:1874; do_ap_capture_settings:1898; before_ap_capture_settings:1907	ap_capture_settings 2 SET _ @1900	usr/lib/lua/luci/controller/admin/apmng_set.lua	70
+apmng_set	ap_reboot_rule	section-type	nil; do_ap_reboot_rule_after:2079; do_ap_reboot_rule_before:2049		usr/lib/lua/luci/controller/admin/apmng_set.lua	70
+apmng_set	ap_led_switch_rule	section-type	nil; do_ap_led_switch_rule_after:2108; do_ap_led_switch_rule_before:2098		usr/lib/lua/luci/controller/admin/apmng_set.lua	70
+apmng_set	ap_log_settings	section-name	check_ap_log_settings; do_ap_log_settings; before_ap_log_settings		usr/lib/lua/luci/controller/admin/apmng_set.lua	70
+apmng_set	group_list	section-type	check_group_list_type:258; do_group_list_type:260; before_save_group_list:262		usr/lib/lua/luci/controller/admin/apmng_set.lua	70
+apmng_set	ap_list	section-type	check_ap_list_type:461; do_ap_list_type:463; nil		usr/lib/lua/luci/controller/admin/apmng_set.lua	70
+apmng_set	ap_location_detect	section-type	check_ap_location_detect_type:465; nil; nil		usr/lib/lua/luci/controller/admin/apmng_set.lua	70
+apmng_set	port_list	section-type	check_port_list_type:2309; nil; nil		usr/lib/lua/luci/controller/admin/apmng_set.lua	70
+apmng_set	group_list	get	group_list_data_get:319		usr/lib/lua/luci/controller/admin/apmng_set.lua	70
+apmng_set	ap_list	get	ap_list_data_get:493	ap_log_timer_start 2 SET {} @525; apmngr_entry 3 GET r @552	usr/lib/lua/luci/controller/admin/apmng_set.lua	70
+apmng_set	fit_ap_vlan	get	fit_ap_vlan_data_get:583	ap_vlan_info 3 GET {["start"]=l,["size"]=tostring(_)} @587	usr/lib/lua/luci/controller/admin/apmng_set.lua	70
+apmng_set	authorize_ap_list	get	authorize_ap_list_get:1651	apmngr_entry_authorize 3 GET n @1659	usr/lib/lua/luci/controller/admin/apmng_set.lua	70
+apmng_set	apdb_info_list	get	apdb_info_list_get:467	apmngr_apdb_info 3 GET r @478	usr/lib/lua/luci/controller/admin/apmng_set.lua	70
+apmng_set	model_list	get	model_list_data_get:1130		usr/lib/lua/luci/controller/admin/apmng_set.lua	70
+apmng_set	ap_capture_list	get	ap_capture_list_data_get:1925	ap_capture_list 3 GET a @1931	usr/lib/lua/luci/controller/admin/apmng_set.lua	70
+apmng_set	radio_role_table	get	radio_role_table_get:2023		usr/lib/lua/luci/controller/admin/apmng_set.lua	70
+apmng_set	ap_log_display_list	get	ap_log_display_list_data_get:2145	ap_log_display_list 3 GET _ @2166	usr/lib/lua/luci/controller/admin/apmng_set.lua	70
+apmng_set	ap_log_download_list	get	ap_log_download_list_data_get:2177	ap_log_download_list 3 GET r @2178	usr/lib/lua/luci/controller/admin/apmng_set.lua	70
+apmng_set	ap_log_config_list	get	ap_log_config_list_data_get:2251	ap_log_debug_list 3 GET l @2255	usr/lib/lua/luci/controller/admin/apmng_set.lua	70
+apmng_set	port_list	get	port_list_data_get:2311	port_list 3 GET a @2324	usr/lib/lua/luci/controller/admin/apmng_set.lua	70
+apmng_set	group_list	set	group_list_data_set:396	~apmngr_group (M) 2 SET _ @431	usr/lib/lua/luci/controller/admin/apmng_set.lua	70
+apmng_set	ap_list	set	ap_list_data_set:967		usr/lib/lua/luci/controller/admin/apmng_set.lua	70
+apmng_set	authorize_ap_list	set	authorize_ap_set:1670	apmngr_entry_authorize 2 SET _ @1684	usr/lib/lua/luci/controller/admin/apmng_set.lua	70
+apmng_set	ap_capture_list	set	ap_capture_list_data_set:1942	ap_capture_list 2 SET _ @1967	usr/lib/lua/luci/controller/admin/apmng_set.lua	70
+apmng_set	ap_log_config_bind	set	ap_log_config_bind_set:2266	ap_log_debug_cfg_bind 2 SET _ @2276	usr/lib/lua/luci/controller/admin/apmng_set.lua	70
+apmng_set	port_list	set	port_list_data_set:2335	port_list 2 SET _ @2376	usr/lib/lua/luci/controller/admin/apmng_set.lua	70
+apmng_set	group_list	delete	group_list_data_del:362	~apmngr_group (M) 1 DEL r @386	usr/lib/lua/luci/controller/admin/apmng_set.lua	70
+apmng_set	ap_list	delete	ap_list_data_del:649	~apmngr_entry (S) 1 DEL {['template']=m,['ap']=d,['ap_tmp']=p} @690	usr/lib/lua/luci/controller/admin/apmng_set.lua	70
+apmng_set	ap_capture_list	delete	ap_capture_list_data_del:1999	ap_capture_list 1 DEL r @2014	usr/lib/lua/luci/controller/admin/apmng_set.lua	70
+apmng_set	group_list	add	group_list_data_add:345	~apmngr_group (M) 0 ADD _ @352	usr/lib/lua/luci/controller/admin/apmng_set.lua	70
+apmng_set	ap_list	add	ap_list_data_add:614	~apmngr_entry (S) 0 ADD _ @630	usr/lib/lua/luci/controller/admin/apmng_set.lua	70
+apmng_set	ap_capture_list	add	ap_capture_list_data_add:1976	ap_capture_list 0 ADD _ @1987	usr/lib/lua/luci/controller/admin/apmng_set.lua	70
+apmng_set	ap_log_download_list	add	ap_log_download_list_data_add:2189	ap_log_download_list 0 ADD a @2196	usr/lib/lua/luci/controller/admin/apmng_set.lua	70
+apmng_set	ap_log_config_list	add	ap_log_config_list_data_add:2227	ap_log_debug_list 0 ADD n @2244	usr/lib/lua/luci/controller/admin/apmng_set.lua	70
+apmng_set	apmng_multi_get	do	ap_list_data_do_get:928		usr/lib/lua/luci/controller/admin/apmng_set.lua	70
+apmng_set	apmng_multi_set	do	ap_list_data_do_set:949		usr/lib/lua/luci/controller/admin/apmng_set.lua	70
+apmng_set	ap_log_download_start	do	ap_log_download_start:2201	ap_log_download_start 2 SET _ @2201	usr/lib/lua/luci/controller/admin/apmng_set.lua	70
+apmng_set	ap_log_download_status	do	ap_log_download_status_data_get:2208	ap_log_download_status 3 GET n @2220	usr/lib/lua/luci/controller/admin/apmng_set.lua	70
+apmng_set	ap_location_detect	do	ap_location_detect_start:2283	ap_location_cfg 2 SET n @2290	usr/lib/lua/luci/controller/admin/apmng_set.lua	70
+apmng_set	sync_ap_config	do	ap_list_data_copy:987	~apmngr_entry_copy (ye) 2 SET e @1083; ~apmngr_entry_copy (ye) 2 SET e @1104	usr/lib/lua/luci/controller/admin/apmng_set.lua	70
+apmng_set	notify_ap_replace_rule	do	ap_replace_rule_set:971	ap_replace_rule 2 SET a @982	usr/lib/lua/luci/controller/admin/apmng_set.lua	70
+apmng_set_status		module			usr/lib/lua/luci/controller/admin/apmng_set_status.lua	1
+apmng_set_status	status	get	ap_status_get:3	ap_exceed_status 3 GET {} @6	usr/lib/lua/luci/controller/admin/apmng_set_status.lua	1
+apmng_set_status	unknown_ap_list	get	unknown_ap_list_get:10	unsupport_ap_get 3 GET {} @12	usr/lib/lua/luci/controller/admin/apmng_set_status.lua	1
+apmng_status		module			usr/lib/lua/luci/controller/admin/apmng_status.lua	14
+apmng_status	ap_list	section-name	check_set_ap_list_data:159; do_set_ap_list_data:179; nil		usr/lib/lua/luci/controller/admin/apmng_status.lua	14
+apmng_status	ap_list	set	set_ap_list_data:181	ap_status_evt 2 SET {['evt']=s[tonumber(l)+1],['entry_id']=t} @195; ap_telnet_status_evt 2 SET {['evt']=c[tonumber(_)+1],['entry_id']=t} @215; ap_crashdump_status_evt 2 SET {['evt']=d[tonumber(r)+1],['entry_id']=t} @235	usr/lib/lua/luci/controller/admin/apmng_status.lua	14
+apmng_status	ap_list	get	get_ap_list_data:36	ap_status 3 GET l @93	usr/lib/lua/luci/controller/admin/apmng_status.lua	14
+apmng_status	ap_ssid_list	get	get_ap_ssid_list_data:139	ap_status_ssid 3 GET a @153	usr/lib/lua/luci/controller/admin/apmng_status.lua	14
+apmng_status	ap_reboot	do	ap_reboot:19	ap_status_evt 2 SET {['evt']="reboot",['entry_id']=t} @24	usr/lib/lua/luci/controller/admin/apmng_status.lua	14
+apmng_status	ap_reset	do	ap_reset:26	ap_status_evt 2 SET {['evt']="reset",['entry_id']=a} @34	usr/lib/lua/luci/controller/admin/apmng_status.lua	14
+apmng_status	online_model_list	get	get_online_model_list_data:111	apmngr_online_model 3 GET l @128	usr/lib/lua/luci/controller/admin/apmng_status.lua	14
+apmng_status	ap_count_trend	get	get_ap_count_trend:161	ap_count_trend 3 GET t @163	usr/lib/lua/luci/controller/admin/apmng_status.lua	14
+apmng_status	ap_link_status	get	get_ap_link_status:169	ap_count 3 GET t @171	usr/lib/lua/luci/controller/admin/apmng_status.lua	14
+apmng_upgrade		module			usr/lib/lua/luci/controller/admin/apmng_upgrade.lua	37
+apmng_upgrade	settings	section-name	check_settings:91; apply_settings:100; nil		usr/lib/lua/luci/controller/admin/apmng_upgrade.lua	37
+apmng_upgrade	upgrade_status	get	get_upgrade_status:102	apupd_status 3 GET a @103	usr/lib/lua/luci/controller/admin/apmng_upgrade.lua	37
+apmng_upgrade	firmed_model_list	get	get_firmed_model_list:492	ap_firmed_model 3 GET r @500	usr/lib/lua/luci/controller/admin/apmng_upgrade.lua	37
+apmng_upgrade	large_image_profile	get	get_large_image_profile:513		usr/lib/lua/luci/controller/admin/apmng_upgrade.lua	37
+apmng_upgrade	batch_ap_list	get	get_batch_ap_list_data:107	apupd_model 3 GET l @134	usr/lib/lua/luci/controller/admin/apmng_upgrade.lua	37
+apmng_upgrade	batch_ap_list	section-type	check_batch_ap_list_data:145; do_batch_ap_list_data:147; nil		usr/lib/lua/luci/controller/admin/apmng_upgrade.lua	37
+apmng_upgrade	batch_ap_list	set	set_batch_ap_list_data:149	apupd_model 2 SET n @188	usr/lib/lua/luci/controller/admin/apmng_upgrade.lua	37
+apmng_upgrade	batch_ap_list	add	add_batch_ap_list_data:227	apupd_model 0 ADD t @254	usr/lib/lua/luci/controller/admin/apmng_upgrade.lua	37
+apmng_upgrade	batch_ap_list	delete	del_batch_ap_list_data:288	apupd_model 1 DEL i @304	usr/lib/lua/luci/controller/admin/apmng_upgrade.lua	37
+apmng_upgrade	delete_batch_firmware	do	delete_batch_firmware:321		usr/lib/lua/luci/controller/admin/apmng_upgrade.lua	37
+apmng_upgrade	ap_list	get	get_ap_list_data:355	apupd_wtp 3 GET l @376	usr/lib/lua/luci/controller/admin/apmng_upgrade.lua	37
+apmng_upgrade	fail_log_list	get	get_fail_log_data:391	apupd_log 3 GET r @406	usr/lib/lua/luci/controller/admin/apmng_upgrade.lua	37
+apmng_upgrade	fail_log_clear	do	fail_log_clear:419	apupd_log 1 DEL l @423	usr/lib/lua/luci/controller/admin/apmng_upgrade.lua	37
+apmng_upgrade	single_upgrade_status	do	get_single_upgrade_status:323	apupd_wtp 2 SET l @345	usr/lib/lua/luci/controller/admin/apmng_upgrade.lua	37
+apmng_upgrade	upgrade_progress_list	get	get_upgrade_progress_data:425	apupd_wtp 3 GET t @439	usr/lib/lua/luci/controller/admin/apmng_upgrade.lua	37
+apmng_upgrade	large_image_status_get	do	get_apupd_large_image_status:454	apupd_large_image_status 3 GET r @462	usr/lib/lua/luci/controller/admin/apmng_upgrade.lua	37
+apmng_upgrade	large_image_status_set	do	set_apupd_large_image_status:566	apupd_large_image_status 2 SET r @574	usr/lib/lua/luci/controller/admin/apmng_upgrade.lua	37
+apmng_upgrade	online_upgrade_start	do	online_upgrade_start:478	apupd_wtp 2 SET t @484	usr/lib/lua/luci/controller/admin/apmng_upgrade.lua	37
+apmng_upgrade	check_fw_version	do	check_fw_version:519		usr/lib/lua/luci/controller/admin/apmng_upgrade.lua	37
+apmng_upgrade	check_allow_update	do	check_allow_update:528	apupd_check_allow_update 3 GET {model_id=l,upgrade_type=t} @528	usr/lib/lua/luci/controller/admin/apmng_upgrade.lua	37
+apmng_upgrade	fw_check_status	get	get_fw_check_status:550		usr/lib/lua/luci/controller/admin/apmng_upgrade.lua	37
+apmng_upgrade	fw_info	get	get_fw_info:551		usr/lib/lua/luci/controller/admin/apmng_upgrade.lua	37
+apmng_upgrade	check_image_import	do	check_image_import:553	apupd_image_check 3 GET {file_size=t.file_size} @556	usr/lib/lua/luci/controller/admin/apmng_upgrade.lua	37
+apmng_set		module			usr/lib/lua/luci/controller/admin/apmng_usb.lua	10
+apmng_set	usb_settings	get	usb_settings_get:13	usb_settings 3 GET e @13	usr/lib/lua/luci/controller/admin/apmng_usb.lua	10
+apmng_set	usb_settings	set	usb_settings_set:20	usb_settings 2 SET i @41	usr/lib/lua/luci/controller/admin/apmng_usb.lua	10
+apmng_set	usb_settings	section-type	check_usb_settings:11; nil; nil		usr/lib/lua/luci/controller/admin/apmng_usb.lua	10
+apmng_wserv		module			usr/lib/lua/luci/controller/admin/apmng_wserv.lua	33
+apmng_wserv	settings	section-name	check_settings:127; do_settings:153; before_settings:157		usr/lib/lua/luci/controller/admin/apmng_wserv.lua	33
+apmng_wserv	wserv_switch_rule	section-type	check_wserv_swtich_rule:1290; do_wserv_switch_rule_after:1743; do_wserv_switch_rule_before:1733		usr/lib/lua/luci/controller/admin/apmng_wserv.lua	33
+apmng_wserv	wlan_serv	get	get_wserv_list_data:371		usr/lib/lua/luci/controller/admin/apmng_wserv.lua	33
+apmng_wserv	wlan_serv	section-type	check_wserv_list_data:413; do_set_wserv_list_data:422; before_set_wserv_or_bind_list_data:426		usr/lib/lua/luci/controller/admin/apmng_wserv.lua	33
+apmng_wserv	wlan_serv	set	set_wserv_list_data:653		usr/lib/lua/luci/controller/admin/apmng_wserv.lua	33
+apmng_wserv	wlan_serv	add	add_wserv_list_data:747	wservice 0 ADD r @777	usr/lib/lua/luci/controller/admin/apmng_wserv.lua	33
+apmng_wserv	wlan_serv	delete	del_wserv_list_data:793	wservice 1 DEL g @835	usr/lib/lua/luci/controller/admin/apmng_wserv.lua	33
+apmng_wserv	igmp_settings	get	get_igmp_settings_data:159		usr/lib/lua/luci/controller/admin/apmng_wserv.lua	33
+apmng_wserv	igmp_settings	section-type	nil; nil; nil		usr/lib/lua/luci/controller/admin/apmng_wserv.lua	33
+apmng_wserv	igmp_settings	set	set_igmp_settings_data:170	F 2 SET _ @210	usr/lib/lua/luci/controller/admin/apmng_wserv.lua	33
+apmng_wserv	igmp_ip_list	get	get_igmp_ip_list:1110		usr/lib/lua/luci/controller/admin/apmng_wserv.lua	33
+apmng_wserv	igmp_ip_list	section-type	check_igmp_ip_list:1092; do_set_igmp_ip_list:1094; before_set_igmp_ip_list:1103		usr/lib/lua/luci/controller/admin/apmng_wserv.lua	33
+apmng_wserv	igmp_ip_list	add	add_igmp_ip_list:1123	wservice_ip 0 ADD n @1146	usr/lib/lua/luci/controller/admin/apmng_wserv.lua	33
+apmng_wserv	igmp_ip_list	set	set_igmp_ip_list:1225	wservice_ip 2 SET n @1266	usr/lib/lua/luci/controller/admin/apmng_wserv.lua	33
+apmng_wserv	igmp_ip_list	delete	delete_igmp_ip_list:1158	wservice_ip 1 DEL a @1202	usr/lib/lua/luci/controller/admin/apmng_wserv.lua	33
+apmng_wserv	ppsk_group_list	get	get_ppsk_group_list:1344		usr/lib/lua/luci/controller/admin/apmng_wserv.lua	33
+apmng_wserv	ppsk_group_list	section-type	check_ppsk_group_list:1340; do_set_ppsk_group_list:1342; nil		usr/lib/lua/luci/controller/admin/apmng_wserv.lua	33
+apmng_wserv	ppsk_group_list	add	add_ppsk_group_list:1369	ppsk_group 0 ADD _ @1376	usr/lib/lua/luci/controller/admin/apmng_wserv.lua	33
+apmng_wserv	ppsk_group_list	set	set_ppsk_group_list:1381	ppsk_group 2 SET _ @1405	usr/lib/lua/luci/controller/admin/apmng_wserv.lua	33
+apmng_wserv	ppsk_group_list	delete	delete_ppsk_group_list:1407	ppsk_group 1 DEL s @1458	usr/lib/lua/luci/controller/admin/apmng_wserv.lua	33
+apmng_wserv	ppsk_user_list	get	get_ppsk_user_list:1464	ppsk_user 3 GET _ @1500	usr/lib/lua/luci/controller/admin/apmng_wserv.lua	33
+apmng_wserv	ppsk_user_list	section-type	check_ppsk_user_list:1460; do_set_ppsk_user_list:1462; nil		usr/lib/lua/luci/controller/admin/apmng_wserv.lua	33
+apmng_wserv	ppsk_user_list	add	add_ppsk_user_list:1513	ppsk_user 0 ADD _ @1530	usr/lib/lua/luci/controller/admin/apmng_wserv.lua	33
+apmng_wserv	ppsk_user_list	set	set_ppsk_user_list:1566	ppsk_user 2 SET _ @1592; ppsk_user 2 SET _ @1593	usr/lib/lua/luci/controller/admin/apmng_wserv.lua	33
+apmng_wserv	ppsk_user_list	delete	delete_ppsk_user_list:1602	ppsk_user 1 DEL s @1644	usr/lib/lua/luci/controller/admin/apmng_wserv.lua	33
+apmng_wserv	upload_ppsk	do	import_ppsk_status_set:1665	ppsk_user_import_set 2 SET n @1689	usr/lib/lua/luci/controller/admin/apmng_wserv.lua	33
+apmng_wserv	upload_ppsk_status_get	do	import_ppsk_status_get:1692		usr/lib/lua/luci/controller/admin/apmng_wserv.lua	33
+apmng_wserv	radio_bind_list	get	get_rf_bind_list_data:851	wservice 3 GET _ @905	usr/lib/lua/luci/controller/admin/apmng_wserv.lua	33
+apmng_wserv	radio_bind_list	section-type	check_set_rf_bind_list_data:918; do_set_rf_bind_list_data:920; before_set_wserv_or_bind_list_data:426		usr/lib/lua/luci/controller/admin/apmng_wserv.lua	33
+apmng_wserv	radio_bind_list	set	set_rf_bind_list_data:922	wservice 2 SET n @978	usr/lib/lua/luci/controller/admin/apmng_wserv.lua	33
+authentication	authentication	module			usr/lib/lua/luci/controller/admin/auth_server.lua	4
+authentication	test	do	test:281		usr/lib/lua/luci/controller/admin/auth_server.lua	4
+authentication	server_group_list	section-type	check_page_list_type:42; nil; nil		usr/lib/lua/luci/controller/admin/auth_server.lua	4
+authentication	server_group_list	get	get_server_group:44		usr/lib/lua/luci/controller/admin/auth_server.lua	4
+authentication	server_group_list	add	add_server_group:68		usr/lib/lua/luci/controller/admin/auth_server.lua	4
+authentication	server_group_list	set	set_server_group:131		usr/lib/lua/luci/controller/admin/auth_server.lua	4
+authentication	server_group_list	delete	del_server_group:229		usr/lib/lua/luci/controller/admin/auth_server.lua	4
+cloud_config	check_fw_version	do	check_fw_version:176		usr/lib/lua/luci/controller/admin/cloud.lua	37
+cloud_config	fw_download	do	fw_download:229		usr/lib/lua/luci/controller/admin/cloud.lua	37
+cloud_status	client_info	get	get_cloud_client:295		usr/lib/lua/luci/controller/admin/cloud.lua	37
+cloud_status	client_config_info	get	get_cloud_client:295		usr/lib/lua/luci/controller/admin/cloud.lua	37
+cloud_config	config_id	set	set_config_id:50		usr/lib/lua/luci/controller/admin/cloud.lua	37
+cloud_config	sync_config_id	do	sync_config_id:55		usr/lib/lua/luci/controller/admin/cloud.lua	37
+cloud_config	bind_info	section-name	check_bind_info:41; apply_bind_info:59; nil		usr/lib/lua/luci/controller/admin/cloud.lua	37
+cloud_config	cloud_reset	do	cloud_reset:61		usr/lib/lua/luci/controller/admin/cloud.lua	37
+cloud_config	conf_mngt	section-name	check_conf_mngt:66; apply_conf_mngt:150; before_save_conf_mngt:133		usr/lib/lua/luci/controller/admin/cloud.lua	37
+cloud_config	cloud_switch	section-name	check_cloud_switch:68; apply_cloud_switch:142; before_save_cloud_switch:136		usr/lib/lua/luci/controller/admin/cloud.lua	37
+cloud_config	cloud_type	set	set_cloud_type:344		usr/lib/lua/luci/controller/admin/cloud.lua	37
+cloud_config	tums_info	set	set_tums_info:359		usr/lib/lua/luci/controller/admin/cloud.lua	37
+cloud_config	fast_report	set	set_fast_report:394	cloud_mngt_fast_report 2 SET n @400	usr/lib/lua/luci/controller/admin/cloud.lua	37
+cloud_config	tums_download	do	tums_download:233		usr/lib/lua/luci/controller/admin/cloud.lua	37
+cloud_config	tums_upload	do	tums_upload:286		usr/lib/lua/luci/controller/admin/cloud.lua	37
+cloud_config	notify_event	do	notify_event_from_cloud:410		usr/lib/lua/luci/controller/admin/cloud.lua	37
+cloud_status	connect_info	get	get_connect_info:420		usr/lib/lua/luci/controller/admin/cloud.lua	37
+cloud_status	report_token	do	get_report_token:454		usr/lib/lua/luci/controller/admin/cloud.lua	37
+cloud_status	report_url	get	get_report_url:488		usr/lib/lua/luci/controller/admin/cloud.lua	37
+cloud_status	token_out_of_date	do	token_out_of_date:516		usr/lib/lua/luci/controller/admin/cloud.lua	37
+{"cloud_config","cloud_status"}		module			usr/lib/lua/luci/controller/admin/cloud.lua	37
+authentication	authentication	module			usr/lib/lua/luci/controller/admin/cloud_template.lua	4
+authentication	portal_local_template_list	get	get_portal_local_template_list:15		usr/lib/lua/luci/controller/admin/cloud_template.lua	6
+authentication	portal_template_list	get	get_portal_template_list:21		usr/lib/lua/luci/controller/admin/cloud_template.lua	6
+authentication	portal_template_config	section-type	check_template_config_type:27; do_template_config_type:29; nil		usr/lib/lua/luci/controller/admin/cloud_template.lua	6
+authentication	portal_template_config	get	get_portal_template_config:31		usr/lib/lua/luci/controller/admin/cloud_template.lua	6
+authentication	portal_page_list	section-type	check_page_list_type:47; do_page_list_type:49; nil		usr/lib/lua/luci/controller/admin/cloud_template.lua	6
+authentication	portal_page_list	get	get_portal_page_list:51		usr/lib/lua/luci/controller/admin/cloud_template.lua	6
+authentication	portal_page_list	add	add_portal_page_list:145		usr/lib/lua/luci/controller/admin/cloud_template.lua	6
+authentication	portal_page_list	set	edit_portal_page_list:157		usr/lib/lua/luci/controller/admin/cloud_template.lua	6
+authentication	portal_page_list	delete	del_portal_page_list:177		usr/lib/lua/luci/controller/admin/cloud_template.lua	6
+dev_discover		module			usr/lib/lua/luci/controller/admin/dev_discover.lua	3
+dev_discover	config	section-name	check_dev_discover_switch:7; set_dev_discover_switch:9; before_save_dev_discover_switch:5		usr/lib/lua/luci/controller/admin/dev_discover.lua	3
+dhcpd	dhcpd	module			usr/lib/lua/luci/controller/admin/dhcpd.lua	9
+dhcpd	settings	section-name	check_alloc_target:56; apply_alloc_target:59; nil		usr/lib/lua/luci/controller/admin/dhcpd.lua	13
+dhcpd	dhcpd_list	section-type	check_dhcp_server:93; apply_dhcp_server:180; before_save_dhcp_server:277		usr/lib/lua/luci/controller/admin/dhcpd.lua	13
+dhcpd	dhcpd_list	get	get_dhcp_list:403		usr/lib/lua/luci/controller/admin/dhcpd.lua	13
+dhcpd	dhcp_clients	get	get_dhcp_clients:476		usr/lib/lua/luci/controller/admin/dhcpd.lua	13
+dhcpd	flush	do	flush_dhcp_clients:558		usr/lib/lua/luci/controller/admin/dhcpd.lua	13
+dhcpd	dhcp_static	section-type	check_dhcp_static:569; nil; before_save_dhcp_static:597		usr/lib/lua/luci/controller/admin/dhcpd.lua	13
+dhcpd	dhcp_static	get	get_dhcp_static:604		usr/lib/lua/luci/controller/admin/dhcpd.lua	13
+dhcpd	dhcp_static	add	add_dhcp_static:672		usr/lib/lua/luci/controller/admin/dhcpd.lua	13
+dhcpd	dhcp_static	set	set_dhcp_static:697		usr/lib/lua/luci/controller/admin/dhcpd.lua	13
+dhcpd	dhcp_static	delete	delete_dhcp_static:741		usr/lib/lua/luci/controller/admin/dhcpd.lua	13
+dhcpd6	dhcpd6	module			usr/lib/lua/luci/controller/admin/dhcpd6.lua	9
+dhcpd6	settings	section-name	check_alloc_target:33; apply_alloc_target:36; nil		usr/lib/lua/luci/controller/admin/dhcpd6.lua	13
+dhcpd6	dhcpd_list	section-type	check_dhcp_server:55; apply_dhcp_server:221; before_save_dhcp_server:294		usr/lib/lua/luci/controller/admin/dhcpd6.lua	13
+dhcpd6	dhcpd_list	get	get_dhcp_list:420		usr/lib/lua/luci/controller/admin/dhcpd6.lua	13
+dhcpd6	dhcp_clients	get	get_dhcp_clients:514		usr/lib/lua/luci/controller/admin/dhcpd6.lua	13
+dhcpd6	flush	do	flush_dhcp_clients:596		usr/lib/lua/luci/controller/admin/dhcpd6.lua	13
+dhcpd6	dhcp_static	section-type	check_dhcp_static:607; nil; before_save_dhcp_static:635		usr/lib/lua/luci/controller/admin/dhcpd6.lua	13
+dhcpd6	dhcp_static	get	get_dhcp_static:642		usr/lib/lua/luci/controller/admin/dhcpd6.lua	13
+dhcpd6	dhcp_static	add	add_dhcp_static:710		usr/lib/lua/luci/controller/admin/dhcpd6.lua	13
+dhcpd6	dhcp_static	set	set_dhcp_static:729		usr/lib/lua/luci/controller/admin/dhcpd6.lua	13
+dhcpd6	dhcp_static	delete	delete_dhcp_static:772		usr/lib/lua/luci/controller/admin/dhcpd6.lua	13
+diagnose	system	module			usr/lib/lua/luci/controller/admin/diagnose.lua	16
+diagnose	start	do	start_diagnose:234		usr/lib/lua/luci/controller/admin/diagnose.lua	22
+diagnose	get	do	get_diagnose:270		usr/lib/lua/luci/controller/admin/diagnose.lua	22
+diagnose	stop	do	stop_diagnose:304		usr/lib/lua/luci/controller/admin/diagnose.lua	22
+diagnose	get_default	do	get_default_value:27		usr/lib/lua/luci/controller/admin/diagnose.lua	22
+diagnose	settings	section-name	check_settings:370; do_settings:372; before_settings:376	diagnose_global 2 SET e @374	usr/lib/lua/luci/controller/admin/diagnose.lua	22
+system	fault_diagnose	section-name	check_fault_diagnose:310; nil; nil		usr/lib/lua/luci/controller/admin/diagnose.lua	22
+system	fault_diagnose	get	get_fault_diagnose:321		usr/lib/lua/luci/controller/admin/diagnose.lua	22
+system	fault_diagnose	set	set_fault_diagnose:323		usr/lib/lua/luci/controller/admin/diagnose.lua	22
+system	clear_diagnose_data	do	clear_diagnose_data:350	nego_del 1 DEL {} @352	usr/lib/lua/luci/controller/admin/diagnose.lua	22
+dns		module			usr/lib/lua/luci/controller/admin/dns.lua	12
+dns	global	section-name	check_global:44; do_global:48; nil		usr/lib/lua/luci/controller/admin/dns.lua	15
+dns	rule	get	get_dns_rule:83		usr/lib/lua/luci/controller/admin/dns.lua	15
+dns	rule	section-type	nil; do_rule_type:162; do_rule_before_type:129		usr/lib/lua/luci/controller/admin/dns.lua	15
+dns	dns_policy	section-type	check_dns_policy:167; do_dns_policy:169; before_save_dns_policy:189		usr/lib/lua/luci/controller/admin/dns.lua	15
+dns	dns_map	section-type	check_dns_map:210; do_dns_map:212; before_save_dns_map:228		usr/lib/lua/luci/controller/admin/dns.lua	15
+event_report	reset_global_config	do	reset_event_report_config:22		usr/lib/lua/luci/controller/admin/event_report.lua	5
+event_report	reset_event_params	do	reset_event_params_config:33		usr/lib/lua/luci/controller/admin/event_report.lua	5
+event_report	set_global_config	do	set_event_report_config:53		usr/lib/lua/luci/controller/admin/event_report.lua	5
+event_report	set_event_params	do	set_event_params_config:71		usr/lib/lua/luci/controller/admin/event_report.lua	5
+event_report	get_global_config	do	get_event_report_config:82		usr/lib/lua/luci/controller/admin/event_report.lua	5
+event_report	get_event_support_list	do	get_event_support:97		usr/lib/lua/luci/controller/admin/event_report.lua	5
+event_report	get_event_params	do	get_event_params_config:105		usr/lib/lua/luci/controller/admin/event_report.lua	5
+event_report	event_flush	do	flush_report_event:145		usr/lib/lua/luci/controller/admin/event_report.lua	5
+stats_report	reset_global_config	do	reset_stat_report_config:152		usr/lib/lua/luci/controller/admin/event_report.lua	5
+stats_report	reset_stats_params	do	reset_stat_params_config:158		usr/lib/lua/luci/controller/admin/event_report.lua	5
+stats_report	set_global_config	do	set_stat_report_config:203		usr/lib/lua/luci/controller/admin/event_report.lua	5
+stats_report	set_stats_params	do	set_stat_params_config:255		usr/lib/lua/luci/controller/admin/event_report.lua	5
+stats_report	get_global_config	do	get_stat_report_config:242		usr/lib/lua/luci/controller/admin/event_report.lua	5
+stats_report	get_stats_support_list	do	get_stat_support_list:246		usr/lib/lua/luci/controller/admin/event_report.lua	5
+stats_report	get_stats_params	do	get_stat_params_config:292		usr/lib/lua/luci/controller/admin/event_report.lua	5
+stats_report	stats_flush	do	flush_report_stat:322		usr/lib/lua/luci/controller/admin/event_report.lua	5
+intelligent_ops_data_report	modules_support	set	modules_nms_support_hanlde_set:330		usr/lib/lua/luci/controller/admin/event_report.lua	5
+intelligent_ops_data_report	modules_support	get	modules_nms_support_hanlde_get:343		usr/lib/lua/luci/controller/admin/event_report.lua	5
+stats_report	get_dev_sta_status_config	do	get_dev_sta_status_config:348		usr/lib/lua/luci/controller/admin/event_report.lua	5
+stats_report	set_dev_sta_status_config	do	set_dev_sta_status_config:350		usr/lib/lua/luci/controller/admin/event_report.lua	5
+stats_report	reset_dev_sta_status_config	do	reset_dev_sta_status_config:352		usr/lib/lua/luci/controller/admin/event_report.lua	5
+{"event_report","stats_report","intelligent_ops_data_report"}		module			usr/lib/lua/luci/controller/admin/event_report.lua	5
+firmware		module			usr/lib/lua/luci/controller/admin/firmware.lua	1
+firmware	config	get	get_firmware:2		usr/lib/lua/luci/controller/admin/firmware.lua	1
+firmware_backuprestore		module			usr/lib/lua/luci/controller/admin/firmware_backuprestore.lua	3
+system	download_conf	do	get_backup_url:107		usr/lib/lua/luci/controller/admin/firmware_backuprestore.lua	3
+system	upload_conf	do	get_restore_url:109		usr/lib/lua/luci/controller/admin/firmware_backuprestore.lua	3
+system	upload_conf_status	get	get_upload_conf_status:64		usr/lib/lua/luci/controller/admin/firmware_backuprestore.lua	3
+firmware_upgrade		module			usr/lib/lua/luci/controller/admin/firmware_upgrade.lua	10
+system	firmware_upgrade	do	get_upgrade_url:68		usr/lib/lua/luci/controller/admin/firmware_upgrade.lua	11
+forward		module			usr/lib/lua/luci/controller/admin/forward.lua	3
+forward	forward	do	handle_forward:4	ac_forward 2 SET a @19; ac_forward 3 GET e @22	usr/lib/lua/luci/controller/admin/forward.lua	3
+authentication	authentication	module			usr/lib/lua/luci/controller/admin/free_auth_strategy.lua	43
+t	e	add	add_free_strategy:245		usr/lib/lua/luci/controller/admin/free_auth_strategy.lua	43
+t	e	set	set_free_strategy:650		usr/lib/lua/luci/controller/admin/free_auth_strategy.lua	43
+t	e	delete	del_free_strategy:418		usr/lib/lua/luci/controller/admin/free_auth_strategy.lua	43
+t	e	section-type	check_free_auth_list_type:46; nil; before:91		usr/lib/lua/luci/controller/admin/free_auth_strategy.lua	43
+t	e	get	get_free_strategy_list:282		usr/lib/lua/luci/controller/admin/free_auth_strategy.lua	43
+global_config		module			usr/lib/lua/luci/controller/admin/global_config.lua	3
+global_config	page_size	section-name	nil; nil; do_before_global_config:4		usr/lib/lua/luci/controller/admin/global_config.lua	3
+host_management	host_management	module			usr/lib/lua/luci/controller/admin/host_management.lua	8
+host_management	recognition_settings	section-name	check_settings:635; do_settings:637; nil	wstation_recognize 2 SET t @654	usr/lib/lua/luci/controller/admin/host_management.lua	8
+host_management	host_info	section-type	check_host_info:20; nil; nil		usr/lib/lua/luci/controller/admin/host_management.lua	8
+host_management	isolate_rule_list	section-type	check_isolate_rule_list_data:684; nil; nil		usr/lib/lua/luci/controller/admin/host_management.lua	8
+sta_journey	journey_event_list	section-type	check_journey_event_list_data:688; nil; nil		usr/lib/lua/luci/controller/admin/host_management.lua	8
+sta_journey	journey_event_detail	section-type	check_journey_event_detail_data; nil; nil		usr/lib/lua/luci/controller/admin/host_management.lua	8
+host_management	host_info	get	host_info_data_get:95	journey_sta_list 3 GET t @169; host_info 3 GET t @170; host_info 3 GET t @202	usr/lib/lua/luci/controller/admin/host_management.lua	8
+host_management	terminal_brand_list	get	host_info_brand_list_get:670		usr/lib/lua/luci/controller/admin/host_management.lua	8
+host_management	terminal_os_list	get	host_info_os_list_get:677		usr/lib/lua/luci/controller/admin/host_management.lua	8
+host_management	isolate_rule_list	get	isolate_rule_list_get:692	wsta_iso_group 3 GET l @709	usr/lib/lua/luci/controller/admin/host_management.lua	8
+host_management	host_info	set	host_info_data_set:498		usr/lib/lua/luci/controller/admin/host_management.lua	8
+host_management	isolate_rule_list	set	isolate_rule_list_set:718	wsta_iso_group 2 SET i @724	usr/lib/lua/luci/controller/admin/host_management.lua	8
+host_management	host_info	delete	host_info_data_del:520	wsta_bind_info 1 DEL i @535	usr/lib/lua/luci/controller/admin/host_management.lua	8
+host_management	isolate_rule_list	delete	isolate_rule_list_del:732	wsta_iso_group 1 DEL i @736	usr/lib/lua/luci/controller/admin/host_management.lua	8
+host_management	isolate_rule_list	add	isolate_rule_list_add:742	wsta_iso_group 0 ADD i @747	usr/lib/lua/luci/controller/admin/host_management.lua	8
+host_management	disconnect	do	do_disconnect:663	wstation_disconnect 2 SET i @668	usr/lib/lua/luci/controller/admin/host_management.lua	8
+sta_journey	journey_event_list	get	journey_event_list_get:755	journey_event_list 3 GET l @773	usr/lib/lua/luci/controller/admin/host_management.lua	8
+sta_journey	journey_phase_list	get	journey_phase_list_get:782	journey_event_phase 3 GET o @794	usr/lib/lua/luci/controller/admin/host_management.lua	8
+system	ifstat_list	get	get_ifstat_list:34		usr/lib/lua/luci/controller/admin/ifstat.lua	9
+system	clear_ifstats	do	clear_ifstats:113		usr/lib/lua/luci/controller/admin/ifstat.lua	9
+index		module			usr/lib/lua/luci/controller/admin/index.lua	1
+function	new_module_spec	get	new_module_spec:19		usr/lib/lua/luci/controller/admin/index.lua	7
+interface		module			usr/lib/lua/luci/controller/admin/interface.lua	1
+interface	interface	get	get_all_interface:166		usr/lib/lua/luci/controller/admin/interface.lua	1
+interface	quick_show	get	get_quick_show:151		usr/lib/lua/luci/controller/admin/interface.lua	1
+interface	quick_show	add	add_quick_show:43		usr/lib/lua/luci/controller/admin/interface.lua	1
+interface	quick_show	delete	del_quick_show:2		usr/lib/lua/luci/controller/admin/interface.lua	1
+interface	interface_type_status	get	get_interface_type_status:175		usr/lib/lua/luci/controller/admin/interface.lua	1
+istart		module			usr/lib/lua/luci/controller/admin/istart.lua	35
+istart	global	get	istart_global_get_action:49		usr/lib/lua/luci/controller/admin/istart.lua	40
+istart	discover_device_capability	get	discover_device_capability_get_action:47		usr/lib/lua/luci/controller/admin/istart.lua	40
+istart	cloud_login	do	cloud_login_action:63		usr/lib/lua/luci/controller/admin/istart.lua	40
+istart	cloud_site_get	get	cloud_site_get_action:87		usr/lib/lua/luci/controller/admin/istart.lua	40
+istart	cloud_site_add	do	cloud_site_addt_action:106		usr/lib/lua/luci/controller/admin/istart.lua	40
+istart	cloud_device_bind	do	cloud_device_bind_action:114		usr/lib/lua/luci/controller/admin/istart.lua	40
+istart	cloud_token_get	get	cloud_token_get_action:138		usr/lib/lua/luci/controller/admin/istart.lua	40
+istart	cloud_register_vericode_get	do	cloud_register_vericode_get_action:157		usr/lib/lua/luci/controller/admin/istart.lua	40
+istart	cloud_register_vericode_check	do	cloud_register_vericode_check_action:178		usr/lib/lua/luci/controller/admin/istart.lua	40
+istart	cloud_user_register	do	cloud_user_register_action:196		usr/lib/lua/luci/controller/admin/istart.lua	40
+istart	cloud_reset_vericode_get	do	cloud_reset_vericode_get_action:218		usr/lib/lua/luci/controller/admin/istart.lua	40
+istart	cloud_reset_vericode_check	do	cloud_reset_vericode_check_action:238		usr/lib/lua/luci/controller/admin/istart.lua	40
+istart	cloud_password_reset	do	cloud_password_reset_action:256		usr/lib/lua/luci/controller/admin/istart.lua	40
+istart	discovery_device	do	discovery_device_action:278		usr/lib/lua/luci/controller/admin/istart.lua	40
+istart	discovery_device_state	get	discovery_device_state_action:283		usr/lib/lua/luci/controller/admin/istart.lua	40
+istart	discoveried_device_list	get	discoveried_device_list_action:288		usr/lib/lua/luci/controller/admin/istart.lua	40
+istart	auto_ip_gateway	do	auto_ip_gateway_action:321		usr/lib/lua/luci/controller/admin/istart.lua	40
+istart	auto_ip_gateway_status	get	auto_ip_gateway_status_get_action:326		usr/lib/lua/luci/controller/admin/istart.lua	40
+istart	set_ip_gateway_status	get	set_ip_gateway_status_get_action:331		usr/lib/lua/luci/controller/admin/istart.lua	40
+istart	transmit	do	transmit_action:346		usr/lib/lua/luci/controller/admin/istart.lua	40
+istart	cloud_server_set	do	cloud_server_set_action:373		usr/lib/lua/luci/controller/admin/istart.lua	40
+authentication	authentication	module			usr/lib/lua/luci/controller/admin/jump_page.lua	8
+authentication	jump_page_list	section-type	check_jump_page_list_type:27; do_jump_page_list_type:30; nil		usr/lib/lua/luci/controller/admin/jump_page.lua	9
+authentication	jump_page_list	add	add_jump_page:45		usr/lib/lua/luci/controller/admin/jump_page.lua	9
+authentication	jump_page_list	delete	del_jump_page:74		usr/lib/lua/luci/controller/admin/jump_page.lua	9
+authentication	jump_page_list	set	set_jump_page:101		usr/lib/lua/luci/controller/admin/jump_page.lua	9
+authentication	jump_page_list	get	get_jump_page:134		usr/lib/lua/luci/controller/admin/jump_page.lua	9
+authentication	update_jump_page	do	update_jump_page:183		usr/lib/lua/luci/controller/admin/jump_page.lua	9
+authentication	authentication	module			usr/lib/lua/luci/controller/admin/ldap.lua	1
+authentication	test_ldap_connect	do	test_ldap_connect:219	~ldap_test (E) 2 SET n @232	usr/lib/lua/luci/controller/admin/ldap.lua	1
+authentication	ldap_list	get	get_ldap:91		usr/lib/lua/luci/controller/admin/ldap.lua	1
+authentication	ldap_list	add	add_ldap:116	~wportal (s) 0 ADD _ @141	usr/lib/lua/luci/controller/admin/ldap.lua	1
+authentication	ldap_list	set	set_ldap:150	~wportal (s) 2 SET _ @174	usr/lib/lua/luci/controller/admin/ldap.lua	1
+authentication	ldap_list	delete	del_ldap:178	~wportal (s) 1 DEL e @201	usr/lib/lua/luci/controller/admin/ldap.lua	1
+lldp		module			usr/lib/lua/luci/controller/admin/lldp.lua	3
+lldp	panel_port_info	get	get_panelport_info:103		usr/lib/lua/luci/controller/admin/lldp.lua	3
+lldp	get_lldp_info	do	get_lldp_info:4	uac_lldp 2 SET f @27; uac_lldp 3 GET f @52	usr/lib/lua/luci/controller/admin/lldp.lua	3
+lldp	conf_mngt	section-name	check_lldp_mngt_switch:133; set_lldp_mngt_switch:135; before_save_lldp_mngt_switch:131		usr/lib/lua/luci/controller/admin/lldp.lua	3
+system		module			usr/lib/lua/luci/controller/admin/logger.lua	4
+system	syslog	section-name	check_syslog:15; after_save_syslog:19; before_save_syslog:17		usr/lib/lua/luci/controller/admin/logger.lua	5
+system	read_logs	do	get_syslog:30		usr/lib/lua/luci/controller/admin/logger.lua	5
+system	sys_log_modules	get	get_log_modules:24		usr/lib/lua/luci/controller/admin/logger.lua	5
+system	delete_logs	do	delete_syslog:132		usr/lib/lua/luci/controller/admin/logger.lua	5
+system	system_log	get	get_system_log:90		usr/lib/lua/luci/controller/admin/logger.lua	5
+system	export_logs	do	export_syslog:141		usr/lib/lua/luci/controller/admin/logger.lua	5
+authentication	authentication	module			usr/lib/lua/luci/controller/admin/mac_auth.lua	11
+authentication	mac_addr_list	get	mac_addr_list_get:79		usr/lib/lua/luci/controller/admin/mac_auth.lua	12
+authentication	mac_addr_list	set	mac_addr_list_set:168	macauth_mac 2 SET i @189	usr/lib/lua/luci/controller/admin/mac_auth.lua	12
+authentication	mac_addr_list	delete	mac_addr_list_del:137	macauth_mac 1 DEL l @140; macauth_mac_for_group 1 DEL l @144; macauth_mac_for_group 1 DEL l @151; macauth_mac_for_group 1 DEL l @162	usr/lib/lua/luci/controller/admin/mac_auth.lua	12
+authentication	mac_addr_list	add	mac_addr_list_add:107	macauth_mac 0 ADD l @120	usr/lib/lua/luci/controller/admin/mac_auth.lua	12
+authentication	authentication	module			usr/lib/lua/luci/controller/admin/mac_group.lua	23
+authentication	macauth	section-name	check_auth_mode_para:148; set_auth_mode:281; nil	macauth_type 2 SET e @286	usr/lib/lua/luci/controller/admin/mac_group.lua	24
+authentication	clear_bind_mac_tmp_file	do	clear_and_create_tmp:150		usr/lib/lua/luci/controller/admin/mac_group.lua	24
+authentication	init_bind_mac_tmp_file	do	reset_tmp_mac:164		usr/lib/lua/luci/controller/admin/mac_group.lua	24
+authentication	update_bind_mac_tmp_file	do	update_tmp_mac:166		usr/lib/lua/luci/controller/admin/mac_group.lua	24
+authentication	mac_bind_list	get	get_mac_bind_list:187		usr/lib/lua/luci/controller/admin/mac_group.lua	24
+authentication	all_mac_bind_list	get	get_all_mac_bind_list_macauth:276		usr/lib/lua/luci/controller/admin/mac_group.lua	24
+authentication	mac_bind_list_for_view	get	get_mac_bind_list_for_view:236		usr/lib/lua/luci/controller/admin/mac_group.lua	24
+authentication	mac_auth_list	get	mac_auth_list_get:520		usr/lib/lua/luci/controller/admin/mac_group.lua	24
+authentication	mac_auth_ssid_bind_list	get	mac_auth_ssid_bind_list_get:598	macauth_group 3 GET n @602	usr/lib/lua/luci/controller/admin/mac_group.lua	24
+authentication	mac_auth_list	set	mac_auth_list_set:684	macauth_group_for_ssid 2 SET n @712; macauth_group 2 SET n @743; macauth_group_for_ssid 2 SET n @778; macauth_group 2 SET n @813	usr/lib/lua/luci/controller/admin/mac_group.lua	24
+authentication	mac_auth_list	delete	mac_auth_list_del:663	r==s and'macauth_group_for_ssid'or'macauth_group' 1 DEL t @674	usr/lib/lua/luci/controller/admin/mac_group.lua	24
+authentication	mac_auth_list	add	mac_auth_list_add:616	macauth_group 3 GET _ @628; macauth_group_for_ssid 0 ADD n @637; macauth_group 0 ADD n @638	usr/lib/lua/luci/controller/admin/mac_group.lua	24
+authentication	bind_mac_for_entry	do	bind_mac_for_entry:112		usr/lib/lua/luci/controller/admin/mac_group.lua	24
+authentication	unbind_mac_for_entry	do	unbind_mac_for_entry:123		usr/lib/lua/luci/controller/admin/mac_group.lua	24
+network	network	module			usr/lib/lua/luci/controller/admin/network.lua	5
+network	if_info	section-type	check_if_info_type:478; do_if_info_type:480; nil		usr/lib/lua/luci/controller/admin/network.lua	5
+network	bridge	section-type	check_bridge_type:474; do_bridge_type:476; nil		usr/lib/lua/luci/controller/admin/network.lua	5
+network	optical_port	section-type	check_optical_port_type:470; do_optical_port_type:472; nil		usr/lib/lua/luci/controller/admin/network.lua	5
+network	sys_conf	get	get_system_config:792		usr/lib/lua/luci/controller/admin/network.lua	5
+network	if	get	get_system_interface:803		usr/lib/lua/luci/controller/admin/network.lua	5
+network	if_info	get	get_interface_config:864		usr/lib/lua/luci/controller/admin/network.lua	5
+network	nwadditional	get	get_nwadditional_config:1076		usr/lib/lua/luci/controller/admin/network.lua	5
+network	if_info	add	add_normal_interface:1111		usr/lib/lua/luci/controller/admin/network.lua	5
+network	if_info	set	set_interface_config:1166		usr/lib/lua/luci/controller/admin/network.lua	5
+network	if_info	delete	del_normal_interface:1569		usr/lib/lua/luci/controller/admin/network.lua	5
+network	bridge	get	get_bridge_config:1602		usr/lib/lua/luci/controller/admin/network.lua	5
+network	bridge	add	add_bridge_interface:1614		usr/lib/lua/luci/controller/admin/network.lua	5
+network	bridge	set	set_bridge_interface:1631		usr/lib/lua/luci/controller/admin/network.lua	5
+network	bridge	delete	del_bridge_interface:1678		usr/lib/lua/luci/controller/admin/network.lua	5
+network	change_if_status	do	set_interface_status:781		usr/lib/lua/luci/controller/admin/network.lua	5
+network	iface_mac	get	get_iface_macs:1712		usr/lib/lua/luci/controller/admin/network.lua	5
+network	if_prefix	get	get_prefix_list:1718		usr/lib/lua/luci/controller/admin/network.lua	5
+network	multivlan_bridge_if	get	get_multivlan_bridge_interface_config:1389		usr/lib/lua/luci/controller/admin/network.lua	5
+network	multivlan_bridge_if	set	set_multivlan_bridge_interface_config:1437		usr/lib/lua/luci/controller/admin/network.lua	5
+network	optical_port	get	get_optical_port_info:1746		usr/lib/lua/luci/controller/admin/network.lua	5
+network	optical_port	set	set_optical_port_speed:1784		usr/lib/lua/luci/controller/admin/network.lua	5
+network	lan	get	get_lan_config:54		usr/lib/lua/luci/controller/admin/network_compat.lua	16
+network	lan	set	set_lan_config:74		usr/lib/lua/luci/controller/admin/network_compat.lua	16
+network	apply_lan_config	do	apply_lan_config:98		usr/lib/lua/luci/controller/admin/network_compat.lua	16
+network	wan_status	get	get_wan_status:180		usr/lib/lua/luci/controller/admin/network_compat.lua	16
+protocol	wan	get	get_protocol_wan:202		usr/lib/lua/luci/controller/admin/network_compat.lua	16
+protocol	dhcp	get	get_protocol_dhcp:213		usr/lib/lua/luci/controller/admin/network_compat.lua	16
+protocol	static	get	get_protocol_static:218		usr/lib/lua/luci/controller/admin/network_compat.lua	16
+protocol	pppoe	get	get_protocol_pppoe:220		usr/lib/lua/luci/controller/admin/network_compat.lua	16
+protocol	wan	set	set_protocol_wan:228		usr/lib/lua/luci/controller/admin/network_compat.lua	16
+protocol	dhcp	set	set_protocol_dhcp:247		usr/lib/lua/luci/controller/admin/network_compat.lua	16
+protocol	static	set	set_protocol_static:256		usr/lib/lua/luci/controller/admin/network_compat.lua	16
+protocol	pppoe	set	set_protocol_pppoe:259		usr/lib/lua/luci/controller/admin/network_compat.lua	16
+network	change_wan_status	do	change_wan_status:273		usr/lib/lua/luci/controller/admin/network_compat.lua	16
+authentication	authentication	module			usr/lib/lua/luci/controller/admin/nonsense.lua	1
+authentication	nonsense_list	get	get_nonsense:6	~wportal (s) 3 GET e @32	usr/lib/lua/luci/controller/admin/nonsense.lua	1
+authentication	nonsense_list	delete	del_nonsense:47		usr/lib/lua/luci/controller/admin/nonsense.lua	1
+online_check		module			usr/lib/lua/luci/controller/admin/online_check.lua	1
+online_check	state	get	get_online_check_state:3		usr/lib/lua/luci/controller/admin/online_check.lua	1
+operation_log		module			usr/lib/lua/luci/controller/admin/operation_log.lua	1
+system	operation_log	get	operation_log_get:3		usr/lib/lua/luci/controller/admin/operation_log.lua	1
+system	operationlog_clean	do	operation_log_clean:39		usr/lib/lua/luci/controller/admin/operation_log.lua	1
+operation_tools		module			usr/lib/lua/luci/controller/admin/operation_tools.lua	1
+operation_tools	icmp_echo_test	do	ping_test:2		usr/lib/lua/luci/controller/admin/operation_tools.lua	1
+operation_tools	dns_test	do	dns_test:31		usr/lib/lua/luci/controller/admin/operation_tools.lua	1
+page		module			usr/lib/lua/luci/controller/admin/page.lua	1
+authentication	authentication	module			usr/lib/lua/luci/controller/admin/portal_auth.lua	24
+authentication	portal_auth_list	section-type	check_portal_list_type:1034; do_portal_list_type:1036; nil		usr/lib/lua/luci/controller/admin/portal_auth.lua	28
+authentication	portal_auth_list	add	portal_list_add:1073	~wportal (h) 3 GET _ @1125	usr/lib/lua/luci/controller/admin/portal_auth.lua	28
+authentication	portal_auth_list	set	portal_list_set:1229	~wportal (h) 3 GET _ @1351	usr/lib/lua/luci/controller/admin/portal_auth.lua	28
+authentication	portal_auth_list	delete	portal_list_del:1559		usr/lib/lua/luci/controller/admin/portal_auth.lua	28
+authentication	portal_auth_list	get	portal_list_get:1663		usr/lib/lua/luci/controller/admin/portal_auth.lua	28
+authentication	portal_auth_ssid_bind_list	get	portal_bind_list_get:1740		usr/lib/lua/luci/controller/admin/portal_auth.lua	28
+authentication	portal_auth_reviewer_list	get	portal_reviewer_list_get:1751		usr/lib/lua/luci/controller/admin/portal_auth.lua	28
+authentication	portal_ca_list	get	portal_ca_list_get:1710		usr/lib/lua/luci/controller/admin/portal_auth.lua	28
+authentication	portal_ca_list	delete	portal_ca_list_del:1735		usr/lib/lua/luci/controller/admin/portal_auth.lua	28
+authentication	portal_user_data	get	get_portal_user_data:1866	wportal_user_data 3 GET _ @1873	usr/lib/lua/luci/controller/admin/portal_auth.lua	28
+authentication	clear_user_list_for_qrcode	do	do_clear_userlist_for_qrcode:1921		usr/lib/lua/luci/controller/admin/portal_auth.lua	28
+authentication	do_user_list_for_qrcode	do	handle_bind_status_for_qrcode_reviwer:1923		usr/lib/lua/luci/controller/admin/portal_auth.lua	28
+authentication	unbind_user_list_for_qrcode	do	do_unbind_user_list_for_qrcode		usr/lib/lua/luci/controller/admin/portal_auth.lua	28
+authentication	authentication	module			usr/lib/lua/luci/controller/admin/portal_para.lua	1
+authentication	portal_para	section-name	check_portal_para:26; nil; before_set_portal_para:28		usr/lib/lua/luci/controller/admin/portal_para.lua	1
+authentication	portal_para	set	set_portal_para:47	~wportal (c) 2 SET e @72; ~wportal (c) 2 SET e @82; ~wportal (c) 2 SET e @91; ~wportal (c) 1 DEL t @99; ~wportal (c) 2 SET t @101; ~wportal (c) 2 SET e @121; ~wportal (c) 2 SET e @128; ~wportal (c) 2 SET e @132; ~wportal (c) 2 SET e @148; escape_radius_config 2 SET r @175	usr/lib/lua/luci/controller/admin/portal_para.lua	1
+authentication	portal_para	get	get_portal_para:185		usr/lib/lua/luci/controller/admin/portal_para.lua	1
+authentication	authentication	module			usr/lib/lua/luci/controller/admin/radius.lua	1
+authentication	test	do	test:195		usr/lib/lua/luci/controller/admin/radius.lua	1
+authentication	radius_list	get	get_radius:80		usr/lib/lua/luci/controller/admin/radius.lua	1
+authentication	radius_list	add	add_radius:105	~wportal (l) 0 ADD e @128	usr/lib/lua/luci/controller/admin/radius.lua	1
+authentication	radius_list	set	set_radius:130	~wportal (l) 2 SET n @152	usr/lib/lua/luci/controller/admin/radius.lua	1
+authentication	radius_list	delete	del_radius:156	~wportal (l) 1 DEL r @177	usr/lib/lua/luci/controller/admin/radius.lua	1
+remote_relay		module			usr/lib/lua/luci/controller/admin/remote_relay.lua	1
+remote_relay	relay_connect	do	do_relay_connect:2		usr/lib/lua/luci/controller/admin/remote_relay.lua	1
+route		module			usr/lib/lua/luci/controller/admin/route.lua	5
+network	sys_route	get	get_system_route:131		usr/lib/lua/luci/controller/admin/route.lua	9
+network	user_route	get	get_user_route:449		usr/lib/lua/luci/controller/admin/route.lua	9
+network	user_route	section-type	check_user_route_type:312; do_user_route_type:399; do_user_route_before_type:316		usr/lib/lua/luci/controller/admin/route.lua	9
+network	user_route	set	set_user_route:422		usr/lib/lua/luci/controller/admin/route.lua	9
+network	user_route_ipv6	get	get_user_route_ipv6:505		usr/lib/lua/luci/controller/admin/route.lua	10
+network	user_route_ipv6	section-type	check_user_route_ipv6_type:314; do_user_route_type_ipv6:376; do_user_route_before_type_ipv6:344		usr/lib/lua/luci/controller/admin/route.lua	10
+network	user_route_ipv6	set	set_user_route_ipv6:478		usr/lib/lua/luci/controller/admin/route.lua	10
+policy_route	policy_rule	get	get_policy_route:588		usr/lib/lua/luci/controller/admin/route.lua	11
+policy_route	policy_rule	section-type	check_policy_route_type:586; do_policy_route_type:726; do_policy_route_before_type:664		usr/lib/lua/luci/controller/admin/route.lua	11
+authentication	authentication	module			usr/lib/lua/luci/controller/admin/sessmngr.lua	3
+authentication	auth_session_list	section-type	check_auth_session_type:7; nil; nil		usr/lib/lua/luci/controller/admin/sessmngr.lua	3
+authentication	auth_session_list	get	get_auth_session:41	wportal 3 GET _ @79	usr/lib/lua/luci/controller/admin/sessmngr.lua	3
+authentication	auth_session_list	delete	del_auth_session:139		usr/lib/lua/luci/controller/admin/sessmngr.lua	3
+authentication	auth_session_list	add	add_auth_session:145		usr/lib/lua/luci/controller/admin/sessmngr.lua	3
+authentication	auth_session_list	set	set_auth_session:201		usr/lib/lua/luci/controller/admin/sessmngr.lua	3
+slaac	slaac	module			usr/lib/lua/luci/controller/admin/slaac.lua	5
+slaac	slaac_list	section-type	check_slaac_list:16; apply_slaac_list:18; before_save_slaac_list:84		usr/lib/lua/luci/controller/admin/slaac.lua	6
+port	port	module			usr/lib/lua/luci/controller/admin/switch.lua	9
+port	mirror	section-type	check_mirror:16; mirror_after_proc:29; nil		usr/lib/lua/luci/controller/admin/switch.lua	9
+port	port	section-type	check_port:23; port_after_proc:53; port_before_proc:39		usr/lib/lua/luci/controller/admin/switch.lua	9
+port	port	get	port_info_data_get:68		usr/lib/lua/luci/controller/admin/switch.lua	9
+port	statistic	do	do_statistic:143		usr/lib/lua/luci/controller/admin/switch.lua	9
+system	system	module			usr/lib/lua/luci/controller/admin/system.lua	9
+system	logout	do	logout:23		usr/lib/lua/luci/controller/admin/system.lua	9
+system	reboot	do	do_reboot:50		usr/lib/lua/luci/controller/admin/system.lua	9
+system	reset	do	do_reset:67		usr/lib/lua/luci/controller/admin/system.lua	9
+system	cpu_usage	get	get_cpu_usage:76		usr/lib/lua/luci/controller/admin/system.lua	9
+system	mem_usage	get	get_mem_usage:91		usr/lib/lua/luci/controller/admin/system.lua	9
+system	cpu_log	get	get_cpu_log:101		usr/lib/lua/luci/controller/admin/system.lua	9
+system	cpu_mem_log	get	get_cpu_mem_log:131		usr/lib/lua/luci/controller/admin/system.lua	9
+system	cfg_info	get	get_cfg_info:21		usr/lib/lua/luci/controller/admin/system.lua	9
+system	device_info	get	get_device_info:68		usr/lib/lua/luci/controller/admin/system.lua	9
+system	sys	section-name	check_sys:15; apply_system_sys:17; nil		usr/lib/lua/luci/controller/admin/system.lua	9
+system	get_activate_status	do	get_activate_status:149		usr/lib/lua/luci/controller/admin/system.lua	9
+system	start_report_sub_device_info	do	start_report_sub_device_info_handle:156	start_report_sub_device_info 2 SET e @156	usr/lib/lua/luci/controller/admin/system.lua	9
+system_state		module			usr/lib/lua/luci/controller/admin/system_state.lua	1
+system_status	system_info	get	get_system_info:3		usr/lib/lua/luci/controller/admin/system_state.lua	2
+tddp		module			usr/lib/lua/luci/controller/admin/tddp.lua	1
+tddp	service_start	do	do_service_start:2		usr/lib/lua/luci/controller/admin/tddp.lua	1
+time_mngt	time_mngt	module			usr/lib/lua/luci/controller/admin/time_mngt.lua	7
+time_mngt	time_obj	section-type	check_timeobj:166; nil; nil		usr/lib/lua/luci/controller/admin/time_mngt.lua	7
+time_mngt	time_obj	get	time_mngt_get_obj:293		usr/lib/lua/luci/controller/admin/time_mngt.lua	8
+time_mngt	time	get	get_time_settings:321		usr/lib/lua/luci/controller/admin/time_mngt.lua	8
+time_mngt	time_obj	set	set_time_obj_data:123		usr/lib/lua/luci/controller/admin/time_mngt.lua	8
+time_mngt	time_obj	add	add_time_obj_data:109		usr/lib/lua/luci/controller/admin/time_mngt.lua	8
+time_mngt	time_obj	delete	del_time_obj_data:146		usr/lib/lua/luci/controller/admin/time_mngt.lua	8
+time_setting	system	module			usr/lib/lua/luci/controller/admin/time_setting.lua	3
+system	ntp	get	get_timeserver:24		usr/lib/lua/luci/controller/admin/time_setting.lua	4
+system	ntp	set	apply_timeserver:53		usr/lib/lua/luci/controller/admin/time_setting.lua	4
+system	time_type	section-name	check_time_setting:70; apply_time_type:5; nil		usr/lib/lua/luci/controller/admin/time_setting.lua	4
+system	system_time	get	get_system_time:72		usr/lib/lua/luci/controller/admin/time_setting.lua	4
+system	system_time	set	set_system_time:81		usr/lib/lua/luci/controller/admin/time_setting.lua	4
+system	system_time	section-name	check_system_time:99; nil; nil		usr/lib/lua/luci/controller/admin/time_setting.lua	4
+user_config	system	module			usr/lib/lua/luci/controller/admin/user_config.lua	1
+system	cfg_status	get	get_cfg_status:3		usr/lib/lua/luci/controller/admin/user_config.lua	1
+system	save_cfg	do	save_cfg:13		usr/lib/lua/luci/controller/admin/user_config.lua	1
+system	save_cfg_status	get	get_save_cfg_status:8		usr/lib/lua/luci/controller/admin/user_config.lua	1
+user_management		module			usr/lib/lua/luci/controller/admin/user_management.lua	2
+user_management	get_encrypt_info	do	get_encrypt_info:127		usr/lib/lua/luci/controller/admin/user_management.lua	2
+user_management	check_user_info	do	check_user_info:235		usr/lib/lua/luci/controller/admin/user_management.lua	2
+user_management	change_user_info	do	change_user_info:175		usr/lib/lua/luci/controller/admin/user_management.lua	2
+user_management	user_info	get	user_info_get:298		usr/lib/lua/luci/controller/admin/user_management.lua	2
+user_management	user_info	set	user_info_set		usr/lib/lua/luci/controller/admin/user_management.lua	2
+user_management	user_info	delete	user_info_del:337		usr/lib/lua/luci/controller/admin/user_management.lua	2
+user_management	user_info	add	user_info_add:355		usr/lib/lua/luci/controller/admin/user_management.lua	2
+authentication	authentication	module			usr/lib/lua/luci/controller/admin/usermngr.lua	16
+authentication	userlist	get	get_user:539		usr/lib/lua/luci/controller/admin/usermngr.lua	16
+authentication	userlist	add	add_user:638		usr/lib/lua/luci/controller/admin/usermngr.lua	16
+authentication	userlist	set	set_user:666	~wportal (U) 1 DEL e @738; ~wportal (U) 1 DEL e @742	usr/lib/lua/luci/controller/admin/usermngr.lua	16
+authentication	userlist	delete	del_user:748	~wportal (U) 1 DEL e @765; ~wportal (U) 1 DEL e @766	usr/lib/lua/luci/controller/admin/usermngr.lua	16
+authentication	user_group_list	get	get_user_group:790	wportal 3 GET e @823	usr/lib/lua/luci/controller/admin/usermngr.lua	16
+authentication	user_group_list	add	add_user_group:849		usr/lib/lua/luci/controller/admin/usermngr.lua	16
+authentication	user_group_list	set	set_user_group:858		usr/lib/lua/luci/controller/admin/usermngr.lua	16
+authentication	user_group_list	delete	del_user_group:880		usr/lib/lua/luci/controller/admin/usermngr.lua	16
+authentication	backup_user	do	get_backup_url:974		usr/lib/lua/luci/controller/admin/usermngr.lua	16
+authentication	load_user	do	get_load_url:976		usr/lib/lua/luci/controller/admin/usermngr.lua	16
+vlan		module			usr/lib/lua/luci/controller/admin/vlan.lua	17
+vlan	vlan	section-type	check_vlan:109; vlan_after_proc:185; vlan_before_proc:111		usr/lib/lua/luci/controller/admin/vlan.lua	17
+vlan	vlan	get	get_vlan:345		usr/lib/lua/luci/controller/admin/vlan.lua	17
+vlan	port	get	get_vlan_list_by_port:320		usr/lib/lua/luci/controller/admin/vlan.lua	17
+vlan	port	set	set_vlan_port:303		usr/lib/lua/luci/controller/admin/vlan.lua	17
+vlan	port_vlan	get	get_port_vlan_list_by_port:266		usr/lib/lua/luci/controller/admin/vlan.lua	17
+vlan	get_vlan_by_port	get	get_vlan_by_port:249		usr/lib/lua/luci/controller/admin/vlan.lua	17
+vlan	vlan	set	set_vlan:369		usr/lib/lua/luci/controller/admin/vlan.lua	17
+vlan	vlan	add	add_vlan:387		usr/lib/lua/luci/controller/admin/vlan.lua	17
+vlan	vlan_pool	section-type	check_vlan_pool_type:23; nil; nil		usr/lib/lua/luci/controller/admin/vlan.lua	17
+vlan	vlan_pool	get	get_vlan_pool:440		usr/lib/lua/luci/controller/admin/vlan.lua	17
+vlan	vlan_pool	add	add_vlan_pool:473		usr/lib/lua/luci/controller/admin/vlan.lua	17
+vlan	vlan_pool	set	set_vlan_pool:499		usr/lib/lua/luci/controller/admin/vlan.lua	17
+vlan	vlan_pool	delete	del_vlan_pool:516		usr/lib/lua/luci/controller/admin/vlan.lua	17
+network	if_mode	get	get_wan_mode:10		usr/lib/lua/luci/controller/admin/wanmode.lua	8
+network	if_mode	set	set_wan_mode:24		usr/lib/lua/luci/controller/admin/wanmode.lua	8

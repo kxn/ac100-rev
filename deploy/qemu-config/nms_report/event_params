@@ -1,0 +1,4 @@
+# 安装到 /etc/nms_report/event_params。
+# wsta_db_init_buttom_half @0x0074e474 读取 10001020.threshold。
+config event_params '10001020'
+	option threshold '0'

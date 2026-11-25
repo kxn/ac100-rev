@@ -1,0 +1,3 @@
+config global 'global'
+	option allow_any_src '0'
+	option check_pkg_sig '0'

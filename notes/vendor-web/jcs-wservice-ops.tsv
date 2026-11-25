@@ -1,0 +1,5 @@
+operation	name	calls	fields	sources
+0	edit	3	auth,auto_bind,bw_ctrl_enable,bw_ctrl_mode,central_forward_switch,cipher,default_bind_freq,default_bind_vlan,desc,down_limit,enable,encryption,igmp_2g_rate,igmp_2g_rate_type,igmp_5g_rate,igmp_5g_rate_type,igmp_drop_unknown,igmp_max_resp_time,igmp_multi_to_unicast,igmp_query_interval,igmp_query_switch,igmp_snooping_enable,igmp_snooping_switch,isolate,key,key_update_intv,mlo_switch,ppsk_group,radius_acct_port,radius_auth_channel,radius_ip,radius_nas_id,radius_port,radius_pwd,radius_session_timeout,radius_vlan_enable,serv_id,ssid,ssid_code_type,ssid_id,ssidbrd,time_switch,up_limit	apmng_wserv.lua:1787;apmng_wserv.lua:1802;apmng_wserv.lua:612
+2	unbind_rf	1	radio_id,serv_id,vlan_id	apmng_wserv.lua:978
+3	enable	1	serv_id	apmng_wserv.lua:1319
+4	disable	2	serv_id	apmng_wserv.lua:1332;apmng_wserv.lua:633

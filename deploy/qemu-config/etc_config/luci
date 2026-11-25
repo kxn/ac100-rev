@@ -1,0 +1,2 @@
+config sauth 'sauth'
+	option sessiontime '0'

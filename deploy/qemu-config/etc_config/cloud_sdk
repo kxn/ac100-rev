@@ -1,0 +1,5 @@
+config cloud 'cloud'
+	option defaultValidTime '0'
+
+config default 'default'
+	option heartbeat_interval_ms '0'

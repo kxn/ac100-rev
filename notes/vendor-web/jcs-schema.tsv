@@ -1,0 +1,279 @@
+name	op	handler	handler_symbol	inputs	outputs	input_source	sampled	web_only_inputs
+ac_alias_changed	2	0x00500b80	cloud_mngt_jcs_alias_changed				yes	
+ac_audit	2	0x00587a00	_audit_client_jcs_set_cb	enable,remote_ip		both	yes	
+ac_autorrm_list	2	0x00525bf4	rrm_ops_jcs_auto_rrm_set	id	ret	uac	yes	
+ac_balance	0	0x004ee97c	balance_jcs_callback_balance_add	ap_ids,dif_threshold,enable,group_ids,id,index_field,max_fail_num,mode,name,rssi_threshold,usr_threshold	id,ret	web	yes	ap_ids,dif_threshold,enable,group_ids,id,index_field,max_fail_num,mode,name,rssi_threshold,usr_threshold
+ac_balance	1	0x004ee73c	balance_jcs_callback_balance_del	id	ret	both	yes	
+ac_balance	2	0x004eeb58	balance_jcs_callback_balance_set	ap_ids,dif_threshold,enable,group_ids,id,index_field,max_fail_num,mode,name,rssi_threshold,usr_threshold	ret	both	yes	ap_ids,dif_threshold,enable,group_ids,index_field,max_fail_num,mode,name,rssi_threshold,usr_threshold
+ac_balance	3	0x004ec470	balance_jcs_callback_balance_get	id,index_field,name,size,start	file_name,total_num	both	yes	
+ac_clear_all_cloud_config_id	2	0x005ebcb8	_apmngr_jcs_ac_clear_all_cloud_config_id				yes	
+ac_config_id_changed	2	0x004fded4	cloud_mngt_jcs_config_id_changed	new_config_id		uac	yes	
+ac_datasync_status	2	0x005f6394	_apmngr_jcs_ac_datasync_status_set	status		uac	yes	
+ac_forward	2	0x0058daa0	_ac_forward_jcs_set	content,extend_dev_id,requests	request_id,ret	both	yes	
+ac_forward	3	0x0058f0ac	_ac_forward_jcs_get	device_type,extend_dev_ids,request_id	cnt,get_rsponse_info	both	yes	
+ac_manualrrm	2	0x00525838	rrm_ops_jcs_manual_rrm_set	ap_ids,autorrm_enable,autorrm_timeobj,bw_2g,bw_5g,chnl_2g_set,chnl_5g1_set,chnl_enable,freq_enable,group_ids,id,index_field,max_pwr_2g,max_pwr_5g,min_pwr_2g,min_pwr_5g,name,pwr_enable,pwr_threshold_2g,pwr_threshold_5g,setting_id	ret	uac+helper	yes	
+ac_mesh_discover_cap_change	2	0x00537714	mesh_jcs_discover_cap_change	cap_id,mac	ret	uac	yes	
+ac_mesh_discover_list	3	0x00538d98	mesh_jcs_discover_list_get	size,start	file_name,total_num	both	yes	
+ac_mesh_discover_status	3	0x005389d8	mesh_jcs_discover_status_get		auto_add_status,status		yes	
+ac_mesh_global_settings	2	0x0053a11c	mesh_jcs_global_set	backhaul_key,backhaul_ssid,backhaul_token,bh_work_mode,enable,re_auto_switch,re_recover_flag,web_password		both	yes	
+ac_mesh_stop_discover	2	0x0053a0c0	mesh_jcs_stop_discover		ret		yes	
+ac_mesh_topology	3	0x00538b48	mesh_jcs_topology_get		file_name,total_num		yes	
+ac_mesh_trigger_discover	2	0x00539df8	mesh_jcs_trigger_discover		ret		yes	
+ac_mesh_trigger_pair	2	0x00536908	mesh_jcs_trigger_pair	cap_id,dev_info,mac	ret	both	yes	
+ac_mesh_trigger_pair_all	2	0x00537400	mesh_jcs_trigger_pair_all		ret		yes	
+ac_mesh_wan_status	2	0x00536420	mesh_jcs_wan_status_set	wan_status	ret	uac	yes	
+ac_notify_master_sync_data	2	0x005f6388	_apmngr_jcs_ac_nitify_master_sync_data_set				yes	
+ac_passthrough	2	0x0058d10c	_ac_passthrough_jcs_set	ap_mac,apmng_passthrough,filepath,get_rsponse_info_sync,need_result,params,passthrough_to_subdevice,requestData,request_id,request_info	request_id,ret	both	yes	get_rsponse_info_sync
+ac_passthrough	3	0x0058eaa0	_ac_passthrough_jcs_get	ap_mac,filepath,get_rsponse_info_sync,need_result,request_id,request_info	cnt,continue,get_rsponse_info	both	yes	filepath,need_result,request_info
+ac_rate	2	0x0062fdf0	jcs_callback_rate_set	11a_base,11a_mult,11a_supp,11ac_base,11ac_supp,11ax_base,11ax_supp,11b_base,11b_mult,11b_supp,11g_base,11g_mult,11g_supp,11n_base,11n_supp,rate_11a,rate_11ac,rate_11ax,rate_11b,rate_11g,rate_11n		both	yes	
+ac_report	2	0x0052fa58	_uac_report_jcs_set	active_ap_only,apgroup,content,interval,max_load,protocol,server_address,server_port,state	ret	both	yes	active_ap_only
+ac_roam	2	0x004d6e50	_wsta_roam_jcs_intelligent_set	ap_ids,blacklist_restrict_time,group_ids,id,low_rate_kick_2g,low_rate_kick_5g,low_rate_threshold_2g,low_rate_threshold_5g,low_rssi_kick_2g,low_rssi_kick_5g,low_rssi_threshold_2g,low_rssi_threshold_5g,name,rate_trigger_threshold_2g,rate_trigger_threshold_5g,roaming_dif,roaming_threshold_type_2g,roaming_threshold_type_5g,rssi_trigger_threshold_2g,rssi_trigger_threshold_5g,rssi_trigger_threshold_high_performance,stats_interval,stats_switch,switch_11k,switch_11r,switch_11v,threshold_check_interval	group_ids,name,result	web+helper	yes	blacklist_restrict_time,roaming_dif,stats_interval,threshold_check_interval
+ac_roam_list	0	0x004d5734	_wsta_roam_jcs_roam_list_add	[].ap_ids,[].blacklist_restrict_time,[].group_ids,[].id,[].low_rate_kick_2g,[].low_rate_kick_5g,[].low_rate_threshold_2g,[].low_rate_threshold_5g,[].low_rssi_kick_2g,[].low_rssi_kick_5g,[].low_rssi_threshold_2g,[].low_rssi_threshold_5g,[].name,[].rate_trigger_threshold_2g,[].rate_trigger_threshold_5g,[].roaming_dif,[].roaming_threshold_type_2g,[].roaming_threshold_type_5g,[].rssi_trigger_threshold_2g,[].rssi_trigger_threshold_5g,[].rssi_trigger_threshold_high_performance,[].stats_interval,[].stats_switch,[].switch_11k,[].switch_11r,[].switch_11v,[].threshold_check_interval	id,result	helper	yes	
+ac_roam_list	1	0x004d3c44	_wsta_roam_jcs_roam_list_del	id	id,result	both	yes	
+ac_roam_list	2	0x004d7c30	_wsta_roam_jcs_roam_list_set	ap_ids,blacklist_restrict_time,group_ids,id,low_rate_kick_2g,low_rate_kick_5g,low_rate_threshold_2g,low_rate_threshold_5g,low_rssi_kick_2g,low_rssi_kick_5g,low_rssi_threshold_2g,low_rssi_threshold_5g,name,rate_trigger_threshold_2g,rate_trigger_threshold_5g,roaming_dif,roaming_threshold_type_2g,roaming_threshold_type_5g,rssi_trigger_threshold_2g,rssi_trigger_threshold_5g,rssi_trigger_threshold_high_performance,stats_interval,stats_switch,switch_11k,switch_11r,switch_11v,threshold_check_interval	result	uac	yes	
+ac_roam_list	3	0x004d66ac	_wsta_roam_jcs_roam_list_get	end,id,index_field,name,start	file_name,result,total_num	uac	yes	
+ac_rrm_list	0	0x00524268	rrm_ops_jcs_rrm_para_list_add	ap_ids,autorrm_enable,autorrm_timeobj,bw_2g,bw_5g,chnl_2g_set,chnl_5g1_set,chnl_enable,freq_enable,group_ids,id,index_field,max_pwr_2g,max_pwr_5g,min_pwr_2g,min_pwr_5g,name,pwr_enable,pwr_threshold_2g,pwr_threshold_5g	id,name,ret	web+helper	yes	id
+ac_rrm_list	1	0x005249c8	rrm_ops_jcs_rrm_para_list_del	id	ret	both	yes	
+ac_rrm_list	2	0x005245f8	rrm_ops_jcs_rrm_para_list_set	ap_ids,autorrm_enable,autorrm_timeobj,bw_2g,bw_5g,chnl_2g_set,chnl_5g1_set,chnl_enable,freq_enable,group_ids,id,index_field,max_pwr_2g,max_pwr_5g,min_pwr_2g,min_pwr_5g,name,pwr_enable,pwr_threshold_2g,pwr_threshold_5g	ret	web	yes	ap_ids,autorrm_enable,autorrm_timeobj,bw_2g,bw_5g,chnl_2g_set,chnl_5g1_set,chnl_enable,freq_enable,group_ids,id,index_field,max_pwr_2g,max_pwr_5g,min_pwr_2g,min_pwr_5g,name,pwr_enable,pwr_threshold_2g,pwr_threshold_5g
+ac_rrm_list	3	0x00524c24	rrm_ops_jcs_rrm_para_list_get	id,index_field,name,size,start	file_name,total_num	both	yes	
+ac_rrm_state	3	0x00521188	rrm_ops_jcs_rrm_state_get		fail_reason,state		yes	
+ac_rrmpara	2	0x00521288	rrm_ops_jcs_rrm_para_set	autorrm_date,autorrm_enable,autorrm_time,bw_2g,bw_5g,chnl_2g_set,chnl_5g1_set,chnl_enable,freq_enable,group_id_str,pwr_enable,pwr_max_pwr,pwr_min_pwr,pwr_threshold	ret	uac	yes	
+ac_statics	2	0x007aba98	stats_sta_jcs_report_para_set	clientStats,devStats,radioStats,report_time,sample_time,vapStats		both	yes	
+ap_calibrate	2	0x005f5ee0	_apmngr_jcs_ap_calibrate_load	file_name	ret	both	yes	
+ap_capture_list	0	0x005f4c38	_apmngr_jcs_ap_capture_add	ap_id,capture_type,channel_str,enable,id,rf_enable_str,rf_id_str	id,ret	both	yes	
+ap_capture_list	1	0x00607e84	_apmngr_jcs_ap_capture_del	id	ret	both	yes	
+ap_capture_list	2	0x00608c88	_apmngr_jcs_ap_capture_set	enable,id,operation	ret	both	yes	enable,id
+ap_capture_list	3	0x005f55bc	_apmngr_jcs_ap_capture_get	id,size,start	file_name,ret,total_num	both	yes	
+ap_capture_settings	2	0x005f5b60	_apmngr_jcs_ap_capture_settings_set	enable,remote_capture_port	ret	both	yes	
+ap_count	3	0x005f414c	_apmngr_jcs_ap_count_get		offline_num,online_num,ret,total_num		yes	
+ap_count_trend	3	0x005f42b4	_apmngr_jcs_ap_count_trend_get		ap_count_trend,ap_count_trend.offline_ap_count,ap_count_trend.online_ap_count,ap_count_trend.time,offline_ap_count,online_ap_count,ret,time		yes	
+ap_crashdump_status_evt	2	0x005f8228	_apmngr_jcs_ap_crashdump_evt	entry_id,evt,null		both	yes	null
+ap_exceed_status	3	0x005f6534	_apmngr_jcs_ap_exceed_status		status		yes	
+ap_firmed_model	3	0x0079737c	apupd_jcs_callback_apupd_model_list_get	group_id,search_name,search_value,size,start	file_name,total_num	both	yes	
+ap_log_debug_cfg_bind	2	0x00601e78	_apmngr_jcs_ap_log_debug_cfg_bind_set	ap_ids,log_config_id,status	ret	both	yes	
+ap_log_debug_list	0	0x005f20ec	_apmngr_jcs_ap_log_debug_list_add	debug_level,debug_switch,log_send_switch,model_str,server_ip	id,ret	both	yes	
+ap_log_debug_list	3	0x005f1b90	_apmngr_jcs_ap_log_debug_list_get	ap_id	debug_level,debug_switch,file_name,log_config_id,log_send_switch,module_name_str,server_ip,total_num	both	yes	
+ap_log_display_list	3	0x005f3ac0	_apmngr_jcs_display_log_list_get	ids,search_name,search_type,search_value,size,start	file_name,total_num	both	yes	search_name,search_type,search_value
+ap_log_download_list	0	0x005f3618	_apmngr_jcs_download_log_list_add	ap_id,log_file_ids	ret	both	yes	
+ap_log_download_list	3	0x005f2a68	_apmngr_jcs_download_log_list_get		file_name,total_num		yes	
+ap_log_download_result	2	0x006022ac	_apmngr_jcs_log_download_result_set	ap_id,log_file_id,result		uac	yes	
+ap_log_download_start	2	0x005f292c	_apmngr_jcs_log_download_start		ret		yes	
+ap_log_download_status	3	0x005f2578	_apmngr_jcs_ap_log_download_status_get	ap_id,log_file_fragment,log_file_id,log_file_name	download_status,ret	both	yes	log_file_name
+ap_log_export_cb	2	0x00602260	_apmngr_jcs_export_log_file_cb				yes	
+ap_log_timer_start	2	0x005f4054	_apmngr_jcs_log_timer_start		ret		yes	
+ap_replace_config	2	0x005f0f98	apmngr_jcs_ap_replace_rule_load	file_name,null	ap_new,ap_replace,ret	both	yes	null
+ap_replace_rule	2	0x005f1644	apmngr_jcs_ap_replace_rule_set	source_mac,target_mac	ret	both	yes	
+ap_report_switch	2	0x0050cf58	cloud_mngt_jcs_report_msg_set	site_id,status,support_new_rule		both	yes	
+ap_set_token	2	0x004fd76c	cloud_mngt_jcs_set_token_set	deviceToken,expiresIn		uac	yes	
+ap_status	3	0x00604cf4	_apmngr_jcs_ap_status	ap_role,ap_status,cap_id,entry_id,entry_name,filter,freq_name,group_id,ip,led_status,link_status,mac,model_name,search_name,search_type,search_value,size,sort,sort_field,sort_type,ssid,start	file_name,total_num	both	yes	ap_role,group_id,search_name,search_type,search_value
+ap_status_evt	2	0x005f8888	_apmngr_jcs_ap_evt	entry_id,evt,null		both	yes	null
+ap_status_radio_info	3	0x005f0348	_apmngr_jcs_ap_radio_info	entry_id	channel,freq_name,freq_unit,radio_func_type,rf_client_num,rf_entry	uac	yes	
+ap_status_ssid	3	0x005f7d58	_apmngr_jcs_ssid	entry_id,size,start	ssid_entry,total_num	both	yes	
+ap_telnet_status_evt	2	0x005f8558	_apmngr_jcs_ap_telnet_evt	entry_id,evt,null		both	yes	null
+ap_update_token	2	0x00500d4c	cloud_mngt_jcs_update_token_set	deviceToken,expiresIn,token_str		uac	yes	
+ap_vlan_info	3	0x005f0740	_apmngr_jcs_ap_vlan	null,size,start	file_name,total_num	both	yes	null
+apdb_datasync	2	0x006f0638	_apdb_jcs_callback_datasync	data_msg,len		uac	yes	
+aplist_get	3	0x006ee9ac	_apdb_jcs_callback_get_aplist		file_name,ret		yes	
+apmng_backup_link	2	0x007a4950	_multi_link_jcs_global_set	backup_ip,backup_ip6,enable,priority		uac	yes	
+apmng_band_navigation	2	0x00633610	band_navigation_jcs_set	5g_threshold,dif_threshold,enable,max_fail_num		both	yes	
+apmngr_apdb_info	3	0x005ff560	_apmngr_jcs_apdb_info_get	[].firmware_id,[].model_id	file_name,total_num	helper	yes	
+apmngr_aplog	2	0x0060003c	_apmngr_jcs_aplog_set	ac_log_level,ac_log_switch,remote_log_level,remote_report_interval,remote_server,remote_server_switch		uac	yes	
+apmngr_crashdump	2	0x005ff8a8	_apmngr_jcs_crashdump_set	enable,export_proto,gateway_ip,server_ip,server_port		uac	yes	
+apmngr_cruise_setting	2	0x005f0b20	apmngr_jcs_cruise_setting_set	enable,scan_interval,scan_time	ret	both	yes	
+apmngr_datasync	2	0x005f6230	_apmngr_jcs_callback_datasync	data_msg,len		uac	yes	
+apmngr_entry	0	0x00602964	_apmngr_jcs_entry_add	account_password,account_username,ap_keep_alive,ap_mesh_switch,ap_role,ap_trunk,client_idle,client_keep_alive,crashdump_status,entry_id,entry_name,entry_type,firmware_id,fit_fat_button_status,group_id,hardware_ver,lag_mode,lag_phy_list,lag_phy_num,led,led_close_date,led_close_time,led_open_date,led_open_time,led_timer_enable,led_wifi_sync,mac,model_id,new_ap_trunk,offline_selfmanage,password,phy_wire_vlan_list,rf_change_enable,rf_mode,status,telnet_status,username	ap_too_many,entry_id	both	yes	entry_id,status
+apmngr_entry	1	0x005fbaf4	_apmngr_jcs_entry_del	ap,ap_tmp,null,template		both	yes	null
+apmngr_entry	2	0x005fd1fc	_apmngr_jcs_entry_set	ap_keep_alive,ap_mesh_switch,ap_trunk,cap_id,client_idle,client_keep_alive,cloud_config_id,crashdump_status,entry_id,entry_name,entry_type,errno,fit_fat_button_status,lag_mode,lag_phy_list,lag_phy_num,led,led_close_date,led_close_time,led_open_date,led_open_time,led_timer_enable,led_wifi_sync,mac,model_id,multi_id_list,multi_ids,new_ap_trunk,offline_selfmanage,password,phy_wire_vlan_list,region_code,replace_mac,rf_change_enable,rf_mode,software_ver,telnet_status,username	capa_multi_list,ret,type_multi_list	both+helper	yes	ap_mesh_switch,entry_type,errno,mac,software_ver
+apmngr_entry	3	0x006060d4	_apmngr_jcs_entry_get	ap_role,condition,entry_type,filters,group_id,search_name,search_value,size,sort,sort_field,sort_type,start	file_name,total_num	both	yes	
+apmngr_entry_authorize	2	0x005fa838	_apmngr_jcs_entry_set_authorize	entry_id,operation		both	yes	
+apmngr_entry_authorize	3	0x00602590	_apmngr_jcs_entry_authorize_get	size,start	file_name,total_num	both	yes	
+apmngr_entry_backup	3	0x005f0170	_apmngr_jcs_entry_backup		file_name		yes	
+apmngr_entry_copy	2	0x005fab60	_apmngr_jcs_entry_copy	ap_ids,copy_ap_id,entry_id,replace	ret,success_id_list	both	yes	entry_id
+apmngr_firm	2	0x005fa5b4	_apmngr_jcs_firm	[]	succ		yes	
+apmngr_global	2	0x006005a0	_apmngr_jcs_global_set	apmngr_status,auto_firm,auto_reboot,reboot_day,reboot_time		both	yes	
+apmngr_group	0	0x005f74bc	_apmngr_jcs_group_add	end_ip,entry_name,group_id,name,specific_strategy,start_ip,strategy_enable		both	yes	entry_name
+apmngr_group	1	0x005f6588	_apmngr_jcs_group_del	group_id	group_id	both	yes	
+apmngr_group	2	0x005f67dc	_apmngr_jcs_group_set	end_ip,group_id,name,specific_strategy,start_ip,strategy_enable		both	yes	
+apmngr_group_join	2	0x005f6cf4	_apmngr_jcs_group_join	ap_ids,group_id,null,template_ids		both	yes	null
+apmngr_online_model	3	0x005f8c94	_apmngr_jcs_online_ap_model_get	group_id,search_name,search_value,size,start	file_name,total_num	both	yes	
+apmngr_status_backup	3	0x005eff64	_apmngr_jcs_ap_status_backup		file_name,ret		yes	
+apupd_check_allow_update	3	0x00796d84	apupd_jcs_callback_check_allow_update	model_id,upgrade_type	allow_update	both	yes	
+apupd_config	2	0x0079a510	apupd_jcs_callack_apupd_config_set	state	ret	uac	yes	
+apupd_group_delete	2	0x00796f9c	apupd_jcs_callback_ap_group_delete	group_id		both	yes	
+apupd_image_check	3	0x00799048	apupd_jcs_callback_apupd_image_check	file_size	ret	both	yes	
+apupd_large_image_status	2	0x0079d988	apupd_jcs_large_image_status_set	mac,model_id	ret	both	yes	
+apupd_large_image_status	3	0x00796a34	apupd_jcs_large_image_status_get	mac,model_id	can_down_sub_image,ret,sub_image_num	both	yes	
+apupd_log	1	0x0079c7a0	apupd_jcs_callback_apupd_log_del	model_id	ret	both	yes	
+apupd_log	3	0x00798a64	apupd_jcs_callback_apupd_log_get	ap_role,model_id,size,start	file_name,logs_num,model_id,ret	both	yes	ap_role
+apupd_model	0	0x007a0a34	apupd_jcs_callback_apupd_models_add	ap_list,group_id,is_large_fw,is_sys,model_id,total_image_piece,total_image_size,total_md5,upgrade_date,upgrade_datetime_type,upgrade_start_time,upgrade_type	file_name,ret	both	yes	total_image_piece,total_image_size,total_md5
+apupd_model	1	0x007996ec	apupd_jcs_callback_apupd_models_del	model_id	ret	both	yes	
+apupd_model	2	0x0079fb9c	apupd_jcs_callback_apupd_models_set	auto_to_manual,model_id,upgrade_date,upgrade_datetime_type,upgrade_start_time,upgrade_type	file_name,ret	both	yes	auto_to_manual
+apupd_model	3	0x0079ca50	apupd_jcs_callback_apupd_models_get	is_mesh_device,model_id,product_type,size,start,status,upgrade_type	file_name,ret,totalNum	both	yes	
+apupd_status	3	0x00798964	apupd_jcs_callback_apupd_status_get		ret,status		yes	
+apupd_upgrade_status	3	0x0079715c	apupd_jcs_callback_ap_upgrade_status	entry_ids	ap_upgrade_status	both	yes	
+apupd_wtp	2	0x0079ebfc	apupd_jcs_callback_apupd_set_for_ap	is_large_fw,mac,total_image_piece,total_image_size,total_md5,upgrade_type	file_name,percent,ret	both	yes	total_image_piece,total_image_size,total_md5
+apupd_wtp	3	0x00797c58	apupd_jcs_callback_apupd_wtp_get	ap_role,group_id,mac,model_id,size,start,state	file_name,model_id,ret,wtp_num	both	yes	ap_role,group_id
+arp_defend_ap	2	0x004c8258	_uac_arp_defend_ap_jcs_set	ap_id,arp_id,operation	enable,result	both	yes	ap_id,arp_id
+arp_defend_ap	3	0x004c6a48	_uac_arp_defend_ap_jcs_get	group_id,limit,offset,search_name,search_type,search_value	file_name,total_num	both	yes	group_id,search_type
+arp_defend_arp	0	0x004c58b8	_uac_arp_defend_arp_jcs_add	arp_id,description,ip,is_scan_add,mac	arp_list_data_exceed,id	both	yes	arp_id
+arp_defend_arp	1	0x004c754c	_uac_arp_defend_arp_jcs_del	arp_id	file_name,succ_num	both	yes	
+arp_defend_arp	2	0x004c52d0	_uac_arp_defend_arp_jcs_set	arp_id,description,ip,mac	result	both	yes	
+arp_defend_arp	3	0x004c4c90	_uac_arp_defend_arp_jcs_get				yes	
+arp_defend_do_scan	2	0x004c7dd8	_uac_arp_defend_scan_jcs_set	group_id_str	ret	both	yes	
+arp_defend_scan	3	0x004c6470	_uac_arp_defend_scan_jcs_get	limit,offset,search_name,search_value	file_name,total_num	both	yes	
+arp_defend_setting	2	0x004c4fe0	_uac_arp_defend_setting_jcs_set	defend_mode,wired_port_switch,wireless_port_switch		both	yes	
+backup_rf_mngr_entry	3	0x00713178	_uac_rdmngr_jcs_backup		file_name		yes	
+bcast_storm_ctrl	2	0x004ade5c	_uac_bcast_storm_ctrl_jcs_set	arp_limit_type,arp_proxy_switch,arp_proxy_to_unicast_switch,arp_proxy_type,arp_rate_limit,dhcp_limit_type,dhcp_rate_limit,dhcpv6_limit_type,dhcpv6_rate_limit,enable,icmpv6_ns_limit_type,icmpv6_ns_rate_limit,icmpv6_rs_limit_type,icmpv6_rs_rate_limit,igmp_limit_type,igmp_rate_limit,mdns_proxy_switch,mdns_proxy_to_unicast_switch,nd_proxy_switch,nd_proxy_to_unicast_switch,nd_proxy_type,other_broadcast_limit_type,other_broadcast_rate_limit,other_multicast_limit_type,other_multicast_rate_limit,proto_list,storm_rate		both	yes	
+bluetooth_network_rule_list	0	0x0061d49c	bluetooth_jcs_callback_rule_add	ap_ids,broadcast_channel_set,broadcast_deduplicate_enable,broadcast_filter_data_type,broadcast_filter_enable,broadcast_filter_match_data,broadcast_filter_match_method,group_ids,gw_work_mode,id,mode,name,operation_password,operation_username,rssi_deduplicate_enable,rssi_threshold,server_id	id,ret	web+helper	yes	ap_ids,broadcast_channel_set,broadcast_deduplicate_enable,broadcast_filter_data_type,broadcast_filter_enable,broadcast_filter_match_data,broadcast_filter_match_method,group_ids,gw_work_mode,mode,name,operation_password,operation_username,rssi_deduplicate_enable,rssi_threshold,server_id
+bluetooth_network_rule_list	1	0x0061c064	bluetooth_jcs_callback_rule_del	id	ret	both	yes	
+bluetooth_network_rule_list	2	0x0061e0fc	bluetooth_jcs_callback_rule_set	ap_ids,broadcast_channel_set,broadcast_deduplicate_enable,broadcast_filter_data_type,broadcast_filter_enable,broadcast_filter_match_data,broadcast_filter_match_method,group_ids,gw_work_mode,id,mode,name,operation_password,operation_username,rssi_deduplicate_enable,rssi_threshold,server_id	ret	both	yes	ap_ids,broadcast_channel_set,broadcast_deduplicate_enable,broadcast_filter_data_type,broadcast_filter_enable,broadcast_filter_match_data,broadcast_filter_match_method,group_ids,gw_work_mode,mode,name,operation_password,operation_username,rssi_deduplicate_enable,rssi_threshold,server_id
+bluetooth_network_rule_list	3	0x0061e420	bluetooth_jcs_callback_rule_get	id,name,size,start	bluetooth_network_rule_list,count,result,ret	both	yes	
+client_report_switch	2	0x004fe1a0	cloud_mngt_jcs_client_report_switch_set	status		both	yes	
+client_rssi_data	3	0x00763078	_uac_wsta_jcs_client_rssi_data_get	duration	client_rssi_data,rssi_45_0,rssi_55_45,rssi_65_55,rssi_72,rssi_72_65,time	uac	yes	
+cloud_mngt_clear_config_id	2	0x004fdf94	cloud_mngt_jcs_clear_cloud_config_id	cloud_config_id		uac	yes	
+cloud_mngt_fast_report	2	0x004fd240	cloud_mngt_jcs_fast_report	time_interval		uac	yes	
+cloud_mngt_report_para	2	0x004fddc0	cloud_mngt_jcs_report_para_set	time_interval		uac	yes	
+cloud_mngt_sync_cloud_config_switch	2	0x004fcb24	cloud_mngt_jcs_cloud_config_switch_set	status		uac	yes	
+cloud_mngt_sync_device_config	2	0x004fe048	cloud_mngt_jcs_device_cloud_config_id_set	cloud_config_id,id		uac	yes	
+cloud_mngt_sync_module_config_report	2	0x004fd930	cloud_mngt_jcs_sync_module_config	config_list,config_name,module_name,name		both	yes	name
+deep_checkup_pkt_bssid_list	3	0x00561f24	jcs_deep_checkup_pkt_bssid_list	end,start	bssid,bssid_list_cnt,deep_checkup_pkt_bssid_list,file_name,frame,percent,ret,ssid_id,subframe_a,subframe_p	uac	yes	
+deep_checkup_pkt_ssid_list	3	0x0055d9a8	jcs_deep_checkup_pkt_ssid_list	chnl,entry_id	deep_checkup_pkt_ssid_list,file_name,name,percent,ret,ssid_id	uac+helper	yes	
+deep_checkup_pkt_sta_list	3	0x005613e0	jcs_deep_checkup_pkt_sta_list	end,start	bssid,deep_checkup_pkt_sta_list,file_name,frame,percent,ret,sta_list_cnt,sta_mac,subframe_a,subframe_p	uac	yes	
+deep_inspection_chnl_usage_list	3	0x0055f954	jcs_deep_inspection_chnl_usage_list	entry_id	ap_num,chnl,deep_inspection_chnl_usage_list,free_util,non_wifi_util,ret,ssid_num,sta_num,wifi_util	web	yes	entry_id
+deep_inspection_multi_chnl_density	3	0x0055ed9c	jcs_deep_inspection_multi_chnl_density	entry_id	deep_inspection_multi_chnl_density,density,end,file_name,length,ret,spectrums,start	web	yes	entry_id
+deep_inspection_multi_chnl_rssi	3	0x00560860	jcs_deep_inspection_multi_chnl_rssi	entry_id	band_width,bssid,center_chnl,deep_inspection_multi_chnl_rssi,file_name,primary_chnl,ret,rssi,ssid	web	yes	entry_id
+deep_inspection_multi_chnl_waterfall	3	0x0055e3d4	jcs_deep_inspection_multi_chnl_waterfall	end,entry_id,start	deep_inspection_multi_chnl_waterfall,end,file_name,length,ret,spectrums,start,time,waterfall_cnt	both	yes	entry_id
+deep_inspection_selected_chnl_usage	3	0x0055f4c8	jcs_deep_inspection_selected_chnl_usage	chnl,entry_id	deep_inspection_selected_chnl_usage,non_wifi_util,ret,time,wifi_util	both	yes	entry_id
+deep_inspection_status	3	0x0055d3bc	jcs_deep_inspection_status		cur_viewed_sensor,inspection_remain_time,inspection_status,last_inspection_time,off_line_sensor,ret		yes	
+dhcpdef_apbind	2	0x004b6d6c	_uac_dhcpdef_jcs_set_bind_entries	ap_id,operation	result	both	yes	
+dhcpdef_apbind	3	0x004b46c0	_uac_dhcpdef_jcs_get_bind_entries	group_id,limit,offset,search_name,search_type,search_value	file_name,total_num	both	yes	group_id,search_type
+dhcpdef_apbind_svr	2	0x004b7558	_uac_dhcpdef_jcs_set_bind_svrs	ap_id,operation,svr_id	bind_exceed,result	both	yes	
+dhcpdef_apbind_svr	3	0x004b3234	_uac_dhcpdef_jcs_get_bind_svrs	ap_id,limit,offset,search_name,search_value	file_name,total_num	uac	yes	
+dhcpdef_svr	0	0x004b56a8	_uac_dhcpdef_jcs_svr_add	addr_type,name,svr_addr,svr_id	svr_id	both	yes	svr_id
+dhcpdef_svr	1	0x004b6374	_uac_dhcpdef_jcs_svr_del	svr_id	file_name,succ_num	both	yes	
+dhcpdef_svr	2	0x004b5528	_uac_dhcpdef_jcs_svr_set	addr_type,name,operation,svr_addr,svr_id	svr_id	both	yes	addr_type,name,svr_addr,svr_id
+diagnose_global	2	0x005ffe10	_apmngr_jcs_diagnose_global_set	enable,telnet_port		both	yes	
+edca_config	3	0x007135b0	_rdmngr_jcs_get_edca_config	ap_id,rf_id,size,start	file_name,total_num	both	yes	
+edca_rule	0	0x00711fb0	edca_rule_jcs_add	ap_be_aifs,ap_be_cwmax,ap_be_cwmin,ap_be_txop,ap_bk_aifs,ap_bk_cwmax,ap_bk_cwmin,ap_bk_txop,ap_id,ap_vi_aifs,ap_vi_cwmax,ap_vi_cwmin,ap_vi_txop,ap_vo_aifs,ap_vo_cwmax,ap_vo_cwmin,ap_vo_txop,edca_enable,edca_mode,edca_rule_id,edca_rule_name,freq_map,group_id,reset_edca_default,sta_be_aifs,sta_be_cwmax,sta_be_cwmin,sta_be_txop,sta_bk_aifs,sta_bk_cwmax,sta_bk_cwmin,sta_bk_txop,sta_vi_aifs,sta_vi_cwmax,sta_vi_cwmin,sta_vi_txop,sta_vo_aifs,sta_vo_cwmax,sta_vo_cwmin,sta_vo_txop,static_edca_type,wmm	edca_rule_id,edca_rule_name,ret	web	yes	ap_be_aifs,ap_be_cwmax,ap_be_cwmin,ap_be_txop,ap_bk_aifs,ap_bk_cwmax,ap_bk_cwmin,ap_bk_txop,ap_id,ap_vi_aifs,ap_vi_cwmax,ap_vi_cwmin,ap_vi_txop,ap_vo_aifs,ap_vo_cwmax,ap_vo_cwmin,ap_vo_txop,edca_enable,edca_mode,edca_rule_id,edca_rule_name,freq_map,group_id,reset_edca_default,sta_be_aifs,sta_be_cwmax,sta_be_cwmin,sta_be_txop,sta_bk_aifs,sta_bk_cwmax,sta_bk_cwmin,sta_bk_txop,sta_vi_aifs,sta_vi_cwmax,sta_vi_cwmin,sta_vi_txop,sta_vo_aifs,sta_vo_cwmax,sta_vo_cwmin,sta_vo_txop,static_edca_type,wmm
+edca_rule	1	0x00710cc0	edca_rule_jcs_del	ids	ret	both	yes	
+edca_rule	2	0x007129b4	edca_rule_jcs_set	ap_be_aifs,ap_be_cwmax,ap_be_cwmin,ap_be_txop,ap_bk_aifs,ap_bk_cwmax,ap_bk_cwmin,ap_bk_txop,ap_id,ap_vi_aifs,ap_vi_cwmax,ap_vi_cwmin,ap_vi_txop,ap_vo_aifs,ap_vo_cwmax,ap_vo_cwmin,ap_vo_txop,edca_enable,edca_mode,edca_rule_id,edca_rule_name,freq_map,group_id,reset_edca_default,sta_be_aifs,sta_be_cwmax,sta_be_cwmin,sta_be_txop,sta_bk_aifs,sta_bk_cwmax,sta_bk_cwmin,sta_bk_txop,sta_vi_aifs,sta_vi_cwmax,sta_vi_cwmin,sta_vi_txop,sta_vo_aifs,sta_vo_cwmax,sta_vo_cwmin,sta_vo_txop,static_edca_type,wmm	edca_rule_id,edca_rule_name,ret	both	yes	ap_be_aifs,ap_be_cwmax,ap_be_cwmin,ap_be_txop,ap_bk_aifs,ap_bk_cwmax,ap_bk_cwmin,ap_bk_txop,ap_id,ap_vi_aifs,ap_vi_cwmax,ap_vi_cwmin,ap_vi_txop,ap_vo_aifs,ap_vo_cwmax,ap_vo_cwmin,ap_vo_txop,edca_enable,edca_mode,edca_rule_name,freq_map,group_id,reset_edca_default,sta_be_aifs,sta_be_cwmax,sta_be_cwmin,sta_be_txop,sta_bk_aifs,sta_bk_cwmax,sta_bk_cwmin,sta_bk_txop,sta_vi_aifs,sta_vi_cwmax,sta_vi_cwmin,sta_vi_txop,sta_vo_aifs,sta_vo_cwmax,sta_vo_cwmin,sta_vo_txop,static_edca_type,wmm
+edca_rule	3	0x007122d8	edca_rule_jcs_get	edca_rule_name,ids,size,start	file_name,total_num	both	yes	
+ftp_server_list	0	0x00628f78	ftp_jcs_callback_ftp_config_rule_entry_add	ap_ids,group_ids,rule_id,user_name,user_password	ret,rule_id	web+helper	yes	ap_ids,group_ids,user_name,user_password
+ftp_server_list	1	0x00626e10	ftp_jcs_callback_ftp_config_rule_entry_del	rule_id	ret	both	yes	
+ftp_server_list	2	0x00628284	ftp_jcs_callback_ftp_config_rule_entry_set	ap_ids,group_ids,rule_id,user_name,user_password	ret	both	yes	ap_ids,group_ids,user_name,user_password
+ftp_server_list	3	0x00628bc4	ftp_jcs_callback_ftp_config_rule_entry_get	size,start	count,ftp_server_list	both	yes	
+ftp_status_list	3	0x006265f0	ftp_jcs_callback_ftp_status_get	rule_id	count,ftp_status_list,ret	both	yes	
+get_deep_inspection_scan_mode_change	3	0x0055e044	jcs_get_deep_inspection_sensor_scan_mode_change	entry_id	chnl,deep_inspection_scan_mode_change,ret,scan_mode	both	yes	
+get_deep_inspection_setting	3	0x00562a4c	jcs_get_deep_inspection_setting		chnl,deep_inspection_setting,entry_id,entry_name,inspection_band,inspection_item,ret,scan_mode		yes	
+host_info	3	0x007698b0	_uac_wsta_jcs_host_info_get	ap_role,auth_type,bind_enable,data_type,mac,mac_array,mac_count,operation_type,search_name,search_type,search_value,select_filter,size,sort,sort_field,sort_type,start	file_name,total_num	web+helper	yes	ap_role,auth_type,bind_enable,data_type,mac_array,mac_count,operation_type,search_name,search_type,search_value,select_filter,size,sort,start
+host_info_back	3	0x00762e10	_uac_wsta_host_info_jcs_backup		file_name		yes	
+iot_server_list	0	0x0061b33c	bluetooth_jcs_callback_iot_server_add	ca_file_path,client_id,id,is_encrypt,password,protocol,server_addr,server_port,server_type,topic_comment,topic_data_type,topic_detail,topic_feature,username	id,ret	web+helper	yes	ca_file_path,client_id,is_encrypt,password,protocol,server_addr,server_port,server_type,topic_comment,topic_data_type,topic_detail,topic_feature,username
+iot_server_list	1	0x0061a6d0	bluetooth_jcs_callback_iot_server_del	id	ret	both	yes	
+iot_server_list	2	0x0061b4e4	bluetooth_jcs_callback_iot_server_set	ca_file_path,client_id,id,is_encrypt,password,protocol,server_addr,server_port,server_type,topic_comment,topic_data_type,topic_detail,topic_feature,username	ret	both	yes	ca_file_path,client_id,is_encrypt,password,protocol,server_addr,server_port,server_type,topic_comment,topic_data_type,topic_detail,topic_feature,username
+iot_server_list	3	0x0061b7e4	bluetooth_jcs_callback_iot_server_get	id	count,iot_server_list,ret	uac	yes	
+jcs_radio_mode_entry	3	0x007102c0	_radio_mode_spec_cap_get	ap_ids,filter,firmware_id,model_id,size,start	file_name,total_num	both	yes	
+local_nms_switch	2	0x004fd0e4	cloud_mngt_jcs_debug_nms_enable_set	status,type		uac	yes	
+local_server_set	2	0x004fcf6c	cloud_mngt_jcs_debug_nms_server_set	ip,local_server,port		uac	yes	
+macauth_blacklist	3	0x0049fc64	_uac_mac_auth_global_backlist_jcs_get		id,result		yes	
+macauth_group	0	0x004a2a2c	_uac_mac_auth_group_jcs_add	auth_type,bind_vlan_type,enable,id,mac_id_map,name,note,old_serv_id_map,old_ssid,old_vlan,operation,serv_id_map,type,vlan,vlan_pool_id	id	both	yes	auth_type,id,old_serv_id_map,old_ssid,old_vlan,operation,serv_id_map
+macauth_group	1	0x004a2554	_uac_mac_auth_group_jcs_del	id,vlan	id	uac	yes	
+macauth_group	2	0x004a43f4	_uac_mac_auth_group_jcs_set	auth_type,bind_vlan_type,enable,id,mac_id_map,name,note,old_serv_id_map,old_ssid,old_vlan,operation,serv_id_map,type,vlan,vlan_pool_id	result	both	yes	auth_type,bind_vlan_type,enable,id,mac_id_map,name,note,old_serv_id_map,old_ssid,old_vlan,serv_id_map,type,vlan,vlan_pool_id
+macauth_group	3	0x0049f6c8	_uac_mac_auth_group_jcs_get	type	ret	both	yes	
+macauth_group_for_ssid	0	0x004a0d90	_uac_mac_auth_group_jcs_add_for_ssid	auth_type,bind_vlan_type,enable,id,mac_id_map,name,note,old_serv_id_map,old_ssid,old_vlan,operation,serv_id_map,type,vlan,vlan_pool_id	id	both	yes	auth_type,bind_vlan_type,id,old_serv_id_map,old_ssid,old_vlan,operation,vlan,vlan_pool_id
+macauth_group_for_ssid	1	0x004a09c4	_uac_mac_auth_group_jcs_del_for_ssid	id,name,serv_id_map,type,value	id	both	yes	name,type,value
+macauth_group_for_ssid	2	0x004a4228	_uac_mac_auth_group_jcs_set_for_ssid	auth_type,bind_vlan_type,enable,id,mac_id_map,name,note,old_serv_id_map,old_ssid,old_vlan,operation,serv_id_map,type,vlan,vlan_pool_id	result	both	yes	auth_type,bind_vlan_type,enable,id,mac_id_map,name,note,old_serv_id_map,old_ssid,old_vlan,serv_id_map,type,vlan,vlan_pool_id
+macauth_mac	0	0x0049f988	_uac_mac_auth_mac_jcs_add	id,mac,name	id,result	both	yes	id
+macauth_mac	1	0x004a3c44	_uac_mac_auth_mac_jcs_del	id	id	both	yes	
+macauth_mac	2	0x004a38a0	_uac_mac_auth_mac_jcs_set	id,mac,name	id	both	yes	
+macauth_mac	3	0x0049e470	_uac_mac_auth_mac_jcs_get				yes	
+macauth_mac_for_group	1	0x004a361c	_uac_mac_auth_mac_jcs_del_for_group	id	ret	both	yes	
+macauth_type	2	0x0049ecb8	_uac_mac_auth_auth_type_jcs_set	auth_mode,type	result	both	yes	type
+macauth_vlan_str_check	3	0x0049e7f4	_uac_mac_auth_vlan_id_str_check	id,vlan_id_str	ret	uac	yes	
+nego_del	1	0x006fb00c	_apdb_jcs_callback_del_all_negotiation		status		yes	
+notify_unbind	2	0x004fd34c	cloud_mngt_jcs_notify_unbind		cloud_status,method,notify_unbind		yes	
+nsa_user_backup	3	0x00415558	wportal_jcs_non_sentient_export_callback		file_name,ret		yes	
+port_list	2	0x005ee3f8	_apmngr_jcs_ap_port_info_list_set	ap_id_array,ap_mac_array,count,enable,port_id_array,pvid	ret	both	yes	
+port_list	3	0x005ef2a8	_apmngr_jcs_ap_port_info_list_get	ap_id,ap_mac,id	ap_id,duplex,enable,file_name,id,port_media,port_name,port_pos,port_position,port_speed_max,port_state,port_status_type,port_type,pvid,ret,speed,total_num	both	yes	
+rdmngr_datasync	2	0x00713448	_rdmngr_jcs_callback_datasync	data_msg,len		uac	yes	
+report_debug_switch_set	2	0x004fcebc	cloud_mngt_jcs_debug_switch_set	status		uac	yes	
+rf_mngr	2	0x007207f4	_uac_rdmngr_jcs_set	airtime,antenna,ap_be_aifs,ap_be_cwmax,ap_be_cwmin,ap_be_txop,ap_bk_aifs,ap_bk_cwmax,ap_bk_cwmin,ap_bk_txop,ap_vi_aifs,ap_vi_cwmax,ap_vi_cwmin,ap_vi_txop,ap_vo_aifs,ap_vo_cwmax,ap_vo_cwmin,ap_vo_txop,bandwidth,bcn_intvl,brd_probe,channel,downlink_mumimo,downlink_ofdma,dtim_prd,edca_enable,edca_mode,enable_6g,enable_6g_psc,force_modify,frag_thr,freq_band,gi_mode,manage_frame_rate,max_usr,mode,multi_id_list,mutex_channel,operation,power_level,rail_high_speed_mode_switch,reject_diff,reject_enable,reject_limit,reset_edca_default,rf_check_circle,rf_chnl_dcs,rf_chnl_occup_threshold,rf_chnl_reselect,rf_chnl_tolerance,rf_name,rf_online_switch,rf_state,rssi_kick,rssi_kick_val,rssi_restrict,rssi_restrict_val,rts_thr,short_gi,sta_be_aifs,sta_be_cwmax,sta_be_cwmin,sta_be_txop,sta_bk_aifs,sta_bk_cwmax,sta_bk_cwmin,sta_bk_txop,sta_vi_aifs,sta_vi_cwmax,sta_vi_cwmin,sta_vi_txop,sta_vo_aifs,sta_vo_cwmax,sta_vo_cwmin,sta_vo_txop,static_edca_type,twt,uplink_mumimo,uplink_ofdma,wmm	result	both	yes	airtime,antenna,ap_be_aifs,ap_be_cwmax,ap_be_cwmin,ap_be_txop,ap_bk_aifs,ap_bk_cwmax,ap_bk_cwmin,ap_bk_txop,ap_vi_aifs,ap_vi_cwmax,ap_vi_cwmin,ap_vi_txop,ap_vo_aifs,ap_vo_cwmax,ap_vo_cwmin,ap_vo_txop,bandwidth,bcn_intvl,brd_probe,channel,downlink_mumimo,downlink_ofdma,dtim_prd,edca_enable,edca_mode,enable_6g,enable_6g_psc,force_modify,frag_thr,freq_band,gi_mode,manage_frame_rate,max_usr,mode,mutex_channel,power_level,rail_high_speed_mode_switch,reject_diff,reject_enable,reject_limit,reset_edca_default,rf_check_circle,rf_chnl_dcs,rf_chnl_occup_threshold,rf_chnl_reselect,rf_chnl_tolerance,rf_name,rf_online_switch,rf_state,rssi_kick,rssi_kick_val,rssi_restrict,rssi_restrict_val,rts_thr,short_gi,sta_be_aifs,sta_be_cwmax,sta_be_cwmin,sta_be_txop,sta_bk_aifs,sta_bk_cwmax,sta_bk_cwmin,sta_bk_txop,sta_vi_aifs,sta_vi_cwmax,sta_vi_cwmin,sta_vi_txop,sta_vo_aifs,sta_vo_cwmax,sta_vo_cwmin,sta_vo_txop,static_edca_type,twt,uplink_mumimo,uplink_ofdma,wmm
+rf_mngr	3	0x00719600	_uac_rdmngr_jcs_get	ap_role,ap_status,group_id,search_cond,search_name,search_value,size,start	file_name,total_num	both	yes	ap_role,group_id
+rf_mngr_entry	3	0x00718ed4	_uac_rdmngr_jcs_get_entry	rf_id	rd_entry,ret	uac	yes	
+rf_mngr_template_export	3	0x00712f0c	_rdmngr_jcs_rf_template_export		file_name,ret		yes	
+roam_exist_unsupport_ap	3	0x004d3890	_wsta_roam_jcs_exist_unsupport_ap	exist_unsupport_wireless_network_mode_ap	exist_unsupport_ap	web	yes	exist_unsupport_wireless_network_mode_ap
+roam_wireless_network_mode	2	0x004d3b5c	_wsta_roam_jcs_intelligent_wireless_network_set	wireless_network_mode	result	uac	yes	
+roam_wireless_network_mode	3	0x004d3a94	_wsta_roam_jcs_intelligent_wireless_network_get	wireless_network_mode	real_mode,result	web	yes	wireless_network_mode
+send_tdcp_test	2	0x0058978c	_tdcp_send_jcs_set	tdcp_msg		uac	yes	
+sensor_discover_trigger	2	0x0058579c	_sensor_jcs_discover_trigger	action	ret	uac	yes	
+sensor_global	2	0x00581c78	_sensor_jcs_global_set	backhaul_enable,backhaul_encode,backhaul_key,backhaul_ssid,backhaul_ssidbrd,backhaul_wserv_id,enable,force_set,wserv_cfg_change	ret	both	yes	backhaul_encode,backhaul_key,backhaul_ssid,backhaul_ssidbrd,wserv_cfg_change
+sensor_list_added	3	0x00582348	_sensor_jcs_sensor_list_added_get	end,start	ap_id,file_name,group_id,mac,model_name,name,ret,test_status,total_num	uac	yes	
+sensor_manage_status	3	0x0057e570	_sensor_jcs_sensor_manage_status_get		remain_time,ret,status		yes	
+sensor_test_case_list	0	0x00552324	jcs_sensor_test_add_test_case	change_id,group_id,join_test_sensor,rssi_threshold,sch_period,sch_time,sch_type,service,service[].params[].addr,service[].params[].auth_type,service[].params[].domain,service[].params[].encryption,service[].params[].freqband,service[].params[].passwd,service[].params[].path,service[].params[].port,service[].params[].protocol,service[].params[].radius_key,service[].params[].radius_name,service[].params[].radius_type,service[].params[].ser_index,service[].params[].serv_id,service[].params[].share_key,service[].params[].ssid_key,service[].params[].support_freqband,service[].params[].trans_type,service[].params[].url,service[].params[].user_name,service[].ser_name,ssid_info,test_case_name	err_code,ret	both+helper	yes	sch_period,sch_time
+sensor_test_case_list	1	0x00552804	jcs_sensor_test_del_test_case	test_case_id	err_code,ret	both	yes	
+sensor_test_case_list	2	0x00551bb4	jcs_sensor_test_set_test_case	change_id,group_id,join_test_sensor,rssi_threshold,sch_period,sch_time,sch_type,service,service[].params[].addr,service[].params[].auth_type,service[].params[].domain,service[].params[].encryption,service[].params[].freqband,service[].params[].passwd,service[].params[].path,service[].params[].port,service[].params[].protocol,service[].params[].radius_key,service[].params[].radius_name,service[].params[].radius_type,service[].params[].ser_index,service[].params[].serv_id,service[].params[].share_key,service[].params[].ssid_key,service[].params[].support_freqband,service[].params[].trans_type,service[].params[].url,service[].params[].user_name,service[].ser_name,ssid_info,test_case_id,test_case_name	err_code,ret	both+helper	yes	sch_period,sch_time
+sensor_test_detail_result	3	0x0054cdb4	jcs_sensor_test_get_detail_result	bssid,ser_index,test_case_id,test_type	data,details,diagnosis,file_name,ret,stage,startTime,test,time	uac	yes	
+sensor_test_digest	3	0x00542e94	jcs_sensor_test_get_digest		fail_cnt,offline_sensor_cnt,ret,sensor_cnt,slow_cnt,success_cnt,total_test_cnt		yes	
+sensor_test_group_delete_event_handle	2	0x00548494	jcs_sensor_test_group_delete_event_handle	group_id		both	yes	
+sensor_test_result	3	0x0054a890	jcs_sensor_test_get_simple_result	end,result,sch_start_time,sensor_name,ser_index,start,test_case_id,test_type	ap_name,bssid,down_speed,fail_stage,file_name,freq_type,reason,relay,result,ret,rssi,sensor_name,ser_index,snr,ssid_name,start_time,test_case_id,test_type,total_num,up_speed	uac	yes	
+sensor_test_ssid_list	3	0x005498a0	jcs_sensor_test_get_ssid_list	end,group_list,rssi_threshold,sensor_list,start	encryption,file_name,freqband,ret,serv_id,ssid_code_type,ssid_name,total_num	uac	yes	
+sensor_test_summary	3	0x00543514	jcs_sensor_test_get_summary_result	ser_index,test_case_id,test_type	brief_result,brief_result_list,ret,sch_start_time,sensor_test_summary,ser_index,test_case_id,test_type	uac	yes	
+sensor_test_summary_new	3	0x00543dec	jcs_sensor_test_get_summary_result_new	test_case_id	fail_cnt,file_name,result,ret,sch_start_time,sensor_test_summary_new,slow_cnt,success_cnt,test_case_id,test_type,test_type_summary,total_num	uac	yes	
+sensor_test_wserv_delete_event_handle	2	0x0054fff4	jcs_sensor_test_wserv_delete_event_handle	serv_id		both	yes	
+set_deep_inspection_scan_mode_change	2	0x0056746c	jcs_deep_inspection_sensor_scan_mode_change	chnl,entry_id,scan_mode	ret	both	yes	entry_id
+set_deep_inspection_setting	2	0x00567d60	jcs_deep_inspection_setting	deep_inspection_set,entry_id,inspection_band,inspection_item,switch,use_previous_setting	err_code,ret	uac	yes	
+start_report_sub_device_info	2	0x00512d44	cloud_mngt_jcs_start_report_sub_dev_set	sub_device_mac_list		uac	yes	
+systime	2	0x007a7700	systime_jcs_callback_systime_set		ret		yes	
+target_ap	2	0x004fcbe4	cloud_mngt_jcs_debug_nms_ap_set	is_all,is_set_group,target_ap_file,tftp		uac	yes	
+target_ap	3	0x004fcb1c	cloud_mngt_jcs_debug_nms_ap_get				yes	
+tdcp_passthrough	2	0x00589670	_tdcp_passthrough_jcs_set	tdcp_msg		uac	yes	
+uac_lldp	2	0x0051b400	_uac_lldp_jcs_set	is_first		both	yes	
+uac_lldp	3	0x0051af90	_uac_lldp_jcs_get	is_first	cnt,continue,get_lldp_info	web	yes	is_first
+uac_nms_report_switch	2	0x00516ce4	uac_nms_report_jcs_switch_set	enable		uac	yes	
+udbg	2	0x006bed44	udbg_jcs_callback_set	cmd		uac	yes	
+unsupport_ap_get	3	0x006f077c	_apdb_jcs_callback_get_unsupport_ap		ret		yes	
+usb_settings	2	0x005e7970	apmngr_usb_jcs_callback_usb_global_config_set	ap_ids,enable,group_ids	ret	both	yes	
+usb_settings	3	0x005e87bc	apmngr_usb_jcs_callback_usb_global_config_get		ret,usb_settings,usb_settings.ap_ids,usb_settings.enable,usb_settings.group_ids		yes	
+vlan_id_str_check	3	0x006e79cc	_uac_wserv_vlan_id_str_check	id,vlan_id_str	ret	uac	yes	
+vlan_pool	0	0x006e7d04	_uac_wserv_vlan_pool_jcs_add	id,name,vlan_id_str	ret	uac	yes	
+vlan_pool	1	0x006d1c44	_uac_wserv_vlan_pool_jcs_del	id	ret	uac	yes	
+vlan_pool	2	0x006e85f8	_uac_wserv_vlan_pool_jcs_set	id,name,vlan_id_str	ret	uac	yes	
+vlan_pool_del_check	3	0x006d198c	_uac_wserv_vlan_pool_del_check	id	ret	uac	yes	
+whitelist	0	0x00559cd4	wips_jcs_callback_whitelist_add	mac,ssid,ssid_encode	ret	both	yes	
+whitelist	1	0x00558d0c	wips_jcs_callback_whitelist_delete	whitelist_ids	ret	both	yes	
+whitelist	3	0x00555c24	wips_jcs_callback_whitelist_get	size,start	count,result,ret	both	yes	
+wips_event_detail	3	0x005548fc	wips_jcs_callback_wips_event_detail_get	size,start,wips_info_id	count,result	both	no	
+wips_event_info	2	0x00559fd4	wips_jcs_callback_wips_event_info_set	operation,wips_info_ids	ret	both	yes	
+wips_event_info	3	0x00557284	wips_jcs_callback_wips_event_info_get	entry_name,size,start,wips_info_id,wips_threat_classname,wips_threat_level	count,file_name,ret	both	yes	
+wips_statistics	3	0x00553cb8	wips_jcs_callback_statistics_get	type	end_ts,entry_name,group_name,normal_event_count,num,result,ret,severe_event_count,slight_event_count,start_ts,total	both	yes	
+wips_statistics_num	3	0x005531b8	wips_jcs_callback_statistics_num_get		dos_attack_num,illegal_dev_num,interfering_dev_num,threat_dev_num		yes	
+wportal	0	0x004388b0	_wportal_jcs_add_callback	account_port,admin_dn,admin_passwd,auth_port,auth_type,base_dn,cloud_portal_url,cmcc_ac_name,cmcc_auth_server_type,cmcc_mac_auth,cmcc_url,datasync_data_type,datasync_op_type,dst_ip,dst_ip_mask,dst_port_end,dst_port_start,entry_id,fail_id,fail_url,id,index,match_type,method,name,nas_identifier,nas_ip,portal_page_switch,protocol,radius_auth_type,remote_mac_auth,remote_url,retry_count,retry_interval,serv_id,server_addr,server_name,session_timeout,share_key,src_ip,src_ip_mask,src_mac,src_port_end,src_port_start,src_vlan,type,url,user_filter,user_passwd_filter,vlan_id	ret	both	yes	account_port,auth_type,cloud_portal_url,cmcc_ac_name,cmcc_auth_server_type,cmcc_mac_auth,cmcc_url,dst_ip,dst_ip_mask,dst_port_end,dst_port_start,fail_id,fail_url,id,index,match_type,method,name,nas_identifier,nas_ip,portal_page_switch,protocol,radius_auth_type,remote_mac_auth,remote_url,retry_count,retry_interval,serv_id,session_timeout,share_key,src_ip,src_ip_mask,src_mac,src_port_end,src_port_start,src_vlan,url,vlan_id
+wportal	1	0x004328ac	_wportal_jcs_del_callback	auth_mode,auth_type,bas_identifier,change,cmccServerIp,count,del_mode,del_user,entry_id,free_auth_id,index,interface,ip,key,mac,match_type,method,name,portal_port,serialNo,serv_id,sso_enable,sso_port,sso_server,sso_type,type,useChap,username,version,vlan_id	count,filename,mac,type	both	yes	auth_mode,auth_type,change,del_mode,del_user,free_auth_id,index,interface,key,mac,match_type,method,name,portal_port,serv_id,sso_enable,sso_port,sso_server,sso_type,vlan_id
+wportal	2	0x0043683c	_wportal_jcs_set_callback	account_port,admin_dn,admin_passwd,age_enable,age_time,ageing_enable,ageing_time,auth_mode,auth_port,auth_type,auto,base_dn,cloud_portal_url,cmcc_ac_name,cmcc_auth_server_type,cmcc_mac_auth,cmcc_port,cmcc_portal_port,cmcc_url,del_mode,entry_id,fail_id,fail_url,https_enable,id,index,key,method,nas_identifier,nas_ip,old_vlan_id,portal_page_switch,portal_port,radius_auth_type,remote_mac_auth,remote_url,retry_count,retry_interval,serv_id,server_addr,server_name,session_timeout,share_key,sso_config,sso_enable,sso_port,sso_server,sso_type,type,user_filter,user_passwd_filter,value,vlan_id	ret	both	yes	account_port,admin_dn,admin_passwd,ageing_enable,ageing_time,auth_port,auth_type,base_dn,cloud_portal_url,cmcc_ac_name,cmcc_auth_server_type,cmcc_mac_auth,cmcc_url,del_mode,entry_id,fail_id,fail_url,id,index,key,method,nas_identifier,nas_ip,old_vlan_id,portal_page_switch,radius_auth_type,remote_mac_auth,remote_url,retry_count,retry_interval,serv_id,server_addr,server_name,session_timeout,share_key,user_filter,user_passwd_filter,value,vlan_id
+wportal	3	0x0041c7d8	_wportal_jcs_get_callback	ip,mac,portal_id,search,search_arg,search_arg.auth_type,search_arg.search_name,search_arg.search_value,search_arg.value_type,search_arg.write_to_file,serv_id,size,sort,start,type,vlan	file_name,is_online,mac,ret,totalNum	both	yes	portal_id,search_arg.auth_type,search_arg.search_name,search_arg.search_value,search_arg.value_type,search_arg.write_to_file,serv_id,sort
+wportal_backup	3	0x0041572c	wportal_jcs_backup_callback		file_name		yes	
+wportal_nsa_sync	2	0x0041a530	wportal_jcs_nsa_sync_callback				yes	
+wportal_user_data	3	0x0041356c	_wportal_jcs_client_auth_data_get_callback	duration	client_auth_data,cloud,cmcc,mac_auth,no_auth,onekey,qrcode,remote,sms,time,web,wechat	both	yes	
+wserv_global	2	0x006d4428	_uac_wserv_jcs_global_set	igmp_2g_rate,igmp_2g_rate_type,igmp_5g_rate,igmp_5g_rate_type,igmp_drop_unknown,igmp_max_resp_time,igmp_multi_to_unicast,igmp_query_interval,igmp_snooping_enable,is_set_snp		uac	yes	
+wservice	0	0x006e3970	_uac_wserv_jcs_add	auth,auto_bind,bw_ctrl_enable,bw_ctrl_mode,central_forward_switch,cipher,default_bind_freq,default_bind_vlan,desc,down_limit,enable,encryption,igmp_2g_rate,igmp_2g_rate_type,igmp_5g_rate,igmp_5g_rate_type,igmp_drop_unknown,igmp_max_resp_time,igmp_multi_to_unicast,igmp_query_interval,igmp_query_switch,igmp_snooping_enable,igmp_snooping_switch,isolate,key,key_update_intv,mlo_switch,ppsk_group,radius_acct_port,radius_auth_channel,radius_ip,radius_nas_id,radius_port,radius_pwd,radius_session_timeout,radius_vlan_enable,serv_id,ssid,ssid_code_type,ssid_id,ssidbrd,time_switch,up_limit	serv_id	both	yes	central_forward_switch,ppsk_group,serv_id
+wservice	1	0x006e3590	_uac_wserv_jcs_del	serv_id	serv_id	both	yes	
+wservice	2	0x006e2fd4	_uac_wserv_jcs_set	auth,auto_bind,bw_ctrl_enable,bw_ctrl_mode,central_forward_switch,cipher,default_bind_freq,default_bind_vlan,desc,down_limit,enable,encryption,igmp_2g_rate,igmp_2g_rate_type,igmp_5g_rate,igmp_5g_rate_type,igmp_drop_unknown,igmp_max_resp_time,igmp_multi_to_unicast,igmp_query_interval,igmp_query_switch,igmp_snooping_enable,igmp_snooping_switch,isolate,key,key_update_intv,mlo_switch,operation,ppsk_group,radio_id,radius_acct_port,radius_auth_channel,radius_ip,radius_nas_id,radius_port,radius_pwd,radius_session_timeout,radius_vlan_enable,serv_id,ssid,ssid_code_type,ssid_id,ssidbrd,time_switch,up_limit,vlan_id	serv_id	both	yes	auth,auto_bind,bw_ctrl_enable,bw_ctrl_mode,central_forward_switch,cipher,default_bind_freq,default_bind_vlan,desc,down_limit,enable,encryption,igmp_2g_rate,igmp_2g_rate_type,igmp_5g_rate,igmp_5g_rate_type,igmp_drop_unknown,igmp_max_resp_time,igmp_multi_to_unicast,igmp_query_interval,igmp_query_switch,igmp_snooping_enable,igmp_snooping_switch,isolate,key,key_update_intv,mlo_switch,ppsk_group,radio_id,radius_acct_port,radius_auth_channel,radius_ip,radius_nas_id,radius_port,radius_pwd,radius_session_timeout,radius_vlan_enable,serv_id,ssid,ssid_code_type,ssid_id,ssidbrd,time_switch,up_limit,vlan_id
+wservice	3	0x006d5670	_uac_wserv_jcs_get	group_id,limit,offset,radio_id,search_cond,search_name,search_value,serv_id	file_name,total_num	both	yes	group_id
+wservice_ip	0	0x006e6e4c	_uac_wserv_ip_jcs_add	enable,id,ip_addr,relay	id	both	yes	id
+wservice_ip	1	0x006e6ac0	_uac_wserv_ip_jcs_del	id	result	both	yes	
+wservice_ip	2	0x006e616c	_uac_wserv_ip_jcs_set	enable,id,ip_addr,is_set_enable,relay	id,result	both	yes	
+wsta_bind_info	0	0x0077a30c	_uac_wsta_bind_info_jcs_add	bind_enable,bind_radio_id,down_limit,force_bind_enable,mac,time_obj,up_limit	result,sqldata	uac	yes	
+wsta_bind_info	1	0x00779af4	_uac_wsta_bind_info_jcs_del	mac	result,sqldata	uac	yes	
+wsta_bind_info	2	0x00778b34	_uac_wsta_bind_info_jcs_set	bind_enable,bind_radio_id,down_limit,force_bind_enable,mac,time_obj,up_limit	result,sqldata	uac	yes	
+wsta_bind_info_net_rule	2	0x007775d8	_uac_wsta_bind_info_net_rule_jcs_set	enable,mac	result	uac	yes	
+wsta_iso_group	0	0x00761a74	_uac_wsta_jcs_iso_group_add	enable,group_ids,id,isolate_type,isolation_switch,name,ssid_list,white_list	id,name,ret	web+helper	yes	id
+wsta_iso_group	1	0x007607d4	_uac_wsta_jcs_iso_group_del	id	ret	both	yes	
+wsta_iso_group	2	0x00761640	_uac_wsta_jcs_iso_group_set	enable,group_ids,id,isolate_type,isolation_switch,name,ssid_list,white_list	ret	both+helper	yes	
+wsta_iso_group	3	0x0075fae8	_uac_wsta_jcs_iso_group_get	id,name,size,start	file_name,total_num	both	yes	
+wstation	1	0x0075f8f0	_uac_wsta_jcs_del	entry_id,mac	entry_id	both	yes	mac
+wstation	2	0x00763a84	_uac_wsta_jcs_set	overload_threshold		both	yes	
+wstation	3	0x00765530	_uac_wsta_jcs_get	ap_role,auth_type,bind_enable,filter,filter.auth_type,freq_name,group_id,search_name,search_value,size,sort,sort_field,sort_type,start	all_num,file_name,total_num	both+helper	yes	ap_role,filter,filter.auth_type,group_id,sort
+wstation_backup	3	0x0075e6cc	_uac_wsta_jcs_backup		file_name		yes	
+wstation_disconnect	2	0x0075f41c	_uac_wsta_jcs_disconnect	mac		uac	yes	
+wstation_mac	1	0x0075f6b4	_uac_wsta_jcs_del_by_mac	entry_id,mac	ret	both	yes	entry_id
+wstation_peer_mac	3	0x007637c4	_uac_wsta_jcs_peer_mac_get_by_mld	mac	peer_mac,ret	uac	yes	
+wstation_recognize	2	0x00762440	_uac_wsta_jcs_recognize_set	brand,operating_system,prohibit_access_switch		both	yes	

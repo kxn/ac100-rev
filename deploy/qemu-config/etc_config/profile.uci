@@ -1,0 +1,99 @@
+# uac "profile" UCI 配置 —— 从 TL-AC100 V6.0 uac 二进制逆向重建
+#
+# 证据：uac 内嵌 Lua 片段
+#   local uci = require "luci.model.uci"; local uci_r = uci.cursor()
+#   function uac_get_profile(section, option) return uci_r:get_profile(section, option) end
+# 每个键由 FUN_0051eb48(section, option, out) / FUN_00407f90(section, option, out, len)
+# 读取；键名在 .rodata 中以字面量出现。
+#
+# 安装位置：/tmp/etc/uc_conf/profile （/etc/config 是指向该目录的软链）
+# 注意 UCI 用 section 的 type 作为 get_profile 的一级键，故写作 "config <section>"。
+# 值：带 (recon) 的是合理默认，其余取自固件行为/调用点常量。
+
+config ac_capwap
+	option frag_enable '1'
+	option frag_mtu '1400'
+	option session_num '64'
+	option pkt_queue_size '256'
+	option mngr_queue_size '256'
+	option timer_size '256'
+	option timer_max_time '60'
+	option timer_process_num '1'
+	option mngr_process_num '1'
+	option pkt_process_num '1'
+	option thread_size '1'
+	option socket_recv_buffer_size '131072'
+	option socket_send_buffer_size '131072'
+	option default_retransmit_time '3'
+	option retransmit_max_retries '5'
+	option max_session_num '64'
+	option max_pkt_snapshot_mem_size '2097152'
+	option cacert_file_path '/etc/cacert.pem'
+	option privkey_file_path '/etc/privkey.pem'
+
+config ac_apupd
+	option max_all_model_size '1024000'
+	option max_download_software '1024000'
+	option max_get_version_num '10'
+	option max_import_software '10'
+	option max_update_model '100'
+	option max_update_wtp '1000'
+
+config ac_arp_defend
+	option max_arp '1024'
+	option max_bind_num '1024'
+
+config ac_dhcp_defend
+	option max_server '64'
+	option max_svr_per_ap '8'
+
+config apmng_client
+	option max_wstation '2048'
+
+config apmng_rf
+	option cfg_dft_mngt_frame_2g_rate '1'
+	option cfg_dft_mngt_frame_5g_rate '1'
+	option rd_chnl_collect_interval '300'
+
+config apmng_roma
+	option high_performance_ap_cnt '100'
+	option high_performance_sta_cnt '1000'
+
+config apmng_set
+	option support_nms_ap_max '16'
+	option ap_max '500'
+	option template_max '64'
+	option group_max '64'
+	option echo_timeout '30'
+	option sensor_max '8'
+	option discover_sensor_max '8'
+
+config apmng_upgrade
+	option large_firmware_threshold '10240'
+	option sub_file_size '1024'
+
+config mac_auth
+	option max_group '392'
+	option max_mac '168'
+	option max_vlan '64'
+
+config radio_mngr
+	option max_radio_per_ap '2'
+	option max_wlan_per_radio '16'
+
+config sensor
+	option di_cache_max '64'
+	option st_test_case_max '64'
+
+config wheel_timer
+	option id_len '8'
+
+config wportal
+	option cmcc_thread_num '4'
+	option free_strategy_max '16'
+	option portal_max '64'
+	option sessmngr_max '1024'
+	option wechat_wifi_server_host ''
+
+config wservice_mngr
+	option max_wservice '16'

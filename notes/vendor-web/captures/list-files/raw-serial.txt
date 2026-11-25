@@ -1,0 +1,91 @@
+echo ===ap_list; cat /mnt/tmp/ap_list;echo ===ap_firmed_model; c
+at /mnt/tmp/ap_firmed_model;echo ===apdb_ap_list_temp_1; cat /mnt/tmp/apdb_ap_li
+st_temp_1;echo ===apupd_wtps; cat /mnt/tmp/apupd_wtps;echo ===host_info.csv; cat
+ /mnt/tmp/host_info.csv;echo ===rdmngr_rd_get; cat /mnt/tmp/rdmngr_rd_get;echo =
+==rdEntry.csv; cat /mnt/tmp/rdEntry.csv;echo ===apmngrStatusExport.csv; cat /mnt
+/tmp/apmngrStatusExport.csv; echo FILEDONE; echo __M30674__
+===ap_list
+[{"entry_id":"0","group_id":"0","entry_name":"TL-XAP3006GC-PoE\/DC易展版-0000","model_id":"1600617717","model_name":"TL-XAP3006GC-PoE\/DC易展版","hardware_ver":"2.0","software_ver":"1.0.14","mac":"04-F9-F8-76-A1-97","entry_type":"ap","ap_keep_alive":"30","client_keep_alive":"300","client_idle":"3600","offline_selfmanage":"off","username":"admin","password":"xxxxxx","led":"1","status":"2","telnet_status":"0","crashdump_status":"0","radio_role_table_idx":"0","region_code":"255","led_wifi_sync":"off","firmware_id":"07DE67DF3314B8C0A6E1D10D1A745D12","phy_wire_vlan_list":[],"ap_trunk":"-1","errno":"0","cloud_config_id":"","ap_role":"cap","cap_id":"-1","led_open_time":"00:00:00","led_open_date":"eve","led_timer_enable":"off","led_close_time":"00:00:00","led_close_date":"eve","new_ap_trunk":"255","lag_mode":"0","lag_phy_num":"1","lag_phy_list":"0","bluetooth_enable":"-1","account_username":"admin","account_password":"","fit_fat_button_status":"0","ssid_mlo_support":"0","ap_mesh_switch":"0","wired_capture_support":"0","wireless_capture_support":"0","ap_replace_support":"0","replace_status":"0","replace_mac":"","log_mng_support":"0","log_debug_enable":"0","is_sensor_mode":"0"}]===ap_firmed_model
+[{"model_name":"TL-XAP3006GC-PoE\/DC易展版","model_id":"1600617717","hardware_ver":"2.0","software_ver":"1.0.14 Build 20241205 Rel.57290","group_id":"0","firmware_id":"07DE67DF3314B8C0A6E1D10D1A745D12","hardware_id":"5B5D0CD80F9E99AE7539125034AA5742"}]===apdb_ap_list_temp_1
+{
+	"vendor":	0,
+	"ap_item_list":	[{
+			"id":	1600617717,
+			"ap_name":	"TL-XAP3006GC-PoE/DC易展版",
+			"vendor":	0,
+			"fwid_list":	[{
+					"cap_index":	0,
+					"fwid":	"FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF",
+					"ap_index":	0
+				}, {
+					"cap_index":	1,
+					"fwid":	"07DE67DF3314B8C0A6E1D10D1A745D12",
+					"ap_index":	0
+				}],
+			"ap_list":	[{
+					"ap_name":	"TL-XAP3006GC-PoE/DC易展版",
+					"device_type":	"CEILINGMOUNTAP",
+					"version":	0,
+					"id":	1600617717,
+					"vendor":	0,
+					"support_cloud_upgrade":	true,
+					"is_mesh_device":	true,
+					"hardware_id":	"5B5D0CD80F9E99AE7539125034AA5742",
+					"models":	[{
+							"hwver":	"2.0",
+							"radios":	{
+								"2.4G_1":	{
+									"max_ssid":	7,
+									"max_stations":	128,
+									"max_tx_power":	30,
+									"min_tx_power":	3,
+									"dft_tx_power":	30,
+									"max_tx_stream":	2,
+									"max_rx_stream":	2,
+									"radio_func_type":	0,
+									"support_11ax":	true,
+									"support_WPA3":	true
+								},
+								"5.0G_2":	{
+									"max_ssid":	7,
+									"max_stations":	128,
+									"max_tx_power":	29,
+									"min_tx_power":	3,
+									"dft_tx_power":	29,
+									"max_tx_stream":	2,
+									"max_rx_stream":	2,
+									"mutex_channel":	"36,40,44,48,52,56,60,64,149,153,157,161",
+									"radio_func_type":	0,
+									"support_11ac":	true,
+									"support_11ax":	true,
+									"support_160M":	true,
+									"support_WPA3":	true
+								}
+							},
+							"ext_radios":	{
+						}
+						}]
+				}],
+			"cap_list":	[{
+					"id":	1600617717,
+					"support_usb":	0,
+					"support_ftp":	0,
+					"support_bluetooth_gw":	0,
+					"support_bluetooth_om":	0,
+					"support_bluetooth_esl":	0
+				}]
+		}]
+}===apupd_wtps
+[{"name":"TL-XAP3006GC-PoE\/DC易展版-0000","group_id":"0","model":"TL-XAP3006GC-PoE\/DC易展版","model_id":"1600617717","mac":"04-F9-F8-76-A1-97","hw_version":"2.0","sw_version":"1.0.14 Build 20241205 Rel.57290","status":"0","upgrade_type":"0","new_sw_version":"---"}]===host_info.csv
+客户端名称,厂商,系统,MAC地址,AP名称,射频单元,SSID,IP地址,VLAN,接入时间,协商速率,信号强度,绑定状态,绑定AP,绑定射频,最大上行速率,最大下行速率
+===rdmngr_rd_get
+[{"rf_id":"1","ap_name":"TL-XAP3006GC-PoE\/DC易展版-0000","ap_type":"ap","rf_name":"2.4G1","freq_name":"2.4GHz","freq_unit":"1","radio_func_type":"0","mode":"10","channel":"-1","bandwidth":"2","power":"10","max_usr":"128","rf_state":"on","antenna":"0","frag_thr":"2346","bcn_intvl":"100","manage_frame_rate":"1","rts_thr":"2346","dtim_prd":"1","wmm":"on","brd_probe":"on","short_gi":"on","rssi_restrict":"off","rssi_restrict_val":"0","min_tx_pwr":"3","max_tx_pwr":"30","rf_max_usr":"128","supp_11ac":"0","supp_11ax":"1","supp_11be":"0","supp_160M":"0","is_hdap":"0","supp_240M":"0","rf_chnl_dcs":"0","rf_online_switch":"off","rf_check_circle":"8","rf_chnl_occup_threshold":"50","rf_chnl_tolerance":"20","airtime":"off","reject_limit":"-60","reject_enable":"on","reject_diff":"6","downlink_mumimo":"null","uplink_mumimo":"null","downlink_ofdma":"null","uplink_ofdma":"null","twt":"null","gi_mode":"-1","enable_6g":"null","enable_6g_psc":"null","mutex_channel":"","dft_tx_pwr":"30","region_code":"255","supp_edca":"0","group_name":"default","ap_role":"cap"},{"rf_id":"2","ap_name":"TL-XAP3006GC-PoE\/DC易展版-0000","ap_type":"ap","rf_name":"5G1","freq_name":"5GHz","freq_unit":"2","radio_func_type":"0","mode":"11","channel":"-1","bandwidth":"2","power":"10","max_usr":"128","rf_state":"on","antenna":"0","frag_thr":"2346","bcn_intvl":"100","manage_frame_rate":"1","rts_thr":"2346","dtim_prd":"1","wmm":"on","brd_probe":"on","short_gi":"on","rssi_restrict":"off","rssi_restrict_val":"0","min_tx_pwr":"3","max_tx_pwr":"29","rf_max_usr":"128","supp_11ac":"1","supp_11ax":"1","supp_11be":"0","supp_160M":"1","is_hdap":"0","supp_240M":"0","rf_chnl_dcs":"0","rf_online_switch":"off","rf_check_circle":"8","rf_chnl_occup_threshold":"50","rf_chnl_tolerance":"20","airtime":"off","reject_limit":"-60","reject_enable":"on","reject_diff":"6","downlink_mumimo":"null","uplink_mumimo":"null","downlink_ofdma":"null","uplink_ofdma":"null","twt":"null","gi_mode":"-1","enable_6g":"null","enable_6g_psc":"null","mutex_channel":"36,40,44,48,52,56,60,64,149,153,157,161","dft_tx_pwr":"29","region_code":"255","supp_edca":"0","group_name":"default","ap_role":"cap"}]===rdEntry.csv
+AP分组（只读）,AP名称（只读）,条目类型（只读）,型号ID（只读）,型号（只读）,硬件版本号（只读）,MAC地址（只读）,		射频单元,射频模式,频段带宽,信道,动态信道切换（DCS）,客户端在线切换,检查周期,信道占用率门限,容限系数,发射功率,关联最大用户数,无线客户端正向接入,		信号强度门限,差值门限,天线,分片门限,beacon间隔,Airtime调度,RTS门限,DTIM周期,WMM,响应广播探测,Short Gi,弱信号限制,弱信号限制强度,				下行mu-mimo,上行mu-mimo,下行ofdma,上行ofdma,twt,gi_mode,		EDCA状态,EDCA模式,EDCA场景类型,ap_vo_aifs,ap_vo_cwmin,ap_vo_cwmax,ap_vo_txop,		ap_vi_aifs,ap_vi_cwmin,ap_vi_cwmax,ap_vi_txop,		ap_be_aifs,ap_be_cwmin,ap_be_cwmax,ap_be_txop,		ap_bk_aifs,ap_bk_cwmin,ap_bk_cwmax,ap_bk_txop,		sta_vo_aifs,sta_vo_cwmin,sta_vo_cwmax,sta_vo_txop,		sta_vi_aifs,sta_vi_cwmin,sta_vi_cwmax,sta_vi_txop,		sta_be_aifs,sta_be_cwmin,sta_be_cwmax,sta_be_txop,		sta_bk_aifs,sta_bk_cwmin,sta_bk_cwmax,sta_bk_txop,				状态
+default,TL-XAP3006GC-PoE/DC易展版-0000,AP条目,1600617717,TL-XAP3006GC-PoE/DC易展版,v2.0,04-F9-F8-76-A1-97,1(2.4GHz),802.11b/g/n/ax,自动,自动,自动,禁用,8,50,20,Lv10,128,启用,-60,6,内置天线,2346,100,禁用,2346,1,启用,启用,启用,禁用,0,---,---,---,---,---,-1,禁用,---,---,1,2,3,47,1,3,4,94,2,4,6,0,3,4,10,0,2,2,3,47,2,3,4,94,2,4,10,0,3,4,10,0,启用
+default,TL-XAP3006GC-PoE/DC易展版-0000,AP条目,1600617717,TL-XAP3006GC-PoE/DC易展版,v2.0,04-F9-F8-76-A1-97,2(5GHz),802.11a/n/ac/ax,自动,自动,自动,禁用,8,50,20,Lv10,128,启用,-60,6,内置天线,2346,100,禁用,2346,1,启用,启用,启用,禁用,0,---,---,---,---,---,-1,禁用,---,---,1,2,3,47,1,3,4,94,2,4,6,0,3,4,10,0,2,2,3,47,2,3,4,94,2,4,10,0,3,4,10,0,启用
+===apmngrStatusExport.csv
+AP名称,型号,MAC地址,IP地址,射频单元1,信道,用户数,信道利用率,SSID1,SSID2,SSID3,SSID4,SSID5,SSID6,SSID7,SSID8,射频单元2,信道,用户数,信道利用率,SSID1,SSID2,SSID3,SSID4,SSID5,SSID6,SSID7,SSID8,射频单元3,信道,用户数,信道利用率,SSID1,SSID2,SSID3,SSID4,SSID5,SSID6,SSID7,SSID8,射频单元4,信道,用户数,信道利用率,SSID1,SSID2,SSID3,SSID4,SSID5,SSID6,SSID7,SSID8,在线时长,LED,链路状态
+TL-XAP3006GC-PoE/DC易展版-0000,TL-XAP3006GC-PoE/DC易展版,04-F9-F8-76-A1-97,172.30.194.1,2.4GHz,---,0,---,---,---,---,---,---,---,---,---,5GHz,---,0,---,---,---,---,---,---,---,---,---,---,---,---,---,---,---,---,---,---,---,---,---,---,---,---,---,---,---,---,---,---,---,---,---,50秒,开启,在线
+FILEDONE
+__M30674__
+root@OpenWrt:~# 

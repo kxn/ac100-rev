@@ -1,0 +1,2 @@
+config NORMAL 'NORMAL'
+	option iface '0'

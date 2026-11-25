@@ -1,0 +1,20 @@
+# wips_event_detail GET -- vendor handler crash, no response
+# 2026-11-24, QEMU vendor uac, AP online but no WIPS events (wips_event_info count=0)
+request data: {"wips_info_id":0,"start":0,"size":10}
+request envelope (vendor Lua jcs.lua):
+  {"data":{"wips_info_id":0,"start":0,"size":10},"op":3,
+   "name":"wips_event_detail","clt_path":"/tmp/jcs.ui.srv.uac<pid>.luaclt"}
+
+server log:
+[SENSOR_ERROR]wips_jcs_callback_wips_event_detail_get()/1957 wips event[id=0] not found
+
+====================Bus Error======================
+Thread name: [jcs_ui], tid: [0x75a924c0], real pid: [3547]
+PC: 0x005a4128
+<0>:[0x005a4128]:{uac_mem_free_my}
+<1>:[0x00554d68]:{wips_jcs_callback_wips_event_detail_get}
+
+# Static protocol (from uac_symbol_fun + json-object dataflow):
+# handler : wips_jcs_callback_wips_event_detail_get @ 0x005548fc
+# in_keys : size, start, wips_info_id
+# out_keys: count, result

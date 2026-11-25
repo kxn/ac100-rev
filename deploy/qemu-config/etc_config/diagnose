@@ -1,0 +1,3 @@
+config settings 'settings'
+	option enable 'on'
+	option telnet_port '0'

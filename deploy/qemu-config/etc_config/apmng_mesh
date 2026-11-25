@@ -1,0 +1,5 @@
+config settings 'settings'
+	option enable 'on'
+	option backhaul_type '0'
+	option re_auto_switch 'on'
+	option bh_work_mode '0'

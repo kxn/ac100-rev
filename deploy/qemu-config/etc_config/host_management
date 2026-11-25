@@ -1,0 +1,4 @@
+config recognition_settings 'recognition_settings'
+	option prohibit_access_switch 'on'
+	option brand '0'
+	option operating_system '0'

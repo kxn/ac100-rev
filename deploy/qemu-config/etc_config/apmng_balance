@@ -1,0 +1,8 @@
+config settings 'settings'
+	option enable 'on'
+	option mode '0'
+	option usr_threshold '0'
+	option dif_threshold '0'
+	option max_fail_num '0'
+	option rssi_threshold '0'
+	option group_id_str '0'
