@@ -235,3 +235,10 @@ PMK gate原APentry+28c为General第三个32位词：蓝牙bit77与0x2000独立�
 
 
 独立程序配置更新已提交并部署为f0ebf98。全部Go test/vet/race、三平台CGO_ENABLED=0构建、JS/Python工具/格式及双向索引检查通过；UI两能力×11页48表单通过。部署后的资源API真实修改/恢复验证不改变AP会话时间，原AP回RUN且13项配置无失败，平板status检查网关/DNS/HTTPS通过，Go客户端状态/IP/射频正常。回滚快照保存在忽略的私人部署目录，未修改AP的SSID/密码或做多AP算法外部对比。
+
+
+## 2026-11-27 06:51 — 再次双向复核完成并部署
+
+源码提交 `90fd82b`；完整整改计划、根因与结果见 [controller-revalidation.md](controller-revalidation.md)。补原厂批量命名遗漏，按原字符计数并合并名称权威；修复 Mesh 实时容量、启动/写入校验、快照会话代次、静默客户端状态及人数；删除旧 IP 修补、RADIUS 编码/密钥路径、测试专用生产辅助函数与自身往返佐证；生成器输出规范化。
+
+新增可执行原厂来源→Go 符号→指定测试合同，覆盖18链路/46合同/126具名测试，129个函数全部归类。固件身份与指纹、生成表、全量无缓存测试/vet/race、Linux amd64/arm64和Windows amd64纯Go构建、两能力11页50表单通过。部署后仅做基本服务/联网检查：AP RUN，两路RF verified，13同步无失败/受阻；ADB5200MHz、网关/DNS/HTTPS、Go客户端位置和IP通过。未运行原程序/设备黑盒推导策略。

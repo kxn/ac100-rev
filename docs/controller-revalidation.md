@@ -32,3 +32,8 @@
 `python3 tools/check_behavior_contracts.py --verify-firmware --run-tests` 检查源码标识、Go 函数声明、Go 自身测试发现和实际 pass 事件；用例丢失、跳过或仅出现“没有可运行测试”不能算通过。`check_parity_map.py` 继续负责原 23 个模块及 186 个 Go 文件的双向归类。固件原函数指纹、原编译表和 2029 条 OUI 重建核验通过；均衡/漫游/RRM 的判断没有使用原程序黑盒或 AP/客户端试验推导。
 
 以下最终检查均通过：全量无缓存 Go 测试、vet、race，Linux amd64/arm64 与 Windows amd64 纯 Go 构建，以及两套能力×11 页面、50 次表单的 UI 回归。测试范围是具名分支与控制器链路，不等于所有参数/型号的形式化等价证明。
+
+
+## 提交与部署
+
+代码提交为 `90fd82b`（统一控制器状态与固件证据合同）。部署前已保存旧二进制及 SQLite 一致性备份；新二进制构建信息确认该提交、`vcs.modified=false`、`CGO_ENABLED=0`。06:51（Asia/Singapore）基本检查通过：AP 已重新进入 RUN，两路 RF verified，13 项同步没有 failed/blocked。ADB 平板保持 5200 MHz，网关、DNS/HTTPS通过，Go 客户端 AP/射频/槽位/IP 与平板一致。服务 active/running、重启计数0。私人记录为 `.local/ac100/adb-tests/20261127-065109-status.json` 与当次部署快照 `20261126T224953Z`。未改变 Wi-Fi/射频配置，也没有用设备结果充当策略等价证据。

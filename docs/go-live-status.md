@@ -1,5 +1,13 @@
 # 独立 Go 控制器实机进度（2026-11-26）
 
+## 最新部署：2026-11-27 06:51（Asia/Singapore）
+
+已部署双向复核与根因整改提交 `90fd82b07b0209a331b04f6b0a3ec467275ff7f4`，构建信息 `vcs.modified=false`、`CGO_ENABLED=0`。详细问题、证据和验证见 [复核记录](controller-revalidation.md)。已补齐 AP 批量 CSV 命名并统一名称存储；会话容量、配置校验和客户端事实入口已收敛，移除 RADIUS 残留及重复修补路径。
+
+46 项行为合同、126 个具名用例、129 个已取证 UAC 函数归类、全量测试/vet/race、三平台纯 Go 构建、两能力×11页/50次表单全部通过。部署后 AP 重新 RUN，两路 RF 回读 verified，13 项同步无失败/受阻；平板保持 5 GHz 5200 MHz，网关、DNS/HTTPS及 Go 客户端位置/IP检查通过。旧二进制和数据一致性快照已私存。此次基本设备检查不作为原厂漫游/调度算法的证明。
+
+以下较早部署与设备检查属于历史记录，以本节为当前版本。
+
 ## 2026-11-27 独立程序配置更新
 
 已部署代码 `f0ebf98dd2c1f6882cf1d32bb649d6f536d26346`，替换下节的策略部署版本。构建信息确认revision一致、vcs.modified=false，服务active/running且NRestarts=0。
