@@ -7,7 +7,7 @@ import sys
 from collections import defaultdict
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
+from ac100_env import ROOT, REPO, CACHE, FIELDS
 OUT = ROOT / "notes/vendor-web/jcs-registry.tsv"
 WEB = ROOT / "notes/vendor-web/web-jcs-calls.tsv"
 
@@ -21,10 +21,14 @@ def norm(n):
 
 
 def main():
-    reg = subprocess.run([sys.executable, str(ROOT / "tools/jcs_registry.py")],
+    reg = subprocess.run([sys.executable, str(REPO / "tools/jcs_registry.py")],
                          check=True, capture_output=True, text=True).stdout
-    fields = subprocess.run([sys.executable, str(ROOT / "tools/jcs_fields.py")],
+    fields = subprocess.run([sys.executable, str(REPO / "tools/jcs_fields.py")],
                             check=True, capture_output=True, text=True).stdout
+    CACHE.mkdir(parents=True, exist_ok=True)
+    FIELDS.parent.mkdir(parents=True, exist_ok=True)
+    (CACHE / "jcs-registry-raw.tsv").write_text(reg)
+    FIELDS.write_text(fields)
     fin, fout = defaultdict(set), defaultdict(set)
     for line in fields.splitlines()[1:]:
         p = line.split("\t")

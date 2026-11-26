@@ -6,7 +6,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import jcs_fields as jf
 
-ROOT = Path(__file__).resolve().parents[1]
+from ac100_env import ROOT
 SCHEMA = ROOT / 'notes/vendor-web/jcs-schema.tsv'
 
 

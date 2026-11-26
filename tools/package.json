@@ -1,0 +1,9 @@
+{
+  "name": "ac100-evidence-tools",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Pinned dependencies for vendor LuCI evidence extraction",
+  "dependencies": {
+    "luaparse": "0.3.1"
+  }
+}

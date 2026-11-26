@@ -4,8 +4,8 @@ import re
 from collections import defaultdict
 from pathlib import Path
 
-ASM = Path('/tmp/uac-load1.asm')
-FIELDS = Path('/tmp/jcs_fields.tsv')
+from ac100_env import ASM
+from ac100_env import FIELDS
 ARRAY_FUNCS = {0x8b9240: 'length', 0x8b9520: 'get_idx'}
 INS = re.compile(r'^\s*([0-9a-f]+):\s+([0-9a-f]{8})\s+(\S+)\s*(.*)$')
 

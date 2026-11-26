@@ -70,47 +70,65 @@ func ParsePrivNdpPara(v []byte) (*PrivNdpPara, error) {
 	return p, nil
 }
 
-// RrmNeigh is one neighbour row of 0x5d (loop body rbytes(6) + 5×r8).
-type RrmNeigh struct {
-	MAC [6]byte
-	U8  [5]uint8
+// V6 cw_priv_rrm_neighs_list_parse @0x692d54: a neighbor contains
+// an AP MAC, flags, and a counted list of {radio,power,RSSI}. It is not a
+// fixed 11-byte record (that only happens for a single RSSI sample).
+type RrmRSSI struct {
+	Radio uint8 `json:"radio_id"`
+	Power int8  `json:"power_dbm"`
+	RSSI  int8  `json:"rssi_dbm"`
 }
-
-// PrivRrmNeighsList is 0x5d (min 4): r8 r8 r16 + per-neighbour rows
-// (cw_priv_rrm_neighs_list_parse @0x5be944).
+type RrmNeigh struct {
+	MAC     [6]byte   `json:"mac"`
+	Flags   uint8     `json:"flags"`
+	Samples []RrmRSSI `json:"samples"`
+}
 type PrivRrmNeighsList struct {
 	A      uint8
 	B      uint8
-	Count  uint16
 	Neighs []RrmNeigh
 }
 
-// AssembleValue writes header + rows.
 func (p PrivRrmNeighsList) AssembleValue() []byte {
-	b := []byte{p.A, p.B}
-	b = AppendUint16BE(b, p.Count)
+	b := AppendUint16BE([]byte{p.A, p.B}, uint16(len(p.Neighs)))
 	for _, n := range p.Neighs {
 		b = append(b, n.MAC[:]...)
-		b = append(b, n.U8[:]...)
+		b = append(b, n.Flags, byte(len(n.Samples)))
+		for _, r := range n.Samples {
+			b = append(b, r.Radio, byte(r.Power), byte(r.RSSI))
+		}
 	}
 	return b
 }
-
-// ParsePrivRrmNeighsList decodes header + 11-byte neighbour rows.
 func ParsePrivRrmNeighsList(v []byte) (*PrivRrmNeighsList, error) {
-	if len(v) < 4 {
+	if len(v) < 4 || v[0] >= 32 {
 		return nil, ErrShortPacket
 	}
-	p := &PrivRrmNeighsList{A: v[0], B: v[1], Count: Uint16BE(v[2:])}
-	off := 4
-	for off+11 <= len(v) {
-		var n RrmNeigh
-		copy(n.MAC[:], v[off:off+6])
-		copy(n.U8[:], v[off+6:off+11])
-		p.Neighs = append(p.Neighs, n)
-		off += 11
+	count := Uint16BE(v[2:])
+	if count > 32 {
+		return nil, ErrShortPacket
 	}
-	if off != len(v) {
+	p := &PrivRrmNeighsList{A: v[0], B: v[1]}
+	v = v[4:]
+	for i := 0; i < int(count); i++ {
+		if len(v) < 8 {
+			return nil, ErrShortPacket
+		}
+		var n RrmNeigh
+		copy(n.MAC[:], v)
+		n.Flags = v[6]
+		samples := int(v[7])
+		v = v[8:]
+		if len(v) < samples*3 {
+			return nil, ErrShortPacket
+		}
+		for j := 0; j < samples; j++ {
+			n.Samples = append(n.Samples, RrmRSSI{Radio: v[0], Power: int8(v[1]), RSSI: int8(v[2])})
+			v = v[3:]
+		}
+		p.Neighs = append(p.Neighs, n)
+	}
+	if len(v) != 0 {
 		return nil, ErrShortPacket
 	}
 	return p, nil
@@ -186,7 +204,7 @@ func (p PrivDhcpv6Defend) AssembleValue() []byte {
 
 // ParsePrivDhcpv6Defend decodes header + tail.
 func ParsePrivDhcpv6Defend(v []byte) (*PrivDhcpv6Defend, error) {
-	if len(v) < 6 {
+	if !validDefendLength(v, 17) {
 		return nil, ErrShortPacket
 	}
 	return &PrivDhcpv6Defend{Enable: v[0], Count: v[1],
@@ -211,7 +229,7 @@ func (p PrivNdDefend) AssembleValue() []byte {
 
 // ParsePrivNdDefend decodes header + tail.
 func ParsePrivNdDefend(v []byte) (*PrivNdDefend, error) {
-	if len(v) < 6 {
+	if !validDefendLength(v, 22) {
 		return nil, ErrShortPacket
 	}
 	return &PrivNdDefend{Enable: v[0], Count: v[1],

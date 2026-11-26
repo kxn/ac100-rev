@@ -4,8 +4,9 @@ import json
 import sys
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
-RAW = Path(sys.argv[1]) if len(sys.argv) > 1 else Path('/tmp/ac100/harness/field-raw-results4.jsonl')
+from ac100_env import ROOT
+from ac100_env import HARNESS
+RAW = Path(sys.argv[1]) if len(sys.argv) > 1 else HARNESS / "field-raw-results.jsonl"
 OUT = ROOT / 'notes/vendor-web/captures/jcs-samples.jsonl'
 SUMMARY = ROOT / 'notes/vendor-web/captures/jcs-summary.tsv'
 OLD = ROOT / 'notes/vendor-web/captures/jcs-samples-empty.jsonl'

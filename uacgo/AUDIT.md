@@ -1,4 +1,10 @@
-# 完成审计 — 目标要求逐项对照（截至当前）
+# 历史完成审计 — 目标要求逐项对照
+
+> **以下完成标记不能作为当前独立 Go 产品的功能验收结论。** 原型的编解码、SQLite/JCS 和模拟通过不等同于管理 UI、配置下发与实机行为完成。2026-11-26 逐项复核发现分组、部分 AP 设置、RADIUS 扩展、完整速率表、均衡/漫游等仍有缺项；以 [当前功能对应表](../docs/feature-parity.md) 和 [控制链路审查](../docs/controller-audit.md) 为准。
+
+> 本文是早期实现阶段的快照。当前环境验收见 [environment-status.md](../docs/environment-status.md)，
+> Go/原厂运行路径的边界见 [ondevice-verify.md](docs/ondevice-verify.md)。
+> 下文的“DTLS 沙箱 Skip”和 JCS 对等结论已被后续证据修正。
 
 目标：逆向 TL-AC100 固件中的 `uac` 二进制，恢复为完全可编译、跨平台可用的 Go 版本。
 

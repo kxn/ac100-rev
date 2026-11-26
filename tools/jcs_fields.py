@@ -12,23 +12,16 @@ import subprocess
 import sys
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
-FW = Path(os.environ.get("AC100_FW", "/tmp/ac100/rootfs"))
+from ac100_env import ROOT
+from ac100_env import ROOTFS as FW
 UAC = FW / "usr/sbin/uac"
 SYM = FW / "usr/sbin/uac_symbol_fun"
-ASM = Path("/tmp/uac-load1.asm")
+from ac100_env import ASM
 LOAD1_END = 0x8ba180
 
 
-def build_asm():
-    if ASM.exists() and ASM.stat().st_size > 1_000_000:
-        return
-    with open(ASM, "w") as f:
-        subprocess.run([
-            "mips-linux-gnu-objdump", "-D", "-b", "binary", "-m", "mips:isa32r2",
-            "-EB", "--adjust-vma=0x400000", "--start-address=0x400000",
-            "--stop-address=%#x" % LOAD1_END, str(UAC),
-        ], stdout=f, check=True)
+from ac100_env import build_vendor_asm as build_asm
+
 
 
 def read_cstr(va):
@@ -229,13 +222,13 @@ def main():
     syms = load_syms()
     ins = load_ins()
     plt = load_plt()
-    registry = Path("/tmp/jcs_registry2.tsv")
+    registry = ROOT / "notes/vendor-web/jcs-registry.tsv"
     handlers = {}
     if registry.exists():
         for line in registry.read_text().splitlines():
             p = line.split("\t")
-            if len(p) >= 5 and p[2]:
-                handlers[int(p[3], 16)] = p[5] if len(p) > 5 else ""
+            if len(p) >= 4 and p[2].startswith("0x"):
+                handlers[int(p[2], 16)] = p[3]
     else:
         for a, s, n in syms:
             if "jcs" in n:

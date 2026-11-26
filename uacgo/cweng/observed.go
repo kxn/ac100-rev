@@ -1,0 +1,166 @@
+package cweng
+
+import (
+	"encoding/binary"
+	"strings"
+	"time"
+	"uacgo/capwap"
+)
+
+// RadioStatus contains AP observations, separate from requested configuration.
+// Private 0x25: cw_priv_ap_res_info_parse @0x5a6f6c, radio/mode/channel/power;
+// names verified by rdmngr_capwap_callback_wtp_event_request_listen @0x6143f0.
+type RadioStatus struct {
+	Radio   uint8     `json:"radio_id"`
+	Mode    uint8     `json:"mode"`
+	Channel uint8     `json:"channel"`
+	Power   uint16    `json:"power_dbm"`
+	Seen    time.Time `json:"last_seen"`
+}
+type ReportedSSID struct {
+	Radio uint8     `json:"radio_id"`
+	SSID  string    `json:"ssid"`
+	Seen  time.Time `json:"last_seen"`
+}
+
+type ChannelScanReport struct {
+	ReceivedAt time.Time                  `json:"received_at"`
+	Channels   []capwap.ChannelScanSample `json:"channels"`
+}
+
+type RRMReport struct {
+	Radio      uint8             `json:"radio_id"`
+	Mode       uint8             `json:"mode"`
+	ReceivedAt time.Time         `json:"received_at"`
+	Neighbors  []capwap.RrmNeigh `json:"neighbors"`
+}
+
+func privateElements(p *capwap.ParsedPacket, visit func(uint16, []byte)) {
+	for _, el := range p.Elements {
+		if el.Type != 0x25 || len(el.Value) < 6 {
+			continue
+		}
+		for b := el.Value[6:]; len(b) >= 4; {
+			n := int(binary.BigEndian.Uint16(b[2:]))
+			if n > len(b)-4 {
+				break
+			}
+			visit(binary.BigEndian.Uint16(b), b[4:4+n])
+			b = b[4+n:]
+		}
+	}
+}
+
+func (e *Engine) RegisterObservationHandlers() {
+	observe := func(ctx *Ctx, req, rsp *capwap.ParsedPacket) bool {
+		privateElements(req, func(typ uint16, b []byte) {
+			if ctx.Session.apEntry != nil {
+				if typ == 0x7f {
+					ctx.Session.apEntry.linkageTable = append([]byte{}, b...)
+					refreshRadioLinkage(ctx.Session.apEntry)
+					return
+				}
+				if typ == 0x90 {
+					ctx.Session.apEntry.linkageControl = append([]byte{}, b...)
+					refreshRadioLinkage(ctx.Session.apEntry)
+					return
+				}
+				if typ == 0xbb {
+					if modes, err := ParseRadioModes(b); err == nil {
+						ctx.Session.apEntry.RadioModes = modes
+					}
+					return
+				}
+				if typ == 0xbc {
+					if mode, err := parseRadioModeState(b); err == nil {
+						ctx.Session.apEntry.RadioMode = mode
+					}
+					return
+				}
+			}
+			if typ == 0x76 {
+				if report, err := updateMeshReport(ctx.Session.meshReport, b); err == nil {
+					ctx.Session.meshReport = report
+				}
+				return
+			}
+			if typ == 0xc8 && ctx.Session.apEntry != nil {
+				if rows, err := capwap.ParseVendorList(b); err == nil {
+					for _, r := range rows {
+						if r.Type == 12 {
+							if ports, err := parsePortCapabilities(r.Value); err == nil {
+								ctx.Session.apEntry.Ports = ports
+							}
+						}
+					}
+				}
+				return
+			}
+			if typ == 0xdd {
+				if r, err := parseBluetoothServerStatus(b); err == nil {
+					if ctx.Session.bluetoothServers == nil {
+						ctx.Session.bluetoothServers = map[uint8]BluetoothServerStatus{}
+					}
+					ctx.Session.bluetoothServers[r.Server] = r
+				}
+				return
+			}
+			if typ == 0x9c {
+				if rows, err := capwap.ParseChannelScanReport(b); err == nil {
+					ctx.Session.channelScan = &ChannelScanReport{ReceivedAt: time.Now(), Channels: rows}
+				}
+				return
+			}
+			if typ == 0xca {
+				if report, err := parseARPScan(b); err == nil {
+					ctx.Session.arpScan = report
+				}
+				return
+			}
+			if typ == 0x5d {
+				if p, err := capwap.ParsePrivRrmNeighsList(b); err == nil {
+					if ctx.Session.rrmReports == nil {
+						ctx.Session.rrmReports = map[uint8]RRMReport{}
+					}
+					ctx.Session.rrmReports[p.A] = RRMReport{Radio: p.A, Mode: p.B, ReceivedAt: time.Now(), Neighbors: p.Neighs}
+				}
+				return
+			}
+			if typ == 0xce && ctx.Session.apEntry != nil {
+				if p, err := capwap.ParseEDCAPresets(b); err == nil {
+					ctx.Session.apEntry.EDCAPresets = p
+				}
+				return
+			}
+			if typ != 0x25 || len(b) != 5 || b[0] == 0 || b[0] >= 32 {
+				return
+			}
+			s := ctx.Session
+			if s.radioStatus == nil {
+				s.radioStatus = map[uint8]RadioStatus{}
+			}
+			s.radioStatus[b[0]] = RadioStatus{Radio: b[0], Mode: b[1], Channel: b[2], Power: binary.BigEndian.Uint16(b[3:]), Seen: time.Now()}
+		})
+		return true
+	}
+	e.Register(9, 90, "radio_observations", observe)
+	e.Register(8, 90, "configuration_observations", observe)
+	e.Register(5, 90, "configure_observations", observe)
+	e.Register(5, 101, "reported_ssids", func(ctx *Ctx, req, rsp *capwap.ParsedPacket) bool {
+		privateElements(req, func(typ uint16, b []byte) {
+			if typ != 0x1e {
+				return
+			}
+			list, err := capwap.ParsePrivWlanList(b)
+			if err != nil || int(list.B) != len(list.Entries) {
+				return
+			}
+			rows := []ReportedSSID{}
+			for _, row := range list.Entries {
+				rows = append(rows, ReportedSSID{Radio: row.RadioID, SSID: strings.TrimRight(string(row.SSID), "\x00"), Seen: time.Now()})
+			}
+			ctx.Session.reportedSSIDs = rows
+		})
+		return true
+	})
+}

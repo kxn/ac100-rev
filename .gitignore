@@ -6,3 +6,10 @@ uacgo/acd.exe
 uacgo/data/dbs/
 # python
 __pycache__/
+# Local firmware, kernels, QEMU disks, captures and tool dependencies
+.local/
+tools/node_modules/
+raw_text.asm
+syms.json
+func_index.tsv
+ghidraProj/

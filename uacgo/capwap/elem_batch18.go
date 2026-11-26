@@ -4,59 +4,52 @@ import "encoding/binary"
 
 // Batch-18: remaining private elements (defend/PMK/LDSP/statistics).
 
-// PrivDhcpDefend is 0x47 (min 6): u8 enable + u8 count + BE32 svr_len
-// + per-server {u8 id, u8 pad, BE16, 6B mac} entries.
-// (cw_priv_dhcp_defend_parse.)
+// PrivDhcpDefend (0x47): enable8, operation8, entry-count32, then
+// {address-type8,address[6]}. Operation0 toggles, operation1 replaces the list.
 type PrivDhcpDefend struct {
 	Enable uint8
-	Count  uint8
-	SvrLen uint32
-	Tail   []byte // server entries verbatim
+	Count  uint8  // operation, retained name for source compatibility
+	SvrLen uint32 // number of entries (not a byte length)
+	Tail   []byte
 }
 
-// AssembleValue writes header + tail.
 func (p PrivDhcpDefend) AssembleValue() []byte {
-	b := []byte{p.Enable, p.Count}
-	b = AppendUint32BE(b, p.SvrLen)
-	return append(b, p.Tail...)
+	return append(AppendUint32BE([]byte{p.Enable, p.Count}, p.SvrLen), p.Tail...)
 }
-
-// ParsePrivDhcpDefend decodes header + tail.
 func ParsePrivDhcpDefend(v []byte) (*PrivDhcpDefend, error) {
+	if !validDefendLength(v, 7) {
+		return nil, ErrShortPacket
+	}
+	return &PrivDhcpDefend{Enable: v[0], Count: v[1], SvrLen: Uint32BE(v[2:]), Tail: append([]byte{}, v[6:]...)}, nil
+}
+func validDefendLength(v []byte, width int) bool {
 	if len(v) < 6 {
-		return nil, ErrShortPacket
+		return false
 	}
-	return &PrivDhcpDefend{Enable: v[0], Count: v[1],
-		SvrLen: Uint32BE(v[2:]), Tail: append([]byte(nil), v[6:]...)}, nil
+	n := uint64(Uint32BE(v[2:]))
+	if v[1] == 0 && width != 10 && width != 22 {
+		n = 0
+	}
+	return uint64(len(v)) == 6+n*uint64(width)
 }
 
-// PrivArpDefend is 0x48. Wire (cw_priv_arp_defend_parse @0x5ab914 retrieve
-// sequence r8 r8 r32 r32 rbytes): u8 enable + u8 count + BE32 + BE32 +
-// entry bytes.
+// PrivArpDefend (0x48): flags8, operation8, count32, then IPv4[4]/MAC[6].
+// The C entry structure is12 bytes; its padding is absent on the wire.
 type PrivArpDefend struct {
-	Enable   uint8
-	Count    uint8
-	W1       uint32
-	EntryLen uint32
-	Tail     []byte
+	Enable uint8
+	Count  uint8
+	W1     uint32
+	Tail   []byte
 }
 
-// AssembleValue writes header + tail.
 func (p PrivArpDefend) AssembleValue() []byte {
-	b := []byte{p.Enable, p.Count}
-	b = AppendUint32BE(b, p.W1)
-	b = AppendUint32BE(b, p.EntryLen)
-	return append(b, p.Tail...)
+	return append(AppendUint32BE([]byte{p.Enable, p.Count}, p.W1), p.Tail...)
 }
-
-// ParsePrivArpDefend decodes header + tail.
 func ParsePrivArpDefend(v []byte) (*PrivArpDefend, error) {
-	if len(v) < 10 {
+	if !validDefendLength(v, 10) {
 		return nil, ErrShortPacket
 	}
-	return &PrivArpDefend{Enable: v[0], Count: v[1],
-		W1: Uint32BE(v[2:]), EntryLen: Uint32BE(v[6:]),
-		Tail: append([]byte(nil), v[10:]...)}, nil
+	return &PrivArpDefend{Enable: v[0], Count: v[1], W1: Uint32BE(v[2:]), Tail: append([]byte{}, v[6:]...)}, nil
 }
 
 // PrivStaPMKReq is 0x49 (min=max=0x65=101):

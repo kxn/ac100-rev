@@ -2,6 +2,7 @@ package cweng
 
 import (
 	"bytes"
+	"context"
 	"crypto/ecdsa"
 	"crypto/elliptic"
 	"crypto/rand"
@@ -11,11 +12,11 @@ import (
 	"io"
 	"math/big"
 	"net"
-	"strings"
 	"testing"
 	"time"
 
 	dtls "github.com/pion/dtls/v2"
+	"github.com/pion/transport/v2/udp"
 )
 
 // Real pion/dtls handshake over UDP: server via PionHandshaker.Bind,
@@ -23,74 +24,76 @@ import (
 // established connection.
 func TestPionDTLSHandshake(t *testing.T) {
 	certGen := genCert(t)
-
-	// dtls server over a real UDP socket pair.
-	ua, err := net.ResolveUDPAddr("udp", "127.0.0.1:0")
+	// Pion needs a per-peer net.Conn. An unconnected net.UDPConn cannot
+	// write replies with Write and caused the former false sandbox skip.
+	listener, err := udp.Listen("udp", &net.UDPAddr{IP: net.IPv4(127, 0, 0, 1)})
 	if err != nil {
 		t.Fatal(err)
 	}
-	srv, err := net.ListenUDP("udp", ua)
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer srv.Close()
-	cli, err := net.DialUDP("udp", nil, srv.LocalAddr().(*net.UDPAddr))
+	defer listener.Close()
+	cli, err := net.DialUDP("udp", nil, listener.Addr().(*net.UDPAddr))
 	if err != nil {
 		t.Fatal(err)
 	}
 	defer cli.Close()
-
 	hs := &PionHandshaker{done: make(chan struct{}), cfg: dtls.Config{
-		Certificates: []tls.Certificate{*certGen},
-		ClientAuth:   dtls.NoClientCert,
+		Certificates: []tls.Certificate{*certGen}, ClientAuth: dtls.NoClientCert,
 	}}
 	bindErr := make(chan error, 1)
-	go func() { bindErr <- hs.Bind(srv) }()
-	time.Sleep(200 * time.Millisecond) // let dtls.Server start reading
-	select {
-	case e := <-bindErr:
-		t.Fatalf("server bind failed early: %v", e)
-	default:
-	}
-
-	dcli, err := dtls.Client(cli, &dtls.Config{InsecureSkipVerify: true})
-	if err != nil {
-		// The sandbox kernel refuses the rapid UDP handshake exchange
-		// (ECONNREFUSED) while single-datagram loopback works; the pion
-		// handshake itself is exercised in a normal environment.
-		if strings.Contains(err.Error(), "connection refused") {
-			t.Skip("sandbox refuses UDP handshake exchange")
+	cliClosed := make(chan struct{})
+	defer close(cliClosed)
+	go func() {
+		conn, err := listener.Accept()
+		if err != nil {
+			bindErr <- err
+			return
 		}
+		defer conn.Close()
+		// Bind owns the DTLS connection after success; keep the transport
+		// open until the client closes and test cleanup runs.
+		bindErr <- hs.Bind(conn)
+		<-cliClosed
+	}()
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	dcli, err := dtls.ClientWithContext(ctx, cli, &dtls.Config{InsecureSkipVerify: true})
+	if err != nil {
 		t.Fatalf("client handshake: %v", err)
 	}
+	defer dcli.Close()
 	select {
-	case <-hs.done:
-	case <-time.After(3 * time.Second):
+	case err := <-bindErr:
+		if err != nil {
+			t.Fatalf("server handshake: %v", err)
+		}
+	case <-ctx.Done():
 		t.Fatal("server handshake timeout")
 	}
-
-	// data roundtrip through the established layer
 	msg := []byte("capwap-plaintext")
-	go func() {
-		time.Sleep(50 * time.Millisecond)
-		dcli.Write(msg)
-	}()
+	if _, err := dcli.Write(msg); err != nil {
+		t.Fatal(err)
+	}
 	hs.mu.Lock()
 	estab := hs.estab
 	hs.mu.Unlock()
 	if estab == nil {
 		t.Fatal("no established conn")
 	}
+	defer estab.Close()
 	estab.SetReadDeadline(time.Now().Add(3 * time.Second))
-	buf := make([]byte, 256)
-	n, err := estab.Read(buf)
-	if err != nil || !bytes.Equal(buf[:n], msg) {
-		t.Fatalf("roundtrip: %v %q", err, buf[:n])
+	got, err := hs.Unwrap()
+	if err != nil || !bytes.Equal(got, msg) {
+		t.Fatalf("unwrap: %v %q", err, got)
 	}
 	if _, err := hs.Wrap(msg); err != nil {
 		t.Fatalf("wrap: %v", err)
 	}
-	dcli.Close()
+	dcli.SetReadDeadline(time.Now().Add(3 * time.Second))
+	buf := make([]byte, 256)
+	n, err := dcli.Read(buf)
+	if err != nil || !bytes.Equal(buf[:n], msg) {
+		t.Fatalf("client roundtrip: %v %q", err, buf[:n])
+	}
 }
 
 func genCert(t *testing.T) *tls.Certificate {
@@ -166,8 +169,8 @@ func (pipeAddr) String() string  { return "pipe" }
 
 // TestPionDTLSHandshakeInProcess exercises the full pion DTLS handshake
 // and record layer through PionHandshaker over an in-process datagram
-// link (the kernel UDP loopback is refused by the sandbox; the real
-// on-device exchange remains the environment-dependent check).
+// link. The separate UDP test exercises the same handshake over loopback;
+// interoperability with an actual AP remains a separate check.
 func TestPionDTLSHandshakeInProcess(t *testing.T) {
 	certGen := genCert(t)
 
@@ -194,9 +197,10 @@ func TestPionDTLSHandshakeInProcess(t *testing.T) {
 		t.Fatalf("client handshake: %v", err)
 	}
 	select {
-	case <-hs.done:
 	case e := <-bindErr:
-		t.Fatalf("server bind: %v", e)
+		if e != nil {
+			t.Fatalf("server bind: %v", e)
+		}
 	case <-time.After(5 * time.Second):
 		t.Fatal("server handshake timeout")
 	}

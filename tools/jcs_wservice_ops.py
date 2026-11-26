@@ -5,8 +5,8 @@ import re
 from collections import defaultdict
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
-RAW = Path('/tmp/lua_jcs_fields.jsonl')
+from ac100_env import ROOT
+from ac100_env import LUA_FIELDS as RAW
 OUT = ROOT / 'notes/vendor-web/jcs-wservice-ops.tsv'
 OPS = {'O': 0, 'J': 1, 'K': 2, 'Y': 3, 'x': 4}
 NAMES = {0: 'edit', 1: 'bind_rf', 2: 'unbind_rf', 3: 'enable', 4: 'disable'}

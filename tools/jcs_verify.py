@@ -4,7 +4,7 @@ import json
 import sys
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
+from ac100_env import ROOT
 REG = ROOT / "notes/vendor-web/jcs-registry.tsv"
 SAMPLES = ROOT / "notes/vendor-web/captures/jcs-samples.jsonl"
 

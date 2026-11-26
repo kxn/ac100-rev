@@ -79,6 +79,9 @@ func TestEngineApLifecycle(t *testing.T) {
 		t.Fatal(err)
 	}
 	e.RegisterAttachHandlers(fixtureIdentity{})
+	ran := make(chan struct{}, 1)
+	e.OnEntRun = func(x *Session) error { ran <- struct{}{}; return nil }
+	defer e.Close()
 	go func() { _ = e.Run() }()
 
 	c, err := net.DialUDP("udp", nil, &net.UDPAddr{IP: net.IPv4(127, 0, 0, 1), Port: e.LocalPort()})
@@ -120,8 +123,8 @@ func TestEngineApLifecycle(t *testing.T) {
 	}
 	e.mu.Lock()
 	s := e.sessions[c.LocalAddr().String()]
-	st := s.State
 	e.mu.Unlock()
+	st := lockedState(s)
 	if s == nil || st != StateJoinFinish {
 		t.Fatalf("session state = %v (want JOIN_FINISH)", st)
 	}
@@ -137,19 +140,17 @@ func TestEngineApLifecycle(t *testing.T) {
 	if err != nil || rsp.Control.MsgType != capwap.MsgConfigurationStatusResponse {
 		t.Fatalf("bad cfg status response: %v", err)
 	}
-	if st := s.State; st != StateConfigure {
+	if st := lockedState(s); st != StateConfigure {
 		t.Fatalf("state = %s (want CONFIGURE)", StateNames[st])
 	}
 
 	// --- change state event (seq 4): CONFIGURE→RUN + ent-1 listeners fired ---
-	ran := make(chan struct{}, 1)
-	e.OnEntRun = func(x *Session) error { ran <- struct{}{}; return nil }
 	c.Write(withSeq(t, "cw_cse_req_0074ee9c.bin", 4))
 	rsp, err = capwap.ParsePacket(read(t))
 	if err != nil || rsp.Control.MsgType != capwap.MsgChangeStateEventResponse {
 		t.Fatalf("bad cse response: %v", err)
 	}
-	if st := s.State; st != StateRun {
+	if st := lockedState(s); st != StateRun {
 		t.Fatalf("state = %s (want RUN)", StateNames[st])
 	}
 	select {
@@ -183,3 +184,9 @@ func TestEngineApLifecycle(t *testing.T) {
 
 // cwengMsgEcho — capwap package doesn't re-export 13 under this name.
 const cwengMsgEcho = 13
+
+func lockedState(s *Session) uint32 {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	return s.State
+}

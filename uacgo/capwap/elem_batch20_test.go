@@ -17,11 +17,11 @@ func TestBatch20Roundtrips(t *testing.T) {
 		t.Fatalf("ndp para: %v", err)
 	}
 
-	rl := PrivRrmNeighsList{A: 1, B: 2, Count: 1}
+	rl := PrivRrmNeighsList{A: 1, B: 2}
 	rl.Neighs = append(rl.Neighs, RrmNeigh{})
 	rl.Neighs[0].MAC[5] = 0x66
-	rl.Neighs[0].U8[4] = 9
-	if v, err := ParsePrivRrmNeighsList(rl.AssembleValue()); err != nil || v.Count != 1 || v.Neighs[0].U8[4] != 9 {
+	rl.Neighs[0].Samples = []RrmRSSI{{Radio: 1, Power: 20, RSSI: -69}, {Radio: 2, Power: 24, RSSI: -75}}
+	if v, err := ParsePrivRrmNeighsList(rl.AssembleValue()); err != nil || len(v.Neighs) != 1 || len(v.Neighs[0].Samples) != 2 || v.Neighs[0].Samples[1].RSSI != -75 {
 		t.Fatalf("rrm neighs: %v", err)
 	}
 
@@ -36,13 +36,13 @@ func TestBatch20Roundtrips(t *testing.T) {
 		t.Fatalf("log report para: %v", err)
 	}
 
-	d6 := PrivDhcpv6Defend{Enable: 1, Count: 2, SvrLen: 8, Tail: []byte{1, 2}}
-	if v, err := ParsePrivDhcpv6Defend(d6.AssembleValue()); err != nil || v.SvrLen != 8 {
+	d6 := PrivDhcpv6Defend{Enable: 1, Count: 1, SvrLen: 1, Tail: make([]byte, 17)}
+	if v, err := ParsePrivDhcpv6Defend(d6.AssembleValue()); err != nil || v.SvrLen != 1 {
 		t.Fatalf("dhcpv6: %v", err)
 	}
 
-	nd := PrivNdDefend{Enable: 1, Count: 2, W: 3, Tail: bytes.Repeat([]byte{0}, 22)}
-	if v, err := ParsePrivNdDefend(nd.AssembleValue()); err != nil || v.W != 3 {
+	nd := PrivNdDefend{Enable: 1, Count: 1, W: 1, Tail: bytes.Repeat([]byte{0}, 22)}
+	if v, err := ParsePrivNdDefend(nd.AssembleValue()); err != nil || v.W != 1 {
 		t.Fatalf("nd defend: %v", err)
 	}
 

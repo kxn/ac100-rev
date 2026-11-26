@@ -19,8 +19,9 @@ LINE = re.compile(r"^\s*([0-9a-f]+):\s+([0-9a-f]{8})\s")
 
 def main():
     syms = json.loads((RE_DIR / "syms.json").read_text())
-    funs = {int(a, 0) if isinstance(a, str) else a: o for a, o in syms["functions"].items()}
-    funs = {int(a): o for a, o in funs.items()}
+    # json encodes integer dict keys as decimal strings, not hex literals.
+    funs = {int(a, 16) if isinstance(a, str) and a.startswith("0x") else int(a): o
+            for a, o in syms["functions"].items()}
     starts = sorted(funs)
 
     OUT.mkdir(parents=True, exist_ok=True)

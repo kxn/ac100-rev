@@ -2,6 +2,7 @@ package cweng
 
 import (
 	"encoding/binary"
+	"fmt"
 
 	"uacgo/capwap"
 )
@@ -54,6 +55,9 @@ func (e *Engine) SendConfigUpdate(s *Session, envelopeValues [][]byte) error {
 func (e *Engine) sendACRequest(s *Session, msgType uint32, privs ...capwap.PrivElementValue) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
+	if len(s.pending) != 0 {
+		return fmt.Errorf("AP already has a pending command")
+	}
 	next := s.OutSeq + 1
 	if s.OutSeq == 0xff { // signed-char -1 wrap in the binary
 		next = 1
@@ -75,7 +79,7 @@ func (e *Engine) sendACRequest(s *Session, msgType uint32, privs ...capwap.PrivE
 		}
 		pkt.Elements = append(pkt.Elements, capwap.Element{Type: 0x0025, Value: v})
 	}
-	return e.sendTo(s.Addr, pkt.Assemble())
+	return e.sendSession(s, pkt.Assemble())
 }
 
 func encodeU32(v uint32) []byte {

@@ -4,7 +4,7 @@ import csv
 import json
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
+from ac100_env import ROOT
 DOCS = ROOT / 'notes/vendor-web'
 
 

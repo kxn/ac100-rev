@@ -9,10 +9,11 @@ import "encoding/binary"
 // Layout per cw_sta_info_list_parse:
 //
 //	u8 radio id (<0x20)
-//	BE32 add count (<0x11)
+//	BE32 WLAN id (<0x11), BE32 station count
 //	entries × { BE32 a, BE32 b, 6-byte mac }   (14 bytes each)
 type StaInfoList struct {
 	RadioID uint8
+	WLANID  uint32
 	Entries []StaInfoEntry
 }
 
@@ -25,15 +26,15 @@ type StaInfoEntry struct {
 
 // ParseStaInfoList decodes the element value bytes.
 func ParseStaInfoList(v []byte) (*StaInfoList, error) {
-	if len(v) < 5 || v[0] >= 0x20 {
+	if len(v) < 9 || v[0] >= 0x20 {
 		return nil, ErrShortPacket
 	}
-	l := &StaInfoList{RadioID: v[0]}
-	count := binary.BigEndian.Uint32(v[1:])
-	if count >= 0x11 {
+	l := &StaInfoList{RadioID: v[0], WLANID: binary.BigEndian.Uint32(v[1:])}
+	count := binary.BigEndian.Uint32(v[5:])
+	if l.WLANID >= 0x11 || count > 1000 || uint64(count)*14+9 != uint64(len(v)) {
 		return nil, ErrShortPacket
 	}
-	off := 5
+	off := 9
 	for i := uint32(0); i < count; i++ {
 		if off+14 > len(v) {
 			return nil, ErrShortPacket
@@ -50,7 +51,8 @@ func ParseStaInfoList(v []byte) (*StaInfoList, error) {
 
 // AssembleValue writes the element value bytes.
 func (l *StaInfoList) AssembleValue() []byte {
-	b := []byte{l.RadioID, 0, 0, 0, byte(len(l.Entries))}
+	b := binary.BigEndian.AppendUint32([]byte{l.RadioID}, l.WLANID)
+	b = binary.BigEndian.AppendUint32(b, uint32(len(l.Entries)))
 	for _, e := range l.Entries {
 		b = binary.BigEndian.AppendUint32(b, e.A)
 		b = binary.BigEndian.AppendUint32(b, e.B)

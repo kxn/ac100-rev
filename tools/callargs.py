@@ -8,13 +8,14 @@ We resolve them against the uac image directly (LOAD1/LOAD2 mapping).
 import re
 import sys
 from pathlib import Path
+from ac100_env import LEGACY_FW, LEGACY_SHA256, require_uac
 
 # repo root (ac100-rev checkout); override with AC100_REV_ROOT
 RE_DIR = Path(__import__("os").environ.get("AC100_REV_ROOT",
     str(Path(__file__).resolve().parents[1])))
 ASM = RE_DIR / "asm"
 
-DATA = (RE_DIR / "firmware" / "usr/sbin" / "uac").read_bytes()
+DATA = require_uac(LEGACY_FW, LEGACY_SHA256).read_bytes()
 LOAD1_VA, LOAD1_SZ = 0x400000, 0x321164
 LOAD2_VA, LOAD2_OFF, LOAD2_SZ = 0x731164, 0x321164, 0x28774
 

@@ -3,74 +3,52 @@ package capwap
 // Batch-15: upgrade flow + feature/capability private elements,
 // field orders from the vendor assemble functions.
 
-// PrivLargeFirmwareInfo is private 0xaf (min=max=0x1d=29):
-//
-//	u8 type + BE32 pad + BE32 total_size + BE32 md5_offset
-//	(restore8 + restore32@+4 + restore32@+8 + restore32@+0x1c)
+// PrivLargeFirmwareInfo (0xaf): type8, total32, sub-image count32,
+// MD5[16], flags32. No C structure alignment is present on the wire.
 type PrivLargeFirmwareInfo struct {
 	Type      uint8
 	TotalSize uint32
-	MD5Offset uint32
-	Unknown3  uint32 // +0x1c
+	SubImages uint32
+	MD5       [16]byte
+	Flags     uint32
 }
 
-// AssembleValue writes the 29-byte value (header + padding to min/max).
 func (p PrivLargeFirmwareInfo) AssembleValue() []byte {
-	b := []byte{p.Type}
-	b = AppendUint32BE(b, p.TotalSize)
-	b = AppendUint32BE(b, p.MD5Offset)
-	for len(b) < 29 {
-		b = append(b, 0)
-	}
-	return b
+	b := AppendUint32BE([]byte{p.Type}, p.TotalSize)
+	b = AppendUint32BE(b, p.SubImages)
+	b = append(b, p.MD5[:]...)
+	return AppendUint32BE(b, p.Flags)
 }
-
-// ParsePrivLargeFirmwareInfo decodes the 29-byte value.
 func ParsePrivLargeFirmwareInfo(v []byte) (*PrivLargeFirmwareInfo, error) {
 	if len(v) != 29 {
 		return nil, ErrShortPacket
 	}
-	return &PrivLargeFirmwareInfo{
-		Type:      v[0],
-		TotalSize: Uint32BE(v[1:5]),
-		MD5Offset: Uint32BE(v[5:9]),
-	}, nil
+	p := &PrivLargeFirmwareInfo{Type: v[0], TotalSize: Uint32BE(v[1:]), SubImages: Uint32BE(v[5:]), Flags: Uint32BE(v[25:])}
+	copy(p.MD5[:], v[9:25])
+	return p, nil
 }
 
-// PrivSubFirmwareInfo is private 0xb0 (min=max=0x1a=26):
-//
-//	u8 type + u8 sub_type + BE32 total_size + BE32 md5_offset
+// PrivSubFirmwareInfo (0xb0): type8, index8, size32, MD5[16], flags32.
 type PrivSubFirmwareInfo struct {
 	Type      uint8
 	SubType   uint8
 	TotalSize uint32
-	MD5Offset uint32
+	MD5       [16]byte
+	Flags     uint32
 }
 
-// AssembleValue writes the 26-byte value.
-// Wire: type(0) + sub_type(1) + BE32 total_size + BE32 md5_offset + pad.
 func (p PrivSubFirmwareInfo) AssembleValue() []byte {
-	b := []byte{p.Type, p.SubType}
-	b = AppendUint32BE(b, p.TotalSize)
-	b = AppendUint32BE(b, p.MD5Offset)
-	for len(b) < 26 {
-		b = append(b, 0)
-	}
-	return b
+	b := AppendUint32BE([]byte{p.Type, p.SubType}, p.TotalSize)
+	b = append(b, p.MD5[:]...)
+	return AppendUint32BE(b, p.Flags)
 }
-
-// ParsePrivSubFirmwareInfo decodes the 26-byte value.
-// Wire: type(1) + sub_type(1) + BE32 total_size + BE32 md5_offset + pad.
 func ParsePrivSubFirmwareInfo(v []byte) (*PrivSubFirmwareInfo, error) {
-	if len(v) != 0x1a {
+	if len(v) != 26 {
 		return nil, ErrShortPacket
 	}
-	return &PrivSubFirmwareInfo{
-		Type:      v[0],
-		SubType:   v[1],
-		TotalSize: Uint32BE(v[2:6]),
-		MD5Offset: Uint32BE(v[6:10]),
-	}, nil
+	p := &PrivSubFirmwareInfo{Type: v[0], SubType: v[1], TotalSize: Uint32BE(v[2:]), Flags: Uint32BE(v[22:])}
+	copy(p.MD5[:], v[6:22])
+	return p, nil
 }
 
 // PrivSubFirmwareAction is private 0xb1 (min=max=6):
@@ -98,32 +76,28 @@ func ParsePrivSubFirmwareAction(v []byte) (*PrivSubFirmwareAction, error) {
 	}, nil
 }
 
-// PrivApWebAccount is private 0xa9 (min 4 max 0x84):
-//
-//	BE16 username_len + u8 enabled + u8 pad + username/password
-//
-// (restore16 + restore8 + restore8; remaining fields carried in Tail).
+// PrivApWebAccount is private 0xa9: BE16 encryption algorithm, username
+// length8, password length8, then both strings. V6 assembler @0x6ae024.
 type PrivApWebAccount struct {
-	UserLen uint16
-	Enabled uint8
-	Pad     uint8
-	Tail    []byte
+	Algorithm uint16
+	Username  []byte
+	Password  []byte
 }
 
 // AssembleValue writes header + tail.
 func (p PrivApWebAccount) AssembleValue() []byte {
-	b := AppendUint16BE(nil, p.UserLen)
-	b = append(b, p.Enabled, p.Pad)
-	return append(b, p.Tail...)
+	b := AppendUint16BE(nil, p.Algorithm)
+	b = append(b, byte(len(p.Username)), byte(len(p.Password)))
+	b = append(b, p.Username...)
+	return append(b, p.Password...)
 }
 
 // ParsePrivApWebAccount decodes the header + tail.
 func ParsePrivApWebAccount(v []byte) (*PrivApWebAccount, error) {
-	if len(v) < 4 {
+	if len(v) < 4 || len(v) > 132 || int(v[2])+int(v[3])+4 != len(v) {
 		return nil, ErrShortPacket
 	}
-	p := &PrivApWebAccount{UserLen: Uint16BE(v), Enabled: v[2], Pad: v[3]}
-	p.Tail = append([]byte(nil), v[4:]...)
+	p := &PrivApWebAccount{Algorithm: Uint16BE(v), Username: append([]byte{}, v[4:4+int(v[2])]...), Password: append([]byte{}, v[4+int(v[2]):]...)}
 	return p, nil
 }
 
@@ -131,19 +105,20 @@ func ParsePrivApWebAccount(v []byte) (*PrivApWebAccount, error) {
 // (cw_priv_lag_config_assemble: restore8×3).
 type PrivLAGConfig struct {
 	A, B, C uint8
+	Ports   []byte
 }
 
 // AssembleValue writes the 3 bytes.
 func (p PrivLAGConfig) AssembleValue() []byte {
-	return []byte{p.A, p.B, p.C}
+	return append([]byte{p.A, p.B, byte(len(p.Ports))}, p.Ports...)
 }
 
 // ParsePrivLAGConfig decodes the 3 bytes.
 func ParsePrivLAGConfig(v []byte) (*PrivLAGConfig, error) {
-	if len(v) != 3 {
+	if len(v) < 3 || len(v) > 23 || int(v[2])+3 != len(v) {
 		return nil, ErrShortPacket
 	}
-	return &PrivLAGConfig{A: v[0], B: v[1], C: v[2]}, nil
+	return &PrivLAGConfig{A: v[0], B: v[1], C: v[2], Ports: append([]byte{}, v[3:]...)}, nil
 }
 
 // PrivFitFatButtonStatus is private 0xa4 (min=max=4): BE32

@@ -12,12 +12,13 @@ Load mapping (from readelf -l):
 import json
 import struct
 import sys
+from functools import cache
 from pathlib import Path
+from ac100_env import ROOT, LEGACY_FW, LEGACY_SHA256, require_uac
 
 # extracted rootfs containing usr/sbin/uac + symbol tables;
 # default: this repo's firmware/ tree. Override with AC100_FW_ROOT.
-FW_ROOT = Path(__import__("os").environ.get("AC100_FW_ROOT",
-    str(Path(__file__).resolve().parents[1] / "firmware")))
+FW_ROOT = LEGACY_FW
 UAC = FW_ROOT / "usr/sbin/uac"
 SYM_FUN = FW_ROOT / "usr/sbin/uac_symbol_fun"
 SYM_OBJ = FW_ROOT / "usr/sbin/uac_symbol_obj"
@@ -50,11 +51,16 @@ def va_to_off(va):
     return None
 
 
+@cache
+def binary_data():
+    return require_uac(FW_ROOT, LEGACY_SHA256).read_bytes()
+
+
 def read_at(va, n):
     off = va_to_off(va)
     if off is None:
         return None
-    data = UAC.read_bytes()
+    data = binary_data()
     if off + n > len(data):
         return None
     return data[off:off + n]
@@ -63,16 +69,18 @@ def read_at(va, n):
 def main():
     cmd = sys.argv[1] if len(sys.argv) > 1 else "dump-syms"
     if cmd == "dump-syms":
+        binary_data()
         funs = parse_sym(SYM_FUN)
         objs = parse_sym(SYM_OBJ)
         out = {"functions": funs, "objects": objs}
-        Path(__import__("os").environ.get("AC100_REV_ROOT", str(Path(__file__).resolve().parents[1]))) / "syms.json".write_text(json.dumps(out, indent=0))
+        ROOT.mkdir(parents=True, exist_ok=True)
+        (ROOT / "syms.json").write_text(json.dumps(out, indent=0))
         print(f"functions={len(funs)} objects={len(objs)} -> syms.json")
     elif cmd == "extract":
         # extract data objects by name -> files under re/export/data/
         objs = parse_sym(SYM_OBJ)
         names = sys.argv[2:]
-        outdir = Path(__import__("os").environ.get("AC100_REV_ROOT", str(Path(__file__).resolve().parents[1]))) / "ghidra-export" / "data"
+        outdir = ROOT / "ghidra-export" / "data"
         outdir.mkdir(parents=True, exist_ok=True)
         for name in names:
             hits = [a for a, o in objs.items() if o["name"] == name]

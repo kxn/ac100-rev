@@ -103,16 +103,7 @@ func (e *Engine) RegisterWserviceHandlers(cfg WserviceConfig) {
 // packAdvRd serialises the adv-rd-para value at its wire length
 // (15-byte head + even-length pad byte, per cw_priv_adv_rd_para_parse).
 func packAdvRd(a *capwap.PrivAdvRdPara) []byte {
-	b := make([]byte, 0, 16)
-	b = append(b, a.RadioID)
-	b = append(b, a.Head[:]...)
-	if len(b)%2 == 0 { // even total → [0x15] byte participates
-		b = append(b, a.Byte15)
-	}
-	if a.Tail6 != nil {
-		b = append(b, a.Tail6...)
-	}
-	return b
+	return a.AssembleValue()
 }
 
 // envelopeTLV wraps one private TLV into an envelope value.

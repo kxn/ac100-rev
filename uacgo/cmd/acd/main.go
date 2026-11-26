@@ -10,11 +10,22 @@
 package main
 
 import (
+	"context"
+	"encoding/hex"
+	"encoding/json"
 	"flag"
 	"log"
 	"net"
+	"net/http"
 	"os"
+	"os/signal"
 	"strconv"
+	"sync"
+	"syscall"
+	"time"
+	_ "time/tzdata"
+	"uacgo/admin"
+	"uacgo/dhcpserver"
 
 	"uacgo/capwap"
 	"uacgo/cweng"
@@ -29,7 +40,48 @@ func main() {
 	port := flag.Int("port", 5246, "UDP control port")
 	listen := flag.String("iface", "", "listen address (default all)")
 	debug := flag.Bool("debug", false, "verbose engine logs")
+	interfaceName := flag.String("interface", "", "bind control traffic to this network interface (broadcast supported)")
+	dtlsCert := flag.String("dtls-cert", "", "RSA certificate for the AP DTLS 1.0 compatibility transport")
+	dtlsKey := flag.String("dtls-key", "", "matching RSA key")
+	tracePath := flag.String("trace", "", "write private wire and decrypted CAPWAP trace JSONL")
+	httpAddress := flag.String("http", "127.0.0.1:8090", "local management HTTP address")
+	dhcpConfig := flag.String("ap-dhcp", "", "opt-in AP-only DHCP JSON configuration (Linux)")
 	flag.Parse()
+	if *port < 1 || *port > 65535 {
+		log.Fatal("port must be between 1 and 65535")
+	}
+	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+	defer cancel()
+	if *interfaceName == "" {
+		var saved struct {
+			Interface string `json:"interface"`
+		}
+		if b, err := os.ReadFile(*dataDir + "/controller.json"); err == nil && json.Unmarshal(b, &saved) == nil {
+			*interfaceName = saved.Interface
+		}
+	}
+	if *dhcpConfig != "" {
+		b, err := os.ReadFile(*dhcpConfig)
+		if err != nil {
+			log.Fatal(err)
+		}
+		var cfg dhcpserver.Config
+		if err = json.Unmarshal(b, &cfg); err != nil {
+			log.Fatal(err)
+		}
+		if cfg.Interface != *interfaceName {
+			log.Fatal("DHCP interface must match controller binding")
+		}
+		dhcp, err := dhcpserver.New(cfg)
+		if err != nil {
+			log.Fatal(err)
+		}
+		go func() {
+			if err := dhcp.Serve(ctx); err != nil {
+				log.Fatalf("AP-only DHCP: %v", err)
+			}
+		}()
+	}
 	if *debug {
 		os.Setenv("UACGO_DEBUG", "1")
 	}
@@ -63,6 +115,21 @@ func main() {
 		log.Fatalf("listen udp %d: %v", *port, err)
 	}
 	e.MaxSessions = maxSess
+	e.Debug = *debug
+	if *tracePath != "" {
+		f, err := os.OpenFile(*tracePath, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0600)
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer f.Close()
+		var traceMu sync.Mutex
+		e.Trace(func(direction string, data []byte) {
+			b, _ := json.Marshal(map[string]any{"time": time.Now().UTC(), "direction": direction, "hex": hex.EncodeToString(data)})
+			traceMu.Lock()
+			defer traceMu.Unlock()
+			_, _ = f.Write(append(b, '\n'))
+		})
+	}
 	e.ACName = id.ACName
 	e.ACFirmware = id.ACFirmware
 	e.ControlPort = uint16(*port)
@@ -76,7 +143,32 @@ func main() {
 	} else {
 		e.ControlIP = cweng.ParseIPv4(id.ControlIP)
 	}
+	if *interfaceName != "" && *listen == "" {
+		if nic, err := net.InterfaceByName(*interfaceName); err == nil {
+			addrs, _ := nic.Addrs()
+			for _, a := range addrs {
+				ip, _, _ := net.ParseCIDR(a.String())
+				if p := ip.To4(); p != nil {
+					copy(e.ControlIP[:], p)
+					listenAddr = ip.String()
+					break
+				}
+			}
+		}
+	}
+	if *interfaceName != "" {
+		if err := e.BindInterface(*interfaceName); err != nil {
+			log.Fatal(err)
+		}
+	}
+	if *dtlsCert != "" || *dtlsKey != "" {
+		if err := e.EnableLegacyDTLS(*dtlsCert, *dtlsKey); err != nil {
+			log.Fatal(err)
+		}
+	}
+	e.UseAPDB(apdb)
 	e.RegisterAttachHandlers(fileIdentity{id: id, apdb: apdb})
+	e.RegisterV6Compatibility()
 	e.UseStore(&cweng.SQLiteAPStore{Cfg: stores.Apmngr.DB(), Run: stores.Apmngr.DB()})
 	rateDefault, err := cweng.LoadRateDefault(*dataDir + "/rate-default.bin")
 	if err != nil {
@@ -85,6 +177,33 @@ func main() {
 	e.RegisterWserviceHandlers(&cweng.StoreWserviceConfig{Stores: stores, RateDefault: rateDefault})
 	clients := cweng.NewClientTable()
 	e.RegisterWstaHandlers(clients)
+	e.RegisterObservationHandlers()
+	e.RegisterRPCHandlers()
+	e.RegisterTelemetryHandlers()
+	manager, err := admin.New(e, clients, *dataDir)
+	if err != nil {
+		log.Fatal(err)
+	}
+	go manager.Run(ctx)
+	go func() { <-ctx.Done(); _ = e.Close() }()
+	if *httpAddress != "" {
+		host, _, err := net.SplitHostPort(*httpAddress)
+		if err != nil || !net.ParseIP(host).IsLoopback() {
+			log.Fatal("management HTTP currently requires a loopback address")
+		}
+		server := &http.Server{Addr: *httpAddress, Handler: manager.Handler(), ReadHeaderTimeout: 5 * time.Second}
+		listener, err := net.Listen("tcp", *httpAddress)
+		if err != nil {
+			log.Fatalf("management HTTP: %v", err)
+		}
+		defer server.Close()
+		go func() {
+			log.Printf("management UI: http://%s", *httpAddress)
+			if err := server.Serve(listener); err != nil && err != http.ErrServerClosed {
+				log.Printf("management HTTP: %v", err)
+			}
+		}()
+	}
 	var modelList []any
 	for _, ap := range apdb.APList {
 		modelList = append(modelList, map[string]any{
@@ -102,7 +221,7 @@ func main() {
 
 	log.Printf("acd (uac-go) listening on :%d, max_sessions=%d, ac=%s, apdb=%s (%d models)",
 		*port, e.MaxSessions, id.ACName, apdb.Version, len(apdb.APList))
-	if err := e.Run(); err != nil {
+	if err := e.Run(); err != nil && ctx.Err() == nil {
 		log.Fatalf("engine: %v", err)
 	}
 }
@@ -161,7 +280,7 @@ func (f fileIdentity) CfgStatusFixed() cweng.CfgStatusFixed {
 		DecryptPeriod: [3]byte{0x01, 0x00, 0x78},
 		IdleTimeout:   3600,
 		WTPFallback:   1,
-		ACIPv4List:    [][4]byte{cweng.ParseIPv4(f.id.ControlIP)},
+		ACIPv4List:    [][4]byte{f.LocalAddress()},
 	}
 }
 

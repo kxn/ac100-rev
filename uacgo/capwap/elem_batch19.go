@@ -37,68 +37,157 @@ func ParsePrivFailStation(v []byte) (*PrivFailStation, error) {
 	return p, nil
 }
 
-// PrivRoamingTrigger is 0x58. Wire (cw_priv_roaming_trigger_parse
-// @0x5bd644 retrieve sequence r8 r8 r8 r32 rbytes(6) r8 r8 r8 r8
-// rbytes(6) r8 r8 r8 = 26 bytes):
-// {u8 a, u8 b, u8 c, BE32, mac1[6], u8×4, mac2[6], u8×3}.
+// PrivRoamingTrigger is 0x58. V6 @0x682a2c: header 7 bytes,
+// count <=200, variable station rows with <=12 neighbor reports per row.
+// The old 26-byte prototype encoded one row as the entire message.
+type RoamNeighborReport struct {
+	BSSID        [6]byte
+	Signal, B, C uint8
+}
+type RoamTriggerStation struct {
+	MAC                 [6]byte
+	WLAN, Reason, Flags uint8
+	Neighbors           []RoamNeighborReport
+}
 type PrivRoamingTrigger struct {
-	A, B, C uint8
-	W       uint32
-	MAC1    [6]byte
-	U8a     uint8
-	U8b     uint8
-	U8c     uint8
-	U8d     uint8
-	MAC2    [6]byte
-	Tail    [3]uint8
+	Radio, ChannelLoad uint8
+	NoiseFloor         int8
+	Stations           []RoamTriggerStation
 }
 
-// AssembleValue writes the 26 bytes.
 func (p PrivRoamingTrigger) AssembleValue() []byte {
-	b := []byte{p.A, p.B, p.C}
-	b = AppendUint32BE(b, p.W)
-	b = append(b, p.MAC1[:]...)
-	b = append(b, p.U8a, p.U8b, p.U8c, p.U8d)
-	b = append(b, p.MAC2[:]...)
-	return append(b, p.Tail[:]...)
+	b := AppendUint32BE([]byte{p.Radio, p.ChannelLoad, byte(p.NoiseFloor)}, uint32(len(p.Stations)))
+	for _, s := range p.Stations {
+		b = append(b, s.MAC[:]...)
+		b = append(b, s.WLAN, s.Reason, s.Flags, byte(len(s.Neighbors)))
+		for _, n := range s.Neighbors {
+			b = append(b, n.BSSID[:]...)
+			b = append(b, n.Signal, n.B, n.C)
+		}
+	}
+	return b
 }
-
-// ParsePrivRoamingTrigger decodes the 26 bytes.
 func ParsePrivRoamingTrigger(v []byte) (*PrivRoamingTrigger, error) {
-	if len(v) != 26 {
+	if len(v) < 7 {
 		return nil, ErrShortPacket
 	}
-	p := &PrivRoamingTrigger{A: v[0], B: v[1], C: v[2], W: Uint32BE(v[3:])}
-	copy(p.MAC1[:], v[7:13])
-	p.U8a, p.U8b, p.U8c, p.U8d = v[13], v[14], v[15], v[16]
-	copy(p.MAC2[:], v[17:23])
-	copy(p.Tail[:], v[23:26])
+	n := Uint32BE(v[3:])
+	if n > 200 {
+		return nil, ErrShortPacket
+	}
+	p := &PrivRoamingTrigger{Radio: v[0], ChannelLoad: v[1], NoiseFloor: int8(v[2])}
+	v = v[7:]
+	for i := uint32(0); i < n; i++ {
+		if len(v) < 10 || v[9] > 12 {
+			return nil, ErrShortPacket
+		}
+		var s RoamTriggerStation
+		copy(s.MAC[:], v)
+		s.WLAN, s.Reason, s.Flags = v[6], v[7], v[8]
+		count := int(v[9])
+		v = v[10:]
+		if len(v) < count*9 {
+			return nil, ErrShortPacket
+		}
+		for j := 0; j < count; j++ {
+			var r RoamNeighborReport
+			copy(r.BSSID[:], v)
+			r.Signal, r.B, r.C = v[6], v[7], v[8]
+			s.Neighbors = append(s.Neighbors, r)
+			v = v[9:]
+		}
+		p.Stations = append(p.Stations, s)
+	}
+	if len(v) != 0 {
+		return nil, ErrShortPacket
+	}
 	return p, nil
 }
 
-// PrivRoamingCalcResult is 0x59 (min 10 max 0x2c8a):
-// u8 a + u8 b + BE32 count + entries
-// (cw_priv_roaming_calculate_result_parse @0x5bc118.)
+// The 16-byte AP bitmap indexes the message's AP union; each station has
+// at most six {AP index,radio,WLAN,BSSID[6],channel} candidate records.
+type RoamCandidate struct {
+	APIndex, Radio, WLAN uint8
+	BSSID                [6]byte
+	Channel              uint8
+}
+type RoamResultStation struct {
+	MAC        [6]byte
+	APBitmap   [16]byte
+	Candidates []RoamCandidate
+}
 type PrivRoamingCalcResult struct {
-	A    uint8
-	B    uint32
-	Data []byte
+	Radio, SourceAPIndex uint8
+	APs                  [][6]byte
+	Stations             []RoamResultStation
 }
 
-// AssembleValue writes header + data.
 func (p PrivRoamingCalcResult) AssembleValue() []byte {
-	b := []byte{p.A}
-	b = AppendUint32BE(b, p.B)
-	return append(b, p.Data...)
+	b := AppendUint32BE([]byte{p.SourceAPIndex, p.Radio}, uint32(len(p.Stations)))
+	b = AppendUint32BE(b, uint32(len(p.APs)))
+	for _, a := range p.APs {
+		b = append(b, a[:]...)
+	}
+	for _, s := range p.Stations {
+		b = append(b, s.MAC[:]...)
+		b = append(b, s.APBitmap[:]...)
+		b = append(b, byte(len(s.Candidates)))
+		for _, c := range s.Candidates {
+			b = append(b, c.APIndex, c.Radio, c.WLAN)
+			b = append(b, c.BSSID[:]...)
+			b = append(b, c.Channel)
+		}
+	}
+	return b
 }
-
-// ParsePrivRoamingCalcResult decodes header + data.
 func ParsePrivRoamingCalcResult(v []byte) (*PrivRoamingCalcResult, error) {
-	if len(v) < 5 {
+	if len(v) < 10 {
 		return nil, ErrShortPacket
 	}
-	p := &PrivRoamingCalcResult{A: v[0], B: Uint32BE(v[1:5])}
-	p.Data = append([]byte(nil), v[5:]...)
+	count, aps := Uint32BE(v[2:]), Uint32BE(v[6:])
+	if count > 128 || aps > 128 {
+		return nil, ErrShortPacket
+	}
+	p := &PrivRoamingCalcResult{Radio: v[1], SourceAPIndex: v[0]}
+	v = v[10:]
+	if len(v) < int(aps)*6 {
+		return nil, ErrShortPacket
+	}
+	for i := uint32(0); i < aps; i++ {
+		var a [6]byte
+		copy(a[:], v)
+		p.APs = append(p.APs, a)
+		v = v[6:]
+	}
+	if aps > 0 && uint32(p.SourceAPIndex) >= aps {
+		return nil, ErrShortPacket
+	}
+	for i := uint32(0); i < count; i++ {
+		if len(v) < 23 || v[22] > 6 {
+			return nil, ErrShortPacket
+		}
+		var s RoamResultStation
+		copy(s.MAC[:], v)
+		copy(s.APBitmap[:], v[6:22])
+		n := int(v[22])
+		v = v[23:]
+		if len(v) < n*10 {
+			return nil, ErrShortPacket
+		}
+		for j := 0; j < n; j++ {
+			c := RoamCandidate{APIndex: v[0], Radio: v[1], WLAN: v[2], Channel: v[9]}
+			if uint32(c.APIndex) >= aps {
+				return nil, ErrShortPacket
+			}
+			copy(c.BSSID[:], v[3:9])
+			s.Candidates = append(s.Candidates, c)
+			v = v[10:]
+		}
+		p.Stations = append(p.Stations, s)
+	}
+	if len(v) != 0 {
+		return nil, ErrShortPacket
+	}
 	return p, nil
 }
 

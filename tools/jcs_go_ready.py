@@ -3,7 +3,7 @@
 import json
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
+from ac100_env import ROOT
 SCHEMA = ROOT / 'notes/vendor-web/jcs-schema.tsv'
 SAMPLES = ROOT / 'notes/vendor-web/captures/jcs-samples.jsonl'
 WARN = ROOT / 'notes/vendor-web/captures/type-warnings.tsv'

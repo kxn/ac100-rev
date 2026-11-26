@@ -9,7 +9,7 @@ import json
 import re
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
+from ac100_env import ROOT
 SCHEMA = ROOT / "notes/vendor-web/jcs-schema.tsv"
 
 

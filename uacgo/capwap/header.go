@@ -78,6 +78,9 @@ func ParseHeader(b []byte) (Header, int, error) {
 	h.Version = uint8(w >> 28)
 	h.Type = uint8(w>>24) & 0xf
 	h.Hlen = uint8(w>>19) & 0x1f
+	if h.Hlen < 2 {
+		return h, 0, ErrShortPacket
+	}
 	h.Rid = uint8(w>>14) & 0x1f
 	h.Wbid = uint8(w>>9) & 0x1f
 	h.T = uint8(w>>8) & 1
@@ -92,7 +95,7 @@ func ParseHeader(b []byte) (Header, int, error) {
 	}
 	w1 := binary.BigEndian.Uint32(b[4:])
 	h.FragID = uint16(w1 >> 16)
-	h.FragOff = uint16(w1 >> 3)
+	h.FragOff = uint16(w1>>3) & 0x1fff
 	consumed := 8 + int(h.Hlen-2)*4
 	if consumed > len(b) {
 		return h, 0, ErrShortPacket

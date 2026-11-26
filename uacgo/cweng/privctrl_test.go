@@ -2,15 +2,23 @@ package cweng
 
 import (
 	"net"
+	"sync"
 	"testing"
 	"time"
 
 	"uacgo/capwap"
 )
 
-type testApdb struct{ got [][]byte }
+type testApdb struct {
+	mu  sync.Mutex
+	got [][]byte
+}
 
-func (a *testApdb) ApdbInfo(_ *Session, info capwap.PrivApdbInfo) { a.got = append(a.got, info) }
+func (a *testApdb) ApdbInfo(_ *Session, info capwap.PrivApdbInfo) {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+	a.got = append(a.got, info)
+}
 
 // The apdb listeners (msg 1/3 priority 256) pull 0x51 out of request
 // envelopes; the stats/roaming/period senders frame 0x55/0x57/0x0c.
@@ -20,7 +28,8 @@ func TestPrivCtrl(t *testing.T) {
 	e.RegisterAttachHandlers(fixtureIdentity{})
 	sink := &testApdb{}
 	e.RegisterApdbHandlers(sink)
-	go func() { _ = e.Run() }()
+	stopped := make(chan struct{})
+	go func() { _ = e.Run(); close(stopped) }()
 
 	c, err := net.DialUDP("udp", nil, &net.UDPAddr{IP: net.IPv4(127, 0, 0, 1), Port: e.LocalPort()})
 	if err != nil {
@@ -40,6 +49,10 @@ func TestPrivCtrl(t *testing.T) {
 	if _, err := c.Read(buf); err != nil {
 		t.Fatalf("no discovery response: %v", err)
 	}
+	e.Close()
+	<-stopped
+	sink.mu.Lock()
+	defer sink.mu.Unlock()
 	if len(sink.got) != 1 || !bytesEq(sink.got[0], []byte{0xde, 0xad, 0xbe, 0xef}) {
 		t.Fatalf("apdb sink = %x", sink.got)
 	}

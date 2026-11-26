@@ -38,11 +38,19 @@ func (p *ParsedPacket) MEL() uint16 {
 //
 // Evidence: capwap_packet_parse @0x587a94.
 func ParsePacket(b []byte) (*ParsedPacket, error) {
+	return parsePacket(b, false)
+}
+
+// ParseDTLSPacket accepts the AP's type=1 marker on its inner authenticated
+// control packet. V6 capture: AP Join/Config/CSE/Event are 0x01104300,
+// while AC responses are 0x00104300. Call only after DTLS authentication.
+func ParseDTLSPacket(b []byte) (*ParsedPacket, error) { return parsePacket(b, true) }
+func parsePacket(b []byte, authenticated bool) (*ParsedPacket, error) {
 	hdr, off, err := ParseHeader(b)
 	if err != nil {
 		return nil, err
 	}
-	if hdr.Type != 0 {
+	if hdr.Type != 0 && !(authenticated && hdr.Type == 1) {
 		// The AC only parses control packets here (param_4=0 path).
 		return nil, ErrShortPacket
 	}

@@ -7,9 +7,9 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import jcs_fields as jf
 
-ROOT = Path(__file__).resolve().parents[1]
+from ac100_env import ROOT
 SCHEMA = ROOT / 'notes/vendor-web/jcs-schema.tsv'
-ASM = Path('/tmp/uac-load1.asm')
+from ac100_env import ASM
 
 GETTERS = {
     0x8b98f0: 'int', 0x8b9580: 'string', 0x8b9a40: 'int64', 0x8b9750: 'double',

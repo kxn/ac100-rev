@@ -3,25 +3,35 @@ package cweng
 import (
 	"encoding/binary"
 	"fmt"
+	"golang.org/x/net/ipv4"
 	"log"
 	"net"
 	"os"
 	"sync"
+	"time"
 
 	"uacgo/capwap"
+	"uacgo/internal/legacydtls"
 )
 
 // Engine is the AC-side CAPWAP engine. It mirrors the binary's structure:
 // one UDP socket pair (v4+v6 combined in Go), a session table, per-message
 // handler chains registered by the subsystems, and the session FSM.
 type Engine struct {
-	mu       sync.Mutex
-	conn     *net.UDPConn
-	sessions map[string]*Session
-	reg      *registry
-	acData   *AcDataCounters
+	apdb           *APDB
+	mu             sync.Mutex
+	conn           *net.UDPConn
+	sessions       map[string]*Session
+	reg            *registry
+	acData         *AcDataCounters
+	packetConn     *ipv4.PacketConn
+	interfaceIndex int
+	legacyDTLS     *legacydtls.Server
+	trace          func(string, []byte)
+	fragments      capwap.Reassembler
 
 	MaxSessions       int // l_profile[0x140] max_session_num
+	Debug             bool
 	RetransIntervalMs int // profile default_retransmit_time (ms, test-tunable)
 	RetransMax        int // profile retransmit_max_retries
 
@@ -42,6 +52,12 @@ type Engine struct {
 	OnEntReset func(*Session) error
 	OnEntRun   func(*Session) error
 	OnDelete   func(*Session)
+	// Set before Run. Nil retains protocol-only operation for engine users.
+	AdmitStation func(ap string, radio, wlan uint8) bool
+	// Runs under the AP session lock; must not call session/engine readers.
+	AdmitClient        func(ap string, radio, wlan uint8, mac [6]byte, rssi *int8) bool
+	meshChildAuthorize func(string, time.Time, string, uint8) bool
+	OnRoamingTrigger   func(ap string, connection time.Time, report capwap.PrivRoamingTrigger)
 }
 
 // LocalPort returns the bound UDP port (test/diagnostic helper).
@@ -89,12 +105,28 @@ func (e *Engine) RegisterEnt(ent uint, prio uint16, name string, h Handler) {
 func (e *Engine) Run() error {
 	buf := make([]byte, capwap.MaxUdpPayload)
 	for {
-		n, addr, err := e.conn.ReadFromUDP(buf)
+		var n int
+		var addr *net.UDPAddr
+		var err error
+		if e.packetConn != nil {
+			var peer net.Addr
+			var cm *ipv4.ControlMessage
+			n, cm, peer, err = e.packetConn.ReadFrom(buf)
+			if err == nil && (cm == nil || cm.IfIndex != e.interfaceIndex) {
+				continue
+			}
+			addr, _ = peer.(*net.UDPAddr)
+		} else {
+			n, addr, err = e.conn.ReadFromUDP(buf)
+		}
 		if err != nil {
 			return err
 		}
 		pkt := make([]byte, n)
 		copy(pkt, buf[:n])
+		if e.trace != nil {
+			e.trace("rx", pkt)
+		}
 		e.handleDatagram(pkt, addr)
 	}
 }
@@ -109,13 +141,162 @@ func (e *Engine) sendTo(addr *net.UDPAddr, b []byte) error {
 	if addr == nil {
 		return fmt.Errorf("nil peer addr")
 	}
+	if e.legacyDTLS != nil && !(len(b) >= 12 && binary.BigEndian.Uint32(b[8:12]) == capwap.MsgDiscoveryResponse) {
+		if !e.legacyDTLS.Established(addr.String()) {
+			return fmt.Errorf("AP DTLS session is unavailable")
+		}
+		if e.trace != nil {
+			e.trace("plain-tx", b)
+		}
+		packet, err := e.legacyDTLS.Encrypt(addr.String(), b)
+		if err != nil {
+			return err
+		}
+		b = append([]byte{1, 0, 0, 0}, packet...)
+	}
+	return e.sendRaw(addr, b)
+}
+
+// sendSession is called with s.mu held, so teardown cannot race plaintext
+// sends. DTLS additionally pins encryption to this session's handshake.
+func (e *Engine) sendSession(s *Session, b []byte) error {
+	if s.meshParent != nil {
+		return e.sendMeshSession(s, b)
+	}
+	if len(b) <= 1200 {
+		return e.sendSessionFragment(s, b)
+	}
+	s.fragmentID++
+	packets, err := capwap.FragmentPacket(b, s.fragmentID, 1200)
+	if err != nil {
+		return err
+	}
+	for _, packet := range packets {
+		if err := e.sendSessionFragment(s, packet); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+func (e *Engine) sendSessionFragment(s *Session, b []byte) error {
+	if s.dead {
+		return fmt.Errorf("AP session closed")
+	}
+	if e.legacyDTLS == nil || e.sendToForTest != nil {
+		return e.sendTo(s.Addr, b)
+	}
+	packet, err := e.legacyDTLS.EncryptGeneration(s.Addr.String(), s.transportGeneration, b)
+	if err != nil {
+		return err
+	}
+	if e.trace != nil {
+		e.trace("plain-tx", b)
+	}
+	return e.sendRaw(s.Addr, append([]byte{1, 0, 0, 0}, packet...))
+}
+
+func (e *Engine) sendRaw(addr *net.UDPAddr, b []byte) error {
+	if e.trace != nil {
+		e.trace("tx", b)
+	}
+	if e.packetConn != nil {
+		_, err := e.packetConn.WriteTo(b, &ipv4.ControlMessage{IfIndex: e.interfaceIndex, Src: net.IP(e.ControlIP[:])}, addr)
+		return err
+	}
 	_, err := e.conn.WriteToUDP(b, addr)
 	return err
+}
+
+// BindInterface filters received packets by IP_PKTINFO and selects the same
+// interface for replies, while retaining limited-broadcast discovery.
+func (e *Engine) BindInterface(name string) error {
+	iface, err := net.InterfaceByName(name)
+	if err != nil {
+		return err
+	}
+	p := ipv4.NewPacketConn(e.conn)
+	if err = p.SetControlMessage(ipv4.FlagInterface, true); err != nil {
+		return err
+	}
+	e.packetConn = p
+	e.interfaceIndex = iface.Index
+	return nil
+}
+func (e *Engine) BoundInterface() string {
+	if e.interfaceIndex == 0 {
+		return ""
+	}
+	nic, err := net.InterfaceByIndex(e.interfaceIndex)
+	if err != nil {
+		return ""
+	}
+	return nic.Name
+}
+
+func (e *Engine) EnableLegacyDTLS(certFile, keyFile string) error {
+	var err error
+	e.legacyDTLS, err = legacydtls.New(certFile, keyFile)
+	if err == nil {
+		e.legacyDTLS.MaxPeers = e.MaxSessions + 8 // bounded room for reconnect handshakes
+	}
+	return err
+}
+
+// Trace records wire datagrams without exposing keys through ordinary logs.
+func (e *Engine) Trace(fn func(string, []byte)) { e.trace = fn }
+func (e *Engine) Close() error {
+	for _, s := range e.sessionList() {
+		s.mu.Lock()
+		if e.legacyDTLS != nil {
+			if b, err := e.legacyDTLS.Close(s.Addr.String()); err == nil && len(b) > 0 {
+				_ = e.sendRaw(s.Addr, append([]byte{1, 0, 0, 0}, b...))
+			}
+		}
+		s.teardown()
+		s.mu.Unlock()
+	}
+	return e.conn.Close()
 }
 
 // handleDatagram mirrors cw_ac_data_network_process + ac_msg_pretreat +
 // ac_msg_handle for the no-DTLS configuration the AC100 ships with.
 func (e *Engine) handleDatagram(raw []byte, addr *net.UDPAddr) {
+	if len(raw) >= 4 && raw[0] == 1 && raw[1] == 0 && raw[2] == 0 && raw[3] == 0 {
+		if e.legacyDTLS == nil {
+			return
+		}
+		responses, packets, err := e.legacyDTLS.Handle(addr.String(), raw[4:])
+		for _, b := range responses {
+			_ = e.sendRaw(addr, append([]byte{1, 0, 0, 0}, b...))
+		}
+		if err != nil {
+			log.Printf("DTLS %s: %v", addr, err)
+			return
+		}
+		for _, plain := range packets {
+			if e.trace != nil {
+				e.trace("plain-rx", plain)
+			}
+			e.handlePlainDatagram(plain, addr)
+		}
+		return
+	}
+	if e.legacyDTLS != nil && !capwap.IsDiscoveryRequest(raw) {
+		return
+	}
+	e.handlePlainDatagram(raw, addr)
+}
+
+func (e *Engine) handlePlainDatagram(raw []byte, addr *net.UDPAddr) {
+	peer := addr.String()
+	if e.legacyDTLS != nil {
+		peer += fmt.Sprintf("/%x", e.legacyDTLS.Generation(addr.String()))
+	}
+	complete, fragmentErr := e.fragments.Push(peer, raw)
+	if fragmentErr != nil || complete == nil {
+		return
+	}
+	raw = complete
 	if len(raw) < 16 {
 		return
 	}
@@ -124,15 +305,30 @@ func (e *Engine) handleDatagram(raw []byte, addr *net.UDPAddr) {
 		return
 	}
 	// parsed packet for the session path
-	req, err := capwap.ParsePacket(raw)
+	var req *capwap.ParsedPacket
+	var err error
+	if e.legacyDTLS != nil && e.legacyDTLS.Established(addr.String()) {
+		req, err = capwap.ParseDTLSPacket(raw)
+	} else {
+		req, err = capwap.ParsePacket(raw)
+	}
 	if err != nil {
 		return
 	}
 	msgType := req.Control.MsgType
-	if debugEngine {
+	if debugEngine || e.Debug {
 		log.Printf("[ENG] recv msg=%d seq=%d from %s", msgType, req.Control.SeqNum, addr)
 	}
 	s := e.sessionFor(addr)
+	if s != nil && e.handleMeshPublic(s, req) {
+		return
+	}
+	if s != nil && msgType == MsgJoin && e.legacyDTLS != nil && s.transportGeneration != e.legacyDTLS.Generation(addr.String()) {
+		s.mu.Lock()
+		s.teardown()
+		s.mu.Unlock()
+		s = nil
+	}
 
 	if s == nil {
 		// cw_ac_data_network_process: only join requests create sessions
@@ -140,10 +336,39 @@ func (e *Engine) handleDatagram(raw []byte, addr *net.UDPAddr) {
 		if msgType != MsgJoin {
 			return
 		}
-		if e.MaxSessions > 0 && len(e.sessions) >= e.MaxSessions {
+		ap, err := ParseAPEntry(req)
+		if err == nil && len(ap.Capabilities) == 0 && e.apdb != nil {
+			e.apdb.ResolveCapabilities(ap)
+		}
+		if err != nil {
+			return
+		}
+		// An authenticated AP may reconnect from a new source port before
+		// its old watchdog expires. Retire that identity before capacity
+		// checks and before exposing it to management commands.
+		id := ap.MAC
+		if id == "" {
+			id = ap.Serial
+		}
+		if id != "" {
+			for _, old := range e.sessionList() {
+				old.mu.Lock()
+				if sessionID(old) == id {
+					old.teardown()
+				}
+				old.mu.Unlock()
+			}
+		}
+		e.mu.Lock()
+		count := len(e.sessions)
+		e.mu.Unlock()
+		if e.MaxSessions > 0 && count >= e.MaxSessions {
 			return // capwap_ac_session_exceed_max_num: "just ignore it"
 		}
 		s = newSession(addr, e.acData)
+		if e.legacyDTLS != nil {
+			s.transportGeneration = e.legacyDTLS.Generation(addr.String())
+		}
 		s.onTeardown = func(x *Session) { e.removeSession(x) }
 		s.onEnterRun = func(x *Session) error {
 			if e.OnEntRun != nil {
@@ -160,14 +385,14 @@ func (e *Engine) handleDatagram(raw []byte, addr *net.UDPAddr) {
 			return nil
 		}
 		s.onDelete = func(x *Session) { e.removeSession(x) }
-		s.send = func(x *Session, b []byte) error { return e.sendTo(x.Addr, b) }
+		s.send = func(x *Session, b []byte) error { return e.sendSession(x, b) }
 		s.RetransInterval = e.RetransIntervalMs
 		s.RetransMax = e.RetransMax
 		// cw_fsm_ac_process_event(session, 8) — DTLS established (direct path)
 		if err := s.processEvent(&Event{ID: EventDTLSEstab}); err != nil {
 			log.Printf("fsm: %v", err)
 		}
-		if ap, err := ParseAPEntry(req); err == nil {
+		{
 			s.apEntry = ap
 			// The binary creates the AP entry inside the join listener
 			// (_apmngr_try_create_ap_entry_by_template_or_db), not at RUN.
@@ -187,11 +412,15 @@ func (e *Engine) handleDatagram(raw []byte, addr *net.UDPAddr) {
 
 // handleSessionPacket mirrors ac_msg_pretreat + ac_msg_handle.
 func (e *Engine) handleSessionPacket(s *Session, req *capwap.ParsedPacket, raw []byte) {
-	if debugEngine {
-		log.Printf("[ENG] session pkt msg=%d seq=%d state=%s", req.Control.MsgType, req.Control.SeqNum, StateNames[s.State])
-	}
 	s.mu.Lock()
 	defer s.mu.Unlock()
+	if s.dead {
+		return
+	}
+	if debugEngine || e.Debug {
+		log.Printf("[ENG] session pkt msg=%d seq=%d state=%s", req.Control.MsgType, req.Control.SeqNum, StateNames[s.State])
+	}
+	s.LastSeen = time.Now()
 
 	msgType := req.Control.MsgType
 	seq := req.Control.SeqNum
@@ -213,9 +442,9 @@ func (e *Engine) handleSessionPacket(s *Session, req *capwap.ParsedPacket, raw [
 		// duplicate request with a stored response → re-send it
 		if s.DuplicateReq(seq) {
 			rsp := s.LastRspBuf
-			s.mu.Unlock()
-			e.sendTo(s.Addr, rsp)
-			s.mu.Lock()
+			if len(rsp) >= 12 && binary.BigEndian.Uint32(rsp[8:12]) == msgType+1 {
+				e.sendSession(s, rsp)
+			}
 			return
 		}
 		rsp, err := capwap.NewParsedPacket(msgType + 1)
@@ -238,11 +467,11 @@ func (e *Engine) handleSessionPacket(s *Session, req *capwap.ParsedPacket, raw [
 		}
 
 		out := rsp.Assemble()
-		if debugEngine {
+		if debugEngine || e.Debug {
 			log.Printf("[ENG] sending rsp len=%d elements=%d", len(out), len(rsp.Elements))
 		}
-		if err := e.sendTo(s.Addr, out); err != nil {
-			if debugEngine {
+		if err := e.sendSession(s, out); err != nil {
+			if debugEngine || e.Debug {
 				log.Printf("[ENG] send err: %v", err)
 			}
 			return
@@ -253,6 +482,7 @@ func (e *Engine) handleSessionPacket(s *Session, req *capwap.ParsedPacket, raw [
 	}
 
 	// RESPONSE message (even type): dispatch to handlers, then FSM result.
+	s.acknowledge(req)
 	ctx := &Ctx{Session: s}
 	ok := e.reg.handleMsg(ctx, msgType, req, nil)
 	_ = s.recvResult(0, ok)
@@ -287,8 +517,11 @@ func (e *Engine) sessionFor(addr *net.UDPAddr) *Session {
 func (e *Engine) removeSession(s *Session) {
 	e.mu.Lock()
 	defer e.mu.Unlock()
-	if cur, ok := e.sessions[s.Addr.String()]; ok && cur == s {
-		delete(e.sessions, s.Addr.String())
+	if cur, ok := e.sessions[s.sessionKey()]; ok && cur == s {
+		delete(e.sessions, s.sessionKey())
+		if s.meshParent == nil && e.legacyDTLS != nil && s.transportGeneration == e.legacyDTLS.Generation(s.Addr.String()) {
+			e.legacyDTLS.Remove(s.Addr.String())
+		}
 	}
 }
 

@@ -18,10 +18,10 @@ func TestBatch13Roundtrips(t *testing.T) {
 		t.Fatalf("image info parse: %v", err)
 	}
 
-	// image data: type 1 + len + data
+	// Independent V6 wire: type + raw bytes, no inner length word.
 	id := ImageData{Type: 1, Data: []byte("chunk-bytes")}
 	w := id.AssembleValue()
-	if w[0] != 1 || w[1] != 0 || w[2] != byte(len(id.Data)) {
+	if !bytes.Equal(w, append([]byte{1}, []byte("chunk-bytes")...)) {
 		t.Fatalf("image data header = %x", w[:3])
 	}
 	if v, err := ParseImageData(w); err != nil || !bytes.Equal(v.Data, id.Data) {
@@ -35,6 +35,11 @@ func TestBatch13Roundtrips(t *testing.T) {
 	// invalid type 3 must fail
 	if _, err := ParseImageData([]byte{3, 0, 0}); err == nil {
 		t.Fatal("type 3 must fail")
+	}
+	for _, bad := range [][]byte{{1}, {2}, {5, 0}, append([]byte{1}, make([]byte, 1025)...)} {
+		if _, err := ParseImageData(bad); err == nil {
+			t.Fatal("invalid image data accepted")
+		}
 	}
 
 	// mesh control / sub capability / ip report: verbatim carriers

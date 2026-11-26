@@ -12,21 +12,14 @@ import re
 import subprocess
 from pathlib import Path
 
-FW = Path(os.environ.get("AC100_FW", "/tmp/ac100/rootfs"))
+from ac100_env import ROOTFS as FW
 UAC = FW / "usr/sbin/uac"
 SYM = FW / "usr/sbin/uac_symbol_fun"
-ASM = Path(os.environ.get("AC100_ASM", "/tmp/uac-load1.asm"))
+from ac100_env import ASM
 LOAD1_END = 0x8ba180
 
-def build_asm():
-    if ASM.exists() and ASM.stat().st_size > 1_000_000:
-        return
-    with open(ASM, "w") as f:
-        subprocess.run([
-            "mips-linux-gnu-objdump", "-D", "-b", "binary", "-m", "mips:isa32r2",
-            "-EB", "--adjust-vma=0x400000", "--start-address=0x400000",
-            "--stop-address=%#x" % LOAD1_END, str(UAC),
-        ], stdout=f, check=True)
+from ac100_env import build_vendor_asm as build_asm
+
 
 import re
 from pathlib import Path

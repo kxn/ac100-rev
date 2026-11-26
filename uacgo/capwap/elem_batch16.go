@@ -3,64 +3,38 @@ package capwap
 // Batch-16: remaining private station/session elements.
 // All field orders from the vendor parse functions (grep'd retrieve sequences).
 
-// StaAuthReq is priv 0x01 (min 12): radio + wlan_id + MAC + BE32 vlan
-// (cw_priv_sta_auth_req_parse).
+// StaAuthReq is private 0x01: radio, WLAN, MAC, BE32 backfill length,
+// then opaque bytes. V6 cw_priv_sta_auth_req_parse @0x6a9fc8.
 type StaAuthReq struct {
-	Radio  uint8
-	WlanID uint8
-	MAC    [6]byte
-	VlanID uint32
+	Radio    uint8
+	WlanID   uint8
+	MAC      [6]byte
+	Backfill []byte
 }
 
-// AssembleValue writes the 12-byte minimum.
 func (s StaAuthReq) AssembleValue() []byte {
-	b := []byte{s.Radio, s.WlanID}
-	b = append(b, s.MAC[:]...)
-	return AppendUint32BE(b, s.VlanID)
+	b := append([]byte{s.Radio, s.WlanID}, s.MAC[:]...)
+	b = AppendUint32BE(b, uint32(len(s.Backfill)))
+	return append(b, s.Backfill...)
 }
-
-// ParseStaAuthReq decodes the 12-byte minimum.
 func ParseStaAuthReq(v []byte) (*StaAuthReq, error) {
-	if len(v) < 12 {
+	if len(v) < 12 || v[0] >= 32 || v[1] > 16 {
 		return nil, ErrShortPacket
 	}
-	s := &StaAuthReq{Radio: v[0], WlanID: v[1], VlanID: Uint32BE(v[8:])}
+	if uint64(Uint32BE(v[8:])) != uint64(len(v)-12) {
+		return nil, ErrLenMismatch
+	}
+	s := &StaAuthReq{Radio: v[0], WlanID: v[1], Backfill: append([]byte{}, v[12:]...)}
 	copy(s.MAC[:], v[2:8])
 	return s, nil
 }
 
-// StaAssocReq is priv 0x02 (min 16). Wire (cw_priv_sta_assoc_req_parse
-// @0x5c17ec: r8 r8 rbytes(6) r32 rraw r32): radio + wlan + mac + BE32 cap
-// + variable assoc-IE blob + trailing BE32 vlan.
-type StaAssocReq struct {
-	Radio   uint8
-	WlanID  uint8
-	MAC     [6]byte
-	CapInfo uint32
-	IEs     []byte // association-request IEs carried verbatim
-	VlanID  uint32
-}
+// StaAssocReq shares the authoritative legacy 0x02 parser. The old CapInfo /
+// trailing VLAN interpretation was incorrect: the word is optional RSSI and
+// the following word is the length of an opaque backfill.
+type StaAssocReq = LegacyAssociation
 
-// AssembleValue writes the header + IEs + vlan.
-func (s StaAssocReq) AssembleValue() []byte {
-	b := []byte{s.Radio, s.WlanID}
-	b = append(b, s.MAC[:]...)
-	b = AppendUint32BE(b, s.CapInfo)
-	b = append(b, s.IEs...)
-	return AppendUint32BE(b, s.VlanID)
-}
-
-// ParseStaAssocReq decodes the header, the IE blob and the trailing vlan.
-func ParseStaAssocReq(v []byte) (*StaAssocReq, error) {
-	if len(v) < 16 {
-		return nil, ErrShortPacket
-	}
-	s := &StaAssocReq{Radio: v[0], WlanID: v[1],
-		CapInfo: Uint32BE(v[8:]), VlanID: Uint32BE(v[len(v)-4:])}
-	copy(s.MAC[:], v[2:8])
-	s.IEs = append([]byte(nil), v[12:len(v)-4]...)
-	return s, nil
-}
+func ParseStaAssocReq(v []byte) (*StaAssocReq, error) { return ParseLegacyAssociation(v) }
 
 // StaDeassoc is priv 0x03 (min=max=8): radio + wlan_id + MAC
 // (cw_priv_sta_deassoc_parse).
@@ -86,36 +60,27 @@ func ParseStaDeassoc(v []byte) (*StaDeassoc, error) {
 	return s, nil
 }
 
-// StaAuthResult is priv 0x04/0x13 (min 16). Wire (cw_priv_sta_assoc_rslt
-// _parse @0x5c32bc / cw_priv_sta_auth_rslt_parse @0x5c552c:
-// r8 r8 rbytes(6) r32 r32 rraw): radio + wlan + mac + result + vlan +
-// raw tail.
+// StaAuthResult is private 0x04/0x13: radio, WLAN, MAC, BE32 result,
+// BE32 backfill length and backfill. V6 cw_priv_sta_auth_rslt_parse @0x6a17a4.
 type StaAuthResult struct {
-	Radio  uint8
-	WlanID uint8
-	MAC    [6]byte
-	Result uint32
-	VlanID uint32
-	Raw    []byte
+	Radio    uint8
+	WlanID   uint8
+	MAC      [6]byte
+	Result   uint32
+	Backfill []byte
 }
 
-// AssembleValue writes the header + tail.
 func (s StaAuthResult) AssembleValue() []byte {
-	b := []byte{s.Radio, s.WlanID}
-	b = append(b, s.MAC[:]...)
-	b = AppendUint32BE(b, s.Result)
-	b = AppendUint32BE(b, s.VlanID)
-	return append(b, s.Raw...)
+	return (LegacyAssociation{Radio: s.Radio, WLAN: s.WlanID, MAC: s.MAC, Backfill: s.Backfill}).Result(s.Result)
 }
-
-// ParseStaAuthResult decodes the header + tail.
 func ParseStaAuthResult(v []byte) (*StaAuthResult, error) {
-	if len(v) < 16 {
+	if len(v) < 16 || v[0] >= 32 || v[1] > 16 {
 		return nil, ErrShortPacket
 	}
-	s := &StaAuthResult{Radio: v[0], WlanID: v[1],
-		Result: Uint32BE(v[8:]), VlanID: Uint32BE(v[12:]),
-		Raw: append([]byte(nil), v[16:]...)}
+	if uint64(Uint32BE(v[12:])) != uint64(len(v)-16) {
+		return nil, ErrLenMismatch
+	}
+	s := &StaAuthResult{Radio: v[0], WlanID: v[1], Result: Uint32BE(v[8:]), Backfill: append([]byte{}, v[16:]...)}
 	copy(s.MAC[:], v[2:8])
 	return s, nil
 }

@@ -18,6 +18,7 @@ import json
 import struct
 import sys
 from pathlib import Path
+from ac100_env import ROOT
 
 sys.path.insert(0, str(__import__("pathlib").Path(__file__).resolve().parent))
 from syms import parse_sym, read_at, SYM_FUN, SYM_OBJ  # noqa: E402
@@ -86,7 +87,9 @@ def main():
     priv = extract_table(0x6E6700, 0, 0xC0, "private")
     all_e = std + ieee + priv
     out = {"standard": std, "ieee80211": ieee, "private": priv}
-    Path(__import__("os").environ.get("AC100_REV_ROOT", str(Path(__file__).resolve().parents[1]))) / "ghidra-export" / "elements.json".write_text(json.dumps(out, indent=1))
+    (ROOT / "ghidra-export").mkdir(parents=True, exist_ok=True)
+    (ROOT / "notes").mkdir(parents=True, exist_ok=True)
+    (ROOT / "ghidra-export" / "elements.json").write_text(json.dumps(out, indent=1))
 
     lines = ["kind\ttype\tmin\tmax\tname\tparse\tassemble"]
     for m in all_e:
@@ -94,7 +97,7 @@ def main():
             f"{m['kind']}\t{m['type']:#06x}\t{m['min_len']:#06x}\t{m['max_len']:#06x}\t"
             f"{m['name']}\t{m['parse']}\t{m['assemble']}"
         )
-    Path(__import__("os").environ.get("AC100_REV_ROOT", str(Path(__file__).resolve().parents[1]))) / "notes" / "elements.tsv".write_text("\n".join(lines) + "\n")
+    (ROOT / "notes" / "elements.tsv").write_text("\n".join(lines) + "\n")
 
     bad = [m for m in all_e if not m["type_field_ok"]]
     print(f"standard={len(std)} ieee80211={len(ieee)} private={len(priv)} "

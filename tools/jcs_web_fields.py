@@ -7,8 +7,8 @@ import sys
 from collections import defaultdict
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
-RAW = Path("/tmp/lua_jcs_fields.jsonl")
+from ac100_env import ROOT
+from ac100_env import LUA_FIELDS as RAW
 
 
 def opnum(s):

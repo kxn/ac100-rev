@@ -5,7 +5,7 @@ import re
 from collections import defaultdict
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
+from ac100_env import ROOT
 REG = ROOT / "notes/vendor-web/jcs-registry.tsv"
 WEB = ROOT / "notes/vendor-web/jcs-web-fields.tsv"
 SAMPLES = ROOT / "notes/vendor-web/captures/jcs-samples.jsonl"

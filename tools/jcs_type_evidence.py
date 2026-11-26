@@ -6,9 +6,9 @@ import sys
 from collections import defaultdict
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
-ASM = Path('/tmp/uac-load1.asm')
-FIELDS = Path('/tmp/jcs_fields.tsv')
+from ac100_env import ROOT
+from ac100_env import ASM
+from ac100_env import FIELDS
 REGISTRY = ROOT / 'notes/vendor-web/jcs-registry.tsv'
 OUTPUT = ROOT / 'notes/vendor-web/jcs-types.tsv'
 
@@ -26,7 +26,7 @@ VALUE_GETTERS = {
 
 def main():
     if not ASM.exists() or not FIELDS.exists():
-        raise SystemExit('missing /tmp/uac-load1.asm or /tmp/jcs_fields.tsv')
+        raise SystemExit(f'missing {ASM} or {FIELDS}; generate them as described in docs/setup.md')
 
     instructions = {}
     for line in ASM.read_text().splitlines():

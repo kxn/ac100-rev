@@ -4,31 +4,35 @@ package capwap
 // Layouts from the vendor parse functions' retrieve sequences with
 // retrieve_bytes lengths confirmed from the a2 argument.
 
-// PrivAPFirmwareID is 0x5b (min 0x11): rbytes(16) r8 rbytes(16)
-// (cw_priv_ap_firmware_id_parse @0x5a4d54). Blocks carried verbatim.
+// PrivAPFirmwareID (0x5b): current firmware ID followed by a counted
+// blocked-firmware list. V6 cw_priv_ap_firmware_id_parse @0x67fdf8.
 type PrivAPFirmwareID struct {
-	Blk1 [16]byte
-	A    uint8
-	Blk2 [16]byte
-	Rest []byte
+	FirmwareID [16]byte
+	Blocked    [][16]byte
 }
 
-// AssembleValue writes blocks + rest.
 func (p PrivAPFirmwareID) AssembleValue() []byte {
-	b := append([]byte(nil), p.Blk1[:]...)
-	b = append(b, p.A)
-	b = append(b, p.Blk2[:]...)
-	return append(b, p.Rest...)
+	if len(p.Blocked) > 255 {
+		return nil
+	}
+	b := append([]byte{}, p.FirmwareID[:]...)
+	b = append(b, byte(len(p.Blocked)))
+	for _, id := range p.Blocked {
+		b = append(b, id[:]...)
+	}
+	return b
 }
-
-// ParsePrivAPFirmwareID decodes the 33-byte prefix + rest.
 func ParsePrivAPFirmwareID(v []byte) (*PrivAPFirmwareID, error) {
-	if len(v) < 33 {
+	if len(v) < 17 || len(v) != 17+int(v[16])*16 {
 		return nil, ErrShortPacket
 	}
-	p := &PrivAPFirmwareID{A: v[16], Rest: append([]byte(nil), v[33:]...)}
-	copy(p.Blk1[:], v[:16])
-	copy(p.Blk2[:], v[17:33])
+	p := &PrivAPFirmwareID{}
+	copy(p.FirmwareID[:], v[:16])
+	for b := v[17:]; len(b) > 0; b = b[16:] {
+		var id [16]byte
+		copy(id[:], b[:16])
+		p.Blocked = append(p.Blocked, id)
+	}
 	return p, nil
 }
 

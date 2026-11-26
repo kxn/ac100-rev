@@ -1,5 +1,49 @@
 # uac 逆向笔记 — 全部结论直接取自二进制证据
 
+## 2026-11-26 实机修正与独立 Go 路径
+
+本节优先于下面历史“完成度快照”。旧反编译的 SHA-256 为
+`ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68`；
+V6 的 SHA-256 为 `b12d1584fcafda2a71aa9038b41b7e1c5b893b350f3e6edf5105e445d024a912`。
+地址不能跨版本套用。设备证据见 [Go 实机进度](../docs/go-live-status.md)。
+
+- V6 原厂与 TL-7AP5100 的实际握手选择 DTLS 1.0 / RSA / AES-256-CBC / SHA1（0035），
+  ClientHello feff。新增 `internal/legacydtls`，按 RFC 4347/4346 实现 cookie、PRF、
+  RSA 交换、CBC MAC、Finished 与记录重放窗口；独立 OpenSSL 0035/002f 对拍。
+  不以既有 Pion 1.2 测试外推兼容性。普通退出向 AP 发加密 close_notify。
+- CAPWAP 外层为 `01 00 00 00` + DTLS；解密后的 AP 控制头为 `01104300`，
+  AC 的响应为 `00104300`。只在已认证 DTLS 内接受这个 type=1；原 ParsePacket 仍拒绝。
+  配置 DTLS 时禁止 Join 或控制命令回退为明文。允许明文广播 Discovery。
+- 动态能力来自 AP 私有 0x51：16 字节头、BE32 item count@12、u8 type/u8 length TLV；
+  radio 子块有 4 字节头，再嵌套 TLV。数值语义参照
+  `_apdb_pkt_parse_radio`（旧 0x0060e514；V6 0x0070ae08）。
+  此 AP 不在旧 AP DB，必须读取 Join 元数据。
+- 无线服务下发为消息 `0x33dd01`，标准 Add WLAN `0x0400` 加私有 `0x63`；
+  V6 地址 `_uac_wserv_packet_send_callback` 0x006dbd74、
+  `cw_80211_add_wlan_assemble` 0x0065a5d4、`wsrv_new_assemble` 0x00695f68。
+  和原厂解密帧 204/232 对拍后发给真实 AP，按类型+序号检查 `0x33dd02` 和结果码。
+  Delete WLAN 是 `0x0403`，不是 `0x0402`（Assigned BSSID）。
+- 射频 DSSS 0x0404、Power 0x0411 与 V6 帧 66/68/112/132 对拍。
+  运行状态私有 0x25 为 `u8 radio/u8 mode/u8 channel/BE16 power`，
+  旧 `cw_priv_ap_res_info_parse` 0x005a6f6c，字段名来自
+  `rdmngr_capwap_callback_wtp_event_request_listen` 0x006143f0。
+  Go 把 AP 实际回报与请求配置分别展示，不用 ACK 冒充回读。
+- 客户端 0x0034 旧 Go 漏了 WLAN 字段。正确为 `r8 radio, r32 WLAN, r32 count`，
+  再逐站 `r32 A,r32 B,MAC6`；不是 `radio,count,entries`。
+  证据 `cw_sta_info_list_parse` 0x00581148 / assemble 0x00580f6c；
+  listener `_uac_wsta_pkt_sta_info_list` 0x00635f9c。
+  WLAN <17，count 与实际长度必须一致；统计 0x52 也校验 count×38+4 的精确长度。
+- 新关联 0x8a / 响应 0x8b 为 radio/WLAN/MAC/BE32 word/u8 phase/BE32 sublength/TLV16；
+  旧 parse 0x005c282c、result assemble 0x005c3834、listener 0x00634d80。
+  请求 backfill subtype0 在响应里是 subtype1；MLO subtype1 另有流程，当前明确拒绝。
+  离线私有 0x03 来自 parse 0x005c5990 / listener 0x00635a50，旧 AP 的迟到离线
+  不能覆盖同一客户端在新 AP 上的关联。0x52 RSSI 是记录偏移10的有符号字节，
+  `_stats_pkt_sta_request` 0x006736f0；0x33 每记录 MAC6 + RSSI8（parse 0x00581888）。
+  新客户端处理尚缺真实终端验收，不能因单元测试通过就称已对等。
+- 新 Web 为 Go embed + 独立 JSON API，直接操作 Go 引擎和私有 JSON 配置，原厂 JCS
+  仍留作取证；当前不需要原厂 Lua、uHTTPd 或 QEMU 提供产品界面。
+
+
 证据基座（均为固件内一手数据，非旧文档）：
 - `work/rootfs/usr/sbin/uac` — 目标 ELF32 MSB MIPS32r2，0x400000 文本段 / 0x731164 数据段
 - `work/rootfs/usr/sbin/uac_symbol_fun|obj` — 厂商符号表 5683 函数 + 1213 对象（固件自带）

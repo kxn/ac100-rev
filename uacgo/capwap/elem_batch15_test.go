@@ -1,13 +1,14 @@
 package capwap
 
 import (
+	"reflect"
 	"testing"
 )
 
 // Batch-15: upgrade flow + feature/capability elements roundtrip.
 func TestBatch15Roundtrips(t *testing.T) {
 	// large firmware info (29B)
-	lfi := PrivLargeFirmwareInfo{Type: 1, TotalSize: 1000, MD5Offset: 200, Unknown3: 300}
+	lfi := PrivLargeFirmwareInfo{Type: 1, TotalSize: 1000, SubImages: 200, Flags: 300, MD5: [16]byte{1, 2, 3}}
 	w := lfi.AssembleValue()
 	if len(w) != 0x1d {
 		t.Fatalf("large fw wire = %d", len(w))
@@ -17,7 +18,7 @@ func TestBatch15Roundtrips(t *testing.T) {
 	}
 
 	// sub firmware info (26B)
-	sfi := PrivSubFirmwareInfo{Type: 1, SubType: 2, TotalSize: 500, MD5Offset: 100}
+	sfi := PrivSubFirmwareInfo{Type: 1, SubType: 2, TotalSize: 500, Flags: 100, MD5: [16]byte{4, 5, 6}}
 	w = sfi.AssembleValue()
 	if len(w) != 0x1a {
 		t.Fatalf("sub fw wire = %d", len(w))
@@ -37,15 +38,15 @@ func TestBatch15Roundtrips(t *testing.T) {
 	}
 
 	// web account (header + tail)
-	wa := PrivApWebAccount{UserLen: 4, Enabled: 1, Tail: []byte("adminpass")}
+	wa := PrivApWebAccount{Algorithm: 1, Username: []byte("admin"), Password: []byte("pass")}
 	w = wa.AssembleValue()
-	if v, err := ParsePrivApWebAccount(w); err != nil || v.Enabled != 1 {
+	if v, err := ParsePrivApWebAccount(w); err != nil || v.Algorithm != 1 {
 		t.Fatalf("web account: %v", err)
 	}
 
 	// LAG config (3B)
-	lag := PrivLAGConfig{A: 1, B: 2, C: 3}
-	if v, err := ParsePrivLAGConfig(lag.AssembleValue()); err != nil || *v != lag {
+	lag := PrivLAGConfig{A: 1, B: 0, C: 3, Ports: []byte("1,2")}
+	if v, err := ParsePrivLAGConfig(lag.AssembleValue()); err != nil || !reflect.DeepEqual(*v, lag) {
 		t.Fatalf("lag: %v", err)
 	}
 

@@ -18,23 +18,23 @@ func TestBatch19Roundtrips(t *testing.T) {
 		t.Fatalf("fail station: %v", err)
 	}
 
-	// 0x58: 26 bytes {u8×3, u32, mac1, u8×4, mac2, u8×3}
-	rt := PrivRoamingTrigger{A: 1, B: 2, C: 3, W: 42,
-		MAC1: [6]byte{1, 2, 3, 4, 5, 6}, U8a: 7,
-		MAC2: [6]byte{8, 9, 10, 11, 12, 13}, Tail: [3]uint8{14, 15, 16}}
-	wire = rt.AssembleValue()
-	if len(wire) != 26 {
-		t.Fatalf("roaming trigger wire = %d bytes, want 26", len(wire))
-	}
+	// Independently constructed V6 variable-count message, two station rows.
+	wire = []byte{2, 30, 160, 0, 0, 0, 2, 2, 1, 2, 3, 4, 5, 1, 2, 0, 1, 2, 9, 8, 7, 6, 5, 180, 36, 1, 2, 1, 2, 3, 4, 6, 2, 1, 0, 0}
 	v, err := ParsePrivRoamingTrigger(wire)
-	if err != nil || v.W != 42 || v.U8a != 7 || v.Tail[0] != 14 ||
-		!bytes.Equal(v.MAC2[:], rt.MAC2[:]) {
-		t.Fatalf("roaming trigger: %v %+v", err, v)
+	if err != nil || len(v.Stations) != 2 || len(v.Stations[0].Neighbors) != 1 || v.Stations[1].WLAN != 2 {
+		t.Fatal(v, err)
 	}
-
-	rcr := PrivRoamingCalcResult{A: 1, B: 2, Data: []byte{9, 8, 7}}
-	if v, err := ParsePrivRoamingCalcResult(rcr.AssembleValue()); err != nil || v.B != 2 {
-		t.Fatalf("roaming calc: %v", err)
+	if !bytes.Equal(v.AssembleValue(), wire) {
+		t.Fatal("trigger changed independent wire")
+	}
+	for _, bad := range [][]byte{wire[:len(wire)-1], append(append([]byte{}, wire...), 0), {2, 0, 0, 0, 0, 0, 201}} {
+		if _, err := ParsePrivRoamingTrigger(bad); err == nil {
+			t.Fatal("malformed trigger accepted")
+		}
+	}
+	rcr := PrivRoamingCalcResult{Radio: 2, APs: [][6]byte{{2, 0, 0, 0, 0, 1}}, Stations: []RoamResultStation{{MAC: [6]byte{2, 1, 2, 3, 4, 5}, Candidates: []RoamCandidate{{Radio: 2, WLAN: 1, BSSID: [6]byte{2, 0, 0, 0, 0, 2}, Channel: 40}}}}}
+	if v, err := ParsePrivRoamingCalcResult(rcr.AssembleValue()); err != nil || v.Stations[0].Candidates[0].Channel != 40 {
+		t.Fatal(v, err)
 	}
 	if v, err := ParsePrivApMloSwitch(PrivApMloSwitch(1).AssembleValue()); err != nil || v != 1 {
 		t.Fatalf("mlo switch: %v", err)

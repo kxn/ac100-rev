@@ -44,7 +44,7 @@
 0x0031	wtp static ip address information	cw_wtp_static_ip_address_information_parse@0x586f3c	r32 r32 r32 r8
 0x0032	wtp capability flag	cw_wtp_capability_flag_parse@0x583eb0	r32
 0x0033	station rssi	cw_sta_rssi_parse@0x581888	r8 r32 rbytes r8
-0x0034	station information list	cw_sta_info_list_parse@0x581148	r8 r32 r32 r32 r32 rbytes
+0x0034	station information list	cw_sta_info_list_parse@0x581148	r8 r32(wlan) r32(count) [r32 r32 rbytes(6)]*count
 0x0035	ecn support	cw_ecn_support_parse@0x576168	r8
 0x0036	capwap local ipv6 address	cw_capwap_local_ipv6_address_parse@0x5712cc	rbytes
 0x0400	ieee 802.11 add wlan	cw_80211_add_wlan_parse@0x563a1c	r8 r8 r16 r8 r8 r16 rbytes r8 r8 r8 r8 r8

@@ -10,11 +10,19 @@
  */
 const fs = require('fs');
 const path = require('path');
-const luaparse = require(process.env.LUAPARSE || '/tmp/luaparse/node_modules/luaparse');
+const luaparse = require(process.env.LUAPARSE || 'luaparse');
 
-const ROOT = path.resolve(__dirname, '..');
+const ROOT = path.resolve(process.env.AC100_REV_ROOT || path.join(__dirname, '..'));
 const TSV = path.join(ROOT, 'notes/vendor-web/web-jcs-calls.tsv');
-const fw = process.env.AC100_FW || '/tmp/ac100/rootfs';
+const work = path.resolve(process.env.AC100_WORK_DIR || path.join(ROOT, '.local/ac100'));
+const fw = process.env.AC100_ROOTFS || process.env.AC100_FW || path.join(work, 'rootfs');
+const crypto = require('crypto');
+const expected = 'b12d1584fcafda2a71aa9038b41b7e1c5b893b350f3e6edf5105e445d024a912';
+const binary = path.join(fw, 'usr/sbin/uac');
+if (!fs.existsSync(binary)) throw new Error(`Missing ${binary}; import the V6 firmware first (docs/setup.md)`);
+if (crypto.createHash('sha256').update(fs.readFileSync(binary)).digest('hex') !== expected) {
+  throw new Error('Firmware mismatch: this extractor requires TL-AC100 V6.0 1.0.3 Build 260817 Rel.68871n');
+}
 
 function walk(node, fn, parent = null) {
   if (!node || typeof node !== 'object') return;

@@ -9,8 +9,8 @@ import re
 from collections import defaultdict
 from pathlib import Path
 
-ASM = Path('/tmp/uac-load1.asm')
-FIELDS = Path('/tmp/jcs_fields.tsv')
+from ac100_env import ASM
+from ac100_env import FIELDS
 GETTERS = {
     0x8b98f0: 'int', 0x8b9580: 'string', 0x8b9a40: 'int64',
     0x8b9750: 'double', 0x8b92f0: 'boolean', 0x8b9770: 'object',

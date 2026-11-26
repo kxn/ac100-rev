@@ -5,9 +5,10 @@ import re
 from collections import defaultdict
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
-LUA = Path('/tmp/ac100/rootfs/usr/lib/lua/luci/torchlight/uac/wportal_public.lua')
-RAW = Path('/tmp/lua_jcs_fields.jsonl')
+from ac100_env import ROOT
+from ac100_env import ROOTFS
+LUA = ROOTFS / "usr/lib/lua/luci/torchlight/uac/wportal_public.lua"
+from ac100_env import LUA_FIELDS as RAW
 OUT = ROOT / 'notes/vendor-web/jcs-wportal-types.tsv'
 IDENT = re.compile(r'^[A-Za-z_][A-Za-z0-9_]*$')
 

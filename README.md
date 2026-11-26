@@ -4,12 +4,16 @@ Reverse-engineering workspace for the TP-Link TL-AC100 `uac` binary (CAPWAP
 AC controller, MIPS32 big-endian, dynamically linked against uClibc/GnuTLS)
 and a from-scratch, pure-Go reimplementation of it.
 
-**Status**: the Go implementation covers the full CAPWAP session path
-(discovery → join → config-status → change-state → echo, DTLS, image
-upgrade, LED/reset control, the vendor 0x25 envelope, 118 registered
-message elements) plus the five JCS control-socket subsystems.
-`go test ./...` is green; `linux/amd64`, `linux/arm64`, `windows/amd64`
-build with `CGO_ENABLED=0`.
+**Status**: the standalone Go daemon manages a real TL-7AP5100HC AP through
+a pure-Go DTLS 1.0 compatibility transport. The embedded Web UI covers AP
+management, WLAN services, radio controls, clients and wireless history,
+AP coordination, Mesh and capability-dependent options. Selective TP-Link AP
+DHCP is available separately from the lab's ordinary DHCP/DNS/NAT tools.
+Controller logic has UDP simulated-AP and API/UI regression coverage; real
+multi-AP roaming and hardware-specific behavior remain compatibility checks.
+See [AC acceptance](docs/ac-acceptance.md), [measured progress](docs/go-live-status.md)
+and [product scope](docs/implementation-plan.md). QEMU is a reference controller,
+not a runtime dependency. Delivery builds use `CGO_ENABLED=0`.
 
 ## Layout
 
@@ -24,11 +28,19 @@ build with `CGO_ENABLED=0`.
 | `tools/` | the extraction/annotation tooling (objdump annotator, Ghidra batch exporter, element-registry extractor, call-site argument extractor) |
 | `uacgo/docs/ondevice-verify.md` | the remaining on-device verification checklist (needs a real TL-AC100 / live AP) |
 
+## Environment
+
+Start with `source tools/env.sh` and `python3 tools/check_env.py`. The
+QEMU/vendor-Web evidence uses TL-AC100 V6.0 **1.0.3 Build 260817 Rel.68871n**
+and a separate complete rootfs; the checked-in legacy binary has a different
+address map. See [docs/setup.md](docs/setup.md) for installation, firmware
+import, native Linux USB/AP networking, and both extraction workflows.
+
 ## Build / test
 
 ```
 cd uacgo
-go build ./...          # CGO_ENABLED=0 by default; no cgo anywhere
+CGO_ENABLED=0 go build ./...
 go test ./...           # packet fixtures in ghidra-export/data are exercised
 AC100_REV_ROOT=/path/to/checkout go test ./...   # optional override
 ```
@@ -54,11 +66,10 @@ as references only. `notes/00-architecture.md` records the address anchors
 section by section; `tools/` regenerates the corpus from
 `firmware/usr/sbin/uac`.
 
-Known gaps are documented in `uacgo/docs/ondevice-verify.md`: four checks
-that require a real TL-AC100 or a live AP (JCS frame capture,
-SendImageNotify direction, profile value calibration, on-wire DTLS
-interop with the device's GnuTLS stack). The DTLS integration itself is
-verified end-to-end in-process (`cweng/dtls_pion_test.go`).
+Implementation and device-validation boundaries are documented in
+[uacgo/docs/ondevice-verify.md](uacgo/docs/ondevice-verify.md). Pion DTLS 1.2
+component tests and the AP's legacy DTLS compatibility transport are separate;
+passing fixture tests alone does not establish device interoperability.
 
 ## Notes for contributors
 

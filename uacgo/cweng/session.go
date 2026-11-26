@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"uacgo/capwap"
@@ -36,12 +37,12 @@ type Event struct {
 // (ac_data+0x5c join count, +0x60 run count, +0x68 join fail, +0x6c csp fail —
 // cw_fsm_ac_join_wait/finish/configure increment sites).
 type AcDataCounters struct {
-	JoinCount      uint32 // ac_data+0x5c
-	RunCount       uint32 // ac_data+0x60
-	JoinFailCount  uint32 // ac_data+0x68
-	CSPFailCount   uint32 // ac_data+0x6c
-	EchoTimeout    uint32 // ac_data+0x74 (cw_fsm_ac_run RUN ECHO exhaustion)
-	RetransTimeout uint32 // ac_data+0x78 (RUN retransmit exhaustion)
+	JoinCount      atomic.Uint32 // ac_data+0x5c
+	RunCount       atomic.Uint32 // ac_data+0x60
+	JoinFailCount  atomic.Uint32 // ac_data+0x68
+	CSPFailCount   atomic.Uint32 // ac_data+0x6c
+	EchoTimeout    atomic.Uint32 // ac_data+0x74 (cw_fsm_ac_run RUN ECHO exhaustion)
+	RetransTimeout atomic.Uint32 // ac_data+0x78 (RUN retransmit exhaustion)
 }
 
 // Session is the per-AP control session. Layout mirrors the binary's session
@@ -50,7 +51,16 @@ type AcDataCounters struct {
 //	addr / acData / State(+0xb4) / EchoInterval(+0xd0) /
 //	LastReqSeq(+0xa6) / LastRspBuf(+0xd4) / EchoWatchdog(+0xc8)
 type Session struct {
-	mu sync.Mutex
+	meshParent       *Session
+	meshReport       *MeshReport
+	fragmentID       uint16
+	bluetoothServers map[uint8]BluetoothServerStatus
+	channelScan      *ChannelScanReport
+	arpScan          *ARPScanReport
+	rrmReports       map[uint8]RRMReport
+	rpc              map[uint32]chan []byte
+	rpcSeq           uint32
+	mu               sync.Mutex
 
 	acData *AcDataCounters
 
@@ -67,15 +77,25 @@ type Session struct {
 	rspRetries int
 	rspTimer   *time.Timer
 
-	LastReqSeq   int    // session+0xa6, -1 = none
-	LastRspBuf   []byte // session+0xd4, resend on duplicate request
-	EchoWatchdog uint32 // session+0xc8
+	LastReqSeq          int    // session+0xa6, -1 = none
+	LastRspBuf          []byte // session+0xd4, resend on duplicate request
+	EchoWatchdog        uint32 // session+0xc8
+	LastSeen            time.Time
+	Created             time.Time
+	transportGeneration [32]byte
+	radioStatus         map[uint8]RadioStatus
+	telemetry           *WirelessTelemetry
+	reports             map[uint16]APReport
+	reportedSSIDs       []ReportedSSID
 
-	apEntry *APEntry // parsed join identity (for the apmngr store)
+	pending     map[uint8]*pendingCommand
+	commandGate chan struct{}
+	apEntry     *APEntry // parsed join identity (for the apmngr store)
 
 	// timers: id → deadline
 	timers map[uint]*time.Timer
 	dead   bool
+	closed chan struct{}
 
 	// hooks (set by engine)
 	onTeardown   func(*Session)
@@ -89,11 +109,13 @@ func newSession(addr *net.UDPAddr, acData *AcDataCounters) *Session {
 	return &Session{
 		acData:        acData,
 		Addr:          addr,
+		Created:       time.Now(),
 		State:         StateIDLE, // cw_fsm_ac_setup @0x59ce08: state 1
 		EchoInterval:  TimerTimeouts[TimerEchoInterval],
 		LastReqSeq:    -1,
 		EchoMaxMisses: 5,
 		timers:        make(map[uint]*time.Timer),
+		closed:        make(chan struct{}),
 	}
 }
 
@@ -141,6 +163,8 @@ func (s *Session) teardown() {
 	}
 	s.clearTimers()
 	s.dead = true
+	close(s.closed)
+	s.cancelRspRetransmit()
 	if s.onTeardown != nil {
 		s.onTeardown(s)
 	}
@@ -215,7 +239,7 @@ func (s *Session) armRspRetransmit(rsp []byte) {
 			return
 		}
 		if s.rspRetries >= s.RetransMax {
-			s.acData.RetransTimeout++
+			s.acData.RetransTimeout.Add(1)
 			s.rspTimer = nil
 			return
 		}
@@ -242,7 +266,7 @@ func fireRspRetransmit(s *Session, buf []byte, interval *int) {
 		return
 	}
 	if s.rspRetries >= s.RetransMax {
-		s.acData.RetransTimeout++
+		s.acData.RetransTimeout.Add(1)
 		s.rspTimer = nil
 		return
 	}

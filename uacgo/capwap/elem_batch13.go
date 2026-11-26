@@ -31,8 +31,9 @@ func AppendImageInformation(dst []byte, p ImageInformation) []byte {
 	return AppendElement(dst, 0x001a, p.AssembleValue())
 }
 
-// AppendImageData is element 0x0018 (min 1 max 0x401): u8 type + BE16 len +
-// data[len] (cw_image_data_parse @0x576850: type ∈ {1,2}=data, 5=pull).
+// ImageData is element 0x0018: type8 followed by raw data. The length in
+// cw_image_data's C struct is derived from the outer TLV, never on the wire.
+// V6 parse @0x63d2e0: types1/2 have 1–1024 bytes; type5 has no data.
 type ImageData struct {
 	Type uint8
 	Data []byte
@@ -41,24 +42,22 @@ type ImageData struct {
 // AssembleValue writes the element value.
 func (d ImageData) AssembleValue() []byte {
 	b := []byte{d.Type}
-	b = AppendUint16BE(b, uint16(len(d.Data)))
 	return append(b, d.Data...)
 }
 
 // ParseImageData decodes the element value.
 func ParseImageData(v []byte) (*ImageData, error) {
-	if len(v) < 3 {
+	if len(v) < 1 || len(v) > 1025 {
 		return nil, ErrShortPacket
 	}
 	t := v[0]
 	if !(t >= 1 && t <= 2) && t != 5 {
 		return nil, ErrShortPacket
 	}
-	n := int(Uint16BE(v[1:]))
-	if 3+n != len(v) {
+	if (t == 5 && len(v) != 1) || (t != 5 && len(v) == 1) {
 		return nil, ErrShortPacket
 	}
-	return &ImageData{Type: t, Data: append([]byte(nil), v[3:]...)}, nil
+	return &ImageData{Type: t, Data: append([]byte(nil), v[1:]...)}, nil
 }
 
 // AppendImageData writes element 0x0018.

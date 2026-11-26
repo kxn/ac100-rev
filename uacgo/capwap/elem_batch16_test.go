@@ -8,20 +8,20 @@ import (
 func TestBatch16Roundtrips(t *testing.T) {
 	mac := [6]byte{0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff}
 
-	ar := StaAuthReq{Radio: 1, WlanID: 2, VlanID: 100}
+	ar := StaAuthReq{Radio: 1, WlanID: 2, Backfill: []byte{0xaa, 0xbb}}
 	copy(ar.MAC[:], mac[:])
 	w := ar.AssembleValue()
-	if len(w) != 12 {
+	if len(w) != 14 {
 		t.Fatalf("auth req wire = %d", len(w))
 	}
-	if v, err := ParseStaAuthReq(w); err != nil || v.VlanID != 100 {
+	if v, err := ParseStaAuthReq(w); err != nil || len(v.Backfill) != 2 {
 		t.Fatalf("auth req parse: %v", err)
 	}
 
-	sr := StaAssocReq{Radio: 1, WlanID: 2, CapInfo: 0x1234, VlanID: 200}
+	sr := StaAssocReq{Radio: 1, WLAN: 2, Backfill: []byte{0x12, 0x34}}
 	copy(sr.MAC[:], mac[:])
 	w = sr.AssembleValue()
-	if v, err := ParseStaAssocReq(w); err != nil || v.CapInfo != 0x1234 {
+	if v, err := ParseStaAssocReq(w); err != nil || len(v.Backfill) != 2 {
 		t.Fatalf("assoc req parse: %v", err)
 	}
 
@@ -31,7 +31,7 @@ func TestBatch16Roundtrips(t *testing.T) {
 		t.Fatalf("deassoc: %v", err)
 	}
 
-	arr := StaAuthResult{Radio: 1, WlanID: 2, Result: 0, VlanID: 100}
+	arr := StaAuthResult{Radio: 1, WlanID: 2, Result: 0, Backfill: []byte{0xaa, 0xbb}}
 	copy(arr.MAC[:], mac[:])
 	if v, err := ParseStaAuthResult(arr.AssembleValue()); err != nil || v.Result != 0 {
 		t.Fatalf("auth result: %v", err)

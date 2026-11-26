@@ -190,7 +190,7 @@ func (s *Session) fsmDTLSTeardown(ev *Event) error {
 func (s *Session) fsmJoinWaitRecv(ev *Event) error {
 	if ev.ID == EventCheckPassed && ev.MsgType == MsgJoin {
 		s.setState(StateJoinFinish)
-		s.acData.JoinCount++
+		s.acData.JoinCount.Add(1)
 		return nil
 	}
 	s.teardown()
@@ -239,7 +239,7 @@ func (s *Session) fsmConfigureRecv(ev *Event) error {
 	case MsgChangeStateEvent:
 		s.setTimer(TimerEchoInterval)
 		s.enterRun()
-		s.acData.RunCount++
+		s.acData.RunCount.Add(1)
 		s.setState(StateRun)
 	case MsgConfigStatus:
 		// stay in CONFIGURE
@@ -255,7 +255,7 @@ func (s *Session) fsmJoinWait(ev *Event) error {
 	switch ev.ID {
 	case EventTimeout:
 		if ev.Timer == TimerWaitJoin {
-			s.acData.JoinFailCount++
+			s.acData.JoinFailCount.Add(1)
 			s.clearTimers()
 			s.teardown()
 			return nil
@@ -280,7 +280,7 @@ func (s *Session) fsmJoinFinish(ev *Event) error {
 	switch ev.ID {
 	case EventTimeout:
 		if ev.Timer == TimerWaitJoin {
-			s.acData.JoinFailCount++
+			s.acData.JoinFailCount.Add(1)
 			s.clearTimers()
 			s.teardown()
 			return nil
@@ -306,7 +306,7 @@ func (s *Session) fsmConfigure(ev *Event) error {
 	switch ev.ID {
 	case EventTimeout:
 		if ev.Timer == TimerChangeStatePend {
-			s.acData.CSPFailCount++
+			s.acData.CSPFailCount.Add(1)
 			s.clearTimers()
 			s.enterReset()
 			s.delete()
@@ -402,12 +402,12 @@ func (s *Session) fsmRun(ev *Event) error {
 				s.setTimer(TimerEchoInterval)
 				return nil
 			}
-			s.acData.EchoTimeout++
+			s.acData.EchoTimeout.Add(1)
 			s.clearTimers()
 			s.teardown()
 			return nil
 		case TimerRetransmit:
-			s.acData.RetransTimeout++
+			s.acData.RetransTimeout.Add(1)
 			s.clearTimers()
 			s.teardown()
 			return nil

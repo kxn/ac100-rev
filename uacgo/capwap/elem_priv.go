@@ -97,42 +97,41 @@ func (l *PrivWlanList) AssembleValue() []byte {
 }
 
 // PrivAdvRdPara mirrors cw_priv_adv_rd_para_parse @0x5a3654.
-// Fixed 15-byte head (slot 0xd of the vendor struct is padding), then
-// length-conditional reads:
-//
-//	len ∈ {0x14,0x15,0x1a,0x1b} → 4 bytes read then replaced by the vendor
-//	    defaults ff 01 ff 01 (quirk preserved)
-//	len even                    → 1 byte [0x15]
-//	len >= 0x16                 → 6 more bytes [0x16..0x1b]
+// Fixed 16-byte wire head followed by optional RSSI (4), extension (1),
+// and Wi-Fi 6 (6) bytes. Checked against the V6 assembler at 0x6894b4.
+// Structure offsets in the decompiler include padding; they are not wire offsets.
 type PrivAdvRdPara struct {
-	RadioID uint8
-	Head    [14]byte // bytes 1..14 of the wire head (slot 4..5 = BE16)
-	Extra4  []byte   // present when read (stored as vendor defaults)
-	Byte15  uint8    // [0x15], 0xff default
-	Tail6   []byte   // [0x16..0x1b]
+	RadioID   uint8
+	Head      [14]byte // bytes 1..14 of the wire head (slot 4..5 = BE16)
+	BaseFlags uint8    // wire byte 15; vendor structure offset 0x10
+	Extra4    []byte   // RSSI restriction and kick controls; preserve AP values
+	Byte15    uint8    // [0x15], 0xff default
+	HasByte15 bool     // optional extension is present for odd wire lengths
+	Tail6     []byte   // [0x16..0x1b]
 }
 
 // ParsePrivAdvRdPara decodes the value with the vendor's length conditionals.
 func ParsePrivAdvRdPara(v []byte) (*PrivAdvRdPara, error) {
-	if len(v) < 15 || v[0] >= 0x20 {
+	if len(v) < 16 || v[0] >= 0x20 {
 		return nil, ErrShortPacket
 	}
-	p := &PrivAdvRdPara{RadioID: v[0]}
+	p := &PrivAdvRdPara{RadioID: v[0], BaseFlags: v[15], Byte15: 0xff}
 	copy(p.Head[:], v[1:15])
 	l := len(v)
-	off := 15
+	off := 16
 	if l == 0x14 || l == 0x15 || l == 0x1a || l == 0x1b {
 		if off+4 > l {
 			return nil, ErrShortPacket
 		}
+		p.Extra4 = append([]byte(nil), v[off:off+4]...)
 		off += 4
-		p.Extra4 = []byte{0xff, 0x01, 0xff, 0x01} // vendor overwrites with defaults
 	}
-	if l%2 == 0 {
+	if l%2 != 0 {
 		if off+1 > l {
 			return nil, ErrShortPacket
 		}
 		p.Byte15 = v[off]
+		p.HasByte15 = true
 		off++
 	}
 	if l >= 0x16 {
@@ -148,17 +147,16 @@ func ParsePrivAdvRdPara(v []byte) (*PrivAdvRdPara, error) {
 	return p, nil
 }
 
-// AssembleValue writes the wire bytes (head + defaults-preserving extras).
+// AssembleValue writes the wire bytes, retaining optional-field presence.
 func (p *PrivAdvRdPara) AssembleValue() []byte {
 	b := make([]byte, 0, 15)
 	b = append(b, p.RadioID)
 	b = append(b, p.Head[:]...)
+	b = append(b, p.BaseFlags)
 	if p.Extra4 != nil {
 		b = append(b, p.Extra4...)
 	}
-	if p.Tail6 != nil || p.Byte15 != 0xff {
-		// byte15 participates when the length was even; reproduce by position:
-		// the caller supplies the original length via LenHint when needed.
+	if p.HasByte15 {
 		b = append(b, p.Byte15)
 	}
 	if p.Tail6 != nil {

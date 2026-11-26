@@ -23,9 +23,9 @@ func ParseDuplicateIPv6Address(v []byte) (*DuplicateAddr, error) {
 }
 
 // StaStatisticsRecord is one per-station record of element 0x0052,
-// wire layout per cw_priv_sta_statistics_assemble (34 bytes):
+// wire layout per cw_priv_sta_statistics_assemble (38 bytes):
 //
-//	6B mac + u8×6 + BE16 + BE32 + BE16 + u8×2 + BE32×3
+//	6B mac + u8×6 + BE16 + BE32 + BE16 + u8×2 + BE32×4
 type StaStatisticsRecord struct {
 	MAC  [6]byte
 	U8   [6]byte
@@ -94,7 +94,7 @@ func ParsePrivStaStatisticsReq(v []byte) (*PrivStaStatisticsReq, error) {
 		return nil, ErrShortPacket
 	}
 	p := &PrivStaStatisticsReq{Count: Uint32BE(v)}
-	if p.Count > 0 && (len(v)-4)%38 != 0 {
+	if p.Count > 200 || uint64(p.Count)*38+4 != uint64(len(v)) {
 		return nil, ErrShortPacket
 	}
 	for off := 4; off+38 <= len(v); off += 38 {

@@ -1,14 +1,10 @@
 package cweng
 
 import (
-	"crypto/ecdsa"
-	"crypto/elliptic"
-	"crypto/rand"
+	"context"
 	"crypto/tls"
-	"crypto/x509"
-	"math/big"
+	"fmt"
 	"net"
-	"strings"
 	"testing"
 	"time"
 
@@ -16,72 +12,58 @@ import (
 )
 
 func TestPionSmoke(t *testing.T) {
-	key, _ := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
-	tmpl := &x509.Certificate{SerialNumber: big.NewInt(1),
-		NotBefore: time.Now(), NotAfter: time.Now().Add(time.Hour)}
-	der, _ := x509.CreateCertificate(rand.Reader, tmpl, tmpl, key.Public(), key)
-	cert := tls.Certificate{Certificate: [][]byte{der}, PrivateKey: key}
-
-	srv, _ := net.ListenUDP("udp", &net.UDPAddr{IP: net.IPv4(127, 0, 0, 1), Port: 0})
-	srvAddr := srv.LocalAddr().(*net.UDPAddr)
-	srvClosed := make(chan struct{})
-	countConn := &countConn{UDPConn: srv}
-	srvErr := make(chan error, 1)
-	go func() {
-		dconn, err := dtls.Server(countConn, &dtls.Config{Certificates: []tls.Certificate{cert}, ClientAuth: dtls.NoClientCert})
-		if err != nil {
-			srvErr <- err
-			close(srvClosed)
-			return
-		}
-		buf := make([]byte, 128)
-		n, err := dconn.Read(buf)
-		if err != nil {
-			t.Logf("server read err: %v", err)
-			close(srvClosed)
-			return
-		}
-		t.Logf("server got %q", buf[:n])
-		dconn.Close()
-		close(srvClosed)
-	}()
-
-	cli, _ := net.DialUDP("udp", nil, srvAddr)
-	dcli, err := dtls.Client(cli, &dtls.Config{InsecureSkipVerify: true})
+	listener, err := dtls.Listen("udp", &net.UDPAddr{IP: net.IPv4(127, 0, 0, 1)},
+		&dtls.Config{Certificates: []tls.Certificate{*genCert(t)}, ClientAuth: dtls.NoClientCert})
 	if err != nil {
-		if strings.Contains(err.Error(), "connection refused") {
-			t.Skip("sandbox refuses UDP handshake exchange")
+		t.Fatal(err)
+	}
+	defer listener.Close()
+	serverErr := make(chan error, 1)
+	go func() {
+		conn, err := listener.Accept()
+		if err != nil {
+			serverErr <- err
+			return
 		}
+		defer conn.Close()
+		conn.SetDeadline(time.Now().Add(5 * time.Second))
+		buf := make([]byte, 128)
+		n, err := conn.Read(buf)
+		if err == nil && string(buf[:n]) != "ping" {
+			err = fmt.Errorf("unexpected payload %q", buf[:n])
+		}
+		if err == nil {
+			_, err = conn.Write([]byte("pong"))
+		}
+		serverErr <- err
+	}()
+	raw, err := net.DialUDP("udp", nil, listener.Addr().(*net.UDPAddr))
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer raw.Close()
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	client, err := dtls.ClientWithContext(ctx, raw, &dtls.Config{InsecureSkipVerify: true})
+	if err != nil {
 		t.Fatalf("client handshake: %v", err)
 	}
-	dcli.Write([]byte("ping"))
+	defer client.Close()
+	client.SetDeadline(time.Now().Add(5 * time.Second))
+	if _, err := client.Write([]byte("ping")); err != nil {
+		t.Fatal(err)
+	}
+	buf := make([]byte, 128)
+	n, err := client.Read(buf)
+	if err != nil || string(buf[:n]) != "pong" {
+		t.Fatalf("client response: %v %q", err, buf[:n])
+	}
 	select {
-	case e := <-srvErr:
-		t.Fatalf("server handshake err: %v", e)
-	case <-srvClosed:
-	case <-time.After(2 * time.Second):
-		t.Log("timeout waiting server close")
+	case err := <-serverErr:
+		if err != nil {
+			t.Fatal(err)
+		}
+	case <-ctx.Done():
+		t.Fatal("server timeout")
 	}
-	_ = cli.Close()
-}
-
-type countConn struct {
-	*net.UDPConn
-	n int
-}
-
-func (c *countConn) ReadFrom(p []byte) (int, net.Addr, error) {
-	n, a, err := c.UDPConn.ReadFrom(p)
-	if err == nil {
-		c.n++
-	}
-	return n, a, err
-}
-
-func (c *countConn) WriteTo(p []byte, a net.Addr) (int, error) {
-	n, err := c.UDPConn.WriteTo(p, a)
-	if err == nil {
-		c.n++
-	}
-	return n, err
 }

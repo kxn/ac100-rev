@@ -62,11 +62,11 @@ func (p *PionHandshaker) Bind(conn net.Conn) error {
 }
 
 func (p *PionHandshaker) handshakeDone(dconn net.Conn) {
-	close(p.done)
 	// stash the established connection for Wrap/Unwrap
 	p.mu.Lock()
 	p.estab = dconn
 	p.mu.Unlock()
+	close(p.done)
 }
 
 // Unwrap reads and decodes one application-data datagram from the
