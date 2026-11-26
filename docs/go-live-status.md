@@ -1,5 +1,13 @@
 # 独立 Go 控制器实机进度（2026-11-26）
 
+## 2026-11-27 独立程序配置更新
+
+已部署代码 `f0ebf98dd2c1f6882cf1d32bb649d6f536d26346`，替换下节的策略部署版本。构建信息确认revision一致、vcs.modified=false，服务active/running且NRestarts=0。
+
+新增“程序配置”页，10项Go资源预算可实时修改、持久化及备份恢复。实际HTTP验证将AP预算1024临时提高至1025再恢复1024，原AP连接时间保持不变；Web主页面与资源脚本已更新。AP基础初值20秒心跳/5次超时/30秒保活/3600秒空闲/离线自管理允许已填入已有管理页。正式程序不读取原硬件profile.ini。
+
+全量Go测试/vet/race及Linux amd64/arm64、Windows amd64纯Go构建通过；两能力×11页、48表单无JS错误。实际AP回RUN、配置无failed/blocked，平板5GHz连接及网关/DNS/HTTPS通过，客户端IP/射频/统计显示正常。此轮未更改漫游/RRM纯计算模块，资源调整不改变AP配置身份和策略；设备检查仅确认基本可用性。
+
 ## 2026-11-27 部署更新
 
 策略整改代码已提交并部署为 `712f49648d70392034a17b112bad2fa7568c6e75`。运行二进制的 Go 构建信息确认该 revision、`vcs.modified=false`、`CGO_ENABLED=0`；systemd 服务 active/running，重启计数0。部署前已在忽略目录私存旧二进制及数据库一致性备份。
