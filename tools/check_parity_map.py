@@ -42,7 +42,7 @@ def main():
     assert production <= covered, f'Go files without review classification: {sorted(production - covered)}'
     assert all((ROOT / path).is_file() for path in covered), 'Stale review file entry'
     startup = (ROOT / 'uacgo/cmd/acd/main.go').read_text()
-    for forbidden in ('"uacgo/jcs"', 'store.OpenAll(', 'RegisterWserviceHandlers(', 'StoreWserviceConfig', 'RegisterApmngrJCS('):
+    for forbidden in ('"uacgo/jcs"', 'store.OpenAll(', 'RegisterWserviceHandlers(', 'StoreWserviceConfig', 'RegisterApmngrJCS(', 'LoadProfileINI(', 'ProfileInt('):
         assert forbidden not in startup, f'Second configuration authority reactivated: {forbidden}'
     if args.verify_firmware:
         for c in original['controllers']:

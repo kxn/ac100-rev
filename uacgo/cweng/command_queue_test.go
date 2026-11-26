@@ -65,3 +65,58 @@ func TestCommandSubmissionIsImmutableFIFOAndSafeInsideEvent(t *testing.T) {
 		t.Fatal(err)
 	}
 }
+
+func TestLiveGoLimitsKeepExistingSessionAndQueuedCommands(t *testing.T) {
+	e, s, sent := requestTestSession(t)
+	e.SetResourceLimits(1, 1)
+	if e.canAddSession() {
+		t.Fatal("AP capacity not enforced")
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	s.mu.Lock()
+	ap := s.statusLocked()
+	s.mu.Unlock()
+	first, err := e.QueueAP(ctx, ap, 7, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	read := func() *capwap.ParsedPacket {
+		select {
+		case p := <-sent:
+			return p
+		case <-ctx.Done():
+			t.Fatal("command did not transmit")
+			return nil
+		}
+	}
+	p := read()
+	second, err := e.QueueAP(ctx, ap, 7, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err = e.QueueAP(ctx, ap, 7, nil); err == nil {
+		t.Fatal("queue budget ignored")
+	}
+	ack := func(p *capwap.ParsedPacket) {
+		r, _ := capwap.NewParsedPacket(8)
+		r.Control.SeqNum = p.Control.SeqNum
+		r.Elements = []capwap.Element{{Type: 0x21, Value: []byte{0, 0, 0, 0}}}
+		s.mu.Lock()
+		s.acknowledge(r)
+		s.mu.Unlock()
+	}
+	e.SetResourceLimits(2, 1)
+	if !e.canAddSession() {
+		t.Fatal("live capacity increase had no effect")
+	}
+	ack(p)
+	if _, err = first.Wait(ctx); err != nil {
+		t.Fatal(err)
+	}
+	p = read()
+	ack(p)
+	if _, err = second.Wait(ctx); err != nil {
+		t.Fatal("queue resize lost existing command", err)
+	}
+}

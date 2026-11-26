@@ -8,6 +8,7 @@ import (
 	"sort"
 	"time"
 	"uacgo/capwap"
+	"uacgo/controllercfg"
 	"uacgo/cweng"
 	"uacgo/mobility"
 )
@@ -79,8 +80,8 @@ func defaultMobility() MobilityConfig {
 	return MobilityConfig{NetworkMode: 2, Default: defaultRoamSettings(), Balance: []BalanceRule{}, Roaming: []RoamRule{}}
 }
 func (p MobilityConfig) validate(cfg Config) error {
-	if len(p.Balance) > 32 || len(p.Roaming) > 32 || p.NetworkMode != 2 {
-		return fmt.Errorf("均衡/漫游规则最多各 32 项，V6 固件只开放兼容模式（2）")
+	if len(p.Balance) > controllercfg.Effective(cfg.Resources).MaxPolicyRules || len(p.Roaming) > controllercfg.Effective(cfg.Resources).MaxPolicyRules || p.NetworkMode != 2 {
+		return fmt.Errorf("均衡/漫游规则超过程序容量，或网络模式不是原固件兼容模式（2）")
 	}
 	groups := map[string]bool{}
 	for _, g := range cfg.Groups {

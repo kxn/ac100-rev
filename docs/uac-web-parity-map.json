@@ -438,6 +438,25 @@
         "uacgo/cmd/acd/main_test.go"
       ],
       "basis": "Go 程序架构对应；持久化、脱敏、导入校验和原Web RRM修改门禁。HTTP/JSON外观重新设计，不声称和原UI像素/API路径一致。 正式启动不再注册旧 SQLite WLAN/RF 或 JCS；AP 身份编号单独持久化。"
+    },
+    {
+      "id": "controller-resources",
+      "title": "Go 程序默认值与可编辑资源预算",
+      "firmware_modules": [],
+      "go_files": [
+        "uacgo/controllercfg/resources.go",
+        "uacgo/admin/resources.go",
+        "uacgo/cweng/resources.go",
+        "uacgo/admin/assets/resources.js"
+      ],
+      "regressions": [
+        "uacgo/controllercfg/resources_test.go",
+        "uacgo/admin/resources_test.go",
+        "uacgo/cweng/command_queue_test.go",
+        "uacgo/cmd/acd/main_test.go",
+        "tools/check_admin_ui.py"
+      ],
+      "basis": "用户2026-11-27明确要求按独立Go程序设置默认值/容量并允许Web编辑；这些程序预算无须复刻原AC硬件profile。AP能力、单AP限制、协议结构和漫游/RRM算法常量仍沿固件依据。资源编辑实时生效且不改变AP配置身份；缺省AP心跳/保活/空闲/离线管理为可编辑Go初值。"
     }
   ],
   "controller_review": {
@@ -681,7 +700,7 @@
     "uacgo/store/store.go": "Legacy UAC/JCS/SQLite research compatibility; no claim of standalone Web feature parity"
   },
   "limits": [
-    "Flash-only profile limits/defaults cannot be recovered from the update image. Reconstructed QEMU profile is not original evidence.",
+    "原硬件Flash容量/profile无需逐值复刻；用户已明确采用可编辑的Go程序资源预算。固件中已确认的AP约束、算法常量和时序继续保留。",
     "V4 device behavior is not established by this V6 firmware review.",
     "No hardware or original-UAC oracle executions used to infer/prove algorithms. Fake AP tests validate Go transport/state and source-derived vectors.",
     "Current source changes have not been deployed to the lab daemon."

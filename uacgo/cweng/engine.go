@@ -8,9 +8,11 @@ import (
 	"net"
 	"os"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"uacgo/capwap"
+	"uacgo/controllercfg"
 	"uacgo/internal/legacydtls"
 )
 
@@ -33,6 +35,7 @@ type Engine struct {
 	fragments      capwap.Reassembler
 
 	MaxSessions       int // l_profile[0x140] max_session_num
+	resources         atomic.Pointer[engineResources]
 	Debug             bool
 	RetransIntervalMs int // profile default_retransmit_time (ms, test-tunable)
 	RetransMax        int // profile retransmit_max_retries
@@ -93,7 +96,7 @@ func NewEngine(port uint16) (*Engine, error) {
 		sessions:          make(map[string]*Session),
 		reg:               newRegistry(),
 		acData:            &AcDataCounters{},
-		MaxSessions:       64,
+		MaxSessions:       controllercfg.Defaults().MaxAPSessions,
 		RetransIntervalMs: 3000,
 		RetransMax:        5,
 		ACName:            "TL-AC100",
@@ -249,7 +252,7 @@ func (e *Engine) EnableLegacyDTLS(certFile, keyFile string) error {
 	var err error
 	e.legacyDTLS, err = legacydtls.New(certFile, keyFile)
 	if err == nil {
-		e.legacyDTLS.MaxPeers = e.MaxSessions + 8 // bounded room for reconnect handshakes
+		e.legacyDTLS.SetMaxPeers(e.MaxAPSessions() + 8) // bounded room for reconnect handshakes
 	}
 	return err
 }
@@ -371,10 +374,7 @@ func (e *Engine) handlePlainDatagram(raw []byte, addr *net.UDPAddr) {
 				old.mu.Unlock()
 			}
 		}
-		e.mu.Lock()
-		count := len(e.sessions)
-		e.mu.Unlock()
-		if e.MaxSessions > 0 && count >= e.MaxSessions {
+		if !e.canAddSession() {
 			return // capwap_ac_session_exceed_max_num: "just ignore it"
 		}
 		s = newSession(addr, e.acData)

@@ -13,6 +13,7 @@ import (
 	"sort"
 	"time"
 	"uacgo/capwap"
+	"uacgo/controllercfg"
 	"uacgo/cweng"
 	"uacgo/firmware"
 )
@@ -171,8 +172,9 @@ func (m *Manager) importImage(b []byte) (firmware.Image, error) {
 	for _, row := range m.upgrades.Images {
 		total += row.Size
 	}
-	if len(m.upgrades.Images) >= 16 || total > 256<<20 {
-		return im, fmt.Errorf("固件库最多 16 个镜像、256 MiB，请先删除旧镜像")
+	resources := controllercfg.Effective(m.config.Resources)
+	if len(m.upgrades.Images) >= resources.MaxFirmwareImages || int64(total) > int64(resources.FirmwareStorageMiB)<<20 {
+		return im, fmt.Errorf("固件库超过程序配置容量，请先删除旧镜像或调整容量")
 	}
 	if err = os.MkdirAll(filepath.Dir(m.imagePath(im.ID)), 0700); err != nil {
 		return im, err

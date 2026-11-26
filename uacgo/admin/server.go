@@ -21,6 +21,7 @@ import (
 	"sync"
 	"time"
 	"uacgo/capwap"
+	"uacgo/controllercfg"
 	"uacgo/cweng"
 	"uacgo/mobility"
 	"unicode/utf8"
@@ -57,6 +58,7 @@ func (r RadioList) MarshalJSON() ([]byte, error) {
 }
 
 type Config struct {
+	Resources           *controllercfg.Resources    `json:"controller_resources,omitempty"`
 	EDCARules           []EDCARule                  `json:"edca_rules"`
 	EDCAState           map[string]EDCABindingState `json:"edca_state,omitempty"`
 	ReportedClientNames map[string]string           `json:"reported_client_names,omitempty"`
@@ -261,6 +263,23 @@ func New(engine *cweng.Engine, clients *cweng.ClientTable, dataDir string) (*Man
 	if err := validateManagement(m.config); err != nil {
 		return nil, err
 	}
+	defaults := mergeOptions(standaloneAPDefaults(), m.config.APDefaults)
+	defaultsChanged := configurationKey(defaults, time.Time{}) != configurationKey(m.config.APDefaults, time.Time{})
+	m.config.APDefaults = defaults
+	resourcesMissing := m.config.Resources == nil
+	if resourcesMissing {
+		initial := initialControllerResources(m.config)
+		m.config.Resources = &initial
+	}
+	if err := m.validateResourceUsage(m.config); err != nil {
+		return nil, err
+	}
+	if resourcesMissing || defaultsChanged {
+		if err := atomicJSON(m.path, m.config); err != nil {
+			return nil, err
+		}
+	}
+	m.applyControllerResources()
 	return m, nil
 }
 func atomicJSON(path string, v any) error {
@@ -903,6 +922,7 @@ func (m *Manager) Handler() http.Handler {
 	m.multicastRoutes(mux)
 	m.rrmRoutes(mux)
 	m.edcaRoutes(mux)
+	m.resourceRoutes(mux)
 	mux.HandleFunc("POST /api/vlan-pools", m.poolHTTP)
 	mux.HandleFunc("DELETE /api/vlan-pools/{id}", m.poolHTTP)
 	mux.HandleFunc("GET /api/radios/defaults", m.radioDefaultsHTTP)

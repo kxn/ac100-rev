@@ -23,7 +23,7 @@ not a runtime dependency. Delivery builds use `CGO_ENABLED=0`.
 | path | contents |
 |---|---|
 | `uacgo/` | the Go reimplementation (`capwap` wire codecs, `cweng` engine+FSM+DTLS, `jcs` control-socket handlers, `store` SQLite layer, `cmd/acd` daemon) |
-| `uacgo/data/` | firmware-derived runtime data the daemon reads from files (`profile.ini` reconstruction, AP DB seed, rate table) |
+| `uacgo/data/` | firmware-derived runtime data the daemon reads from files (AP DB seed and protocol reference data) |
 | `notes/` | evidence notes with binary addresses for every implemented conclusion (`00-architecture.md`), element registry (`elements.tsv`), dispatch registry (`registry.tsv`), per-function retrieve sequences (`element_retseq.txt`) |
 | `firmware/usr/sbin/` | the `uac` binary and the firmware-shipped symbol tables (`uac_symbol_fun` 5683 functions, `uac_symbol_obj` 1213 objects). The firmware image is publicly downloadable from the vendor site |
 | `asm/` | one annotated disassembly file per function (symbol names from the shipped tables) |
@@ -55,13 +55,17 @@ disassembly, Ghidra pseudocode, registries) or to keep reversing, see
 exact commands, env vars, known pitfalls).
 
 The daemon reads its runtime data from a data directory (see
-`cmd/acd` flags): `identity.json` / `profile.ini` / `apdb.json`.
+`cmd/acd` flags): `identity.json` / `apdb.json` / `controller.json`.
 Standalone WLAN/RF configuration has one authority in `controller.json`;
 SQLite retains AP identity IDs. The legacy JCS server and SQLite WLAN/RF
 response builders are research adapters and are not registered by `acd`.
-`rate-default.bin` is only needed by those reference adapters. Profile values
-marked `(recon)` are reconstructed deployment settings, not proof of the
-original device's flash defaults or capacity.
+`rate-default.bin` and reconstructed `profile.ini` are only needed by
+reference adapters. Standalone startup does not read the original hardware
+profile. Program capacities have Go defaults and can be edited live on the
+**程序配置** page; they are saved in `controller.json` and included in backups.
+AP capabilities, wire constraints and firmware roaming/RRM policies remain
+separate from these budgets.
+
 
 ## Evidence method
 

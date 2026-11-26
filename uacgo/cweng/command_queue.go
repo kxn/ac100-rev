@@ -78,6 +78,10 @@ func (e *Engine) queueOnSession(ctx context.Context, s *Session, p *capwap.Parse
 		e.outbound = map[*Session]*commandQueue{}
 	}
 	q := e.outbound[root]
+	if limit := e.queueLimit(); q != nil && limit > 0 && len(q.jobs) >= limit {
+		e.outboundMu.Unlock()
+		return nil, errors.New("AP command queue is full")
+	}
 	if q == nil {
 		q = &commandQueue{wake: make(chan struct{}, 1)}
 		e.outbound[root] = q

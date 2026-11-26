@@ -9,6 +9,7 @@ import (
 	"net/netip"
 	"time"
 	"uacgo/capwap"
+	"uacgo/controllercfg"
 	"uacgo/cweng"
 )
 
@@ -60,7 +61,8 @@ func validateProtection(p *ProtectionConfig, cfg Config) error {
 	if p == nil {
 		return nil
 	}
-	if len(p.Servers) > 10000 || len(p.Bindings) > 10000 || len(p.Rules) > 1024 {
+	resources := controllercfg.Effective(cfg.Resources)
+	if len(p.Servers) > resources.MaxTrustedServers || len(p.Bindings) > resources.MaxAddressBindings || len(p.Rules) > resources.MaxPolicyRules {
 		return fmt.Errorf("防护表超过容量")
 	}
 	servers, bindings, addresses, ids, names := map[string]bool{}, map[string]bool{}, map[string]bool{}, map[string]bool{}, map[string]bool{}

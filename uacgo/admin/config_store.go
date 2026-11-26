@@ -9,6 +9,9 @@ import (
 // database for the entire business operation. All configuration writers go
 // through this boundary, including imports and inherited group profiles.
 func (m *Manager) persistConfigLocked(next Config, rrmResult bool) error {
+	if err := m.validateResourceUsage(next); err != nil {
+		return err
+	}
 	if !rrmResult && wirelessConfigKey(next) != wirelessConfigKey(m.config) {
 		for _, job := range m.rrmJobs {
 			switch job.State {
@@ -21,6 +24,7 @@ func (m *Manager) persistConfigLocked(next Config, rrmResult bool) error {
 		return err
 	}
 	m.config = next
+	m.applyControllerResources()
 	return nil
 }
 

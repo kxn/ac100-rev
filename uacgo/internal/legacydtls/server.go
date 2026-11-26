@@ -43,6 +43,9 @@ type peer struct {
 	seen                                     bool
 }
 
+// SetMaxPeers changes the handshake capacity while preserving current peers.
+func (s *Server) SetMaxPeers(limit int) { s.mu.Lock(); s.MaxPeers = limit; s.mu.Unlock() }
+
 type Server struct {
 	mu       sync.Mutex
 	cert     tls.Certificate

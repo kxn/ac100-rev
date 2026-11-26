@@ -72,6 +72,9 @@ func (e *Engine) handleMeshPublic(parent *Session, req *capwap.ParsedPacket) boo
 				continue
 			}
 			if child == nil {
+				if !e.canAddSession() {
+					continue
+				}
 				if req.Control.MsgType != MsgJoin {
 					continue
 				}

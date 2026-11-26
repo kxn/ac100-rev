@@ -23,6 +23,19 @@ func TestIdentityAdvertisesSelectedControlPort(t *testing.T) {
 	}
 }
 
+func TestIdentityAdvertisesGoCapacityInsteadOfOriginalHardwareLimit(t *testing.T) {
+	e, err := cweng.NewEngine(0)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer e.Close()
+	e.SetResourceLimits(2048, 1024)
+	f := fileIdentity{id: &cweng.Identity{}, engine: e}
+	if d := f.ACDescriptor(); d.ActiveLim != 2048 || d.StationLim != 65535 {
+		t.Fatal(d)
+	}
+}
+
 func TestStandaloneHelperProcess(t *testing.T) {
 	if os.Getenv("AC100_TEST_CHILD") != "1" {
 		return
@@ -34,11 +47,11 @@ func TestStandaloneHelperProcess(t *testing.T) {
 
 // Exercise the real executable bootstrap, not a test-only registration chain.
 // A leftover prototype SSID must never be injected in Configure, even though
-// its old DB is present. The standalone no longer needs rate-default.bin or
+// its old DB is present. The standalone no longer needs profile.ini/rate-default.bin or
 // creates the authentication/Portal database as a startup side effect.
 func TestStandaloneIgnoresLegacyWirelessDatabase(t *testing.T) {
 	dir := t.TempDir()
-	for _, name := range []string{"identity.json", "apdb.json", "profile.ini"} {
+	for _, name := range []string{"identity.json", "apdb.json"} {
 		b, err := os.ReadFile(filepath.Join("..", "..", "data", name))
 		if err != nil {
 			t.Fatal(err)

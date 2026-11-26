@@ -48,6 +48,11 @@ func (m *Manager) saveManagementResult(next Config, rrmResult bool) error {
 	return m.saveManagement(next)
 }
 func (m *Manager) saveManagementFrom(next Config, source managementWrite) error {
+	if source == managementRestore && next.Resources == nil {
+		initial := initialControllerResources(next)
+		next.Resources = &initial
+	}
+	next.APDefaults = mergeOptions(standaloneAPDefaults(), next.APDefaults)
 	if err := validateGroupStrategies(next.Groups); err != nil {
 		return err
 	}

@@ -78,6 +78,9 @@ func inheritedRadioSettings(cfg Config, ap string) []RadioSetting {
 	return out
 }
 func effectiveRadioConfig(cfg Config, ap cweng.APStatus) Config {
+	// Program budgets don't belong to an AP's desired configuration or
+	// commit identity. Resource-only edits must not reconfigure the radios.
+	cfg.Resources = nil
 	cfg.APDefaults = inheritedRadioOptions(cfg.APDefaults, ap)
 	cfg.Templates = append([]APTemplate{}, cfg.Templates...)
 	for i := range cfg.Templates {

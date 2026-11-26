@@ -71,6 +71,14 @@ type APTemplate struct {
 	Options  APOptions `json:"options"`
 }
 
+// Standalone startup choices for settings whose factory values lived in the
+// AC's Flash configuration. They remain ordinary editable AP settings; wire
+// meanings, model constraints and roaming/RRM defaults are firmware-derived.
+func standaloneAPDefaults() APOptions {
+	echo, miss, keep, idle, offline := uint8(20), uint32(5), uint32(30), uint32(3600), true
+	return APOptions{EchoSeconds: &echo, EchoMisses: &miss, ClientKeepAlive: &keep, ClientIdle: &idle, OfflineSelfManage: &offline}
+}
+
 func mergeOptions(base, override APOptions) APOptions {
 	// JSON overlays only explicitly set options. Nested schedules/accounts and
 	// complete port/LAG lists are atomic replacements, not partial surprises.
@@ -88,7 +96,8 @@ func mergeOptions(base, override APOptions) APOptions {
 	return out
 }
 func effectiveAPOptions(cfg Config, ap cweng.APStatus) (APOptions, error) {
-	o := inheritedRadioOptions(supportedInheritedOptions(cfg.APDefaults, ap), ap)
+	defaults := mergeOptions(standaloneAPDefaults(), cfg.APDefaults)
+	o := inheritedRadioOptions(supportedInheritedOptions(defaults, ap), ap)
 	for _, p := range cfg.APProfiles {
 		if p.AP != ap.ID {
 			continue

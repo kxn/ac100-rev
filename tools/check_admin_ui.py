@@ -10,6 +10,9 @@ def live(p):return json.load(urllib.request.urlopen('http://127.0.0.1:8090/api/'
 aps=live('aps');cfg=live('config');defaults=live('radios/defaults?ap_id='+aps[0]['id']+'&radio_id=1');clients=[{'mac':'02:03:04:05:06:07','ap_id':aps[0]['id'],'radio_id':1,'wlan_id':1,'ssid':'GoAC-Lab','state':'connected','rssi_dbm':-60,'ip':'192.0.2.20','last_seen':'2026-11-26T12:00:00Z'}];rates=live('rates');mobility=live('mobility');mobility['network_mode']=2;rrm=live('rrm');upgrades={'images':[{'id':'synthetic-image','format':'tp-container','model':aps[0]['model'],'version':'1.2.3 Build 20250317 Rel.43192','size':4096,'hardware_ids':[aps[0].get('hardware_id','fixture-hardware')],'firmware_id':'test-firmware'}],'jobs':{}};storm={'defaults':{'enabled':False,'rate':64,'custom':False,'arp_proxy':{'enabled':False,'scope':3,'to_unicast':False},'nd_proxy':{'enabled':False,'scope':3,'to_unicast':False},'mdns_proxy':{'enabled':False,'scope':3,'to_unicast':False},'protocols':[{'enabled':False,'scope':3,'rate':64}for _ in range(8)]},'protocols':['ARP','NS','RS','DHCP','DHCPv6','IGMP','Broadcast','Multicast']}
 edca_queues=[{'aifs':a,'cw_min':lo,'cw_max':hi,'txop':tx}for a,lo,hi,tx in [(1,2,3,47),(1,3,4,94),(2,4,6,0),(3,4,10,0),(2,2,3,47),(2,3,4,94),(2,4,10,0),(3,4,10,0)]]
 edca={'rules':[],'defaults':{'frequency_mask':0,'wmm':True,'custom':True,'scene':1,'configuration':{'enabled':True,'mode':0,'queues':edca_queues}}}
+resource_values={'max_ap_sessions':1024,'command_queue_depth':1024,'max_services':1024,'max_groups':1024,'max_templates':1024,'max_policy_rules':1024,'max_trusted_servers':10000,'max_address_bindings':10000,'max_firmware_images':32,'firmware_storage_mib':512}
+resources={'settings':resource_values,'defaults':resource_values,'fields':[{'key':k,'label':k,'min':16 if k=='firmware_storage_mib'else 1,'max':1000000}for k in resource_values]}
+
 
 class Handler(http.server.SimpleHTTPRequestHandler):
  def __init__(self,*a,**k):super().__init__(*a,directory=str(ROOT/'uacgo/admin/assets'),**k)
@@ -43,11 +46,13 @@ with sync_playwright() as p:
    if r.request.method!='GET':writes.append({'path':path,'body':r.request.post_data_json});r.fulfill(json={'status':'saved'});return
    if path.startswith('clients/')and'/history?'in path:
     signal_queries.append(path);r.fulfill(json={'samples':[{'at':'2026-11-26T12:00:00Z','ap_id':profile[0]['id'],'radio_id':1,'wlan_id':1,'ssid':'GoAC-Lab','rssi_dbm':-60},{'at':'2026-11-26T12:00:30Z','ap_id':profile[0]['id'],'radio_id':1,'wlan_id':1,'ssid':'GoAC-Lab','rssi_dbm':-48}]});return
-   value=profile if path=='aps' else conf if path=='config' else clients if path=='clients' else [r for r in conf['config']['radios']if r['ap_id']==profile[0]['id']]if path.endswith('/effective-radios')else rf_defaults if path.startswith('radios/defaults') else rates if path=='rates' else mobility if path=='mobility' else edca if path=='edca' else rrm if path=='rrm' else upgrades if path=='upgrades' else {'config':conf['config'].get('mesh'),'jobs':{}} if path=='mesh' else {'configured_mode':2,'actual_mode':2,'mode_writable':False,'unsupported_aps':[]} if path=='mobility/status' else storm if path=='storm/defaults' else {'ap_counts':[{'at':'2026-11-26T12:00:00Z','online':1,'offline':2,'total':3},{'at':'2026-11-26T12:01:00Z','online':2,'offline':1,'total':3}],'radios':[{'at':'2026-11-26T12:00:00Z','ap_id':profile[0]['id'],'radio_id':1,'clients':1,'channel':6,'power_dbm':15,'metrics':{'channelUsage':20}},{'at':'2026-11-26T12:01:00Z','ap_id':profile[0]['id'],'radio_id':1,'clients':2,'channel':6,'power_dbm':15,'metrics':{'channelUsage':30}}],'events':[]} if path.startswith('history?') else []
+   value=resources if path=='controller/resources' else profile if path=='aps' else conf if path=='config' else clients if path=='clients' else [r for r in conf['config']['radios']if r['ap_id']==profile[0]['id']]if path.endswith('/effective-radios')else rf_defaults if path.startswith('radios/defaults') else rates if path=='rates' else mobility if path=='mobility' else edca if path=='edca' else rrm if path=='rrm' else upgrades if path=='upgrades' else {'config':conf['config'].get('mesh'),'jobs':{}} if path=='mesh' else {'configured_mode':2,'actual_mode':2,'mode_writable':False,'unsupported_aps':[]} if path=='mobility/status' else storm if path=='storm/defaults' else {'ap_counts':[{'at':'2026-11-26T12:00:00Z','online':1,'offline':2,'total':3},{'at':'2026-11-26T12:01:00Z','online':2,'offline':1,'total':3}],'radios':[{'at':'2026-11-26T12:00:00Z','ap_id':profile[0]['id'],'radio_id':1,'clients':1,'channel':6,'power_dbm':15,'metrics':{'channelUsage':20}},{'at':'2026-11-26T12:01:00Z','ap_id':profile[0]['id'],'radio_id':1,'clients':2,'channel':6,'power_dbm':15,'metrics':{'channelUsage':30}}],'events':[]} if path.startswith('history?') else []
    r.fulfill(json=value)
   page.route('**/api/**',route);page.goto('http://127.0.0.1:'+str(server.server_port));page.wait_for_selector('[data-ap]');assert page.locator('a[href="/api/aps/export"]').is_visible()
-  for tab in ['aps','services','radios','clients','management','mobility','history','protection','upgrades','interfaces']:
+  for tab in ['aps','services','radios','clients','management','mobility','history','protection','upgrades','interfaces','resources']:
    page.locator('[data-tab="'+tab+'"]').click();page.wait_for_timeout(40)
+  page.locator('[data-tab="resources"]').click();page.locator('[data-resource-edit]').click();page.locator('[name="max_ap_sessions"]').fill('2048');assert page.locator('#controller-resources-form input[type="number"]').count()==len(resource_values)
+  page.locator('#controller-resources-form [type="submit"]').click();page.wait_for_timeout(80);assert writes[-1]['path']=='controller/resources'and writes[-1]['body']['max_ap_sessions']==2048 and writes[-1]['body']['max_policy_rules']==1024
   page.locator('[data-tab="services"]').click();page.locator('#new-service').click();page.locator('[name="ssid"]').fill('UI-Parity');page.locator('[data-editor-tab="security"]').click();page.locator('[name="passphrase"]').fill('synthetic-ui-key');assert page.locator('[name="radius_ip"]').count()==0
   for pane in ['security','binding','qos','schedule','basic']:page.locator('[data-editor-tab="'+pane+'"]').click()
   if not full:
@@ -113,6 +118,6 @@ with sync_playwright() as p:
  browser.close()
 server.shutdown()
 assert not errors,errors
-assert len(writes)==46,len(writes)
+assert len(writes)==48,len(writes)
 assert next(w for w in reversed(writes) if w['path']=='radios')['body']['advanced']['edca']['preset']==2
-print(json.dumps({'profiles':2,'pages_per_profile':10,'forms_submitted':len(writes),'javascript_errors':errors,'screenshots':str(OUT)},ensure_ascii=False))
+print(json.dumps({'profiles':2,'pages_per_profile':11,'forms_submitted':len(writes),'javascript_errors':errors,'screenshots':str(OUT)},ensure_ascii=False))

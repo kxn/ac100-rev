@@ -4,7 +4,7 @@
 //
 //	identity.json — AC identity (vendor fixture values)
 //	apdb.json     — AP capability DB (decrypted /etc/apdb.bin)
-//	profile.ini   — the hard "profile" runtime config (reconstructed)
+//	controller.json — standalone configuration and resource budgets
 //
 // Usage: acd [-data DIR] [-port 5246] [-iface IP] [-debug]
 package main
@@ -26,6 +26,7 @@ import (
 	"time"
 	_ "time/tzdata"
 	"uacgo/admin"
+	"uacgo/controllercfg"
 	"uacgo/dhcpserver"
 
 	"uacgo/capwap"
@@ -36,7 +37,7 @@ import (
 var listenAddr string
 
 func main() {
-	dataDir := flag.String("data", "data", "data directory (identity.json, apdb.json, profile.ini)")
+	dataDir := flag.String("data", "data", "data directory (identity.json, apdb.json, controller.json)")
 	port := flag.Int("port", 5246, "UDP control port")
 	listen := flag.String("iface", "", "listen address (default all)")
 	debug := flag.Bool("debug", false, "verbose engine logs")
@@ -90,16 +91,6 @@ func main() {
 	if err != nil {
 		log.Fatalf("load identity: %v", err)
 	}
-	prof, err := cweng.LoadProfileINI(*dataDir + "/profile.ini")
-	if err != nil {
-		log.Fatalf("load profile: %v", err)
-	}
-	maxSess, err := cweng.ProfileInt(prof, "ac_capwap", "max_session_num")
-	if err != nil {
-		// The binary exits when profile reads fail (cw_ac_profile_init
-		// returns -1 → "Init uac process failed, exit..."); mirror that.
-		log.Fatalf("profile: %v", err)
-	}
 	apdb, err := cweng.LoadAPDB(*dataDir + "/apdb.json")
 	if err != nil {
 		log.Fatalf("load apdb: %v", err)
@@ -118,7 +109,6 @@ func main() {
 	if err != nil {
 		log.Fatalf("listen udp %d: %v", *port, err)
 	}
-	e.MaxSessions = maxSess
 	e.Debug = *debug
 	if *tracePath != "" {
 		f, err := os.OpenFile(*tracePath, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0600)
@@ -171,7 +161,7 @@ func main() {
 		}
 	}
 	e.UseAPDB(apdb)
-	e.RegisterAttachHandlers(fileIdentity{id: id, port: uint16(*port)})
+	e.RegisterAttachHandlers(fileIdentity{id: id, port: uint16(*port), engine: e})
 	e.RegisterV6Compatibility()
 	e.UseStore(&cweng.SQLiteAPStore{Cfg: apStore.DB(), Run: apStore.DB()})
 	clients := cweng.NewClientTable()
@@ -204,7 +194,7 @@ func main() {
 		}()
 	}
 	log.Printf("acd (uac-go) listening on :%d, max_sessions=%d, ac=%s, apdb=%s (%d models)",
-		*port, e.MaxSessions, id.ACName, apdb.Version, len(apdb.APList))
+		*port, e.MaxAPSessions(), id.ACName, apdb.Version, len(apdb.APList))
 	if err := e.Run(); err != nil && ctx.Err() == nil {
 		log.Fatalf("engine: %v", err)
 	}
@@ -212,17 +202,22 @@ func main() {
 
 // fileIdentity adapts identity.json to the engine's IdentityProvider.
 type fileIdentity struct {
-	id   *cweng.Identity
-	port uint16
+	id     *cweng.Identity
+	port   uint16
+	engine *cweng.Engine
 }
 
 func (f fileIdentity) ACDescriptor() capwap.ACDescriptor {
+	limit := controllercfg.Defaults().MaxAPSessions
+	if f.engine != nil {
+		limit = f.engine.MaxAPSessions()
+	}
 	vendor := uint32(0x12345678)
 	if v, err := strconv.ParseUint(f.id.VendorIDHex, 0, 32); err == nil {
 		vendor = uint32(v)
 	}
 	return capwap.ACDescriptor{
-		Stations: 0, StationLim: 10000, ActiveStas: 0, ActiveLim: 1000,
+		Stations: 0, StationLim: 65535, ActiveStas: 0, ActiveLim: uint16(limit),
 		Status: 2, RStatus: 2, SlaveStatus: 4,
 		SubElements: []capwap.ACDescriptorSubElement{
 			{Vendor: vendor, Type: 4,

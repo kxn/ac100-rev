@@ -27,7 +27,8 @@
 | Mesh、子会话、成员授权和任务恢复 | admin/mesh*、cweng/mesh* |
 | AP防护、风暴/代理/USB | admin/protection*、arp_scan*；cweng/arp_report* |
 | 选择性AP DHCP | dhcpserver/*_test.go：精确厂商、普通终端静默、Mesh特例 |
-| Web | tools/check_admin_ui.py：两套能力×10页，46次表单提交，无JS错误；写操作均被HTTP模拟拦截 |
+| Go程序预算、默认值与配置分层 | controllercfg/resources_test.go、admin/resources_test.go、cweng/command_queue_test.go；实时调整/持久化/恢复、保留已有会话与命令、不改变AP配置及RRM、超过旧32/50条规则容量、无profile.ini启动 |
+| Web | tools/check_admin_ui.py：两套能力×11页，48次表单提交，无JS错误；写操作均被HTTP模拟拦截 |
 
 完整原厂模块→Go以及Go→原厂/基础设施分类见 [双向索引](uac-web-parity-map.json)。文件覆盖检查不等于声称穷举所有功能参数。
 
@@ -51,3 +52,9 @@ CGO_ENABLED=0 go build ./...
 固件没有flash运行配置，重建profile不是原厂容量/默认值依据。V4菜单不证明V6运行行为；多AP真实互通、硬件特性及长期稳定性尚不能由本轮源码审查认定。保留未定义C输入的安全防护，不声称复刻其未定义结果。
 
 排除AC Linux系统/网络/机器监控、RADIUS/Portal/认证、云、网络运维/WIPS/Sensor/FTP/外部审计推送和AP蓝牙。普通客户端DHCP/DNS/NAT只在实验工具；AP执行的DHCP/ARP/ND防护、无线VLAN/池和用户明确要求的AP-only Go DHCP保留。
+
+## 独立程序默认值（用户2026-11-27决策）
+
+原AC硬件的容量/profile不再作为需要复刻的目标。正式acd不读取profile.ini；程序配置通过Web/API保存，资源字段的默认值、校验范围及表单元数据共享controllercfg定义。AP会话/待发队列、服务/组/模板/每类规则默认均为1024，信任服务器及地址绑定各10000，固件库32镜像/512MiB；上限可编辑，已有对象/固件占用不能被新预算截断，已有会话和已入队命令不会因降低容量而被清除。
+
+AP管理的Go初值：心跳20秒、超时5次、客户端保活30秒、空闲3600秒、允许AC离线后AP自管理。通过已有全局AP设置/模板/分组/单AP页面编辑，显式停用不会被初值覆盖。资源专页只调整程序预算；AP能力限制、协议参数范围、漫游/RRM门限/运算/事件次序继续按原固件依据校验。资源编辑不改变AP配置身份，亦不取消进行中的RRM。

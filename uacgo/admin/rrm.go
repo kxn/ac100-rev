@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"uacgo/controllercfg"
 	"uacgo/cweng"
 )
 
@@ -35,8 +36,8 @@ func defaultRRMRule() RRMRule {
 	return RRMRule{Band2G: RRMBand{Bandwidth: 0, Channels: []int{1, 6, 11}, PowerThreshold: -65, MinPower: 10, MaxPower: 50}, Band5G: RRMBand{Bandwidth: 1, Channels: []int{}, PowerThreshold: -65, MinPower: 10, MaxPower: 50}}
 }
 func validateRRMRules(rows []RRMRule, cfg Config) error {
-	if len(rows) > 50 {
-		return fmt.Errorf("无线优化规则最多 50 项")
+	if len(rows) > controllercfg.Effective(cfg.Resources).MaxPolicyRules {
+		return fmt.Errorf("无线优化规则超过程序容量")
 	}
 	ids, names := map[string]bool{}, map[string]bool{}
 	groups := map[string]bool{}
