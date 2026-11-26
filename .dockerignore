@@ -1,0 +1,13 @@
+**
+!uacgo/
+!uacgo/**
+uacgo/data/**
+!uacgo/data/identity.json
+!uacgo/data/apdb.json
+uacgo/acd
+uacgo/acd.exe
+uacgo/**/*.test
+!deploy/
+!deploy/docker/
+!deploy/docker/Dockerfile
+!deploy/docker/entrypoint.sh

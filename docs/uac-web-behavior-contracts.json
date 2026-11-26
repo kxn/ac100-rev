@@ -2495,6 +2495,33 @@
           "name": "TestLegacyAPNamesMigrateWithoutOverridingProfile"
         }
       ]
+    },
+    {
+      "id": "container-http-binding",
+      "feature": "controller-core",
+      "origin": "standalone-go",
+      "behavior": "独立程序默认仅回环 Web；容器入口显式 opt-in 对外监听，监听端口由部署环境指定；不增加原厂策略。",
+      "sources": [],
+      "implementation": [
+        {
+          "path": "uacgo/cmd/acd/main.go",
+          "symbol": "validateHTTPBind"
+        },
+        {
+          "path": "uacgo/admin/server.go",
+          "symbol": "HandlerWithOptions"
+        }
+      ],
+      "tests": [
+        {
+          "path": "uacgo/cmd/acd/main_test.go",
+          "name": "TestManagementHTTPBindingRequiresExplicitRemoteOptIn"
+        },
+        {
+          "path": "uacgo/admin/server_test.go",
+          "name": "TestRemoteHTTPOptInKeepsSameOriginWriteBoundary"
+        }
+      ]
     }
   ],
   "reference_or_inactive_functions": [

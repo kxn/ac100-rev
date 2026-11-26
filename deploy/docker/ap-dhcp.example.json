@@ -1,0 +1,12 @@
+{
+  "interface": "eth0",
+  "server": "192.168.88.2",
+  "start": "192.168.88.100",
+  "end": "192.168.88.150",
+  "netmask": "255.255.255.0",
+  "gateway": "192.168.88.1",
+  "dns": ["192.168.88.1"],
+  "ac": ["192.168.88.2"],
+  "lease_seconds": 3600,
+  "lease_file": "/data/ap-dhcp-leases.json"
+}

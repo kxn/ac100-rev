@@ -67,6 +67,16 @@ AP capabilities, wire constraints and firmware roaming/RRM policies remain
 separate from these budgets.
 
 
+## Docker / RouterOS Container
+
+Two container profiles are available: non-root without DHCP, or AP-only DHCP
+with the required network capabilities. Build Linux arm64 images and RouterOS
+Docker-save archives with `./tools/build_docker.sh`; add
+`--platform linux/amd64,linux/arm64` for both architectures. Set `AC_HTTP_PORT`
+in the Compose environment or RouterOS env list to change the Web port.
+See [container deployment](deploy/docker/README.md) for both configurations,
+certificate mounts, persistent data and RouterOS veth setup.
+
 ## Evidence method
 
 Current V6 strategy and protocol conclusions are traced to the supplied

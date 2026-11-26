@@ -149,3 +149,19 @@ func TestStandaloneIgnoresLegacyWirelessDatabase(t *testing.T) {
 		t.Fatal("standalone boot created an excluded Portal DB", err)
 	}
 }
+
+func TestManagementHTTPBindingRequiresExplicitRemoteOptIn(t *testing.T) {
+	for _, tc := range []struct {
+		address      string
+		remote, want bool
+	}{
+		{"127.0.0.1:8090", false, true}, {"[::1]:8090", false, true},
+		{"0.0.0.0:18090", false, false}, {":18090", false, false},
+		{"0.0.0.0:18090", true, true}, {"[::]:18090", true, true},
+		{"192.0.2.2:18090", true, true}, {"bad-address", true, false},
+	} {
+		if err := validateHTTPBind(tc.address, tc.remote); (err == nil) != tc.want {
+			t.Fatal(tc, err)
+		}
+	}
+}

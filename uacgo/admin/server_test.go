@@ -99,3 +99,32 @@ func TestRadioPacketMatchesCapturedFields(t *testing.T) {
 		t.Fatalf("radio settings differ from V6 frame 112: %+v", elements)
 	}
 }
+
+func TestRemoteHTTPOptInKeepsSameOriginWriteBoundary(t *testing.T) {
+	m, _ := testController(t)
+	address := "http://192.0.2.2:18090/api/controller/resources"
+	w := httptest.NewRecorder()
+	m.Handler().ServeHTTP(w, httptest.NewRequest("GET", address, nil))
+	if w.Code != 403 {
+		t.Fatal("local default accepted remote Host", w.Code)
+	}
+	handler := m.HandlerWithOptions(HTTPOptions{AllowRemote: true})
+	w = httptest.NewRecorder()
+	handler.ServeHTTP(w, httptest.NewRequest("GET", address, nil))
+	if w.Code != 200 {
+		t.Fatal("remote opt-in still rejects reachable Host", w.Code, w.Body.String())
+	}
+	for _, origin := range []string{"http://192.0.2.2:18090", "https://attacker.invalid"} {
+		req := httptest.NewRequest("POST", address, strings.NewReader(`{"max_ap_sessions":2048}`))
+		req.Header.Set("Origin", origin)
+		w = httptest.NewRecorder()
+		handler.ServeHTTP(w, req)
+		want := 202
+		if origin == "https://attacker.invalid" {
+			want = 403
+		}
+		if w.Code != want {
+			t.Fatal(origin, w.Code, w.Body.String())
+		}
+	}
+}

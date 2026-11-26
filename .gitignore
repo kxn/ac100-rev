@@ -13,3 +13,9 @@ raw_text.asm
 syms.json
 func_index.tsv
 ghidraProj/
+
+# Container build outputs and local deployment settings
+/dist/
+/deploy/docker/.env
+/deploy/docker/ap-dhcp.json
+/deploy/docker/certs/

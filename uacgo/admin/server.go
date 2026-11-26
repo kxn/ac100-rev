@@ -783,7 +783,15 @@ func jsonReply(w http.ResponseWriter, status int, v any) {
 	w.WriteHeader(status)
 	_ = json.NewEncoder(w).Encode(v)
 }
-func (m *Manager) Handler() http.Handler {
+
+type HTTPOptions struct{ AllowRemote bool }
+
+// Handler keeps local-only access for existing host integrations.
+func (m *Manager) Handler() http.Handler { return m.HandlerWithOptions(HTTPOptions{}) }
+
+// Remote access is an explicit deployment choice, shared with listener setup.
+// Same-origin write checks apply equally to local and remote deployments.
+func (m *Manager) HandlerWithOptions(options HTTPOptions) http.Handler {
 	mux := http.NewServeMux()
 	m.historyRoutes(mux)
 	m.stormRoutes(mux)
@@ -1008,7 +1016,7 @@ func (m *Manager) Handler() http.Handler {
 		if h, _, err := net.SplitHostPort(host); err == nil {
 			host = h
 		}
-		if host != "localhost" && !net.ParseIP(host).IsLoopback() {
+		if !options.AllowRemote && host != "localhost" && !net.ParseIP(host).IsLoopback() {
 			jsonReply(w, 403, map[string]string{"error": "管理界面仅允许本机访问"})
 			return
 		}

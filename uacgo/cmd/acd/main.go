@@ -14,6 +14,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"flag"
+	"fmt"
 	"log"
 	"net"
 	"net/http"
@@ -45,7 +46,8 @@ func main() {
 	dtlsCert := flag.String("dtls-cert", "", "RSA certificate for the AP DTLS 1.0 compatibility transport")
 	dtlsKey := flag.String("dtls-key", "", "matching RSA key")
 	tracePath := flag.String("trace", "", "write private wire and decrypted CAPWAP trace JSONL")
-	httpAddress := flag.String("http", "127.0.0.1:8090", "local management HTTP address")
+	httpAddress := flag.String("http", "127.0.0.1:8090", "management HTTP listen address")
+	httpAllowRemote := flag.Bool("http-allow-remote", false, "explicitly allow management HTTP on a non-loopback address (trusted management networks only)")
 	dhcpConfig := flag.String("ap-dhcp", "", "opt-in AP-only DHCP JSON configuration (Linux)")
 	flag.Parse()
 	if *port < 1 || *port > 65535 {
@@ -176,11 +178,10 @@ func main() {
 	go manager.Run(ctx)
 	go func() { <-ctx.Done(); _ = e.Close() }()
 	if *httpAddress != "" {
-		host, _, err := net.SplitHostPort(*httpAddress)
-		if err != nil || !net.ParseIP(host).IsLoopback() {
-			log.Fatal("management HTTP currently requires a loopback address")
+		if err := validateHTTPBind(*httpAddress, *httpAllowRemote); err != nil {
+			log.Fatal(err)
 		}
-		server := &http.Server{Addr: *httpAddress, Handler: manager.Handler(), ReadHeaderTimeout: 5 * time.Second}
+		server := &http.Server{Addr: *httpAddress, Handler: manager.HandlerWithOptions(admin.HTTPOptions{AllowRemote: *httpAllowRemote}), ReadHeaderTimeout: 5 * time.Second}
 		listener, err := net.Listen("tcp", *httpAddress)
 		if err != nil {
 			log.Fatalf("management HTTP: %v", err)
@@ -198,6 +199,19 @@ func main() {
 	if err := e.Run(); err != nil && ctx.Err() == nil {
 		log.Fatalf("engine: %v", err)
 	}
+}
+
+// Host defaults remain local. Container deployments explicitly opt into a
+// reachable management address rather than adding a second HTTP proxy.
+func validateHTTPBind(address string, allowRemote bool) error {
+	host, _, err := net.SplitHostPort(address)
+	if err != nil {
+		return err
+	}
+	if !allowRemote && !net.ParseIP(host).IsLoopback() {
+		return fmt.Errorf("management HTTP requires a loopback address; use --http-allow-remote to expose it")
+	}
+	return nil
 }
 
 // fileIdentity adapts identity.json to the engine's IdentityProvider.

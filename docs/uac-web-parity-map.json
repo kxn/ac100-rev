@@ -511,12 +511,14 @@
         "tools/check_admin_ui.py",
         "uacgo/admin/config_store_test.go",
         "uacgo/admin/server_test.go",
-        "uacgo/cmd/acd/main_test.go"
+        "uacgo/cmd/acd/main_test.go",
+        "tools/check_docker.py"
       ],
       "basis": "Go 程序架构对应；持久化、脱敏、导入校验和原Web RRM修改门禁。HTTP/JSON外观重新设计，不声称和原UI像素/API路径一致。 正式启动不再注册旧 SQLite WLAN/RF 或 JCS；AP 身份编号单独持久化。",
       "evidence_contracts": [
         "single-configuration-authority",
-        "configuration-lifecycle-validation"
+        "configuration-lifecycle-validation",
+        "container-http-binding"
       ]
     },
     {

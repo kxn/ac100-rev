@@ -1,0 +1,39 @@
+name: go-ac
+services:
+  ac:
+    image: ${AC_DHCP_IMAGE:-go-ac:latest-arm64-dhcp}
+    platform: ${AC_PLATFORM:-linux/arm64}
+    build:
+      context: ../..
+      dockerfile: deploy/docker/Dockerfile
+      target: dhcp
+    network_mode: host
+    user: "0:0"
+    cap_drop: [ALL]
+    cap_add: [NET_BIND_SERVICE, NET_RAW]
+    security_opt: [no-new-privileges:true]
+    read_only: true
+    tmpfs: [/tmp]
+    restart: unless-stopped
+    stop_grace_period: 15s
+    environment:
+      AC_DHCP_ENABLED: "1"
+      AC_INTERFACE: ${AC_INTERFACE:?Set AC_INTERFACE to the AP-facing host interface}
+      AC_HTTP_HOST: ${AC_HTTP_HOST:-127.0.0.1}
+      AC_HTTP_PORT: ${AC_HTTP_PORT:-8090}
+    volumes:
+      - ac-data:/data
+      - type: bind
+        source: ${AC_CERTS_DIR:-./certs}
+        target: /certs
+        read_only: true
+        bind:
+          create_host_path: false
+      - type: bind
+        source: ${AC_DHCP_CONFIG_FILE:-./ap-dhcp.json}
+        target: /etc/go-ac/ap-dhcp.json
+        read_only: true
+        bind:
+          create_host_path: false
+volumes:
+  ac-data:
