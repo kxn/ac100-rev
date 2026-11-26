@@ -1,13 +1,13 @@
 # 原厂 UAC/Web 与 Go 对应核查
 
-2026-11-27。本表描述当前源码；实机仍运行历史 `587d414`。本轮没有以原厂运行结果、假 AP 或外部设备试验推导调度策略。算法的入口、计算和时序依据见 [策略对照](mobility-parity-audit.md)，版本哈希及129个函数指纹见 [静态清单](mobility-firmware-evidence.json)。
+2026-11-27。本表描述当前源码；本轮复核开始时实验环境运行 `f0ebf98`，本轮整改与验证见 [复核记录](controller-revalidation.md)。本轮没有以原厂运行结果、假 AP 或外部设备试验推导调度策略。算法的入口、计算和时序依据见 [策略对照](mobility-parity-audit.md)，版本哈希及129个函数指纹见 [静态清单](mobility-firmware-evidence.json)。
 
-[原厂目录](original-feature-inventory.json)列出23个 AP 控制器模块，[双向索引](uac-web-parity-map.json)记录保留/排除范围、Go对应文件、回归入口和参考代码。`python3 tools/check_parity_map.py --verify-firmware` 检查模块遗漏、未归类的 Go 源码、文件失配和旧配置源被重新启用；它不替代语义审查。
+[原厂目录](original-feature-inventory.json)列出23个 AP 控制器模块，[双向索引](uac-web-parity-map.json)记录保留/排除范围、Go对应文件、回归入口和参考代码。`python3 tools/check_parity_map.py --verify-firmware` 检查模块遗漏、未归类的 Go 源码和文件失配；[可执行行为合同](uac-web-behavior-contracts.json)及 `tools/check_behavior_contracts.py --verify-firmware --run-tests` 进一步绑定原函数/地址/哈希、Go符号和实际执行测试，旧配置源污染由正式启动行为用例验证。
 
 | 保留功能 | 当前 Go 对应与本轮整改 | 主要依据/回归 |
 | --- | --- | --- |
 | 发现、DTLS、Join/Configure/RUN、心跳、重连 | cweng；会话epoch、同序号应答、重传/取消；统一 FIFO 将提交与ACK分开 | cweng生命周期/command_queue测试 |
-| AP身份、名称、位置、设置、模板、分组、复制/替换 | management、options_capability；自动IP分组补入Join/规则修改，Mesh和升级分支保留 | 原apmng_set、5da88c/5f70f0；group_strategy/management测试 |
+| AP身份、名称、位置、设置、模板、分组、复制/替换 | management、options_capability、ap_names；自动IP分组、批量CSV命名及统一名称存储，Mesh和升级分支保留 | 原apmng_set、5da88c/5f70f0；group_strategy/management测试 |
 | AP重启、复位、定时和升级 | operations、upgrade、firmware；镜像/型号校验、传输/重连/实际版本分开 | upgrade/schedule测试 |
 | 无线服务 | Open/PSK/WPA2-WPA3、隐藏、编码、隔离、限速、MLO、时间计划、组播 | apmng_wserv；service_wire/reconcile测试 |
 | AP/频率/精确射频绑定、VLAN、池、删除提交 | auto_binding、assignments、wlan_state、vlan_pool；cap92虚拟位序与原模型模式列表一致 | 729de0/6fa788；auto_binding/assignments测试 |
@@ -22,7 +22,7 @@
 | Mesh配置、授权、发现/配对/增删/拓扑、子AP会话 | mesh；成员持久化、独立子会话共享父传输队列、错误归属和父断开清理 | apmng_mesh；mesh_*测试 |
 | AP执行的DHCP/ARP/ND防护、绑定/扫描、风暴/代理和USB | protection/storm/APOptions；旧新能力、容量及混合地址，完整编辑与下发 | 原相应AP模块；protection/arp_scan测试 |
 | 控制接口、选择性AP DHCP | 绑定接口；Go DHCP精确TP-Link标识、普通终端静默、Mesh Discover特例 | dhcpserver测试；普通客户端DHCP/DNS/NAT只在实验工具 |
-| 配置/Web/恢复 | 一个正式配置来源；旧SQLite WLAN/RF和JCS不参与启动；API、能力表单、持久化/恢复/失败状态 | main真实进程UDP污染旧库回归；config_store；UI 2能力/10页/46表单 |
+| 配置/Web/恢复 | 一个正式配置来源；旧SQLite WLAN/RF和JCS不参与启动；API、能力表单、持久化/恢复/失败状态 | main真实进程UDP污染旧库回归；config_store；UI 2能力/11页/50表单 |
 
 ## 不属于产品的原厂内容
 
@@ -34,6 +34,6 @@
 
 ## 证据的限度
 
-源码推导/边界向量、Go UDP状态回归、HTTP表单提交、AP ACK、配置回读和实际空口效果是不同证据。本轮源码审查和回归不意味着穷举所有参数/型号，亦不意味着形式化等价证明。升级包缺失的flash profile容量/默认值不能拿重建QEMU配置补成“原厂值”；V4也未据此认定等价。当前改动未部署，多AP真实互通和硬件长期行为仍应另记兼容性结果。
+源码推导/边界向量、Go UDP状态回归、HTTP表单提交、AP ACK、配置回读和实际空口效果是不同证据。本轮源码审查和回归不意味着穷举所有参数/型号，亦不意味着形式化等价证明。升级包缺失的flash profile容量/默认值不能拿重建QEMU配置补成“原厂值”；V4也未据此认定等价。本轮代码验证与部署状态单列在复核记录；多AP真实互通和硬件长期行为仍应另记兼容性结果。
 
 历史设备测试保留在 [go-live-status.md](go-live-status.md) 和 Git `587d414` 的旧表；旧“最少联动”“ACK冷却”“可切换网络模式”和BLE完成记录已被本轮范围/源码结论取代。

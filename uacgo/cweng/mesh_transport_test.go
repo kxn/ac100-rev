@@ -174,3 +174,31 @@ func TestRevokedMeshChildIsRemovedWithoutClosingParent(t *testing.T) {
 	default:
 	}
 }
+
+func TestMeshAdmissionUsesLiveSharedBudgetAboveOldDefault(t *testing.T) {
+	e, parent, _ := requestTestSession(t)
+	parent.apEntry = &APEntry{MAC: "02:00:00:00:00:01", GeneralCapabilities: []uint32{0, 1 << 12}}
+	id := "02:00:00:00:00:09"
+	e.RegisterMeshControl(nil, func(string, time.Time, string, uint8) bool { return true })
+	e.SetResourceLimits(1, 1024)
+	p, _ := capwap.NewParsedPacket(3)
+	p.Elements = []capwap.Element{{Type: 0x26, Value: []byte{0, 0, 0, 0, 0, 4, 0, 6, 2, 0, 0, 0, 0, 9}}}
+	wire := wrapMeshTest(t, id, p)
+	e.handlePlainDatagram(wire, parent.Addr)
+	if e.findAP(id) != nil {
+		t.Fatal("Mesh bypassed full shared budget")
+	}
+	// Occupy the original default capacity; a live increase must apply to
+	// the final Mesh insertion as well as any preliminary capacity check.
+	e.SetResourceLimits(2048, 1024)
+	for i := 0; i < 1023; i++ {
+		s := newSession(&net.UDPAddr{IP: net.IPv4(192, 0, 2, 1), Port: 10000 + i}, e.acData)
+		if !e.registerSession(s) {
+			t.Fatal("live budget not used", i)
+		}
+	}
+	e.handlePlainDatagram(wire, parent.Addr)
+	if e.findAP(id) == nil {
+		t.Fatal("Mesh still limited by original 1024-session field")
+	}
+}

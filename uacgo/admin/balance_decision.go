@@ -21,7 +21,7 @@ func (m *Manager) observeBalanceProbe(ap string, connection time.Time, mac [6]by
 }
 
 // mu held. The vendor's discovery/count algorithm lives outside the Web layer.
-func (m *Manager) balanceAdmission(ap string, radio uint8, mac [6]byte, _ Service, now time.Time) bool {
+func (m *Manager) balanceAdmission(ap string, mac [6]byte, now time.Time) bool {
 	rule := balanceFor(m.config.Mobility, ap, m.config)
 	if rule == nil || !rule.Enabled || m.clients == nil {
 		return true

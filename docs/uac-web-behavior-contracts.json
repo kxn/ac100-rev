@@ -1,0 +1,2582 @@
+{
+  "firmware": "TL-AC100 V6.0 1.0.3 Build 260817 Rel.68871n",
+  "meaning": "Executable source-to-implementation-to-test branch contracts. Callee references pin the supporting source chain; they do not claim every instruction of storage/platform helpers is recreated. Passing named vectors is not exhaustive parameter/model equivalence. Original binaries/devices are never used as algorithm oracles.",
+  "contracts": [
+    {
+      "id": "session-fsm",
+      "feature": "transport",
+      "origin": "firmware",
+      "behavior": "Join/Configure/RUN、应答序号与重传/重连会话边界。",
+      "sources": [
+        {
+          "kind": "lua",
+          "module": "apmng_status",
+          "entry": "get_ap_link_status",
+          "path": "usr/lib/lua/luci/controller/admin/apmng_status.lua",
+          "sha256": "fff67393877c2be9cc87f829583b7f375968446843aab2c6474307ef15127e75"
+        },
+        {
+          "kind": "uac",
+          "name": "cw_fsm_ac_process_event",
+          "address": "0x006720c8",
+          "size": 388,
+          "sha256": "488c277e2112fe627605f27dc07ad0e92981b08e6cb2395e870fb90b50cb7b92"
+        },
+        {
+          "kind": "uac",
+          "name": "capwap_ac_session_exceed_max_num",
+          "address": "0x006b86f0",
+          "size": 108,
+          "sha256": "ceb133217c6e1ebe68f059f64e5820a38097c05acc0f436263a26ad2beee14b4"
+        }
+      ],
+      "implementation": [
+        {
+          "path": "uacgo/cweng/engine.go",
+          "symbol": "handlePlainDatagram"
+        },
+        {
+          "path": "uacgo/cweng/fsm.go",
+          "symbol": "processEvent"
+        }
+      ],
+      "tests": [
+        {
+          "path": "uacgo/cweng/manage_test.go",
+          "name": "TestReconnectReplacesIdentityBeforeSessionLimit"
+        },
+        {
+          "path": "uacgo/cweng/manage_test.go",
+          "name": "TestCommandRequiresMatchingDeviceACK"
+        }
+      ]
+    },
+    {
+      "id": "command-session-isolation",
+      "feature": "transport",
+      "origin": "standalone-go",
+      "behavior": "配置命令与异步 JSON 回复固定同一会话，断开取消；队列提交和 ACK 分离。Go 并发架构合同。",
+      "sources": [],
+      "implementation": [
+        {
+          "path": "uacgo/cweng/command_queue.go",
+          "symbol": "QueueAP"
+        },
+        {
+          "path": "uacgo/cweng/rpc.go",
+          "symbol": "RequestJSON"
+        }
+      ],
+      "tests": [
+        {
+          "path": "uacgo/cweng/command_queue_test.go",
+          "name": "TestCommandSubmissionIsImmutableFIFOAndSafeInsideEvent"
+        },
+        {
+          "path": "uacgo/cweng/session_request_test.go",
+          "name": "TestDisconnectCancelsInFlightAndQueuedRequests"
+        },
+        {
+          "path": "uacgo/cweng/session_request_test.go",
+          "name": "TestPinnedBatchAndRPCRejectReplacementSession"
+        },
+        {
+          "path": "uacgo/cweng/session_request_test.go",
+          "name": "TestDisconnectWhileWaitingForAsyncJSON"
+        }
+      ]
+    },
+    {
+      "id": "ap-option-wire",
+      "feature": "ap-management",
+      "origin": "firmware",
+      "behavior": "全局/模板/分组/单 AP 继承保留显式 false，能力允许的设置下发；型号可选字段过滤、显式覆盖严格校验。",
+      "sources": [
+        {
+          "kind": "lua",
+          "module": "apmng_set",
+          "entry": "check_settings",
+          "path": "usr/lib/lua/luci/controller/admin/apmng_set.lua",
+          "sha256": "032d8ae4a6c7667ac6a3e9427050ffae9ebd761d19dde4d2276ce69b8476a88b"
+        },
+        {
+          "kind": "lua",
+          "module": "apmng_set",
+          "entry": "do_settings",
+          "path": "usr/lib/lua/luci/controller/admin/apmng_set.lua",
+          "sha256": "032d8ae4a6c7667ac6a3e9427050ffae9ebd761d19dde4d2276ce69b8476a88b"
+        }
+      ],
+      "implementation": [
+        {
+          "path": "uacgo/admin/management_wire.go",
+          "symbol": "managementElements"
+        },
+        {
+          "path": "uacgo/admin/management.go",
+          "symbol": "effectiveAPOptions"
+        }
+      ],
+      "tests": [
+        {
+          "path": "uacgo/admin/management_test.go",
+          "name": "TestAPManagementWireMatchesIndependentVendorFields"
+        },
+        {
+          "path": "uacgo/admin/management_test.go",
+          "name": "TestAPManagementInheritancePreservesExplicitFalseAndRedactsSecrets"
+        },
+        {
+          "path": "uacgo/admin/management_test.go",
+          "name": "TestMixedAPInheritanceFiltersOptionalHardwareButDirectOverrideIsStrict"
+        }
+      ]
+    },
+    {
+      "id": "group-join-and-edit",
+      "feature": "ap-management",
+      "origin": "firmware",
+      "behavior": "Join 使用进入时原分组快照，范围包含端点；规则编辑另走 Mesh 父子/升级分支，禁用范围仍冲突。",
+      "sources": [
+        {
+          "kind": "uac",
+          "name": "apmngr_switch_group_handle",
+          "address": "0x005da88c",
+          "size": 232,
+          "sha256": "948677e9f8544672cf9daca1508b99f2765b6264c2c6f5d4fe362dee568c9eb6"
+        },
+        {
+          "kind": "uac",
+          "name": "apmngr_update_group_by_ip_strategy",
+          "address": "0x005da518",
+          "size": 884,
+          "sha256": "6c0600831ac2d3a5907a8f981eb75004dd2a2af2a5a0aa46819be05219d6d8c7"
+        },
+        {
+          "kind": "uac",
+          "name": "apmngr_switch_group_by_ip_strategy",
+          "address": "0x005f70f0",
+          "size": 972,
+          "sha256": "61eab8a9bc82de6d5f42ca1a71a2b9a64456ee686c09df2144b2f56d771d44d3"
+        },
+        {
+          "kind": "uac",
+          "name": "apmngr_db_sqlite_group_restore",
+          "address": "0x005b2e70",
+          "size": 1028,
+          "sha256": "638a18c6e7ed958826d19778d68a273af5a73b2d9241fb6958722c8ebf6dbfc8"
+        },
+        {
+          "kind": "uac",
+          "name": "_apmngr_jcs_group_add",
+          "address": "0x005f74bc",
+          "size": 1204,
+          "sha256": "62f2d51fbe37a15641b921874371c3f71ec56ae87151427f9a607fc7baff8267"
+        },
+        {
+          "kind": "uac",
+          "name": "_apmngr_jcs_group_set",
+          "address": "0x005f67dc",
+          "size": 1304,
+          "sha256": "24014945154f90ee825d068266a271391746adc6d64bfe7fb0dda6326d6f88c3"
+        },
+        {
+          "kind": "uac",
+          "name": "apmngr_db_foreach_group_proc",
+          "address": "0x005b94d4",
+          "size": 552,
+          "sha256": "c8309ba01ea899857fa1045094b2168abd9516a4319e2461d8f5beb4980b005f"
+        },
+        {
+          "kind": "uac",
+          "name": "apmngr_db_group_add",
+          "address": "0x005b96fc",
+          "size": 384,
+          "sha256": "639026e6c32ad1f33a3f3c1c521d697809c7c17bb91fc6cecc5fc121f50a9356"
+        }
+      ],
+      "implementation": [
+        {
+          "path": "uacgo/admin/group_strategy.go",
+          "symbol": "groupAPJoined"
+        },
+        {
+          "path": "uacgo/admin/group_strategy.go",
+          "symbol": "compileGroupEdits"
+        }
+      ],
+      "tests": [
+        {
+          "path": "uacgo/admin/group_strategy_test.go",
+          "name": "TestGroupIPRangeValidationIncludesDisabledRules"
+        },
+        {
+          "path": "uacgo/admin/group_strategy_test.go",
+          "name": "TestGroupJoinUsesControlAddressAndOriginalSnapshot"
+        },
+        {
+          "path": "uacgo/admin/group_strategy_test.go",
+          "name": "TestGroupEditAndMeshFollowOriginalSeparateTriggers"
+        },
+        {
+          "path": "uacgo/admin/group_strategy_test.go",
+          "name": "TestMeshJoinInheritsParentBeforeIPStrategy"
+        },
+        {
+          "path": "uacgo/admin/group_strategy_test.go",
+          "name": "TestIPGroupRulesDoNotResurrectReplacedAP"
+        }
+      ]
+    },
+    {
+      "id": "copy-replace-retire",
+      "feature": "ap-management",
+      "origin": "firmware",
+      "behavior": "AP 复制替换迁移绑定和策略，旧 AP 身份不得重新接管。",
+      "sources": [
+        {
+          "kind": "lua",
+          "module": "apmng_set",
+          "entry": "ap_replace_rule_set",
+          "path": "usr/lib/lua/luci/controller/admin/apmng_set.lua",
+          "sha256": "032d8ae4a6c7667ac6a3e9427050ffae9ebd761d19dde4d2276ce69b8476a88b"
+        },
+        {
+          "kind": "lua",
+          "module": "apmng_set",
+          "entry": "ap_list_data_copy",
+          "path": "usr/lib/lua/luci/controller/admin/apmng_set.lua",
+          "sha256": "032d8ae4a6c7667ac6a3e9427050ffae9ebd761d19dde4d2276ce69b8476a88b"
+        }
+      ],
+      "implementation": [
+        {
+          "path": "uacgo/admin/policy_retarget.go",
+          "symbol": "retargetPolicies"
+        }
+      ],
+      "tests": [
+        {
+          "path": "uacgo/admin/management_test.go",
+          "name": "TestOfflineAPReplacementMovesBindingsAndRetiresOldIdentity"
+        },
+        {
+          "path": "uacgo/admin/mesh_members_test.go",
+          "name": "TestMeshReplacementMovesParentAndChildIntentAndRetiredParentCannotGrant"
+        }
+      ]
+    },
+    {
+      "id": "ap-operations",
+      "feature": "operations",
+      "origin": "firmware",
+      "behavior": "AP 重启/复位/计划；Go 持久化防重放独立于原 AC 系统重启。",
+      "sources": [
+        {
+          "kind": "lua",
+          "module": "apmng_status",
+          "entry": "ap_reboot",
+          "path": "usr/lib/lua/luci/controller/admin/apmng_status.lua",
+          "sha256": "fff67393877c2be9cc87f829583b7f375968446843aab2c6474307ef15127e75"
+        },
+        {
+          "kind": "lua",
+          "module": "apmng_status",
+          "entry": "ap_reset",
+          "path": "usr/lib/lua/luci/controller/admin/apmng_status.lua",
+          "sha256": "fff67393877c2be9cc87f829583b7f375968446843aab2c6474307ef15127e75"
+        },
+        {
+          "kind": "lua",
+          "module": "apmng_set",
+          "entry": "check_reboot_time",
+          "path": "usr/lib/lua/luci/controller/admin/apmng_set.lua",
+          "sha256": "032d8ae4a6c7667ac6a3e9427050ffae9ebd761d19dde4d2276ce69b8476a88b"
+        }
+      ],
+      "implementation": [
+        {
+          "path": "uacgo/admin/operations.go",
+          "symbol": "runAPSchedules"
+        }
+      ],
+      "tests": [
+        {
+          "path": "uacgo/admin/management_test.go",
+          "name": "TestScheduledRebootIsDurableAndNotRepeatedAfterRestart"
+        }
+      ]
+    },
+    {
+      "id": "upgrade-image-confirmation",
+      "feature": "operations",
+      "origin": "firmware",
+      "behavior": "AP 镜像型号/硬件匹配、分块顺序、会话及校验；最终传输 ACK 与重新上线版本确认分开。",
+      "sources": [
+        {
+          "kind": "lua",
+          "module": "apmng_upgrade",
+          "entry": "check_settings",
+          "path": "usr/lib/lua/luci/controller/admin/apmng_upgrade.lua",
+          "sha256": "7ec3c71efa3f66ffc96e093773b6cdfeaf5018c5d489bd82d5e8508fb95de39b"
+        },
+        {
+          "kind": "lua",
+          "module": "apmng_upgrade",
+          "entry": "check_image_import",
+          "path": "usr/lib/lua/luci/controller/admin/apmng_upgrade.lua",
+          "sha256": "7ec3c71efa3f66ffc96e093773b6cdfeaf5018c5d489bd82d5e8508fb95de39b"
+        }
+      ],
+      "implementation": [
+        {
+          "path": "uacgo/admin/upgrade.go",
+          "symbol": "upgradeRoutes"
+        }
+      ],
+      "tests": [
+        {
+          "path": "uacgo/admin/upgrade_test.go",
+          "name": "TestUpgradeBatchRejectsWrongHardwareAndInterruptedJobs"
+        },
+        {
+          "path": "uacgo/admin/upgrade_test.go",
+          "name": "TestUpgradeSequentialWireAndVersionConfirmation"
+        },
+        {
+          "path": "uacgo/admin/upgrade_test.go",
+          "name": "TestUpgradeRejectsWrongSessionSequenceAndFailedFinalChecksum"
+        },
+        {
+          "path": "uacgo/admin/upgrade_test.go",
+          "name": "TestMeshFirmwareJobsSerializeByTransportAndAllowQueuedInitialization"
+        }
+      ]
+    },
+    {
+      "id": "wlan-source-bytes",
+      "feature": "wlan",
+      "origin": "firmware",
+      "behavior": "保留 Open/PSK/WPA2-WPA3 的协议字段、隐藏/隔离、限速单位、MLO、新旧报文；RADIUS/Portal 排除。",
+      "sources": [
+        {
+          "kind": "uac",
+          "name": "_uac_wserv_packet_send_callback",
+          "address": "0x006dbd74",
+          "size": 11016,
+          "sha256": "c774ded44de2962fbf13f86773b20a1abec641d0acf83543ffffeef3e2da5fbf"
+        },
+        {
+          "kind": "lua",
+          "module": "apmng_wserv",
+          "entry": "check_wserv_list_data",
+          "path": "usr/lib/lua/luci/controller/admin/apmng_wserv.lua",
+          "sha256": "e5a5d8996de7a786b1bf80363249675beb1f7ce7c4bf5625b0c9ffd2111b9331"
+        },
+        {
+          "kind": "uac",
+          "name": "_uac_wserv_jcs_add",
+          "address": "0x006e3970",
+          "size": 9948,
+          "sha256": "4b4c90a1f0442f0e0afb687ed74f43186aef902325febb8e652141752bfef55c"
+        },
+        {
+          "kind": "uac",
+          "name": "_uac_wserv_jcs_set",
+          "address": "0x006e2fd4",
+          "size": 1468,
+          "sha256": "95dedcc0bffe80623de164d7d9d128f4068b187137c772ce15c43578fbd6a737"
+        }
+      ],
+      "implementation": [
+        {
+          "path": "uacgo/admin/service_advanced.go",
+          "symbol": "serviceSecurity"
+        },
+        {
+          "path": "uacgo/admin/service_advanced.go",
+          "symbol": "advancedWLANElements"
+        },
+        {
+          "path": "uacgo/admin/service_advanced.go",
+          "symbol": "wirelessExtraElements"
+        }
+      ],
+      "tests": [
+        {
+          "path": "uacgo/admin/service_wire_test.go",
+          "name": "TestWirelessOptionsV6SourceGolden"
+        },
+        {
+          "path": "uacgo/admin/service_wire_test.go",
+          "name": "TestLimitUnitsMLOAndNewFormat"
+        },
+        {
+          "path": "uacgo/admin/server_test.go",
+          "name": "TestWLANMatchesCapturedVendorPacket"
+        }
+      ]
+    },
+    {
+      "id": "frequency-binding",
+      "feature": "wlan",
+      "origin": "firmware",
+      "behavior": "频段绑定根据型号模式首个包含集合及物理射频位序，不将 radio ID 当频段。",
+      "sources": [
+        {
+          "kind": "uac",
+          "name": "get_virtual_freq_band_with_type",
+          "address": "0x00729de0",
+          "size": 932,
+          "sha256": "040c076cd70199cb41db2e00ddca35ad151a759c8194a39e5cbc2baa9bb41fb7"
+        },
+        {
+          "kind": "uac",
+          "name": "apdb_set_freq_band_idx_by_rf_mode",
+          "address": "0x006fa788",
+          "size": 744,
+          "sha256": "f1782451dab416512b3f1e9a45380005fa174256a99f985db273536a00d4ac06"
+        }
+      ],
+      "implementation": [
+        {
+          "path": "uacgo/admin/auto_binding.go",
+          "symbol": "selectedServiceRadios"
+        }
+      ],
+      "tests": [
+        {
+          "path": "uacgo/admin/auto_binding_test.go",
+          "name": "TestAutomaticBindingFollowsFrequencyRankAcrossAPModels"
+        },
+        {
+          "path": "uacgo/admin/auto_binding_test.go",
+          "name": "TestAutoBoundServiceAdmissionDoesNotAuthorizeOtherBands"
+        },
+        {
+          "path": "uacgo/admin/auto_binding_test.go",
+          "name": "TestAutoFrequencyBindingReconcilesMovesAndCleansWLAN"
+        },
+        {
+          "path": "uacgo/admin/auto_binding_test.go",
+          "name": "TestSensorRadiosCannotBeWirelessServiceTargets"
+        }
+      ]
+    },
+    {
+      "id": "vlan-multicast",
+      "feature": "wlan",
+      "origin": "firmware",
+      "behavior": "无线 VLAN 池、组播列表的参数、能力分支、移除报文。",
+      "sources": [
+        {
+          "kind": "lua",
+          "module": "apmng_wserv",
+          "entry": "add_vlan_pool_entry",
+          "path": "usr/lib/lua/luci/controller/admin/apmng_wserv.lua",
+          "sha256": "e5a5d8996de7a786b1bf80363249675beb1f7ce7c4bf5625b0c9ffd2111b9331"
+        },
+        {
+          "kind": "lua",
+          "module": "apmng_wserv",
+          "entry": "check_igmp_ip_list",
+          "path": "usr/lib/lua/luci/controller/admin/apmng_wserv.lua",
+          "sha256": "e5a5d8996de7a786b1bf80363249675beb1f7ce7c4bf5625b0c9ffd2111b9331"
+        }
+      ],
+      "implementation": [
+        {
+          "path": "uacgo/admin/vlan_pool.go",
+          "symbol": "validatePool"
+        },
+        {
+          "path": "uacgo/admin/multicast_groups.go",
+          "symbol": "validateMulticastGroups"
+        }
+      ],
+      "tests": [
+        {
+          "path": "uacgo/admin/vlan_pool_test.go",
+          "name": "TestVLANPoolWireAndCapabilityGates"
+        },
+        {
+          "path": "uacgo/admin/vlan_pool_test.go",
+          "name": "TestVLANRanges"
+        },
+        {
+          "path": "uacgo/admin/multicast_groups_test.go",
+          "name": "TestMulticastListWireAndRemovalThroughUDP"
+        }
+      ]
+    },
+    {
+      "id": "durable-wlan-ownership",
+      "feature": "wlan",
+      "origin": "standalone-go",
+      "behavior": "Go 管理状态维护槽位所有权和删除意图，提交失败/重启不提前释放。此为控制器可靠性合同。",
+      "sources": [],
+      "implementation": [
+        {
+          "path": "uacgo/admin/lifecycle.go",
+          "symbol": "finishDeletions"
+        }
+      ],
+      "tests": [
+        {
+          "path": "uacgo/admin/reconcile_integration_test.go",
+          "name": "TestDeferredDeleteHoldsSlotThroughFailedCommitAndRestart"
+        }
+      ]
+    },
+    {
+      "id": "rrst-and-peer",
+      "feature": "radio",
+      "origin": "firmware",
+      "behavior": "射频参数按原 RRST 有序匹配/表零归一化，再执行原 peer 联动；继承归一化不覆写保存的有效结果。",
+      "sources": [
+        {
+          "kind": "uac",
+          "name": "rdmngr_db_rrst_matched_row_search_strategy",
+          "address": "0x0073abf0",
+          "size": 972,
+          "sha256": "119e988c0e370c1cc3d605e7c1ac07713e666b47b2faf4a896c93ed761f50895"
+        },
+        {
+          "kind": "uac",
+          "name": "rdmngr_db_check_and_do_peer_radio_linked_modify",
+          "address": "0x0072750c",
+          "size": 2272,
+          "sha256": "45dc83c2aef5ea9b4725d278576a1220a258d1f7a27b66d7e45e423f49d40d74"
+        },
+        {
+          "kind": "uac",
+          "name": "apmngr_get_linkage_chnl_bwMode",
+          "address": "0x005dd2d8",
+          "size": 1640,
+          "sha256": "a54a24ccbd8d8b7102b2f503bca39150d1e4cc2072023cdd108c8da5cec877ee"
+        },
+        {
+          "kind": "uac",
+          "name": "rdmngr_db_rrst_matched_row_find",
+          "address": "0x0073a788",
+          "size": 652,
+          "sha256": "8d7b9f35f9b069632bb78cafc2d566ddf6b0504a7910534b4fd89f0b3d353a63"
+        },
+        {
+          "kind": "uac",
+          "name": "rdmngr_db_rrst_matched_row_pre_match",
+          "address": "0x0073aa14",
+          "size": 476,
+          "sha256": "f8c35da06619ebec519735426f6466b9a2880518d7507ad6b0b53311503989cc"
+        },
+        {
+          "kind": "uac",
+          "name": "rdmngr_db_get_radio_cfg_linked_strategy",
+          "address": "0x0073b61c",
+          "size": 1932,
+          "sha256": "32655ce0e1ad47a3c876693084d8883936b26e82085b9f91656ec3cb39fc1968"
+        },
+        {
+          "kind": "uac",
+          "name": "rdmngr_db_init_comPara",
+          "address": "0x00726b98",
+          "size": 2020,
+          "sha256": "5b3938b207abc7d9430f1d09e289f3a6509ce3327facd68d44aece07968e4009"
+        },
+        {
+          "kind": "uac",
+          "name": "apdb_get_default_bw_by_id",
+          "address": "0x00701ee0",
+          "size": 380,
+          "sha256": "af3e20def9943b1e2dc01f071ad2876e3e9455fd90e36d2fe3d05f72fab4e733"
+        },
+        {
+          "kind": "uac",
+          "name": "apdb_get_default_chnl_by_id",
+          "address": "0x00701d64",
+          "size": 380,
+          "sha256": "d2dddfc6197f2fb6be356e7f5371663959bf925c51359ed204faa4d9a722a44d"
+        },
+        {
+          "kind": "uac",
+          "name": "uac_rdmngr_chnl_pwr_modify_by_rdid",
+          "address": "0x00720e2c",
+          "size": 1908,
+          "sha256": "01275433482d414d01ac851c3d3dc0150a0822bfa20646ceecd78b3c9de96dd6"
+        },
+        {
+          "kind": "uac",
+          "name": "rdmngr_db_get_real_max_tx_pwr",
+          "address": "0x0072de04",
+          "size": 176,
+          "sha256": "0b3b6efb43b53b7b030d56ad049e6fd9777eb11b7898f79116d7a40789c36b08"
+        }
+      ],
+      "implementation": [
+        {
+          "path": "uacgo/admin/radio_linkage.go",
+          "symbol": "planRadioLinkage"
+        }
+      ],
+      "tests": [
+        {
+          "path": "uacgo/admin/radio_linkage_test.go",
+          "name": "TestRRSTOrderedRowsAndNoInventedEnableChanges"
+        },
+        {
+          "path": "uacgo/admin/radio_linkage_test.go",
+          "name": "TestRRSTNormalizationUsesTableZeroAndControlDefaults"
+        },
+        {
+          "path": "uacgo/admin/radio_linkage_test.go",
+          "name": "TestInheritedRFNormalizesBeforeExplicitControllerSnapshot"
+        },
+        {
+          "path": "uacgo/admin/radio_linkage_test.go",
+          "name": "TestRRMNormalizesThenRunsOrderedPeerStrategy"
+        }
+      ]
+    },
+    {
+      "id": "model-radio-inheritance",
+      "feature": "radio",
+      "origin": "firmware",
+      "behavior": "AP 型号能力决定 RF 参数/可选开关；继承与单 AP 显式设置分开校验。",
+      "sources": [
+        {
+          "kind": "lua",
+          "module": "apmng_rf",
+          "entry": "check_rf_type",
+          "path": "usr/lib/lua/luci/controller/admin/apmng_rf.lua",
+          "sha256": "473e79266c46290304153b570e246dc5112ae27d91db7e57221785dd43726a82"
+        },
+        {
+          "kind": "lua",
+          "module": "apmng_rf",
+          "entry": "get_raio_mode_spe",
+          "path": "usr/lib/lua/luci/controller/admin/apmng_rf.lua",
+          "sha256": "473e79266c46290304153b570e246dc5112ae27d91db7e57221785dd43726a82"
+        }
+      ],
+      "implementation": [
+        {
+          "path": "uacgo/admin/radio_inheritance.go",
+          "symbol": "effectiveRadioConfig"
+        }
+      ],
+      "tests": [
+        {
+          "path": "uacgo/admin/radio_inheritance_test.go",
+          "name": "TestInheritedRadioAndAPOverrideReachUDPSimulator"
+        },
+        {
+          "path": "uacgo/admin/radio_inheritance_test.go",
+          "name": "TestPowerOverrideClearsInheritedLevel"
+        },
+        {
+          "path": "uacgo/admin/radio_inheritance_test.go",
+          "name": "TestMixedHardwareRadioInheritanceFiltersOptionalFeaturesOnly"
+        }
+      ]
+    },
+    {
+      "id": "edca-overlay-and-triggers",
+      "feature": "edca",
+      "origin": "firmware",
+      "behavior": "八队列、场景、规则增删改/Join/解绑，显式手工设置优先；普通标签保存不重跑策略也不冻结继承。",
+      "sources": [
+        {
+          "kind": "uac",
+          "name": "edca_rule_to_ap",
+          "address": "0x0074108c",
+          "size": 1904,
+          "sha256": "1a41e00185ecfb0c324978d530c542ed91ba9d97cd8e22ab9f54c1c4d7aaeecd"
+        },
+        {
+          "kind": "uac",
+          "name": "check_edca_rule_bind_ap_or_group_conflict",
+          "address": "0x00725b88",
+          "size": 3084,
+          "sha256": "3203f39f327e91506831da7fe38647852ab568024e66f2042abde2f3f136aed2"
+        },
+        {
+          "kind": "uac",
+          "name": "edca_disable_with_no_rule_to_ap",
+          "address": "0x00741dd0",
+          "size": 1260,
+          "sha256": "4990770c06e0b131416d0c0b6088cdc942867ccea5d69c328f84094695f72378"
+        },
+        {
+          "kind": "uac",
+          "name": "get_edca_default_value",
+          "address": "0x00730ec4",
+          "size": 124,
+          "sha256": "060c62ef7c8849f53523186021b655e954448e1d57da4da9387a04e2ae0e9f8b"
+        },
+        {
+          "kind": "uac",
+          "name": "edca_rule_jcs_add",
+          "address": "0x00711fb0",
+          "size": 808,
+          "sha256": "4cdcab9ce7ee2b15c9349250cb0ed3af7e39919177dd8b9db62d75964d215bff"
+        },
+        {
+          "kind": "uac",
+          "name": "edca_rule_jcs_set",
+          "address": "0x007129b4",
+          "size": 1368,
+          "sha256": "adfe1cd183cb8421401e6e0641eb79b409453fbbcf63e0a6effaab0f0b0f8708"
+        },
+        {
+          "kind": "uac",
+          "name": "edca_rule_jcs_del",
+          "address": "0x00710cc0",
+          "size": 884,
+          "sha256": "0249fc49b2abab8b714093b6868e2d84a71ceb8da16ee632a3704790b116391d"
+        },
+        {
+          "kind": "uac",
+          "name": "rdmngr_db_init_edca",
+          "address": "0x00726b10",
+          "size": 136,
+          "sha256": "deed96906b2acfb5162b3068d0bc6d2072bb863fe8c344db3985a7975f263a52"
+        }
+      ],
+      "implementation": [
+        {
+          "path": "uacgo/admin/edca.go",
+          "symbol": "compileEDCARulesAgainst"
+        },
+        {
+          "path": "uacgo/admin/edca.go",
+          "symbol": "applyEDCAState"
+        }
+      ],
+      "tests": [
+        {
+          "path": "uacgo/admin/edca_test.go",
+          "name": "TestNamedEDCARulesUpdateRFDatabaseAndDisableOnUnbind"
+        },
+        {
+          "path": "uacgo/admin/edca_test.go",
+          "name": "TestEDCAFieldOverlayDoesNotFreezeInheritedRadioOrReapplyOnLabels"
+        },
+        {
+          "path": "uacgo/admin/edca_test.go",
+          "name": "TestEDCAFrequencyConflictsAndVirtualModeRank"
+        }
+      ]
+    },
+    {
+      "id": "rate-bitmap-capability",
+      "feature": "rates",
+      "origin": "firmware",
+      "behavior": "a/b/g/n/ac/ax 速率表编码及能力边界，下发失败可重试。",
+      "sources": [
+        {
+          "kind": "lua",
+          "module": "apmng_rate",
+          "entry": "check_rate",
+          "path": "usr/lib/lua/luci/controller/admin/apmng_rate.lua",
+          "sha256": "bd2f15ee5a09eadb208350f08a58f76d8ad611a009c83d9e3fdfd7254357a239"
+        },
+        {
+          "kind": "lua",
+          "module": "apmng_rate",
+          "entry": "do_rate",
+          "path": "usr/lib/lua/luci/controller/admin/apmng_rate.lua",
+          "sha256": "bd2f15ee5a09eadb208350f08a58f76d8ad611a009c83d9e3fdfd7254357a239"
+        }
+      ],
+      "implementation": [
+        {
+          "path": "uacgo/admin/rates.go",
+          "symbol": "rateElements"
+        }
+      ],
+      "tests": [
+        {
+          "path": "uacgo/admin/rates_test.go",
+          "name": "TestRateEncodingMatchesVendorCapture"
+        },
+        {
+          "path": "uacgo/admin/rates_test.go",
+          "name": "TestRateCapabilitiesRetryAndRestore"
+        }
+      ]
+    },
+    {
+      "id": "band-navigation",
+      "feature": "band-steering",
+      "origin": "firmware",
+      "behavior": "双频优选与 RSSI 频段引导独立，保留原下发条件；不增加同 SSID/VLAN/双频启用门禁。",
+      "sources": [
+        {
+          "kind": "uac",
+          "name": "band_navigation_wtp_packt_send",
+          "address": "0x00633a60",
+          "size": 572,
+          "sha256": "6e207ff64f3f0fd9530f0b237304e6dd2eb2d3689f46b02642f4cd045289d1e5"
+        },
+        {
+          "kind": "uac",
+          "name": "band_navigation_packet_send",
+          "address": "0x00633400",
+          "size": 528,
+          "sha256": "51d8603b8ec290ed5fb41ba1df0ebf5f3098403cdcf2f60d0c16b370451d57e5"
+        },
+        {
+          "kind": "uac",
+          "name": "band_navigation_db_init",
+          "address": "0x00633e60",
+          "size": 560,
+          "sha256": "f88f97768740e3b687d736b2fb927572c79cf436822a5e9868e62b7c14817111"
+        }
+      ],
+      "implementation": [
+        {
+          "path": "uacgo/admin/band_navigation.go",
+          "symbol": "element"
+        }
+      ],
+      "tests": [
+        {
+          "path": "uacgo/admin/band_navigation_test.go",
+          "name": "TestBandNavigationIsSeparateFromRSSIOrientation"
+        }
+      ]
+    },
+    {
+      "id": "admission-result-codes",
+      "feature": "association",
+      "origin": "firmware",
+      "behavior": "关联按服务/射频启用、均衡和本射频容量返回原结果码；不增加 AC 全局人数或预约窗口。",
+      "sources": [
+        {
+          "kind": "uac",
+          "name": "_uac_wsta_do_check",
+          "address": "0x00744b70",
+          "size": 584,
+          "sha256": "7e5ac83f4620d5e2f17180bcc76cb5a7d95095b0a9a2bd30b7773da2cec8b75a"
+        },
+        {
+          "kind": "uac",
+          "name": "_uac_wsta_pkt_associcate",
+          "address": "0x00749290",
+          "size": 1584,
+          "sha256": "c4a18330b62eba960d915a07cb96ee3d017570d24c0bfbe9e61206ba693bb4fb"
+        },
+        {
+          "kind": "uac",
+          "name": "_uac_wsta_pkt_associcate_new",
+          "address": "0x007498c0",
+          "size": 2656,
+          "sha256": "f6da25d75ecf2a7e821143808189ef8230ed099490a3c00eb5a07428df54db01"
+        }
+      ],
+      "implementation": [
+        {
+          "path": "uacgo/admin/admission.go",
+          "symbol": "checkAssociation"
+        },
+        {
+          "path": "uacgo/admin/admission.go",
+          "symbol": "radioCapacityLocked"
+        }
+      ],
+      "tests": [
+        {
+          "path": "uacgo/admin/admission_test.go",
+          "name": "TestAdmissionRequiresEnabledBoundServiceAndRadio"
+        },
+        {
+          "path": "uacgo/admin/admission_test.go",
+          "name": "TestFirmwareRadioCapacityIsLocalAndHasNoAdmissionReservation"
+        },
+        {
+          "path": "uacgo/cweng/association_audit_test.go",
+          "name": "TestAdmissionRuleCoversBothV6AssociationFamilies"
+        }
+      ]
+    },
+    {
+      "id": "association-is-authoritative",
+      "feature": "association",
+      "origin": "firmware",
+      "behavior": "成功许可立即更新站点 DB；统计/IP 不制造关联、不覆盖新位置；迟到断开不复活客户端。",
+      "sources": [
+        {
+          "kind": "uac",
+          "name": "wsta_db_sta_assoc",
+          "address": "0x00758cf8",
+          "size": 7296,
+          "sha256": "91762280eb7a144af17815e33ac390fdd07e9a29b127a82b469af0b438d26d29"
+        },
+        {
+          "kind": "uac",
+          "name": "_uac_wsta_pkt_wtp_event_listener",
+          "address": "0x0074a4b0",
+          "size": 808,
+          "sha256": "02c6a269bbbb5ddfaa3513ae7b330d082dad474c45fd19e25c0f6c666ddf5520"
+        }
+      ],
+      "implementation": [
+        {
+          "path": "uacgo/cweng/wsta.go",
+          "symbol": "StationEvent"
+        }
+      ],
+      "tests": [
+        {
+          "path": "uacgo/cweng/association_audit_test.go",
+          "name": "TestFirmwareAssociationMovesClientAndStatisticsCannotMoveItBack"
+        },
+        {
+          "path": "uacgo/cweng/association_audit_test.go",
+          "name": "TestDisconnectedClientNotResurrectedByLateReports"
+        }
+      ]
+    },
+    {
+      "id": "native-recovery-session-boundary",
+      "feature": "association",
+      "origin": "standalone-go",
+      "behavior": "独立 Go 程序重启恢复：完整原生无线表与已提交服务唯一匹配；有线主机不生成站点，旧会话包括空表不得覆盖新会话。",
+      "sources": [],
+      "implementation": [
+        {
+          "path": "uacgo/admin/client_snapshot.go",
+          "symbol": "mergeWirelessSnapshot"
+        },
+        {
+          "path": "uacgo/cweng/client_snapshot.go",
+          "symbol": "WirelessSnapshot"
+        }
+      ],
+      "tests": [
+        {
+          "path": "uacgo/admin/client_state_test.go",
+          "name": "TestAuthoritativeWirelessSnapshotMapsSSIDAndNeverAddsWiredHosts"
+        },
+        {
+          "path": "uacgo/admin/client_state_test.go",
+          "name": "TestWirelessSnapshotWithoutVLANMapsOnlyUnambiguousService"
+        },
+        {
+          "path": "uacgo/cweng/client_snapshot_test.go",
+          "name": "TestFreshWirelessSnapshotRecoversButDoesNotOverwriteNewerEvents"
+        },
+        {
+          "path": "uacgo/cweng/client_snapshot_test.go",
+          "name": "TestWirelessSnapshotRequiresExactSessionEvenForEmptyTable"
+        }
+      ]
+    },
+    {
+      "id": "terminal-recognition",
+      "feature": "association",
+      "origin": "firmware",
+      "behavior": "设备名称/特征识别和 MAC OUI 使用固件表及原优先级。",
+      "sources": [
+        {
+          "kind": "uac",
+          "name": "uac_wstation_recognition_handle",
+          "address": "0x0076a7c8",
+          "size": 936,
+          "sha256": "394327b79cef24f8f1309e92e3738391c63e8ec94b09fd9922134f1b09718226"
+        },
+        {
+          "kind": "uac",
+          "name": "wsta_db_recognition_result_get",
+          "address": "0x00751d24",
+          "size": 472,
+          "sha256": "abfe5514195e7b043c244f63aabd6a2778da56dc206363ccd1cc522a56d5a92a"
+        },
+        {
+          "kind": "uac",
+          "name": "wsta_db_match_mac_oui_value",
+          "address": "0x0074d704",
+          "size": 312,
+          "sha256": "8955aaf3a04002ca953b526e34a3bb6e10f08bcabce8443b37f46abae8e73f5a"
+        },
+        {
+          "kind": "uac",
+          "name": "uac_wsta_recognition_match_handle",
+          "address": "0x0076a43c",
+          "size": 908,
+          "sha256": "ce3d7443190af18a1bbd007a982eb9acfbb2ce9881695f7563e7e893c901c937"
+        },
+        {
+          "kind": "uac",
+          "name": "wsta_db_recog_match_feature_value",
+          "address": "0x00751738",
+          "size": 1116,
+          "sha256": "14a96974459a5d363436a5bb58b9b15e409139de9866d111931c262669b138cc"
+        },
+        {
+          "kind": "uac",
+          "name": "wsta_db_init_buttom_half",
+          "address": "0x0074e474",
+          "size": 5396,
+          "sha256": "183ec55209cb8a65da1544f30e516364299695c49da2432ae4b6c45f3bed33f2"
+        }
+      ],
+      "implementation": [
+        {
+          "path": "uacgo/terminal/recognition.go",
+          "symbol": "Observe"
+        }
+      ],
+      "tests": [
+        {
+          "path": "uacgo/terminal/recognition_test.go",
+          "name": "TestFirmwareRecognitionSources"
+        }
+      ]
+    },
+    {
+      "id": "client-labels-export-disconnect",
+      "feature": "client-management",
+      "origin": "firmware",
+      "behavior": "客户端名称/备注/导出/下线使用实际 AP/射频/槽位，手工名称覆盖上报名称。",
+      "sources": [
+        {
+          "kind": "lua",
+          "module": "apmng_client",
+          "entry": "client_list_data_get",
+          "path": "usr/lib/lua/luci/controller/admin/apmng_client.lua",
+          "sha256": "3b73f67366bba5305cdcd0b28590a1cb288350c4d4e754903868d2c3b4869870"
+        },
+        {
+          "kind": "lua",
+          "module": "apmng_client",
+          "entry": "client_list_data_set",
+          "path": "usr/lib/lua/luci/controller/admin/apmng_client.lua",
+          "sha256": "3b73f67366bba5305cdcd0b28590a1cb288350c4d4e754903868d2c3b4869870"
+        },
+        {
+          "kind": "lua",
+          "module": "apmng_client",
+          "entry": "client_list_data_del",
+          "path": "usr/lib/lua/luci/controller/admin/apmng_client.lua",
+          "sha256": "3b73f67366bba5305cdcd0b28590a1cb288350c4d4e754903868d2c3b4869870"
+        }
+      ],
+      "implementation": [
+        {
+          "path": "uacgo/admin/client_management.go",
+          "symbol": "clientRoutes"
+        }
+      ],
+      "tests": [
+        {
+          "path": "uacgo/admin/management_test.go",
+          "name": "TestClientRenameExportAndDisconnectUseRealLocationAndWire"
+        }
+      ]
+    },
+    {
+      "id": "client-display-report-silence",
+      "feature": "client-management",
+      "origin": "firmware",
+      "behavior": "站点连接状态来自关联/断开/AP 状态；AP 没有新统计不自动变为六分钟 stale。 CSV 导出及射频人数历史也不得用六分钟静默剔除客户端。",
+      "sources": [
+        {
+          "kind": "uac",
+          "name": "wsta_db_sta_assoc",
+          "address": "0x00758cf8",
+          "size": 7296,
+          "sha256": "91762280eb7a144af17815e33ac390fdd07e9a29b127a82b469af0b438d26d29"
+        },
+        {
+          "kind": "uac",
+          "name": "_stats_sta_idle_timer_handle",
+          "address": "0x007a9b48",
+          "size": 236,
+          "sha256": "6603caad52aaef50d3c91645fe2d9d9a1d33e2e7ddd54661b29d27d9deb5f5a8"
+        }
+      ],
+      "implementation": [
+        {
+          "path": "uacgo/admin/server.go",
+          "symbol": "Handler"
+        }
+      ],
+      "tests": [
+        {
+          "path": "uacgo/admin/config_store_test.go",
+          "name": "TestClientDisplayDoesNotInventDisconnectFromReportSilence"
+        },
+        {
+          "path": "uacgo/admin/history_test.go",
+          "name": "TestWirelessHistoryPersistsFreshSamplesAndConfirmedTransitions"
+        },
+        {
+          "path": "uacgo/admin/ap_export_test.go",
+          "name": "TestAPInventoryExportUsesLabelsReportedFactsAndExcludesRetiredDevices"
+        }
+      ]
+    },
+    {
+      "id": "balance-failures-clock",
+      "feature": "balance",
+      "origin": "firmware",
+      "behavior": "每 MAC 共享拒绝计数，距最后拒绝 60 秒重置，达到次数放行；无同 SSID/VLAN 二次过滤。",
+      "sources": [
+        {
+          "kind": "uac",
+          "name": "balance_db_dis_sta_check",
+          "address": "0x004f6f54",
+          "size": 2248,
+          "sha256": "c49652bc108cdf5124147cb1b99472d248093d2cbdaf34fb5b81faa67479004a"
+        },
+        {
+          "kind": "uac",
+          "name": "balance_sta_want_connect_wtp",
+          "address": "0x004f079c",
+          "size": 616,
+          "sha256": "bb46e0fde21b2916c5139b36e2b4ee61f9b21d5f6f6f12933faa3adc1ab8361c"
+        },
+        {
+          "kind": "uac",
+          "name": "balance_wsta_callback_balance_sta_check",
+          "address": "0x004f0dfc",
+          "size": 884,
+          "sha256": "23837834ba4c4bc5b507633ae03a961e81baa581a8c73af8a1e98e9d76c31eff"
+        },
+        {
+          "kind": "uac",
+          "name": "balance_allow_sta_conect_wtp",
+          "address": "0x004f0adc",
+          "size": 800,
+          "sha256": "b74246baaf8ed9ba8508f2cd4c9e6a0977f9bf2d3161d51acce121923ac1476b"
+        }
+      ],
+      "implementation": [
+        {
+          "path": "uacgo/mobility/balance.go",
+          "symbol": "Admit"
+        }
+      ],
+      "tests": [
+        {
+          "path": "uacgo/mobility/balance_test.go",
+          "name": "TestBalanceUsesStationGlobalFailuresAndLastRejectionTime"
+        },
+        {
+          "path": "uacgo/admin/mobility_test.go",
+          "name": "TestBalanceUsesDiscoveredPeerAndBoundedRejections"
+        }
+      ]
+    },
+    {
+      "id": "balance-discovery-aging",
+      "feature": "balance",
+      "origin": "firmware",
+      "behavior": "0b 发现每 MAC 最多 10 AP LRU，300 秒扫描、900 秒老化；离线/未知覆盖不误拒绝。",
+      "sources": [
+        {
+          "kind": "uac",
+          "name": "balance_cnt_wtp_entry_update",
+          "address": "0x004f2ed0",
+          "size": 960,
+          "sha256": "38d5eae009550e9cdd6fb21b26e03fa74c131a08beca7ba57a41f7bb581876af"
+        },
+        {
+          "kind": "uac",
+          "name": "balance_cnt_wtp_delete_timer_callback",
+          "address": "0x004f263c",
+          "size": 580,
+          "sha256": "532011942195a23ed13f9d29a6f1610d9f8c17171949c92cf50e0f2375a420c1"
+        },
+        {
+          "kind": "uac",
+          "name": "balance_capwap_callback_wtp_event_request_listen",
+          "address": "0x004f0a04",
+          "size": 216,
+          "sha256": "a82a8a7ab6c546aa5e8a8e7f4ac0d16b386949e9a60b36ea3f08e3ba7211390d"
+        }
+      ],
+      "implementation": [
+        {
+          "path": "uacgo/mobility/balance.go",
+          "symbol": "Probe"
+        },
+        {
+          "path": "uacgo/mobility/balance.go",
+          "symbol": "Tick"
+        }
+      ],
+      "tests": [
+        {
+          "path": "uacgo/mobility/balance_test.go",
+          "name": "TestBalanceDiscoveryLRUAndFiveMinuteExpirySweep"
+        },
+        {
+          "path": "uacgo/mobility/balance_test.go",
+          "name": "TestBalanceUnknownCoverageAndOfflinePeerPermitAdmission"
+        }
+      ]
+    },
+    {
+      "id": "active-trigger-wire",
+      "feature": "roaming",
+      "origin": "firmware",
+      "behavior": "活动 private58 触发调用有效 roam_nbr_select，报告完整分包；下发与 ACK 不增加 AC 漫游冷却。",
+      "sources": [
+        {
+          "kind": "uac",
+          "name": "wsta_roam_pkt_init",
+          "address": "0x004e9b78",
+          "size": 1032,
+          "sha256": "d530cee555424f51a3a1dd9f3b5124db888f695d5c2659c47b1af3e9d244d72d"
+        },
+        {
+          "kind": "uac",
+          "name": "_wsta_roam_pkt_wtp_event_listener",
+          "address": "0x004e89ac",
+          "size": 232,
+          "sha256": "b34f18a84c646a049f4dafe233686e9353e21a1b5e33b38b11858197c2e55a1e"
+        },
+        {
+          "kind": "uac",
+          "name": "_wsta_roam_pkt_roaming_trigger_request",
+          "address": "0x004e8440",
+          "size": 444,
+          "sha256": "72640c2d48710f41c4c7014db8c91d2b1e3e09ef280e8cc288dacf22258759be"
+        },
+        {
+          "kind": "uac",
+          "name": "_wsta_roam_pkt_roaming_by_rssi_low",
+          "address": "0x004e6564",
+          "size": 7900,
+          "sha256": "8b87ea2465fed7e2b0ade702c3da2d48452d8f342c4cec3f6b8e1de3c1e04cb4"
+        },
+        {
+          "kind": "uac",
+          "name": "roam_nbr_select",
+          "address": "0x004e5638",
+          "size": 2836,
+          "sha256": "06b456dd3a66424ac0f4822e045c956261183dc1cd86e249bff680edcbf0bc6a"
+        },
+        {
+          "kind": "uac",
+          "name": "cw_priv_roaming_trigger_dump",
+          "address": "0x006823fc",
+          "size": 652,
+          "sha256": "422e1828af2d9018ffc363031469337ba098983c004acf690018d8d3b8f94f75"
+        },
+        {
+          "kind": "uac",
+          "name": "stats_db_radio_set_chload_and_nf",
+          "address": "0x007b0c18",
+          "size": 292,
+          "sha256": "17f4eb1353004f6e1acc6511ea40b1d45cd24b0bc6a3f51c02f9febd2ad9824f"
+        }
+      ],
+      "implementation": [
+        {
+          "path": "uacgo/admin/roam_decision.go",
+          "symbol": "queueRoaming"
+        }
+      ],
+      "tests": [
+        {
+          "path": "uacgo/admin/mobility_test.go",
+          "name": "TestRoamingTriggerAcrossTwoUDPSimulatedAPs"
+        },
+        {
+          "path": "uacgo/admin/mobility_test.go",
+          "name": "TestRoamControlWireAndPolicyReferenceValidation"
+        },
+        {
+          "path": "uacgo/admin/mobility_test.go",
+          "name": "TestRoamingSignalConversionUsesWholeReport"
+        }
+      ]
+    },
+    {
+      "id": "candidate-order-and-gates",
+      "feature": "roaming",
+      "origin": "firmware",
+      "behavior": "有效候选率/频段/RSSI 排序，原 quicksort 同分次序；原负载及增益边界、四候选上限、弱信号尾 band 回退。",
+      "sources": [
+        {
+          "kind": "uac",
+          "name": "roam_nbr_select",
+          "address": "0x004e5638",
+          "size": 2836,
+          "sha256": "06b456dd3a66424ac0f4822e045c956261183dc1cd86e249bff680edcbf0bc6a"
+        },
+        {
+          "kind": "uac",
+          "name": "nbr_cmp",
+          "address": "0x004e0d40",
+          "size": 276,
+          "sha256": "0b2b160a02c691804d975ec0890d59571d915460b5ff7f2e512b4d2e3e5c9d6c"
+        }
+      ],
+      "implementation": [
+        {
+          "path": "uacgo/mobility/select.go",
+          "symbol": "Select"
+        },
+        {
+          "path": "uacgo/mobility/select.go",
+          "symbol": "firmwareSort"
+        }
+      ],
+      "tests": [
+        {
+          "path": "uacgo/mobility/select_test.go",
+          "name": "TestSelectionUsesVendorRateGainLoadAndFourCandidateLimit"
+        },
+        {
+          "path": "uacgo/mobility/select_test.go",
+          "name": "TestSelectionBandTieAndWeakFallbackKeepFirmwareQuirks"
+        },
+        {
+          "path": "uacgo/mobility/select_test.go",
+          "name": "TestFirmwareSortPreservesComparatorWithoutInventedTieKey"
+        }
+      ]
+    },
+    {
+      "id": "rate-estimation",
+      "feature": "roaming",
+      "origin": "firmware",
+      "behavior": "STA/AP PHY、空间流和带宽取原组合；原整数速率表、截断斜率、16 位结果；Mesh 调和回传。",
+      "sources": [
+        {
+          "kind": "uac",
+          "name": "wss_steer_candidate_rate_estimate",
+          "address": "0x004eb314",
+          "size": 1036,
+          "sha256": "9e7cc21aac7aab32da010bd4edc6e0deb5c770abc7d9e49cc1cacc9288b4475b"
+        },
+        {
+          "kind": "uac",
+          "name": "estimate_rate_from_snr",
+          "address": "0x004eab48",
+          "size": 936,
+          "sha256": "12f9276fdd6476ef0dad9ba31c12a5339a3582e60e1b5feb8c59de6be19c3cef"
+        },
+        {
+          "kind": "uac",
+          "name": "_sta_caps_calculate",
+          "address": "0x004ea640",
+          "size": 524,
+          "sha256": "b356da2a662732f336c41fc66b5131d62c83dc551ddac5c02f77b37c30d5b72d"
+        },
+        {
+          "kind": "uac",
+          "name": "_wlan_caps_calculate",
+          "address": "0x004ea84c",
+          "size": 700,
+          "sha256": "d5c52f2c1b161912d2b1c7dcf2a2e6e846145b36ea380fe54ad0260b693bd331"
+        },
+        {
+          "kind": "uac",
+          "name": "_steer_candidate_caps_calculate",
+          "address": "0x004ea4c0",
+          "size": 384,
+          "sha256": "69e228e5158bba9d243a2e4607689049ce8fa8cca5e759f7fe2f293b4e3c84a0"
+        },
+        {
+          "kind": "uac",
+          "name": "_stats_sta_support_cal",
+          "address": "0x0040f314",
+          "size": 100,
+          "sha256": "448e20cd2ea5f3d2a26ca9b057ca24524cb597ee8b71a7046675980ce9e1cb1f"
+        }
+      ],
+      "implementation": [
+        {
+          "path": "uacgo/mobility/rate.go",
+          "symbol": "EstimateRate"
+        }
+      ],
+      "tests": [
+        {
+          "path": "uacgo/mobility/rate_test.go",
+          "name": "TestRateUsesFirmwareTableAndTruncatedSlope"
+        },
+        {
+          "path": "uacgo/mobility/rate_test.go",
+          "name": "TestCapabilitiesAndMeshRateFollowVendorOperations"
+        }
+      ]
+    },
+    {
+      "id": "pmk-cache",
+      "feature": "roaming",
+      "origin": "firmware",
+      "behavior": "PMK 固定 101 字节、逻辑服务隔离、原 operation/result；断连 60 秒分钟清理，重关联撤销删除。",
+      "sources": [
+        {
+          "kind": "uac",
+          "name": "_wsta_roam_pkt_pmk_request",
+          "address": "0x004e46c0",
+          "size": 1108,
+          "sha256": "0810a8aa59c78227d5f3b00d185c90d94fc2cfac8a26fd71ab7864014181ecd9"
+        },
+        {
+          "kind": "uac",
+          "name": "cw_priv_sta_pmk_req_parse",
+          "address": "0x006b14d8",
+          "size": 464,
+          "sha256": "7e1776e63c5dd8175dd6046ec4622887f15585a11b71ee3619b338cffd6d1e26"
+        }
+      ],
+      "implementation": [
+        {
+          "path": "uacgo/mobility/pmk.go",
+          "symbol": "Lookup"
+        }
+      ],
+      "tests": [
+        {
+          "path": "uacgo/mobility/pmk_test.go",
+          "name": "TestPMKLookupStatusesAndDisconnectTimerFollowFirmware"
+        }
+      ]
+    },
+    {
+      "id": "station-statistics-lifetime",
+      "feature": "roaming",
+      "origin": "firmware",
+      "behavior": "断连统计保留 905 秒并按 60 秒 sweep；邻居最多 12、按统计间隔老化；缺测与真实 RSSI 分离。",
+      "sources": [
+        {
+          "kind": "uac",
+          "name": "_stats_sta_idle_timer_handle",
+          "address": "0x007a9b48",
+          "size": 236,
+          "sha256": "6603caad52aaef50d3c91645fe2d9d9a1d33e2e7ddd54661b29d27d9deb5f5a8"
+        },
+        {
+          "kind": "uac",
+          "name": "stats_db_sta_start_del_timer_by_mac",
+          "address": "0x007ae6b8",
+          "size": 172,
+          "sha256": "466b9f77e719309f3e53a448a31f956d651e213bf0d29ccc3a8fb3ad8c798c1c"
+        },
+        {
+          "kind": "uac",
+          "name": "stats_db_sta_get_nbr_set",
+          "address": "0x007aef88",
+          "size": 904,
+          "sha256": "7be9f88906c5b7ffb797afd9776ced429ee9b9a443419d2ffcce721405d91b0d"
+        },
+        {
+          "kind": "uac",
+          "name": "stats_db_sta_update_nbr",
+          "address": "0x007aecb8",
+          "size": 720,
+          "sha256": "bd114098b69678c2eee6f8ac730b0d86c911b6b476a3cd6de2e8a0c882e193db"
+        },
+        {
+          "kind": "uac",
+          "name": "_stats_sta_assoc_cb",
+          "address": "0x007b4214",
+          "size": 160,
+          "sha256": "5b9d225c991c83dec05aee9231fc76b6c7ce5e726bac9e604edc9d320c579f6d"
+        },
+        {
+          "kind": "uac",
+          "name": "_stats_sta_deassoc_cb",
+          "address": "0x007b42b4",
+          "size": 96,
+          "sha256": "070c49f3509beb3b96081e7cd15b23dfa176bcb25161483cf3bca27f2aa91424"
+        },
+        {
+          "kind": "uac",
+          "name": "stats_db_sta_update_cnt_target",
+          "address": "0x007ae310",
+          "size": 936,
+          "sha256": "1bee9b11035621249c7aa05f722b87cd6f5051128b567f56f85d1aa563eff7d5"
+        }
+      ],
+      "implementation": [
+        {
+          "path": "uacgo/mobility/station_db.go",
+          "symbol": "Tick"
+        },
+        {
+          "path": "uacgo/mobility/statistics.go",
+          "symbol": "Update"
+        }
+      ],
+      "tests": [
+        {
+          "path": "uacgo/mobility/statistics_test.go",
+          "name": "TestStatisticsFirmwareBoundaries"
+        },
+        {
+          "path": "uacgo/mobility/statistics_test.go",
+          "name": "TestTimerCatchupDoesNotInventImmediateExpiry"
+        },
+        {
+          "path": "uacgo/mobility/statistics_test.go",
+          "name": "TestFirmwareStationStatisticsRetainedUntil905SecondMinuteSweep"
+        }
+      ]
+    },
+    {
+      "id": "v6-mode-and-reporting",
+      "feature": "roaming",
+      "origin": "firmware",
+      "behavior": "V6 Web 不允许修改网络模式、升级迁移固定模式 2；统计使能和长间隔按原上限。",
+      "sources": [
+        {
+          "kind": "uac",
+          "name": "_wsta_roam_sql_create_cfg_table",
+          "address": "0x004d8ca8",
+          "size": 336,
+          "sha256": "eb3c663bbaed9c1a320725aea30f7b45af631271021ffdabe738c132debaec2c"
+        },
+        {
+          "kind": "uac",
+          "name": "_wsta_roam_sql_load_db",
+          "address": "0x004da7b4",
+          "size": 1084,
+          "sha256": "26d99b8b1f6830512c70f938d56a7a0899ea89b0003c3009a300905af9ea4410"
+        },
+        {
+          "kind": "lua",
+          "module": "apmng_roam",
+          "entry": "wireless_network_mode_set",
+          "path": "usr/lib/lua/luci/controller/admin/apmng_roam.lua",
+          "sha256": "55c553f0bf52a468f675d57156940eadd097fbde7f6e9617611929c424fda78b"
+        },
+        {
+          "kind": "uac",
+          "name": "_wsta_roam_read_config",
+          "address": "0x004ddc54",
+          "size": 2080,
+          "sha256": "883ea658006b1ce39b5d0424fec41a35552911c2c5003915bbde57cfa034649e"
+        },
+        {
+          "kind": "uac",
+          "name": "check_cur_wireless_network_mode",
+          "address": "0x004e42f8",
+          "size": 252,
+          "sha256": "9ddfa22dcf40bc3b0f9efd31a3cee10f6119a9ee61a5a3598ab13539dbe8fb14"
+        }
+      ],
+      "implementation": [
+        {
+          "path": "uacgo/admin/mobility.go",
+          "symbol": "defaultMobility"
+        }
+      ],
+      "tests": [
+        {
+          "path": "uacgo/admin/mobility_mode_test.go",
+          "name": "TestV6ModeIsCompatibilityAndLegacyModesCannotBeConfigured"
+        },
+        {
+          "path": "uacgo/admin/mobility_mode_test.go",
+          "name": "TestMobilityModeAndRSSIStatisticsActuallyReachAP"
+        },
+        {
+          "path": "uacgo/admin/mobility_mode_test.go",
+          "name": "TestReportingDisabledAndLongIntervalsUseOriginalCeiling"
+        }
+      ]
+    },
+    {
+      "id": "sca-directed-score-and-ties",
+      "feature": "rrm",
+      "origin": "firmware",
+      "behavior": "活动 SCA 使用有向邻居、仅相同信道且 RSSI>=-85 平方整数评分，局部笛卡尔枚举及首个最小值。",
+      "sources": [
+        {
+          "kind": "uac",
+          "name": "rrm_business_static_optimize_original_version_one",
+          "address": "0x00527c70",
+          "size": 2872,
+          "sha256": "96662b6064d90f3feef1602499d799c66d31c73d350e1fe52ae748eda476d7a2"
+        },
+        {
+          "kind": "uac",
+          "name": "rrm_business_librrm_exec",
+          "address": "0x0052763c",
+          "size": 600,
+          "sha256": "a48f51e3f6dcad99cc7c9620d35932c75d88624351a2c49e12e29327ce91b7c0"
+        },
+        {
+          "kind": "rrm",
+          "path": "usr/lib/librrm_business.so",
+          "binary_sha256": "62a9c14282900ac5bec5d09a69b97ed98b259243c883c4b41b845d63e24ab62e",
+          "address": "0x0000ab44",
+          "anchor_size": 32,
+          "anchor_sha256": "d709b936e39218f9391795d687fa4136226c4ac6808ee75dc5e14277f725f2fb"
+        },
+        {
+          "kind": "rrm",
+          "path": "usr/lib/librrm_business.so",
+          "binary_sha256": "62a9c14282900ac5bec5d09a69b97ed98b259243c883c4b41b845d63e24ab62e",
+          "address": "0x00005094",
+          "anchor_size": 32,
+          "anchor_sha256": "038d966e9ee879ac1f39889a81fd5067fd0bba2728f9c07af305384c87ad15ae"
+        },
+        {
+          "kind": "rrm",
+          "path": "usr/lib/librrm_business.so",
+          "binary_sha256": "62a9c14282900ac5bec5d09a69b97ed98b259243c883c4b41b845d63e24ab62e",
+          "address": "0x00004650",
+          "anchor_size": 32,
+          "anchor_sha256": "82300204250804491980053c2f870b7f7d370c42f48054d1f9c1d2ee25460cf8"
+        },
+        {
+          "kind": "uac",
+          "name": "rrm_business_librrm_cfg_init",
+          "address": "0x00527038",
+          "size": 344,
+          "sha256": "61fe9713d18b0e514ff3c7351cebc75ffd133f76f39395e90f1544fcb50e9a24"
+        },
+        {
+          "kind": "uac",
+          "name": "rrm_business_librrm_rd_info_init",
+          "address": "0x00527240",
+          "size": 600,
+          "sha256": "fae0d82909eb49e31ccfb6452c33688375ec736af5b1ff28f848141fd21b0a15"
+        },
+        {
+          "kind": "uac",
+          "name": "rrm_business_librrm_rd_info_result_apply",
+          "address": "0x00527498",
+          "size": 420,
+          "sha256": "263a013e47534f9441a9746ead2ae4abc24e1851d04a246a710a6d600ce46640"
+        },
+        {
+          "kind": "uac",
+          "name": "rrm_business_intelligent_optimize",
+          "address": "0x00527894",
+          "size": 176,
+          "sha256": "0ff5f50cd94a360d2e862f80dafd40c6a481b1bfaba968e87336a866a5023f64"
+        }
+      ],
+      "implementation": [
+        {
+          "path": "uacgo/rrm/channel.go",
+          "symbol": "Channels"
+        }
+      ],
+      "tests": [
+        {
+          "path": "uacgo/rrm/firmware_test.go",
+          "name": "TestActiveSCAKeepsDirectedGraphAndOriginalTieOrder"
+        },
+        {
+          "path": "uacgo/rrm/firmware_test.go",
+          "name": "TestNeighborSmoothingAndIncomingOtherAPTopology"
+        }
+      ]
+    },
+    {
+      "id": "tpc-third-neighbor-and-quantization",
+      "feature": "rrm",
+      "origin": "firmware",
+      "behavior": "活动 TPC 取第三强外 AP 入向邻居、原边界和 10 级功率整数公式；不是最强邻居启发式。",
+      "sources": [
+        {
+          "kind": "rrm",
+          "path": "usr/lib/librrm_business.so",
+          "binary_sha256": "62a9c14282900ac5bec5d09a69b97ed98b259243c883c4b41b845d63e24ab62e",
+          "address": "0x0000677c",
+          "anchor_size": 32,
+          "anchor_sha256": "e54cfb0dab32ec378e9fb1ab2c19fca96c0c7c25a4916dd0f965c0f1042f2290"
+        },
+        {
+          "kind": "rrm",
+          "path": "usr/lib/librrm_business.so",
+          "binary_sha256": "62a9c14282900ac5bec5d09a69b97ed98b259243c883c4b41b845d63e24ab62e",
+          "address": "0x0000db44",
+          "anchor_size": 32,
+          "anchor_sha256": "b1fb5dffa5ccfa54a6c0785dc2e4d8ec50fdf52b2e8fb810a41a867f02d4bb81"
+        },
+        {
+          "kind": "rrm",
+          "path": "usr/lib/librrm_business.so",
+          "binary_sha256": "62a9c14282900ac5bec5d09a69b97ed98b259243c883c4b41b845d63e24ab62e",
+          "address": "0x0000db90",
+          "anchor_size": 32,
+          "anchor_sha256": "cafb2b0c60e40b482e63ba61282508cf31dbdad8cda4b176d0dcdb3648710a8b"
+        }
+      ],
+      "implementation": [
+        {
+          "path": "uacgo/rrm/power.go",
+          "symbol": "Powers"
+        },
+        {
+          "path": "uacgo/rrm/power.go",
+          "symbol": "LevelForPower"
+        },
+        {
+          "path": "uacgo/rrm/power.go",
+          "symbol": "PowerForLevel"
+        }
+      ],
+      "tests": [
+        {
+          "path": "uacgo/rrm/firmware_test.go",
+          "name": "TestTPCThirdNeighborAndTenLevelQuantization"
+        }
+      ]
+    },
+    {
+      "id": "measurement-round-triggers",
+      "feature": "rrm",
+      "origin": "firmware",
+      "behavior": "固定参与 AP 顺序、先低后高 5G、全测量队列提交后 90 秒；首报告计数，重复只更新图，最多两轮。",
+      "sources": [
+        {
+          "kind": "uac",
+          "name": "rrm_ops_neigh_info_collect",
+          "address": "0x005231e4",
+          "size": 460,
+          "sha256": "7d2f2a176cb2cd5939a399d5fb9f1a940500f05188f7fe6fa90acf6fa148a026"
+        },
+        {
+          "kind": "uac",
+          "name": "rrm_ops_pkt_ndp_recv",
+          "address": "0x0051eccc",
+          "size": 1728,
+          "sha256": "a574cd07d8f9b71244336e4dfc7361a1887a8892b309ed7cc96871682dcbe81d"
+        },
+        {
+          "kind": "uac",
+          "name": "rrm_ops_rd_info_ndp_collect_init",
+          "address": "0x0051f4fc",
+          "size": 160,
+          "sha256": "d3870fc42a0e85f4c12db655224df262404e6a70e848a2063d5209d7e6763457"
+        },
+        {
+          "kind": "uac",
+          "name": "rrm_business_neighbor_collect_and_process",
+          "address": "0x005279e0",
+          "size": 656,
+          "sha256": "42f17df2a80353a3218704365e61f3b5d11eefdcd3add5e86b4b6029e3556b13"
+        },
+        {
+          "kind": "uac",
+          "name": "rrm_ops_apply_all_result",
+          "address": "0x0051fbbc",
+          "size": 512,
+          "sha256": "43bb083b98da106bd8256aae081e223e12b6b3c1e81a57e59990a9fc01e45cb0"
+        },
+        {
+          "kind": "uac",
+          "name": "rrm_ops_algo_result_save",
+          "address": "0x0051fdbc",
+          "size": 256,
+          "sha256": "d14fec6fb2f48e7ed45997bd2970aa69837d018575918dcbcd1a844a66367bd2"
+        },
+        {
+          "kind": "uac",
+          "name": "rrm_ops_get_bw_mode_for_160m_bw_cfg",
+          "address": "0x0051bef0",
+          "size": 284,
+          "sha256": "a00e4e786ecc6894b460ad0149ec8db10529284146cda57f47855e0cc9ca066f"
+        },
+        {
+          "kind": "uac",
+          "name": "rrm_business_neighbor_collect",
+          "address": "0x00527944",
+          "size": 156,
+          "sha256": "98949b26b94aebd267f3840d345b6df3f589acb09d98e032c14d98c22a99cd5c"
+        },
+        {
+          "kind": "uac",
+          "name": "rrm_ops_trigger_rrm_by_rule",
+          "address": "0x00525590",
+          "size": 680,
+          "sha256": "39dcc212d1d6afd7624b96ee2c5c3336e02ba8b9ce039599c2077f0d9ce2c8d1"
+        }
+      ],
+      "implementation": [
+        {
+          "path": "uacgo/admin/rrm_runtime.go",
+          "symbol": "beginPass"
+        },
+        {
+          "path": "uacgo/admin/rrm_runtime.go",
+          "symbol": "markDispatched"
+        },
+        {
+          "path": "uacgo/admin/rrm_runtime.go",
+          "symbol": "collected"
+        }
+      ],
+      "tests": [
+        {
+          "path": "uacgo/admin/rrm_runtime_test.go",
+          "name": "TestRRMCollectionDeadlineAndSingleLowHighChannels"
+        },
+        {
+          "path": "uacgo/admin/rrm_runtime_test.go",
+          "name": "TestRRMSecondCollectionPreservesBaselineAndDoesNotAddNeighbors"
+        },
+        {
+          "path": "uacgo/admin/rrm_runtime_test.go",
+          "name": "TestRRMMeasurementUsesTargetBandwidthAndInitialLevelTen"
+        },
+        {
+          "path": "uacgo/admin/rrm_runtime_test.go",
+          "name": "TestTPCOnlyUsesPriorAlgorithmResultForSecondRound"
+        }
+      ]
+    },
+    {
+      "id": "rrm-write-gate-and-time-conflicts",
+      "feature": "rrm",
+      "origin": "firmware",
+      "behavior": "RRM 全业务期间禁止 Web 修改 RF/WLAN；AP Join 生命周期仍可分组；原计划触发冲突窗口。",
+      "sources": [
+        {
+          "kind": "lua",
+          "module": "apmng_rrm",
+          "entry": "radio_or_wserv_cfg_set_check",
+          "path": "usr/lib/lua/luci/controller/admin/apmng_rrm.lua",
+          "sha256": "26d18fe82414021e02af9cfe723931de6c621b79ed9659d32a67d26057b2e0be"
+        },
+        {
+          "kind": "lua",
+          "module": "apmng_rrm",
+          "entry": "rrm_check_ap_reboot_time_conflict",
+          "path": "usr/lib/lua/luci/controller/admin/apmng_rrm.lua",
+          "sha256": "26d18fe82414021e02af9cfe723931de6c621b79ed9659d32a67d26057b2e0be"
+        }
+      ],
+      "implementation": [
+        {
+          "path": "uacgo/admin/config_store.go",
+          "symbol": "persistConfigLocked"
+        }
+      ],
+      "tests": [
+        {
+          "path": "uacgo/admin/config_store_test.go",
+          "name": "TestRRMConfigurationBoundary"
+        },
+        {
+          "path": "uacgo/admin/config_store_test.go",
+          "name": "TestAPJoinGroupAssignmentIsNotBlockedByWebRRMGuard"
+        },
+        {
+          "path": "uacgo/admin/config_store_test.go",
+          "name": "TestFirmwareScheduledTriggerConflicts"
+        }
+      ]
+    },
+    {
+      "id": "mesh-config-authorization",
+      "feature": "mesh",
+      "origin": "firmware",
+      "behavior": "Mesh 总开关、配对策略、成员列表与发现拓扑分开；ACK 不作为拓扑事实。",
+      "sources": [
+        {
+          "kind": "lua",
+          "module": "apmng_mesh",
+          "entry": "check_settings",
+          "path": "usr/lib/lua/luci/controller/admin/apmng_mesh.lua",
+          "sha256": "618cf8ba53938f6a8b0e50a2146ff4d8d4ac70eb04257bbeb60a622bd43e887e"
+        },
+        {
+          "kind": "lua",
+          "module": "apmng_mesh",
+          "entry": "select_mesh_ap",
+          "path": "usr/lib/lua/luci/controller/admin/apmng_mesh.lua",
+          "sha256": "618cf8ba53938f6a8b0e50a2146ff4d8d4ac70eb04257bbeb60a622bd43e887e"
+        },
+        {
+          "kind": "lua",
+          "module": "apmng_mesh",
+          "entry": "add_mesh_ap",
+          "path": "usr/lib/lua/luci/controller/admin/apmng_mesh.lua",
+          "sha256": "618cf8ba53938f6a8b0e50a2146ff4d8d4ac70eb04257bbeb60a622bd43e887e"
+        }
+      ],
+      "implementation": [
+        {
+          "path": "uacgo/admin/mesh.go",
+          "symbol": "meshRoutes"
+        }
+      ],
+      "tests": [
+        {
+          "path": "uacgo/admin/mesh_test.go",
+          "name": "TestMeshPolicyPackedAndCapabilityGated"
+        },
+        {
+          "path": "uacgo/admin/mesh_test.go",
+          "name": "TestMeshActionACKIsNotTopologyAndRestartDoesNotReplay"
+        },
+        {
+          "path": "uacgo/admin/mesh_test.go",
+          "name": "TestMeshMembershipIsPersistentPolicyNotTopologyQuery"
+        }
+      ]
+    },
+    {
+      "id": "mesh-child-transport",
+      "feature": "mesh",
+      "origin": "firmware",
+      "behavior": "子 AP 有独立 FSM/序号/报告归属，统一父传输队列；撤销/父断开清理，不接受身份伪造。",
+      "sources": [
+        {
+          "kind": "lua",
+          "module": "apmng_mesh",
+          "entry": "re_node_list_get",
+          "path": "usr/lib/lua/luci/controller/admin/apmng_mesh.lua",
+          "sha256": "618cf8ba53938f6a8b0e50a2146ff4d8d4ac70eb04257bbeb60a622bd43e887e"
+        }
+      ],
+      "implementation": [
+        {
+          "path": "uacgo/cweng/mesh_transport.go",
+          "symbol": "handleMeshPublic"
+        }
+      ],
+      "tests": [
+        {
+          "path": "uacgo/cweng/mesh_transport_test.go",
+          "name": "TestMeshChildLifecycleCommandsAndParentIsolation"
+        },
+        {
+          "path": "uacgo/cweng/mesh_transport_test.go",
+          "name": "TestMeshPublicRejectsMalformedAndIdentityClaims"
+        },
+        {
+          "path": "uacgo/cweng/mesh_transport_test.go",
+          "name": "TestRevokedMeshChildIsRemovedWithoutClosingParent"
+        }
+      ]
+    },
+    {
+      "id": "dhcp-arp-nd-wire",
+      "feature": "protection",
+      "origin": "firmware",
+      "behavior": "AP 执行 DHCP/ARP/ND 防护，混合地址和新旧能力布尔位/扩展标志；表总量与每 AP 容量分开。",
+      "sources": [
+        {
+          "kind": "lua",
+          "module": "apmng_dhcp_defense",
+          "entry": "set_dhcp_filter",
+          "path": "usr/lib/lua/luci/controller/admin/apmng_dhcp_defense.lua",
+          "sha256": "d08317988b737e3bcbc555d2fd797e9670459e454ffe7e5cacfc1fe0b7867a00"
+        },
+        {
+          "kind": "lua",
+          "module": "apmng_arpdefend",
+          "entry": "do_settings",
+          "path": "usr/lib/lua/luci/controller/admin/apmng_arpdefend.lua",
+          "sha256": "c717b4d7681e5c864b8df694387f3aef160e8376e862026622f45a543a3aaa03"
+        }
+      ],
+      "implementation": [
+        {
+          "path": "uacgo/admin/protection.go",
+          "symbol": "protectionElements"
+        }
+      ],
+      "tests": [
+        {
+          "path": "uacgo/admin/protection_test.go",
+          "name": "TestDefenseGoldenMixedAddressesAndRuleRemoval"
+        },
+        {
+          "path": "uacgo/admin/protection_test.go",
+          "name": "TestLegacyDefenseUsesBooleanNotExtendedFlags"
+        },
+        {
+          "path": "uacgo/admin/protection_test.go",
+          "name": "TestProtectionKeepsLibraryAndPerDeviceCapacityDistinct"
+        }
+      ]
+    },
+    {
+      "id": "storm-proxy-usb",
+      "feature": "protection",
+      "origin": "firmware",
+      "behavior": "AP 执行风暴抑制/代理/USB，不把 AC Linux 功能搬进程序。",
+      "sources": [
+        {
+          "kind": "lua",
+          "module": "apmng_bcast_storm_ctrl",
+          "entry": "check_settings",
+          "path": "usr/lib/lua/luci/controller/admin/apmng_bcast_storm_ctrl.lua",
+          "sha256": "45f0aef08a98e88e275ef2068e0fadacdaeafd5274af75dbda80d7c79f6d8ff9"
+        },
+        {
+          "kind": "lua",
+          "module": "apmng_usb",
+          "entry": "check_usb_settings",
+          "path": "usr/lib/lua/luci/controller/admin/apmng_usb.lua",
+          "sha256": "63d334ea4ebc9d3cd18956cfe543958120f69244f77c1a751fb4a567615dd546"
+        }
+      ],
+      "implementation": [
+        {
+          "path": "uacgo/admin/storm.go",
+          "symbol": "validateStorm"
+        },
+        {
+          "path": "uacgo/admin/management_wire.go",
+          "symbol": "managementElements"
+        }
+      ],
+      "tests": [
+        {
+          "path": "uacgo/admin/protection_test.go",
+          "name": "TestStormProxyAndProtocolCapabilities"
+        },
+        {
+          "path": "uacgo/admin/protection_test.go",
+          "name": "TestAPMeshAndUSBOptions"
+        }
+      ]
+    },
+    {
+      "id": "dhcp-exact-vendor",
+      "feature": "selective-dhcp",
+      "origin": "firmware",
+      "behavior": "仅精确 TP-LINK 标识响应；Mesh Detect 只响应 Discover，Request 不分配租约；普通终端静默。",
+      "sources": [
+        {
+          "kind": "dhcpd",
+          "path": "usr/sbin/dhcpd",
+          "binary_sha256": "24bb123cf6233ca58eee39e625f7d0a68435c933f9fe3abac80851f14d17c46f",
+          "address": "0x00412f30",
+          "anchor_size": 32,
+          "anchor_sha256": "f545be76ae8ced83409378e1794fb82b1275b6f72cfc734a96b8696646a822e2"
+        },
+        {
+          "kind": "dhcpd",
+          "path": "usr/sbin/dhcpd",
+          "binary_sha256": "24bb123cf6233ca58eee39e625f7d0a68435c933f9fe3abac80851f14d17c46f",
+          "address": "0x004137b0",
+          "anchor_size": 32,
+          "anchor_sha256": "c76e6548348b3a9bf4d1918d547a8c098c5005aa731df108fee8e68afda515bc"
+        }
+      ],
+      "implementation": [
+        {
+          "path": "uacgo/dhcpserver/server.go",
+          "symbol": "IsAPVendor"
+        },
+        {
+          "path": "uacgo/dhcpserver/server.go",
+          "symbol": "Handle"
+        }
+      ],
+      "tests": [
+        {
+          "path": "uacgo/dhcpserver/server_test.go",
+          "name": "TestExactVendorSilentIgnore"
+        },
+        {
+          "path": "uacgo/dhcpserver/server_test.go",
+          "name": "TestMeshDetectDiscoverOnlyMatchesV6Branch"
+        },
+        {
+          "path": "uacgo/dhcpserver/server_test.go",
+          "name": "TestOtherServerAndMalformedAreSilent"
+        },
+        {
+          "path": "uacgo/dhcpserver/server_test.go",
+          "name": "TestDiscoverRequestRenewAndRestart"
+        }
+      ]
+    },
+    {
+      "id": "single-configuration-authority",
+      "feature": "controller-core",
+      "origin": "standalone-go",
+      "behavior": "独立 acd 正式入口只使用 controller 配置；旧 SQLite WLAN/RF 和 JCS 不得污染命令或创建 Portal 库。",
+      "sources": [],
+      "implementation": [
+        {
+          "path": "uacgo/cmd/acd/main.go",
+          "symbol": "main"
+        }
+      ],
+      "tests": [
+        {
+          "path": "uacgo/cmd/acd/main_test.go",
+          "name": "TestStandaloneIgnoresLegacyWirelessDatabase"
+        }
+      ]
+    },
+    {
+      "id": "configuration-lifecycle-validation",
+      "feature": "controller-core",
+      "origin": "standalone-go",
+      "behavior": "启动和所有写入共用结构/参数/引用校验，资源更新不改变 RF 配置身份及 RRM。",
+      "sources": [],
+      "implementation": [
+        {
+          "path": "uacgo/admin/config_validation.go",
+          "symbol": "validateConfig"
+        },
+        {
+          "path": "uacgo/admin/config_store.go",
+          "symbol": "persistConfigLocked"
+        }
+      ],
+      "tests": [
+        {
+          "path": "uacgo/admin/config_store_test.go",
+          "name": "TestStartupAndWritersShareIntrinsicConfigurationValidation"
+        },
+        {
+          "path": "uacgo/admin/resources_test.go",
+          "name": "TestGoBudgetsDoNotChangeFirmwarePolicyOrAPConfiguration"
+        }
+      ]
+    },
+    {
+      "id": "live-budgets-and-defaults",
+      "feature": "controller-resources",
+      "origin": "standalone-go",
+      "behavior": "Go 自有可编辑容量、部分编辑/持久化/恢复；Mesh 和根 AP 在最终登记处共享同一实时限制，不照搬硬件容量。",
+      "sources": [],
+      "implementation": [
+        {
+          "path": "uacgo/controllercfg/resources.go",
+          "symbol": "Patch"
+        },
+        {
+          "path": "uacgo/cweng/resources.go",
+          "symbol": "registerSession"
+        }
+      ],
+      "tests": [
+        {
+          "path": "uacgo/admin/resources_test.go",
+          "name": "TestControllerCapacityAPIPersistsAndGuardsAllWriters"
+        },
+        {
+          "path": "uacgo/cweng/command_queue_test.go",
+          "name": "TestLiveGoLimitsKeepExistingSessionAndQueuedCommands"
+        },
+        {
+          "path": "uacgo/cweng/mesh_transport_test.go",
+          "name": "TestMeshAdmissionUsesLiveSharedBudgetAboveOldDefault"
+        },
+        {
+          "path": "uacgo/admin/resources_test.go",
+          "name": "TestStandaloneAPDefaultsRemainEditable"
+        },
+        {
+          "path": "uacgo/admin/resources_test.go",
+          "name": "TestRuleBudgetsAreIndependentOfACModelCapacity"
+        }
+      ]
+    },
+    {
+      "id": "v6-event-order-and-mlo",
+      "feature": "association",
+      "origin": "firmware",
+      "behavior": "balance/stats/roam/lifecycle 优先级及 c6 子项顺序；MLO peer 计数与 Web 折叠分开，任一链路离开按能力清组。",
+      "sources": [
+        {
+          "kind": "uac",
+          "name": "_uac_wsta_pkt_wtp_event_listener",
+          "address": "0x0074a4b0",
+          "size": 808,
+          "sha256": "02c6a269bbbb5ddfaa3513ae7b330d082dad474c45fd19e25c0f6c666ddf5520"
+        },
+        {
+          "kind": "uac",
+          "name": "_stats_pkt_wtp_event_listener",
+          "address": "0x007b5694",
+          "size": 432,
+          "sha256": "03fe8bcbe6807bd278e151e364c33a1c9a485eb142540e07aaa719ad67f78874"
+        },
+        {
+          "kind": "uac",
+          "name": "uac_wstation_mlo_peer_assoc",
+          "address": "0x00766458",
+          "size": 604,
+          "sha256": "ef1390f9ce15522f3e99d14406a5123c74baa9f5561b5aad5336333d8aee516b"
+        },
+        {
+          "kind": "uac",
+          "name": "_multi_link_status_switch",
+          "address": "0x007a4588",
+          "size": 400,
+          "sha256": "707b6e92acceb18008688336202024b329169c5eb28ee0a54b5742b29e26e05b"
+        },
+        {
+          "kind": "uac",
+          "name": "_uac_wsta_pkt_sta_extra_info",
+          "address": "0x00745f28",
+          "size": 1636,
+          "sha256": "60aa5974c1d8a61356344316dd45073abfd64f41dd3607d80bea50bbc2940c82"
+        },
+        {
+          "kind": "uac",
+          "name": "cw_priv_sta_extra_info_dump",
+          "address": "0x0068ddac",
+          "size": 1008,
+          "sha256": "e0c12f0b0027b157b08a4ea39488f3ca6da6aee94349909e3da10e1654ff2be0"
+        },
+        {
+          "kind": "uac",
+          "name": "_uac_wsta_pkt_deassocicate",
+          "address": "0x007459fc",
+          "size": 824,
+          "sha256": "3beb5de40bd54f5dcde5d7ed2e83e8501e602d5ab4e56be49602a84af5f706cf"
+        },
+        {
+          "kind": "uac",
+          "name": "wsta_db_get_rd_sta_num",
+          "address": "0x00753844",
+          "size": 748,
+          "sha256": "6fb8bab374db4874416e1d7bf794fbd3a5f81c312aef56778c417d31c1e43c1b"
+        },
+        {
+          "kind": "uac",
+          "name": "_uac_wsta_get_entry",
+          "address": "0x007670c8",
+          "size": 4404,
+          "sha256": "8c608fb5e566cbc46e88ea3f55f23cd9d4ef5d1a5623ef0884b14ce09285d890"
+        }
+      ],
+      "implementation": [
+        {
+          "path": "uacgo/cweng/wsta.go",
+          "symbol": "RegisterWstaHandlers"
+        }
+      ],
+      "tests": [
+        {
+          "path": "uacgo/cweng/station_policy_test.go",
+          "name": "TestV6LifecycleElementPrecedenceAndBalancePriority"
+        },
+        {
+          "path": "uacgo/cweng/station_policy_test.go",
+          "name": "TestMLOPeerDatabaseRadioCountingAndDisplay"
+        },
+        {
+          "path": "uacgo/cweng/station_policy_test.go",
+          "name": "TestV6ExtraNormalAssociationAndDeviceMetadata"
+        },
+        {
+          "path": "uacgo/cweng/station_policy_test.go",
+          "name": "TestMLOMissingLinkSentinelDoesNotForgeRSSISample"
+        }
+      ]
+    },
+    {
+      "id": "typed-statistics-bssid",
+      "feature": "association",
+      "origin": "firmware",
+      "behavior": "52/53/54/c6/bd 的独立原始字段布局与索引替换；未提及 BSSID 槽位保留。",
+      "sources": [
+        {
+          "kind": "uac",
+          "name": "_stats_pkt_sta_request",
+          "address": "0x007b4a30",
+          "size": 788,
+          "sha256": "c8705ec66b8a91ad78372cecd6426a77fc83605464f3c037cc39d01c1a38d149"
+        },
+        {
+          "kind": "uac",
+          "name": "_stats_pkt_rssi_request",
+          "address": "0x007b51b4",
+          "size": 632,
+          "sha256": "71a5c21a89b7a35e67a6ca7903d622d55b0f813351c5b5b3c0de356447b7d579"
+        },
+        {
+          "kind": "uac",
+          "name": "_stats_pkt_ap_request",
+          "address": "0x007b4ec4",
+          "size": 752,
+          "sha256": "2908c09675e79f93185422e0f5415e1548f223337a824d7944e443c096a3a739"
+        },
+        {
+          "kind": "uac",
+          "name": "cw_priv_sta_extra_info_parse",
+          "address": "0x0068ea40",
+          "size": 1164,
+          "sha256": "44b1450e1271b62867547efd3777e625cbaebfbc5b6515f830538b4a6ada3b31"
+        },
+        {
+          "kind": "uac",
+          "name": "_stats_pkt_bssid_update",
+          "address": "0x007b542c",
+          "size": 384,
+          "sha256": "231c87582b58461ebaf7c49dcdb79a3009a48c436478a46dabda5020761440a9"
+        },
+        {
+          "kind": "uac",
+          "name": "stats_db_bssid_update",
+          "address": "0x007b1190",
+          "size": 492,
+          "sha256": "9cd909395d5c9046461c31331cd60728a448104828b94c9b20bb5bb825e5bc6a"
+        },
+        {
+          "kind": "uac",
+          "name": "cw_priv_sta_statistics_dump",
+          "address": "0x006a1da4",
+          "size": 656,
+          "sha256": "cc4c338df8c3f831bbe7cce6f4ab06d333cccb1cc2f4983eb647747337ea889e"
+        },
+        {
+          "kind": "uac",
+          "name": "cw_priv_ac_msg_pull_parse",
+          "address": "0x006a0c24",
+          "size": 1740,
+          "sha256": "c33a34bb1d632b3ee1d0e2cf54f991a933c81f446e54d4c81cbe8bf88633cf7b"
+        },
+        {
+          "kind": "uac",
+          "name": "_stats_pkt_sta_or_bssid_update",
+          "address": "0x007b55ac",
+          "size": 232,
+          "sha256": "a81dc61ba1c024af1cdce30067881f25c6c796fde101b83f64be711b9d365271"
+        },
+        {
+          "kind": "uac",
+          "name": "stats_db_ssid_update",
+          "address": "0x007b1e44",
+          "size": 1188,
+          "sha256": "8d22fdcc38cacd939bb2b50e83560e7764eb69f704d6ce378a8d54ca7bf92c82"
+        }
+      ],
+      "implementation": [
+        {
+          "path": "uacgo/admin/mobility_statistics.go",
+          "symbol": "observeBSSIDLocations"
+        }
+      ],
+      "tests": [
+        {
+          "path": "uacgo/capwap/station_extra_test.go",
+          "name": "TestV6StationExtraIndependentWire"
+        },
+        {
+          "path": "uacgo/capwap/state_pull_test.go",
+          "name": "TestV6StatePullFieldLayout"
+        },
+        {
+          "path": "uacgo/admin/bssid_state_test.go",
+          "name": "TestV6BSSIDIndexRetainsOmittedSlotsAndRemovesChangedSlot"
+        }
+      ]
+    },
+    {
+      "id": "ax-defaults-and-model-enums",
+      "feature": "radio",
+      "origin": "firmware",
+      "behavior": "11ax Join 未设值与 RUN 两阶段默认、显式零值保留；型号模式编号与 RF 数值分离；高级设置按能力生成。",
+      "sources": [
+        {
+          "kind": "uac",
+          "name": "rdmngr_db_init_11ax_feature",
+          "address": "0x007301dc",
+          "size": 788,
+          "sha256": "659c385d77534b2a7ad60019cc3e8a2666794d43e9a558c6b02202d231e93da2"
+        },
+        {
+          "kind": "uac",
+          "name": "rdmngr_db_check_11ax_feature",
+          "address": "0x007304f0",
+          "size": 572,
+          "sha256": "a6cadd6e44d5e3086b14eb554c59441edf1098203c2f0a030e74814cd0007976"
+        },
+        {
+          "kind": "uac",
+          "name": "rdmngr_wtp_pkt_send",
+          "address": "0x0073ea84",
+          "size": 9272,
+          "sha256": "5e16b47f9cbbe11862c03c11f722e288597605bb2c39d101107e2743c563009a"
+        },
+        {
+          "kind": "uac",
+          "name": "rdmngr_capwap_callback_join_req_listen",
+          "address": "0x0073d0f0",
+          "size": 1036,
+          "sha256": "878b0068af016960f4c2a0cf8833c21f6711537add66ed03f5e2957e358834b1"
+        },
+        {
+          "kind": "uac",
+          "name": "rdmngr_multilink_callback_rdmngr_add",
+          "address": "0x00742e24",
+          "size": 1008,
+          "sha256": "5fe8143eee1b67130d0ab06786fd54fb737a1aba4b53a6972ba2f97952d2d49d"
+        }
+      ],
+      "implementation": [
+        {
+          "path": "uacgo/admin/radio_advanced.go",
+          "symbol": "defaultRadioAdvanced"
+        }
+      ],
+      "tests": [
+        {
+          "path": "uacgo/admin/radio_advanced_test.go",
+          "name": "TestAPReportedFeatureDefaults"
+        },
+        {
+          "path": "uacgo/cweng/radio_modes_test.go",
+          "name": "TestRadioModeListUsesReportedIDsAndSeparateRFValues"
+        },
+        {
+          "path": "uacgo/admin/rf_mode_test.go",
+          "name": "TestRFModeSelectionNeverUsesRFValueAsModeID"
+        },
+        {
+          "path": "uacgo/admin/radio_advanced_test.go",
+          "name": "TestAdvancedRadioVendorWireAndGates"
+        },
+        {
+          "path": "uacgo/admin/radio_advanced_test.go",
+          "name": "TestRadioBatchesRetainEveryVendorParameter"
+        },
+        {
+          "path": "uacgo/admin/radio_advanced_test.go",
+          "name": "TestRadioModeWMMAndBandwidthCombinations"
+        }
+      ]
+    },
+    {
+      "id": "ap-name-import",
+      "feature": "ap-management",
+      "origin": "firmware",
+      "behavior": "ap_calibrate_load 按 MAC 匹配已有 AP，逐行验证和改名；未知/未改行跳过，错误行不阻止其它有效行；安装位置不改；原 character_number 以字符计数50。旧 Labels 仅作 Go 迁移输入，单台/批量共用 APProfiles.Name。轨道扩展未启用。",
+      "sources": [
+        {
+          "name": "_apmngr_jcs_ap_calibrate_load",
+          "address": "0x005f5ee0",
+          "size": 848,
+          "sha256": "1c754fa50851e9025b1227bce38a51dbdb008a4b9ce7acdcde9700ab95641dd2",
+          "kind": "uac"
+        },
+        {
+          "kind": "lua",
+          "module": "apmng_set",
+          "entry": "ap_calibrate_load",
+          "path": "usr/lib/lua/luci/controller/admin/apmng_set.lua",
+          "sha256": "032d8ae4a6c7667ac6a3e9427050ffae9ebd761d19dde4d2276ce69b8476a88b"
+        },
+        {
+          "kind": "file",
+          "path": "usr/lib/lua/luci/torchlight/uac/ac_util.lua",
+          "sha256": "b4347758854bb5d64a55614d8bfe0b120432bd45b96dc3f1925c2670c2c274ac"
+        }
+      ],
+      "implementation": [
+        {
+          "path": "uacgo/admin/ap_names.go",
+          "symbol": "importAPNamesHTTP"
+        },
+        {
+          "path": "uacgo/admin/ap_names.go",
+          "symbol": "validAPName"
+        },
+        {
+          "path": "uacgo/admin/ap_names.go",
+          "symbol": "migrateAPNames"
+        }
+      ],
+      "tests": [
+        {
+          "path": "uacgo/admin/ap_export_test.go",
+          "name": "TestAPNameImportUsesOriginalCSVRowSemanticsAndSingleNameStore"
+        },
+        {
+          "path": "uacgo/admin/ap_export_test.go",
+          "name": "TestLegacyAPNamesMigrateWithoutOverridingProfile"
+        }
+      ]
+    }
+  ],
+  "reference_or_inactive_functions": [
+    {
+      "name": "rdmngr_db_sqlite_cb",
+      "scope": "reference-storage",
+      "reason": "原 SQLite 配置回调含明确不支持的 rail 字段；Go 使用自身配置存储，活动 RF 参数另由 rrst-and-peer 合同覆盖。",
+      "address": "0x00727f14",
+      "size": 4336,
+      "sha256": "e2889dda49470ffbb44b981a43ebabc4dd4180a60579970f6c6ced10647f80bb"
+    },
+    {
+      "name": "_roaming_nbr_select",
+      "scope": "inactive-selector",
+      "reason": "原 ELF 旧选择器；有效 JAL4e713c 调用4e5638，不能以此旧算法替代活动选择器。",
+      "address": "0x004e4b3c",
+      "size": 1216,
+      "sha256": "2f0e46aab3497665b542694541be400c5bdbe80a88a4cd8e4d4162f3c51856ed"
+    },
+    {
+      "name": "_rssi_sort_fun",
+      "scope": "inactive-selector",
+      "reason": "原 ELF 旧选择器；有效 JAL4e713c 调用4e5638，不能以此旧算法替代活动选择器。",
+      "address": "0x004e3c04",
+      "size": 392,
+      "sha256": "485f1aa31fd34c9856ffae06cb2b90f068092a4bd014b7ed001e0f2d8f563b09"
+    },
+    {
+      "name": "_nbr_filter",
+      "scope": "inactive-selector",
+      "reason": "原 ELF 旧选择器；有效 JAL4e713c 调用4e5638，不能以此旧算法替代活动选择器。",
+      "address": "0x004e3af8",
+      "size": 268,
+      "sha256": "20cb8589bfa56595a408be2d1463efdcf972dd759098b8f605fae1045194a058"
+    },
+    {
+      "name": "wireless_network_mode_change_handle",
+      "scope": "inactive-modes",
+      "reason": "V6 Web 禁止模式设置且升级固定模式2；旧自动/高性能模式 ACS 不作为可启用产品策略。RRM 智能分支失败回退活动 SCA/TPC。",
+      "address": "0x004e2cd8",
+      "size": 416,
+      "sha256": "ecd2c6a9b726fb26bbcaff53abdeeca252b541a524415c9c24fee1f8a9c9a4d4"
+    },
+    {
+      "name": "_wsta_intelligent_roam_sta_change_ap_info",
+      "scope": "inactive-modes",
+      "reason": "V6 Web 禁止模式设置且升级固定模式2；旧自动/高性能模式 ACS 不作为可启用产品策略。RRM 智能分支失败回退活动 SCA/TPC。",
+      "address": "0x004e2e78",
+      "size": 328,
+      "sha256": "6d5435cefd29bad698a524b643acb40f32a4c8e231cd1283c04b5b34d3bb010e"
+    },
+    {
+      "name": "_wsta_intelligent_roam_set_rd_info_by_sta",
+      "scope": "inactive-modes",
+      "reason": "V6 Web 禁止模式设置且升级固定模式2；旧自动/高性能模式 ACS 不作为可启用产品策略。RRM 智能分支失败回退活动 SCA/TPC。",
+      "address": "0x004e34ac",
+      "size": 952,
+      "sha256": "20cbdea93aa4eeb7aece71addbbae7e5ecc7ff7d5fc398f5d0dbdf09590b4efe"
+    },
+    {
+      "name": "_wsta_intelligent_roam_do_acs",
+      "scope": "inactive-modes",
+      "reason": "V6 Web 禁止模式设置且升级固定模式2；旧自动/高性能模式 ACS 不作为可启用产品策略。RRM 智能分支失败回退活动 SCA/TPC。",
+      "address": "0x004e418c",
+      "size": 364,
+      "sha256": "afa1718aabff4cceef1dfff1d1fe94cdde27db8364a4e3bfe235e02a6bffb207"
+    },
+    {
+      "name": "wsta_roam_chnl_handle",
+      "scope": "inactive-modes",
+      "reason": "V6 Web 禁止模式设置且升级固定模式2；旧自动/高性能模式 ACS 不作为可启用产品策略。RRM 智能分支失败回退活动 SCA/TPC。",
+      "address": "0x004e43f4",
+      "size": 716,
+      "sha256": "482531ffc9480f65f6691e39a1ffb0e3c6911d3e432ff735d7edacc2ace9dab3"
+    },
+    {
+      "name": "wsta_roam_chnl_handle_thread",
+      "scope": "inactive-modes",
+      "reason": "V6 Web 禁止模式设置且升级固定模式2；旧自动/高性能模式 ACS 不作为可启用产品策略。RRM 智能分支失败回退活动 SCA/TPC。",
+      "address": "0x004e2668",
+      "size": 1648,
+      "sha256": "c32b5f6e3e133ece95d46d73f4e5c0074e7a4870f5330cfae81ba0da69a93b45"
+    }
+  ]
+}

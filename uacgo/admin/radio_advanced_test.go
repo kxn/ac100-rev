@@ -103,7 +103,7 @@ func TestRadioLocalWLANAllocationAndOfflineDelete(t *testing.T) {
 	if _, err := m.allocate("ap-one", "guest", 1, 1); err == nil {
 		t.Fatal("capacity overrun")
 	}
-	m.config.Services = []Service{{ID: "office", WLAN: 99, Deleting: true}}
+	m.config.Services = []Service{{ID: "office", SSID: "Office", Security: "open", Radios: []uint8{1}, WLAN: 99, Deleting: true}}
 	m.finishDeletions()
 	if len(m.config.Services) != 1 {
 		t.Fatal("discarded pending removal on offline AP")

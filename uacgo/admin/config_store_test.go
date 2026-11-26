@@ -1,6 +1,8 @@
 package admin
 
 import (
+	"encoding/json"
+	"path/filepath"
 	"testing"
 	"time"
 	"uacgo/cweng"
@@ -40,7 +42,7 @@ func TestRRMConfigurationBoundary(t *testing.T) {
 	}
 	next = m.config
 	next.Radios = []RadioSetting{{AP: "a", Radio: 1}}
-	if err = m.saveManagementResult(next, true); err != nil {
+	if err = m.saveManagementFrom(next, managementRRM); err != nil {
 		t.Fatal("RRM cannot save its own result", err)
 	}
 }
@@ -90,5 +92,47 @@ func TestFirmwareScheduledTriggerConflicts(t *testing.T) {
 		if got := triggerConflict(tc.a, tc.b, tc.threshold); got != tc.want {
 			t.Fatal(tc, got)
 		}
+	}
+}
+
+func TestStartupAndWritersShareIntrinsicConfigurationValidation(t *testing.T) {
+	m, _ := testController(t)
+	invalid := Service{ID: "bad", SSID: "Bad", Security: "invented", Radios: []uint8{1}}
+	next := m.config
+	next.Services = []Service{invalid}
+	m.mu.Lock()
+	err := m.persistConfigLocked(next, managementUser)
+	m.mu.Unlock()
+	if err == nil {
+		t.Fatal("direct writer accepted invalid wireless configuration")
+	}
+	dir := t.TempDir()
+	if err := atomicJSON(filepath.Join(dir, "controller.json"), next); err != nil {
+		t.Fatal(err)
+	}
+	e, err := cweng.NewEngine(0)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer e.Close()
+	if _, err = New(e, cweng.NewClientTable(), dir); err == nil {
+		t.Fatal("startup accepted a configuration rejected by the writer")
+	}
+}
+
+func TestClientDisplayDoesNotInventDisconnectFromReportSilence(t *testing.T) {
+	m, e := testController(t)
+	_, ap := newDeferredAP(t, e)
+	at := time.Now().Add(-10 * time.Minute)
+	m.clients.StationEvent(cweng.ClientEvent{APID: ap.ID, MAC: [6]byte{2, 1, 2, 3, 4, 5}, RadioID: 1, WLANID: 1, Kind: "associate", Seen: at})
+	w := callManagement(t, m, "GET", "clients", nil)
+	var rows []struct {
+		State string `json:"state"`
+	}
+	if err := json.Unmarshal(w.Body.Bytes(), &rows); err != nil {
+		t.Fatal(err)
+	}
+	if w.Code != 200 || len(rows) != 1 || rows[0].State != "connected" {
+		t.Fatal(w.Code, w.Body.String())
 	}
 }

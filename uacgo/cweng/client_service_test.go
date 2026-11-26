@@ -36,7 +36,7 @@ func TestReportedClientVLANIsHistoricalAndNeverDerivedFromNewConfig(t *testing.T
 	mac := [6]byte{2, 3, 4, 5, 6, 7}
 	now := time.Now()
 	vlan := uint16(101)
-	table.WirelessSnapshot("a", now, []ClientEvent{{MAC: mac, APID: "a", RadioID: 1, WLANID: 1, SSID: "Pool", ServiceID: "pool", VLAN: &vlan, IP: "192.0.2.20"}}, map[[6]byte]bool{mac: true})
+	table.WirelessSnapshot("a", time.Time{}, now, []ClientEvent{{MAC: mac, APID: "a", RadioID: 1, WLANID: 1, SSID: "Pool", ServiceID: "pool", VLAN: &vlan, IP: "192.0.2.20"}}, map[[6]byte]bool{mac: true})
 	snapshot := table.All()
 	*snapshot[0].VLAN = 999
 	table.StationEvent(ClientEvent{Kind: "disassociate", State: "disconnected", MAC: mac, APID: "a", RadioID: 1, WLANID: 1, Seen: now.Add(time.Second)})

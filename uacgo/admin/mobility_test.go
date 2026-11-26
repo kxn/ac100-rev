@@ -2,6 +2,7 @@ package admin
 
 import (
 	"bytes"
+	"reflect"
 	"testing"
 	"time"
 	"uacgo/capwap"
@@ -26,7 +27,7 @@ func TestRoamControlWireAndPolicyReferenceValidation(t *testing.T) {
 		t.Fatal("missing group accepted")
 	}
 }
-func TestBalanceRequiresCoverageSameServiceAndHasBoundedRejections(t *testing.T) {
+func TestBalanceUsesDiscoveredPeerAndBoundedRejections(t *testing.T) {
 	m, _ := testController(t)
 	s := Service{ID: "office", SSID: "Office", Security: "open", Enabled: true, Radios: []uint8{1}}
 	p := defaultMobility()
@@ -150,7 +151,41 @@ func TestRoamingTriggerAcrossTwoUDPSimulatedAPs(t *testing.T) {
 		t.Fatal("selection fabricated handoff")
 	}
 	// Transport ACKs do not invent a firmware policy cooldown.
-	if got := m.calculateRoaming(a, trigger, time.Now()); len(got.Stations[0].Candidates) != 1 {
+	m.mu.Lock()
+	got := m.calculateRoamingLocked(a, trigger, time.Now())
+	m.mu.Unlock()
+	if len(got) != 1 || len(got[0].Stations) != 1 || len(got[0].Stations[0].Candidates) != 1 {
 		t.Fatal("transport ACK changed candidate selection")
+	}
+}
+
+func TestRoamingSignalConversionUsesWholeReport(t *testing.T) {
+	// _bstm_ngr_generate inlined in 4e6564: unequivocal encodings end
+	// detection; ambiguous even RCPI requires RSNI>=61; conflict discards it.
+	for _, tc := range []struct {
+		rows  []capwap.RoamNeighborReport
+		want  []int
+		valid bool
+	}{
+		{[]capwap.RoamNeighborReport{{RCPI: 100}, {RCPI: 170}}, []int{-60, -25}, true},
+		{[]capwap.RoamNeighborReport{{RCPI: 220}, {RCPI: 170}}, []int{-36, -86}, true},
+		{[]capwap.RoamNeighborReport{{RCPI: 170, RSNI: 61}}, []int{-25}, true},
+		{[]capwap.RoamNeighborReport{{RCPI: 170, RSNI: 60}}, []int{-86}, true},
+		{[]capwap.RoamNeighborReport{{RCPI: 170, RSNI: 61}, {RCPI: 171, RSNI: 61}}, nil, false},
+	} {
+		got, valid := neighborSignals(tc.rows)
+		if valid != tc.valid || !reflect.DeepEqual(got, tc.want) {
+			t.Fatal(tc, got, valid)
+		}
+	}
+	// Candidate conversion uses the raw signal for rate, and a separate
+	// -10dB margin (floored at -95) for selection, at the actual adapter.
+	m, _ := testController(t)
+	ap := cweng.APStatus{ID: "a", Online: true, Capabilities: []cweng.RadioCapability{{RadioID: 1, Band: "5 GHz", TxStreams: 2, SupportAC: true}}, RadioStatistics: []cweng.RadioStatistics{{APRadioStatistics: capwap.APRadioStatistics{Radio: 1, Channel: 36}}}}
+	for _, tc := range []struct{ raw, want int8 }{{-60, -70}, {-86, -95}} {
+		n, ok := m.candidateLocked([6]byte{2, 1, 2, 3, 4, 5}, ap, 1, 1, [6]byte{}, tc.raw, true)
+		if !ok || n.RSSI != tc.want {
+			t.Fatal(tc, n, ok)
+		}
 	}
 }

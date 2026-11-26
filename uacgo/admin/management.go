@@ -233,7 +233,7 @@ func validateManagement(cfg Config) error {
 		}
 	}
 	for _, p := range cfg.APProfiles {
-		if p.AP == "" || aps[p.AP] || !validLabel(p.Name, 52) || !validLabel(p.Location, 200) || p.Group != "" && !groups[p.Group] || p.Template != "" && !templates[p.Template] {
+		if p.AP == "" || aps[p.AP] || !validAPName(p.Name) || !validLabel(p.Location, 200) || p.Group != "" && !groups[p.Group] || p.Template != "" && !templates[p.Template] {
 			return fmt.Errorf("AP 设置引用无效或重复")
 		}
 		aps[p.AP] = true

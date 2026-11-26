@@ -20,12 +20,7 @@ func TestRateUsesFirmwareTableAndTruncatedSlope(t *testing.T) {
 	if CandidateRate(-85, p, p, 1, false, 0) != 0 {
 		t.Fatal("below firmware minimum signal")
 	}
-	if got := NeighborRSSI(100, true); got != -70 {
-		t.Fatal(got)
-	}
-	if got := NeighborRSSI(uint8(170), false); got != -95 {
-		t.Fatal(got)
-	}
+
 }
 
 func TestCapabilitiesAndMeshRateFollowVendorOperations(t *testing.T) {

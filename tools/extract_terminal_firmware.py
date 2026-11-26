@@ -3,6 +3,7 @@
 import hashlib
 import json
 import pathlib
+import subprocess
 import re
 from audit_mobility_firmware import ELF32BE, ROOT, UAC_SHA256
 
@@ -49,5 +50,5 @@ for i, key in enumerate(brands[1:], 1):
 out += ["}"]
 target = ROOT / "uacgo/terminal/tables_generated.go"
 target.parent.mkdir(exist_ok=True)
-target.write_text("\n".join(out)+"\n")
+target.write_text(subprocess.check_output(["gofmt"], input="\n".join(out)+"\n", text=True))
 print(f"Generated {len(seen)} firmware OUI entries")

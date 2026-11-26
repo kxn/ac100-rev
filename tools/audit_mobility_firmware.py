@@ -9,6 +9,7 @@ import argparse
 import hashlib
 import json
 import pathlib
+import subprocess
 import struct
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
@@ -312,7 +313,7 @@ def main():
         for row in evidence["rate_estimation"]["bandwidth_multipliers"]:
             text += '{' + ','.join(map(str, row)) + '},\n'
         text += '}\n'
-        args.go_output.write_text(text)
+        args.go_output.write_text(subprocess.check_output(["gofmt"], input=text, text=True))
     print(f"Extracted {len(evidence['uac_functions'])} function fingerprints, active JAL, compiled constants and rate tables; no devices exercised")
 
 

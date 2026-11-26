@@ -11,7 +11,7 @@ import (
 
 func TestWirelessHistoryPersistsFreshSamplesAndConfirmedTransitions(t *testing.T) {
 	m, e := testController(t)
-	now := time.Now()
+	now := time.Now().Add(-11 * time.Minute)
 	mac := [6]byte{2, 1, 2, 3, 4, 5}
 	m.clients.StationEvent(cweng.ClientEvent{MAC: mac, APID: "a", RadioID: 1, WLANID: 1, Kind: "probe", Seen: now.Add(-time.Second)})
 	if len(m.clients.Transitions(0)) != 0 {
@@ -24,9 +24,17 @@ func TestWirelessHistoryPersistsFreshSamplesAndConfirmedTransitions(t *testing.T
 	if len(m.history.Radios) != 1 || m.history.Radios[0].Metrics["channelUsage"] != 30 || len(m.history.Events) != 1 {
 		t.Fatal(m.history)
 	}
+	// A fresh radio measurement still counts a station with no station
+	// statistics for ten minutes; report silence is not a disconnect.
+	ap.Telemetry.ReceivedAt = now.Add(10 * time.Minute)
+	ap.Telemetry.Radios[0].StatisticsAt = now.Add(10 * time.Minute)
+	m.captureHistory([]cweng.APStatus{ap}, now.Add(10*time.Minute))
+	if len(m.history.Radios) != 2 || m.history.Radios[1].Clients != 1 {
+		t.Fatal("quiet connected client omitted", m.history.Radios)
+	}
 	m.clients.StationEvent(cweng.ClientEvent{MAC: mac, APID: "b", RadioID: 2, WLANID: 1, Kind: "associate", State: "connected", Seen: now.Add(2 * time.Second)})
 	m.clients.StationEvent(cweng.ClientEvent{MAC: mac, APID: "a", RadioID: 1, WLANID: 1, Kind: "disassociate", State: "disconnected", Seen: now.Add(3 * time.Second)})
-	m.captureHistory(nil, now.Add(2*time.Minute))
+	m.captureHistory(nil, now.Add(11*time.Minute))
 	if len(m.history.Events) != 2 || m.history.Events[1].Kind != "roamed" {
 		t.Fatal(m.history.Events)
 	}
@@ -34,7 +42,7 @@ func TestWirelessHistoryPersistsFreshSamplesAndConfirmedTransitions(t *testing.T
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(restored.history.Events) != 2 || len(restored.history.Radios) != 1 {
+	if len(restored.history.Events) != 2 || len(restored.history.Radios) != 2 {
 		t.Fatal("wireless history not recovered")
 	}
 	r := httptest.NewRecorder()

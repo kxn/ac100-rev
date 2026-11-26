@@ -8,10 +8,10 @@ import (
 // WirelessSnapshot reconciles a fresh, complete AP wireless station table.
 // Wired hosts never enter this path. Events received after the read started
 // take precedence, and a snapshot cannot move a client from another live AP.
-func (t *ClientTable) WirelessSnapshot(ap string, started time.Time, rows []ClientEvent, present map[[6]byte]bool) {
+func (t *ClientTable) WirelessSnapshot(ap string, connection, started time.Time, rows []ClientEvent, present map[[6]byte]bool) {
 	t.mu.Lock()
 	defer t.unlockAndNotify(t.transitionSeq)
-	if epoch, ok := t.epochs[ap]; ok && (!epoch.Online || started.Before(epoch.Connection)) {
+	if epoch, ok := t.epochs[ap]; ok && (!epoch.Online || !connection.Equal(epoch.Connection) || started.Before(epoch.Connection)) {
 		return
 	}
 	for _, ev := range rows {

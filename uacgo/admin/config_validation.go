@@ -5,9 +5,12 @@ import (
 	"uacgo/cweng"
 )
 
-// Runs under Manager.mu. Import/copy/group edits must obey the same structural
-// constraints as individual editors; known APs additionally check capabilities.
-func (m *Manager) validateRestorableConfig(cfg Config) error {
+// Intrinsic configuration constraints apply equally on startup, restore and
+// every write. They do not depend on a potentially stale AP capability cache.
+func validateConfig(cfg Config) error {
+	if err := validateManagement(cfg); err != nil {
+		return err
+	}
 	if err := validateEDCARules(cfg.EDCARules, cfg); err != nil {
 		return err
 	}
@@ -45,17 +48,6 @@ func (m *Manager) validateRestorableConfig(cfg Config) error {
 			}
 			if !found {
 				return fmt.Errorf("速率表引用不存在的分组")
-			}
-		}
-	}
-	for _, profile := range cfg.APProfiles {
-		if ap, ok := m.known[profile.AP]; ok {
-			o, err := effectiveAPOptions(cfg, ap)
-			if err != nil {
-				return err
-			}
-			if _, err = managementElements(o, ap); err != nil {
-				return fmt.Errorf("AP %s: %w", profile.AP, err)
 			}
 		}
 	}
@@ -102,22 +94,33 @@ func (m *Manager) validateRestorableConfig(cfg Config) error {
 				return fmt.Errorf("无线模式、带宽与 WMM 组合无效")
 			}
 		}
-		if ap, known := m.known[r.AP]; known {
-			if err := validateKnownRadio(r, ap); err != nil {
+	}
+
+	retired := map[string]bool{}
+	for _, id := range cfg.RetiredAPs {
+		if id == "" || retired[id] {
+			return fmt.Errorf("已替换 AP 编号无效或重复")
+		}
+		retired[id] = true
+	}
+	return nil
+}
+
+// Runs under Manager.mu. Editors additionally validate the effective settings
+// against each known model. Reconciliation repeats that check for the live AP.
+func (m *Manager) validateConfigForAPs(cfg Config) error {
+	for _, profile := range cfg.APProfiles {
+		if ap, ok := m.known[profile.AP]; ok {
+			o, err := effectiveAPOptions(cfg, ap)
+			if err != nil {
 				return err
 			}
-			for _, c := range ap.Capabilities {
-				if c.RadioID == r.Radio {
-					if r.Power != nil && (*r.Power < c.MinPower || *r.Power > c.MaxPower) {
-						return fmt.Errorf("射频功率超出设备能力")
-					}
-					if err := validateAdvanced(r, ap, c); err != nil {
-						return err
-					}
-				}
+			if _, err = managementElements(o, ap); err != nil {
+				return fmt.Errorf("AP %s: %w", profile.AP, err)
 			}
 		}
 	}
+
 	for _, ap := range m.known {
 		if err := validateProtectionForAP(cfg.Protection, protectionFor(cfg.Protection, ap.ID, cfg), ap); err != nil {
 			return err
@@ -129,14 +132,6 @@ func (m *Manager) validateRestorableConfig(cfg Config) error {
 				}
 			}
 		}
-
-	}
-	retired := map[string]bool{}
-	for _, id := range cfg.RetiredAPs {
-		if id == "" || retired[id] {
-			return fmt.Errorf("已替换 AP 编号无效或重复")
-		}
-		retired[id] = true
 	}
 	return nil
 }

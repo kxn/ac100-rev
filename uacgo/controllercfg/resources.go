@@ -6,6 +6,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 )
 
 type Resources struct {
@@ -31,25 +32,32 @@ func Effective(r *Resources) Resources {
 	return *r
 }
 
-// Old backups may omit this block or only contain some settings. Missing
-// members inherit Go defaults; explicit zero remains invalid. API updates
-// decode into the existing value to preserve unspecified members.
+// Missing document fields inherit Go defaults; explicit zero remains invalid.
+// Partial HTTP edits use Patch and do not depend on decoder receiver state.
 func (r *Resources) UnmarshalJSON(b []byte) error {
-	if v := bytes.TrimSpace(b); len(v) == 0 || v[0] != '{' {
-		return fmt.Errorf("程序容量配置必须为对象")
-	}
-	v := *r
-	if v == (Resources{}) {
-		v = Defaults()
-	}
-	type plain Resources
-	d := json.NewDecoder(bytes.NewReader(b))
-	d.DisallowUnknownFields()
-	if err := d.Decode((*plain)(&v)); err != nil {
+	v, err := Defaults().Patch(b)
+	if err != nil {
 		return err
 	}
 	*r = v
 	return nil
+}
+
+func (r Resources) Patch(b []byte) (Resources, error) {
+	if v := bytes.TrimSpace(b); len(v) == 0 || v[0] != '{' {
+		return r, fmt.Errorf("程序容量配置必须为对象")
+	}
+	v := r
+	type plain Resources
+	d := json.NewDecoder(bytes.NewReader(b))
+	d.DisallowUnknownFields()
+	if err := d.Decode((*plain)(&v)); err != nil {
+		return r, err
+	}
+	if err := d.Decode(new(any)); err != io.EOF {
+		return r, fmt.Errorf("程序容量配置必须为单个 JSON 对象")
+	}
+	return v, nil
 }
 
 type Field struct {
@@ -75,9 +83,13 @@ func Fields() []Field {
 	}
 }
 func (r Resources) Validate() error {
-	b, _ := json.Marshal(r)
-	var values map[string]int
-	_ = json.Unmarshal(b, &values)
+	values := map[string]int{
+		"max_ap_sessions": r.MaxAPSessions, "command_queue_depth": r.CommandQueueDepth,
+		"max_services": r.MaxServices, "max_groups": r.MaxGroups, "max_templates": r.MaxTemplates,
+		"max_policy_rules": r.MaxPolicyRules, "max_trusted_servers": r.MaxTrustedServers,
+		"max_address_bindings": r.MaxAddressBindings, "max_firmware_images": r.MaxFirmwareImages,
+		"firmware_storage_mib": r.FirmwareStorageMiB,
+	}
 	for _, f := range Fields() {
 		if values[f.Key] < f.Min || values[f.Key] > f.Max {
 			return fmt.Errorf("%s为 %d–%d", f.Label, f.Min, f.Max)

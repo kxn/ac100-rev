@@ -59,7 +59,11 @@
         "uacgo/cweng/wservice_test.go",
         "uacgo/cweng/wsta_test.go"
       ],
-      "basis": "CAPWAP/FSM 与型号能力；FIFO 提交和 ACK 分开，会话 epoch 防止旧事件覆盖。设备固定容量/主机告警不移植。"
+      "basis": "CAPWAP/FSM 与型号能力；FIFO 提交和 ACK 分开，会话 epoch 防止旧事件覆盖。设备固定容量/主机告警不移植。",
+      "evidence_contracts": [
+        "session-fsm",
+        "command-session-isolation"
+      ]
     },
     {
       "id": "ap-management",
@@ -80,7 +84,8 @@
         "uacgo/admin/options_capability.go",
         "uacgo/admin/policy_retarget.go",
         "uacgo/cweng/ports.go",
-        "uacgo/cweng/radio_modes.go"
+        "uacgo/cweng/radio_modes.go",
+        "uacgo/admin/ap_names.go"
       ],
       "regressions": [
         "uacgo/admin/ap_export_test.go",
@@ -90,7 +95,13 @@
         "uacgo/admin/policy_retarget_test.go",
         "uacgo/admin/ports_test.go"
       ],
-      "basis": "5da88c/5da518 Join、5f70f0 分组编辑；有序快照、包含端点、禁用范围仍占用、Mesh 父子分支和升级跳过。calibrate_load 是批量命名，不是 RF 算法。"
+      "basis": "5da88c/5da518 Join、5f70f0 分组编辑；有序快照、包含端点、禁用范围仍占用、Mesh 父子分支和升级跳过。calibrate_load 是批量命名，不是 RF 算法。",
+      "evidence_contracts": [
+        "ap-option-wire",
+        "group-join-and-edit",
+        "copy-replace-retire",
+        "ap-name-import"
+      ]
     },
     {
       "id": "operations",
@@ -113,7 +124,11 @@
         "uacgo/admin/upgrade_test.go",
         "uacgo/firmware/image_test.go"
       ],
-      "basis": "设备操作保留；AC 系统重启/系统固件升级排除。升级传输完成与设备重连后的版本确认分开。"
+      "basis": "设备操作保留；AC 系统重启/系统固件升级排除。升级传输完成与设备重连后的版本确认分开。",
+      "evidence_contracts": [
+        "ap-operations",
+        "upgrade-image-confirmation"
+      ]
     },
     {
       "id": "wlan",
@@ -140,7 +155,13 @@
         "uacgo/admin/service_wire_test.go",
         "uacgo/admin/vlan_pool_test.go"
       ],
-      "basis": "有效 PSK/Open/MLO、隔离/限速/组播/时间/绑定/池；RADIUS/Portal/PPSK 认证排除。local_wserv_sync 属本机 WLAN。central_forward_switch 在共享 Lua/SQL 保留，活动 JCS/发送路径不消费，不凭日志名造命令。"
+      "basis": "有效 PSK/Open/MLO、隔离/限速/组播/时间/绑定/池；RADIUS/Portal/PPSK 认证排除。local_wserv_sync 属本机 WLAN。central_forward_switch 在共享 Lua/SQL 保留，活动 JCS/发送路径不消费，不凭日志名造命令。",
+      "evidence_contracts": [
+        "wlan-source-bytes",
+        "frequency-binding",
+        "vlan-multicast",
+        "durable-wlan-ownership"
+      ]
     },
     {
       "id": "radio",
@@ -168,7 +189,12 @@
         "uacgo/cweng/capabilities_test.go",
         "uacgo/cweng/radio_linkage_test.go"
       ],
-      "basis": "73abf0 有序行匹配、714b9c peer 联动、5dd2d8 独立归一化；73d0f0→7301dc→742e24→7304f0 两阶段 AX 默认值，使用 radio1 feature bitmap。rail_high_speed_mode_switch 在727f14未实现。"
+      "basis": "73abf0 有序行匹配、714b9c peer 联动、5dd2d8 独立归一化；73d0f0→7301dc→742e24→7304f0 两阶段 AX 默认值，使用 radio1 feature bitmap。rail_high_speed_mode_switch 在727f14未实现。",
+      "evidence_contracts": [
+        "rrst-and-peer",
+        "model-radio-inheritance",
+        "ax-defaults-and-model-enums"
+      ]
     },
     {
       "id": "edca",
@@ -184,7 +210,10 @@
         "uacgo/admin/edca_test.go",
         "uacgo/admin/radio_advanced_test.go"
       ],
-      "basis": "74108c/725b88/741dd0/8ec530：频段绑定占用、按型号场景/保留队列、WMM、无规则 Join 禁用；规则生效不覆盖随后手工编辑。"
+      "basis": "74108c/725b88/741dd0/8ec530：频段绑定占用、按型号场景/保留队列、WMM、无规则 Join 禁用；规则生效不覆盖随后手工编辑。",
+      "evidence_contracts": [
+        "edca-overlay-and-triggers"
+      ]
     },
     {
       "id": "rates",
@@ -199,7 +228,10 @@
       "regressions": [
         "uacgo/admin/rates_test.go"
       ],
-      "basis": "AP 下发和每制式速率集合；不是漫游估算速率表。"
+      "basis": "AP 下发和每制式速率集合；不是漫游估算速率表。",
+      "evidence_contracts": [
+        "rate-bitmap-capability"
+      ]
     },
     {
       "id": "band-steering",
@@ -216,7 +248,10 @@
         "uacgo/admin/band_navigation_test.go",
         "uacgo/admin/navigation_interlock_test.go"
       ],
-      "basis": "633a60 仅能力3+全局配置下发，不加同服务/VLAN/射频开启门禁；0x3a 与射频0x4c分开。实际踢除由 AP 执行。"
+      "basis": "633a60 仅能力3+全局配置下发，不加同服务/VLAN/射频开启门禁；0x3a 与射频0x4c分开。实际踢除由 AP 执行。",
+      "evidence_contracts": [
+        "band-navigation"
+      ]
     },
     {
       "id": "association",
@@ -251,7 +286,15 @@
         "uacgo/cweng/station_policy_test.go",
         "uacgo/terminal/recognition_test.go"
       ],
-      "basis": "74a4b0/744b70/749290/7498c0：原返回码和监听顺序；统计不能创建关联。52/53/54/c6/bd 结构、计量单位、终端识别和 MLO peer/根展示分离。"
+      "basis": "74a4b0/744b70/749290/7498c0：原返回码和监听顺序；统计不能创建关联。52/53/54/c6/bd 结构、计量单位、终端识别和 MLO peer/根展示分离。",
+      "evidence_contracts": [
+        "admission-result-codes",
+        "association-is-authoritative",
+        "native-recovery-session-boundary",
+        "terminal-recognition",
+        "v6-event-order-and-mlo",
+        "typed-statistics-bssid"
+      ]
     },
     {
       "id": "client-management",
@@ -274,7 +317,11 @@
         "uacgo/admin/history_test.go",
         "uacgo/cweng/association_audit_test.go"
       ],
-      "basis": "保留无线状态，不展示机器 CPU/内存/认证；c6 名称上报持久化，手工名称覆盖；历史基于真实测量时间。"
+      "basis": "保留无线状态，不展示机器 CPU/内存/认证；c6 名称上报持久化，手工名称覆盖；历史基于真实测量时间。",
+      "evidence_contracts": [
+        "client-labels-export-disconnect",
+        "client-display-report-silence"
+      ]
     },
     {
       "id": "balance",
@@ -293,7 +340,11 @@
         "uacgo/admin/mobility_test.go",
         "uacgo/mobility/balance_test.go"
       ],
-      "basis": "4f0a04/4f6f54/4f263c：0b发现、10AP、共享失败数、最后拒绝60s、300s扫描900s老化；移除虚构的同SSID/VLAN/规则及第二次RSSI门禁。"
+      "basis": "4f0a04/4f6f54/4f263c：0b发现、10AP、共享失败数、最后拒绝60s、300s扫描900s老化；移除虚构的同SSID/VLAN/规则及第二次RSSI门禁。",
+      "evidence_contracts": [
+        "balance-failures-clock",
+        "balance-discovery-aging"
+      ]
     },
     {
       "id": "roaming",
@@ -324,7 +375,15 @@
         "uacgo/mobility/select_test.go",
         "uacgo/mobility/statistics_test.go"
       ],
-      "basis": "4e89ac→4e8440→4e6564→4e5638；JAL不是旧_roaming_nbr_select。原整数表/排序/四候选/弱信号回退；不增加ACK冷却。V6 Web模式只读2，老ACS内部路径不开放。"
+      "basis": "4e89ac→4e8440→4e6564→4e5638；JAL不是旧_roaming_nbr_select。原整数表/排序/四候选/弱信号回退；不增加ACK冷却。V6 Web模式只读2，老ACS内部路径不开放。",
+      "evidence_contracts": [
+        "active-trigger-wire",
+        "candidate-order-and-gates",
+        "rate-estimation",
+        "pmk-cache",
+        "station-statistics-lifetime",
+        "v6-mode-and-reporting"
+      ]
     },
     {
       "id": "rrm",
@@ -347,7 +406,13 @@
         "uacgo/admin/rrm_test.go",
         "uacgo/rrm/firmware_test.go"
       ],
-      "basis": "527c70/52763c→librrm_business.so+ab44→5094/677c；原有向图、局部枚举和第三入边功率；90s、低高5G/两轮/冻结集合/基线与平滑图/按顺序提交。"
+      "basis": "527c70/52763c→librrm_business.so+ab44→5094/677c；原有向图、局部枚举和第三入边功率；90s、低高5G/两轮/冻结集合/基线与平滑图/按顺序提交。",
+      "evidence_contracts": [
+        "sca-directed-score-and-ties",
+        "tpc-third-neighbor-and-quantization",
+        "measurement-round-triggers",
+        "rrm-write-gate-and-time-conflicts"
+      ]
     },
     {
       "id": "mesh",
@@ -370,7 +435,11 @@
         "uacgo/cweng/mesh_report_test.go",
         "uacgo/cweng/mesh_transport_test.go"
       ],
-      "basis": "Mesh AP 配置与协调保留；成员策略独立于任务历史，子 AP 独立会话而共享父传输队列。"
+      "basis": "Mesh AP 配置与协调保留；成员策略独立于任务历史，子 AP 独立会话而共享父传输队列。",
+      "evidence_contracts": [
+        "mesh-config-authorization",
+        "mesh-child-transport"
+      ]
     },
     {
       "id": "protection",
@@ -392,7 +461,11 @@
         "uacgo/admin/protection_test.go",
         "uacgo/cweng/arp_report_test.go"
       ],
-      "basis": "AP执行的信任库、混合地址、绑定/容量/旧新标志、八协议和代理保留。AC Linux 防火墙/主机 DHCP/ARP 防护不移植。"
+      "basis": "AP执行的信任库、混合地址、绑定/容量/旧新标志、八协议和代理保留。AC Linux 防火墙/主机 DHCP/ARP 防护不移植。",
+      "evidence_contracts": [
+        "dhcp-arp-nd-wire",
+        "storm-proxy-usb"
+      ]
     },
     {
       "id": "selective-dhcp",
@@ -411,7 +484,10 @@
         "uacgo/dhcpserver/network_test.go",
         "uacgo/dhcpserver/server_test.go"
       ],
-      "basis": "用户明确保留 AP-only 服务；精确 Option60、Mesh Discover 特例与普通客户端静默；普通 DHCP/DNS/NAT 仅实验工具。"
+      "basis": "用户明确保留 AP-only 服务；精确 Option60、Mesh Discover 特例与普通客户端静默；普通 DHCP/DNS/NAT 仅实验工具。",
+      "evidence_contracts": [
+        "dhcp-exact-vendor"
+      ]
     },
     {
       "id": "controller-core",
@@ -437,7 +513,11 @@
         "uacgo/admin/server_test.go",
         "uacgo/cmd/acd/main_test.go"
       ],
-      "basis": "Go 程序架构对应；持久化、脱敏、导入校验和原Web RRM修改门禁。HTTP/JSON外观重新设计，不声称和原UI像素/API路径一致。 正式启动不再注册旧 SQLite WLAN/RF 或 JCS；AP 身份编号单独持久化。"
+      "basis": "Go 程序架构对应；持久化、脱敏、导入校验和原Web RRM修改门禁。HTTP/JSON外观重新设计，不声称和原UI像素/API路径一致。 正式启动不再注册旧 SQLite WLAN/RF 或 JCS；AP 身份编号单独持久化。",
+      "evidence_contracts": [
+        "single-configuration-authority",
+        "configuration-lifecycle-validation"
+      ]
     },
     {
       "id": "controller-resources",
@@ -456,7 +536,10 @@
         "uacgo/cmd/acd/main_test.go",
         "tools/check_admin_ui.py"
       ],
-      "basis": "用户2026-11-27明确要求按独立Go程序设置默认值/容量并允许Web编辑；这些程序预算无须复刻原AC硬件profile。AP能力、单AP限制、协议结构和漫游/RRM算法常量仍沿固件依据。资源编辑实时生效且不改变AP配置身份；缺省AP心跳/保活/空闲/离线管理为可编辑Go初值。"
+      "basis": "用户2026-11-27明确要求按独立Go程序设置默认值/容量并允许Web编辑；这些程序预算无须复刻原AC硬件profile。AP能力、单AP限制、协议结构和漫游/RRM算法常量仍沿固件依据。资源编辑实时生效且不改变AP配置身份；缺省AP心跳/保活/空闲/离线管理为可编辑Go初值。",
+      "evidence_contracts": [
+        "live-budgets-and-defaults"
+      ]
     }
   ],
   "controller_review": {

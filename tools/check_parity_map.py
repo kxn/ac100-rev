@@ -41,15 +41,12 @@ def main():
     }
     assert production <= covered, f'Go files without review classification: {sorted(production - covered)}'
     assert all((ROOT / path).is_file() for path in covered), 'Stale review file entry'
-    startup = (ROOT / 'uacgo/cmd/acd/main.go').read_text()
-    for forbidden in ('"uacgo/jcs"', 'store.OpenAll(', 'RegisterWserviceHandlers(', 'StoreWserviceConfig', 'RegisterApmngrJCS(', 'LoadProfileINI(', 'ProfileInt('):
-        assert forbidden not in startup, f'Second configuration authority reactivated: {forbidden}'
     if args.verify_firmware:
         for c in original['controllers']:
             raw = (ROOT / '.local/ac100/rootfs' / c['source']).read_bytes()
             assert hashlib.sha256(raw).hexdigest() == c['sha256'], f'Firmware source changed: {c["module"]}'
     print(f'Checked {len(modules)} original controller scopes, {len(ids)} feature chains, '
-          f'{len(production)} Go source files and the single configuration authority; '
+          f'{len(production)} Go source files; configuration authority is exercised by check_behavior_contracts.py; '
           'no algorithm equivalence inferred')
 
 

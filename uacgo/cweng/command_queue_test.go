@@ -2,6 +2,7 @@ package cweng
 
 import (
 	"context"
+	"net"
 	"testing"
 	"time"
 	"uacgo/capwap"
@@ -69,7 +70,8 @@ func TestCommandSubmissionIsImmutableFIFOAndSafeInsideEvent(t *testing.T) {
 func TestLiveGoLimitsKeepExistingSessionAndQueuedCommands(t *testing.T) {
 	e, s, sent := requestTestSession(t)
 	e.SetResourceLimits(1, 1)
-	if e.canAddSession() {
+	candidate := newSession(&net.UDPAddr{IP: net.IPv4(192, 0, 2, 9), Port: 2000}, e.acData)
+	if e.registerSession(candidate) {
 		t.Fatal("AP capacity not enforced")
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
@@ -107,7 +109,7 @@ func TestLiveGoLimitsKeepExistingSessionAndQueuedCommands(t *testing.T) {
 		s.mu.Unlock()
 	}
 	e.SetResourceLimits(2, 1)
-	if !e.canAddSession() {
+	if !e.registerSession(candidate) {
 		t.Fatal("live capacity increase had no effect")
 	}
 	ack(p)

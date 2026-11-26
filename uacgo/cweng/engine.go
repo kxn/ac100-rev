@@ -34,7 +34,6 @@ type Engine struct {
 	trace          func(string, []byte)
 	fragments      capwap.Reassembler
 
-	MaxSessions       int // l_profile[0x140] max_session_num
 	resources         atomic.Pointer[engineResources]
 	Debug             bool
 	RetransIntervalMs int // profile default_retransmit_time (ms, test-tunable)
@@ -91,19 +90,21 @@ func NewEngine(port uint16) (*Engine, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &Engine{
+	e := &Engine{
 		conn:              conn,
 		sessions:          make(map[string]*Session),
 		reg:               newRegistry(),
 		acData:            &AcDataCounters{},
-		MaxSessions:       controllercfg.Defaults().MaxAPSessions,
 		RetransIntervalMs: 3000,
 		RetransMax:        5,
 		ACName:            "TL-AC100",
 		ACVersion:         "1.0",
 		ACFirmware:        "1.0.1 Build 20140919 Rel.59746",
 		ControlPort:       port,
-	}, nil
+	}
+	r := controllercfg.Defaults()
+	e.SetResourceLimits(r.MaxAPSessions, r.CommandQueueDepth)
+	return e, nil
 }
 
 // Register mirrors serv_msg_mngr_register.
@@ -374,9 +375,6 @@ func (e *Engine) handlePlainDatagram(raw []byte, addr *net.UDPAddr) {
 				old.mu.Unlock()
 			}
 		}
-		if !e.canAddSession() {
-			return // capwap_ac_session_exceed_max_num: "just ignore it"
-		}
 		s = newSession(addr, e.acData)
 		if e.legacyDTLS != nil {
 			s.transportGeneration = e.legacyDTLS.Generation(addr.String())
@@ -405,19 +403,20 @@ func (e *Engine) handlePlainDatagram(raw []byte, addr *net.UDPAddr) {
 		if err := s.processEvent(&Event{ID: EventDTLSEstab}); err != nil {
 			log.Printf("fsm: %v", err)
 		}
-		{
-			s.apEntry = ap
-			// The binary creates the AP entry inside the join listener
-			// (_apmngr_try_create_ap_entry_by_template_or_db), not at RUN.
-			if e.apStore != nil {
-				if err := e.apStore.UpsertAP(ap); err != nil {
-					log.Printf("apmngr store: %v", err)
-				}
+		s.apEntry = ap
+		if !e.registerSession(s) {
+			s.mu.Lock()
+			s.teardown()
+			s.mu.Unlock()
+			return // capwap_ac_session_exceed_max_num: "just ignore it"
+		}
+		// The binary creates the AP entry inside the join listener
+		// (_apmngr_try_create_ap_entry_by_template_or_db), not at RUN.
+		if e.apStore != nil {
+			if err := e.apStore.UpsertAP(ap); err != nil {
+				log.Printf("apmngr store: %v", err)
 			}
 		}
-		e.mu.Lock()
-		e.sessions[addr.String()] = s
-		e.mu.Unlock()
 	}
 
 	e.handleSessionPacket(s, req, raw)

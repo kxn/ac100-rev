@@ -216,7 +216,7 @@ func (m *Manager) captureHistory(aps []cweng.APStatus, now time.Time) {
 				}
 			}
 			for _, c := range clients {
-				if c.APID == ap.ID && c.RadioID == sample.Radio && c.State == "connected" && now.Sub(c.Seen) < 6*time.Minute {
+				if c.APID == ap.ID && c.RadioID == sample.Radio && c.State == "connected" && !c.Seen.Before(ap.ConnectedAt) {
 					sample.Clients++
 				}
 			}

@@ -6,33 +6,6 @@ import (
 	"uacgo/cweng"
 )
 
-func TestClientRecoveryJoinsConfirmedWirelessMACsOnly(t *testing.T) {
-	m, _ := testController(t)
-	mac := [6]byte{2, 1, 2, 3, 4, 5}
-	wired := [6]byte{2, 1, 2, 3, 4, 6}
-	m.clients.StationEvent(cweng.ClientEvent{MAC: mac, APID: "ap", RadioID: 2, WLANID: 1, Kind: "associate", Statistics: &cweng.ClientStatistics{}, Seen: time.Now()})
-	stations := []byte(`{"error_code":0,"wireless":{"sta_list":[{"sta_list_1":{"mac":"02-01-02-03-04-05","connect_time":"123"}}]}}`)
-	hosts := []byte(`{"error_code":0,"hosts_info":{"host_info":[{"host_info_1":{"mac":"02-01-02-03-04-05","ip":"192.0.2.20"}},{"host_info_2":{"mac":"02-01-02-03-04-06","ip":"192.0.2.21"}}]}}`)
-	if err := m.mergeClientFacts("other", stations, hosts); err != nil {
-		t.Fatal(err)
-	}
-	if m.clients.All()[0].IP != "" {
-		t.Fatal("old AP changed client")
-	}
-	if err := m.mergeClientFacts("ap", stations, hosts); err != nil {
-		t.Fatal(err)
-	}
-	rows := m.clients.All()
-	if len(rows) != 1 || rows[0].MAC == wired || rows[0].IP != "192.0.2.20" || time.Since(rows[0].ConnectedAt) < 120*time.Second {
-		t.Fatal(rows)
-	}
-	m.clients.StationEvent(cweng.ClientEvent{MAC: mac, APID: "ap", RadioID: 2, WLANID: 1, Kind: "disassociate", State: "disconnected", Seen: time.Now()})
-	_ = m.mergeClientFacts("ap", stations, hosts)
-	if m.clients.All()[0].State != "disconnected" {
-		t.Fatal("host data resurrected station")
-	}
-}
-
 func TestAuthoritativeWirelessSnapshotMapsSSIDAndNeverAddsWiredHosts(t *testing.T) {
 	m, _ := testController(t)
 	ap := cweng.APStatus{ID: "a"}

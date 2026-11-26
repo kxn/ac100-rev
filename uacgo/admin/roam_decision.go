@@ -389,17 +389,6 @@ func (m *Manager) calculateRoamingLocked(ap cweng.APStatus, report capwap.PrivRo
 	return results
 }
 
-// Convenience for source-derived adapter checks; event ingestion uses all batches.
-func (m *Manager) calculateRoaming(ap cweng.APStatus, r capwap.PrivRoamingTrigger, now time.Time) capwap.PrivRoamingCalcResult {
-	m.mu.Lock()
-	defer m.mu.Unlock()
-	rows := m.calculateRoamingLocked(ap, r, now)
-	if len(rows) > 0 {
-		return rows[0]
-	}
-	return capwap.PrivRoamingCalcResult{Radio: r.Radio}
-}
-
 // Called inside the event transaction. Submission is nonblocking, including
 // for the source AP whose inbound handler still owns its session lock.
 func (m *Manager) submitRoamingLocked(source string, job *roamJob) {

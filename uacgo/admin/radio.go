@@ -301,14 +301,14 @@ func (m *Manager) saveRadioHTTP(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	if err := m.validateRestorableConfig(next); err != nil {
+	if err := m.validateConfigForAPs(next); err != nil {
 		jsonReply(w, 400, map[string]string{"error": err.Error()})
 		return
 	}
 	if manualAdvanced {
 		markManualEDCA(&next, r.AP, r.Radio, requestedAdvanced)
 	}
-	if err := m.persistConfigLocked(next, false); err != nil {
+	if err := m.persistConfigLocked(next, managementUser); err != nil {
 		jsonReply(w, 500, map[string]string{"error": err.Error()})
 		return
 	}

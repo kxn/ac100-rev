@@ -23,7 +23,8 @@ func TestResourceDefaultsAndExplicitInvalidValues(t *testing.T) {
 	}
 	r = Defaults()
 	r.MaxServices = 4096
-	if err := json.Unmarshal([]byte(`{"max_ap_sessions":512}`), &r); err != nil || r.MaxServices != 4096 {
+	patched, err := r.Patch([]byte(`{"max_ap_sessions":512}`))
+	if err != nil || patched.MaxServices != 4096 || patched.MaxAPSessions != 512 {
 		t.Fatal("partial edit reset another setting", r, err)
 	}
 }

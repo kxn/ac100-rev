@@ -538,25 +538,6 @@ func (t *ClientTable) All() []ClientEvent {
 	return out
 }
 
-// Network facts do not constitute an association report. Merge only into an
-// already confirmed station on the same AP; never resurrect an offline client
-// or let a wired host/old AP change the wireless location.
-func (t *ClientTable) NetworkInfo(ap string, mac [6]byte, ip string, connected time.Time) {
-	t.mu.Lock()
-	defer t.mu.Unlock()
-	v, ok := t.m[mac]
-	if !ok || v.APID != ap || v.State != "connected" || time.Since(v.Seen) > 6*time.Minute {
-		return
-	}
-	if addr := net.ParseIP(ip); addr != nil && !addr.IsUnspecified() && !addr.IsMulticast() {
-		v.IP = addr.String()
-	}
-	if !connected.IsZero() && !connected.After(time.Now()) {
-		v.ConnectedAt = connected
-	}
-	t.m[mac] = v
-}
-
 func sameClientService(a, b ClientEvent) bool {
 	return (a.ServiceID == "" || b.ServiceID == "" || a.ServiceID == b.ServiceID) && (a.SSID == "" || b.SSID == "" || a.SSID == b.SSID)
 }

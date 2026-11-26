@@ -41,13 +41,8 @@ const (
 	managementRestore
 )
 
-func (m *Manager) saveManagementResult(next Config, rrmResult bool) error {
-	if rrmResult {
-		return m.saveManagementFrom(next, managementRRM)
-	}
-	return m.saveManagement(next)
-}
 func (m *Manager) saveManagementFrom(next Config, source managementWrite) error {
+	migrateAPNames(&next)
 	if source == managementRestore && next.Resources == nil {
 		initial := initialControllerResources(next)
 		next.Resources = &initial
@@ -71,19 +66,17 @@ func (m *Manager) saveManagementFrom(next Config, source managementWrite) error 
 		}
 		next.Mesh = &p
 	}
-	if err := validateManagement(next); err != nil {
-		return err
-	}
-	if err := m.validateRestorableConfig(next); err != nil {
+	if err := m.validateConfigForAPs(next); err != nil {
 		return err
 	}
 	next.Version = m.config.Version + 1
-	if err := m.persistConfigLocked(next, source == managementRRM || source == managementAPEvent); err != nil {
+	if err := m.persistConfigLocked(next, source); err != nil {
 		return err
 	}
 	return nil
 }
 func (m *Manager) managementRoutes(mux *http.ServeMux) {
+	m.apNameRoutes(mux)
 	mux.HandleFunc("GET /api/aps/export", m.exportAPsHTTP)
 	mux.HandleFunc("GET /api/aps/{id}/management-state", m.managementStateHTTP)
 	mux.HandleFunc("GET /api/aps/{id}/client-state", m.clientStateHTTP)
@@ -429,9 +422,6 @@ func (m *Manager) restoreHTTP(w http.ResponseWriter, r *http.Request) {
 			s.Groups = nil
 			next.Services = append(next.Services, s)
 		}
-	}
-	if next.Labels == nil {
-		next.Labels = map[string]string{}
 	}
 	if err := m.saveManagementFrom(next, managementRestore); err != nil {
 		jsonReply(w, 400, map[string]string{"error": err.Error()})

@@ -96,11 +96,3 @@ func CandidateRate(rssi int8, station, radio PHY, band int, mesh bool, backhaulM
 	}
 	return int(int32(rate) * int32(backhaulMbps) / (int32(rate) + int32(backhaulMbps)))
 }
-
-func NeighborRSSI(raw uint8, rcpi bool) int8 {
-	rssi := int(int8(raw))
-	if rcpi {
-		rssi = int(raw)/2 - 110
-	}
-	return int8(max(-95, rssi-10))
-}

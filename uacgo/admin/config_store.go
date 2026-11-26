@@ -3,16 +3,20 @@ package admin
 import (
 	"fmt"
 	"time"
+	"uacgo/controllercfg"
 )
 
 // radio_or_wserv_cfg_set_check in V6 apmng_rrm.lua protects the RF/WLAN
 // database for the entire business operation. All configuration writers go
 // through this boundary, including imports and inherited group profiles.
-func (m *Manager) persistConfigLocked(next Config, rrmResult bool) error {
+func (m *Manager) persistConfigLocked(next Config, source managementWrite) error {
+	if err := validateConfig(next); err != nil {
+		return err
+	}
 	if err := m.validateResourceUsage(next); err != nil {
 		return err
 	}
-	if !rrmResult && wirelessConfigKey(next) != wirelessConfigKey(m.config) {
+	if source != managementRRM && source != managementAPEvent && wirelessConfigKey(next) != wirelessConfigKey(m.config) {
 		for _, job := range m.rrmJobs {
 			switch job.State {
 			case "preparing", "collecting", "planning", "applying":
@@ -23,8 +27,11 @@ func (m *Manager) persistConfigLocked(next Config, rrmResult bool) error {
 	if err := atomicJSON(m.path, next); err != nil {
 		return err
 	}
+	resourcesChanged := controllercfg.Effective(next.Resources) != controllercfg.Effective(m.config.Resources)
 	m.config = next
-	m.applyControllerResources()
+	if resourcesChanged {
+		m.applyControllerResources()
+	}
 	return nil
 }
 

@@ -114,7 +114,7 @@ func (m *Manager) saveMeshMembersLocked(rows []MeshMemberPolicy) error {
 	p.Members = rows
 	next.Mesh = &p
 	next.Version++
-	if err := m.persistConfigLocked(next, false); err != nil {
+	if err := m.persistConfigLocked(next, managementUser); err != nil {
 		return err
 	}
 	return nil

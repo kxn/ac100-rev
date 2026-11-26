@@ -149,7 +149,7 @@ func (m *Manager) poolHTTP(w http.ResponseWriter, r *http.Request) {
 	} else {
 		next.VLANPools[idx] = p
 	}
-	if err := m.persistConfigLocked(next, false); err != nil {
+	if err := m.persistConfigLocked(next, managementUser); err != nil {
 		jsonReply(w, 500, map[string]string{"error": err.Error()})
 		return
 	}

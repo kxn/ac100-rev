@@ -72,9 +72,6 @@ func (e *Engine) handleMeshPublic(parent *Session, req *capwap.ParsedPacket) boo
 				continue
 			}
 			if child == nil {
-				if !e.canAddSession() {
-					continue
-				}
 				if req.Control.MsgType != MsgJoin {
 					continue
 				}
@@ -116,16 +113,12 @@ func (e *Engine) handleMeshPublic(parent *Session, req *capwap.ParsedPacket) boo
 				if err := child.processEvent(&Event{ID: EventDTLSEstab}); err != nil {
 					continue
 				}
-				e.mu.Lock()
-				if e.MaxSessions > 0 && len(e.sessions) >= e.MaxSessions {
-					e.mu.Unlock()
+				if !e.registerSession(child) {
 					child.mu.Lock()
 					child.teardown()
 					child.mu.Unlock()
 					continue
 				}
-				e.sessions[key] = child
-				e.mu.Unlock()
 				go func(s *Session) {
 					select {
 					case <-parent.closed:

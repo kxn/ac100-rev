@@ -82,7 +82,7 @@ func TestReconnectReplacesIdentityBeforeSessionLimit(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer e.Close()
-	e.MaxSessions = 1
+	e.SetResourceLimits(1, 1024)
 	e.RegisterAttachHandlers(fixtureIdentity{})
 	e.sendToForTest = func(*net.UDPAddr, []byte) error { return nil }
 	a := &net.UDPAddr{IP: net.IPv4(192, 0, 2, 1), Port: 1000}

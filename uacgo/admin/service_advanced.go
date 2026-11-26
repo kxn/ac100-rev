@@ -4,7 +4,6 @@ import (
 	"encoding/binary"
 	"fmt"
 	"golang.org/x/text/encoding/simplifiedchinese"
-	"net"
 	"strings"
 	"uacgo/capwap"
 	"uacgo/cweng"
@@ -23,7 +22,6 @@ type WirelessOptions struct {
 	KeyUpdate   int                `json:"key_update_interval"`
 	RateLimit   *WirelessRateLimit `json:"rate_limit,omitempty"`
 	Multicast   *MulticastOptions  `json:"multicast,omitempty"`
-	Radius      *RadiusOptions     `json:"radius,omitempty"`
 }
 type WirelessRateLimit struct {
 	Enabled  bool   `json:"enabled"`
@@ -43,20 +41,13 @@ type MulticastOptions struct {
 	QueryInterval   int  `json:"query_interval"`
 	MaxResponse     int  `json:"max_response"`
 }
-type RadiusOptions struct {
-	IP             string `json:"ip"`
-	Port           int    `json:"port"`
-	AccountingPort int    `json:"accounting_port"`
-	Secret         string `json:"secret,omitempty"`
-	HasSecret      bool   `json:"has_secret,omitempty"`
-}
 
 func serviceOptions(s Service) WirelessOptions {
 	if s.Options != nil {
 		return *s.Options
 	}
 	auth := 2
-	if s.Security == "wpa-psk" || s.Security == "wpa-enterprise" {
+	if s.Security == "wpa-psk" {
 		auth = 1
 	}
 	if strings.HasPrefix(s.Security, "wpa-wpa2") || s.Security == "wpa2-wpa3-psk" {
@@ -72,9 +63,6 @@ func serviceSSID(s Service) ([]byte, error) {
 }
 func validateWirelessOptions(s Service) error {
 	o := serviceOptions(s)
-	if o.Radius != nil {
-		return fmt.Errorf("RADIUS 不在本程序功能范围内")
-	}
 	if err := o.Schedule.validate(); err != nil {
 		return err
 	}
@@ -110,12 +98,7 @@ func validateWirelessOptions(s Service) error {
 			return fmt.Errorf("组播速率或查询周期无效")
 		}
 	}
-	if strings.HasSuffix(s.Security, "enterprise") {
-		r := o.Radius
-		if r == nil || net.ParseIP(r.IP) == nil || r.Port < 1 || r.Port > 65535 || r.AccountingPort < 0 || r.AccountingPort > 65535 || len(r.Secret) < 1 || len(r.Secret) > 64 {
-			return fmt.Errorf("请填写有效的 RADIUS 地址、端口与共享密钥")
-		}
-	}
+
 	return nil
 }
 func validateServiceCapability(s Service, ap cweng.APStatus, radio uint8) error {
@@ -161,32 +144,12 @@ func serviceSecurity(s Service) (byte, []byte) {
 	} else if s.Security != "open" {
 		mode = 1
 	}
-	if strings.HasSuffix(s.Security, "enterprise") {
-		mode = 2
-	}
 	if mode == 0 {
 		return 0, nil
 	}
 	tail := []byte{byte(o.Auth), byte(o.Cipher)}
 	tail = binary.BigEndian.AppendUint32(tail, uint32(o.KeyUpdate))
-	if mode == 2 {
-		r := o.Radius
-		ip := net.ParseIP(r.IP)
-		for i := 0; i < 3; i++ {
-			if v := ip.To4(); v != nil {
-				tail = append(tail, 1)
-				tail = append(tail, v...)
-			} else {
-				tail = append(tail, 2)
-				tail = append(tail, ip.To16()...)
-			}
-		}
-		tail = binary.BigEndian.AppendUint16(tail, uint16(r.Port))
-		tail = binary.BigEndian.AppendUint16(tail, uint16(r.AccountingPort))
-		tail = binary.BigEndian.AppendUint16(tail, uint16(r.AccountingPort))
-		tail = binary.BigEndian.AppendUint16(tail, uint16(len(r.Secret)))
-		return mode, append(tail, []byte(r.Secret)...)
-	}
+
 	tail = binary.BigEndian.AppendUint16(tail, uint16(len(s.Passphrase)))
 	return mode, append(tail, []byte(s.Passphrase)...)
 }
@@ -280,15 +243,5 @@ func wirelessExtraElements(s Service, radio uint8, ap cweng.APStatus) []capwap.E
 func redactService(s Service) Service {
 	s.HasPassword = s.Passphrase != ""
 	s.Passphrase = ""
-	if s.Options != nil {
-		o := *s.Options
-		s.Options = &o
-		if o.Radius != nil {
-			r := *o.Radius
-			o.Radius = &r
-			r.HasSecret = r.Secret != ""
-			r.Secret = ""
-		}
-	}
 	return s
 }

@@ -7,7 +7,7 @@
 1. **固件静态依据**：先确认版本、有效入口和调用点，再核对字段、分支、数值运算、顺序和时钟。不能凭函数名选旧算法，不能拿共享 Lua 字段代替活动消费链。
 2. **Go 源码向量**：按上述分支编写边界输入和预期输出，检查移植；这些向量不是外部试验推导出的策略。
 3. **控制器回归**：假 AP 通过本机 UDP 验证命令、会话、ACK/报告、乱序、取消和恢复；HTTP/UI 检查能力展示和提交。它们不单独证明原厂算法等价。
-4. **设备兼容记录**：历史单 AP 结果单列在 [go-live-status.md](go-live-status.md)。本轮未部署，不能把历史设备结果套到新代码上。
+4. **设备兼容记录**：历史单 AP 结果单列在 [go-live-status.md](go-live-status.md)。本轮复核及整改记录见 [controller-revalidation.md](controller-revalidation.md)；设备结果必须与具体部署版本对应。
 
 成功关联按原厂入口立即进入站点 DB，统计/IP不制造关联。配置保存、AP应答、报告确认及实际切换分别展示；升级最后分块ACK不等于升级成功，漫游结果ACK不等于客户端已迁移。
 
@@ -28,7 +28,7 @@
 | AP防护、风暴/代理/USB | admin/protection*、arp_scan*；cweng/arp_report* |
 | 选择性AP DHCP | dhcpserver/*_test.go：精确厂商、普通终端静默、Mesh特例 |
 | Go程序预算、默认值与配置分层 | controllercfg/resources_test.go、admin/resources_test.go、cweng/command_queue_test.go；实时调整/持久化/恢复、保留已有会话与命令、不改变AP配置及RRM、超过旧32/50条规则容量、无profile.ini启动 |
-| Web | tools/check_admin_ui.py：两套能力×11页，48次表单提交，无JS错误；写操作均被HTTP模拟拦截 |
+| Web | tools/check_admin_ui.py：两套能力×11页，50次表单提交，无JS错误；写操作均被HTTP模拟拦截 |
 
 完整原厂模块→Go以及Go→原厂/基础设施分类见 [双向索引](uac-web-parity-map.json)。文件覆盖检查不等于声称穷举所有功能参数。
 
@@ -36,6 +36,7 @@
 
 ```bash
 python3 tools/check_parity_map.py --verify-firmware
+python3 tools/check_behavior_contracts.py --verify-firmware --run-tests
 python3 tools/audit_mobility_firmware.py --go-output uacgo/mobility/tables_generated.go
 python3 tools/extract_terminal_firmware.py
 cd uacgo

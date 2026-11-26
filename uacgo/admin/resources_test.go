@@ -42,6 +42,10 @@ func TestControllerCapacityAPIPersistsAndGuardsAllWriters(t *testing.T) {
 	if e.MaxAPSessions() != 2048 || restored.config.Resources.MaxServices != 1 {
 		t.Fatal("resource settings were not restored")
 	}
+	w = callManagement(t, m, "POST", "controller/resources", map[string]int{"command_queue_depth": 512})
+	if w.Code != 202 || m.config.Resources.MaxAPSessions != 2048 || m.config.Resources.MaxServices != 1 {
+		t.Fatal("partial HTTP update reset an unrelated field", w.Code, w.Body.String())
+	}
 	w = callManagement(t, m, "POST", "controller/resources", map[string]int{"max_services": 0})
 	if w.Code != 400 || m.config.Resources.MaxServices != 1 {
 		t.Fatal("invalid capacity modified config", w.Code)

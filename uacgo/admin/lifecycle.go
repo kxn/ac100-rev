@@ -42,7 +42,7 @@ func (m *Manager) deleteServiceHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	next.Version++
-	if err := m.persistConfigLocked(next, false); err != nil {
+	if err := m.persistConfigLocked(next, managementUser); err != nil {
 		jsonReply(w, 500, map[string]string{"error": err.Error()})
 		return
 	}
@@ -72,7 +72,7 @@ func (m *Manager) finishDeletions() {
 		return
 	}
 	next.Version++
-	if m.persistConfigLocked(next, false) != nil {
+	if m.persistConfigLocked(next, managementUser) != nil {
 		return
 	}
 	for key, status := range m.status {

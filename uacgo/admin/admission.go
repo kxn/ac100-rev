@@ -40,14 +40,14 @@ func (m *Manager) checkAssociation(ap string, radio, wlan uint8, mac [6]byte, rs
 		// balance_allow_mlo_sta_conect_wtp @4ef344 evaluates every non-MLD
 		// link, then the MLD itself; a rejection doesn't skip later counters.
 		for _, link := range mlo.Links {
-			if link.MAC != mlo.MAC && !m.balanceAdmission(ap, link.Radio, link.MAC, *service, now) {
+			if link.MAC != mlo.MAC && !m.balanceAdmission(ap, link.MAC, now) {
 				rejected = true
 			}
 		}
-		if !m.balanceAdmission(ap, radio, mlo.MAC, *service, now) {
+		if !m.balanceAdmission(ap, mlo.MAC, now) {
 			rejected = true
 		}
-	} else if !m.balanceAdmission(ap, radio, mac, *service, now) {
+	} else if !m.balanceAdmission(ap, mac, now) {
 		rejected = true
 	}
 	if rejected {

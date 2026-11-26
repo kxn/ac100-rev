@@ -150,7 +150,7 @@ func (m *Manager) bandNavigationHTTP(w http.ResponseWriter, r *http.Request) {
 	next := m.config
 	next.Version++
 	next.BandNavigation = &b
-	if err := m.persistConfigLocked(next, false); err != nil {
+	if err := m.persistConfigLocked(next, managementUser); err != nil {
 		jsonReply(w, 500, map[string]string{"error": err.Error()})
 		return
 	}

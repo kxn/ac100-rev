@@ -59,10 +59,17 @@ func TestTPCThirdNeighborAndTenLevelQuantization(t *testing.T) {
 	if err != nil || out[0] != 1 {
 		t.Fatal("third strongest incoming RSSI should reduce/quantize to level1", out, err)
 	}
-	for level := uint8(1); level <= 10; level++ {
-		dbm := PowerForLevel(level, 24, 3)
-		if dbm < 3 || dbm > 24 || LevelForPower(dbm, 24, 3) != level {
-			t.Fatal(level, dbm)
+	// so+db90 integer quantization, min3/max24, independently calculated
+	// source vectors (not two Go helpers confirming each other).
+	for i, dbm := range []uint8{3, 5, 8, 10, 12, 15, 17, 19, 22, 24} {
+		if got := PowerForLevel(uint8(i+1), 24, 3); got != dbm {
+			t.Fatalf("level%d: %d != %d", i+1, got, dbm)
+		}
+	}
+	// so+db44 half-up thresholds, including points between representable levels.
+	for dbm, level := range []uint8{1, 1, 2, 2, 3, 3, 4, 4, 4, 5, 5, 6, 6, 7, 7, 7, 8, 8, 9, 9, 10, 10} {
+		if got := LevelForPower(uint8(dbm+3), 24, 3); got != level {
+			t.Fatalf("%ddBm: %d != %d", dbm+3, got, level)
 		}
 	}
 	// Too few neighbors with the strongest weaker than threshold increases.

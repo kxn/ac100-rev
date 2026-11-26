@@ -389,7 +389,7 @@ func (m *Manager) tickRRM(now time.Time) { // Called after AP snapshots refresh.
 				fail(err.Error())
 				break
 			}
-			if err = m.saveManagementResult(next, true); err != nil {
+			if err = m.saveManagementFrom(next, managementRRM); err != nil {
 				fail(err.Error())
 				break
 			}
@@ -473,7 +473,7 @@ func (m *Manager) rrmRoutes(mux *http.ServeMux) {
 		defer m.mu.Unlock()
 		next := m.config
 		next.RRM = rows
-		if err := m.saveManagementResult(next, true); err != nil {
+		if err := m.saveManagementFrom(next, managementRRM); err != nil {
 			jsonReply(w, 400, map[string]string{"error": err.Error()})
 			return
 		}

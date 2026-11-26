@@ -41,8 +41,4 @@ func retargetPolicies(cfg *Config, old, target string) {
 	for i := range cfg.EDCARules {
 		cfg.EDCARules[i].APs = retargetIDs(cfg.EDCARules[i].APs, old, target)
 	}
-	if label, ok := cfg.Labels[old]; ok {
-		cfg.Labels[target] = label
-		delete(cfg.Labels, old)
-	}
 }

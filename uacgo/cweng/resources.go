@@ -12,22 +12,18 @@ func (e *Engine) SetResourceLimits(sessions, queue int) {
 type engineResources struct{ sessions, queue int }
 
 func (e *Engine) MaxAPSessions() int { return e.sessionLimit() }
-func (e *Engine) sessionLimit() int {
-	if r := e.resources.Load(); r != nil {
-		return r.sessions
-	}
-	return e.MaxSessions
-}
-func (e *Engine) queueLimit() int {
-	if r := e.resources.Load(); r != nil {
-		return r.queue
-	}
-	return 0
-}
-func (e *Engine) canAddSession() bool {
+func (e *Engine) sessionLimit() int  { return e.resources.Load().sessions }
+func (e *Engine) queueLimit() int    { return e.resources.Load().queue }
+
+// The final admission and insert share the session-table lock for both UDP
+// roots and Mesh children. Lowering a limit keeps existing sessions alive.
+func (e *Engine) registerSession(s *Session) bool {
 	e.mu.Lock()
-	n := len(e.sessions)
-	e.mu.Unlock()
-	limit := e.sessionLimit()
-	return limit <= 0 || n < limit
+	defer e.mu.Unlock()
+	key := s.sessionKey()
+	if e.sessions[key] != nil || len(e.sessions) >= e.sessionLimit() {
+		return false
+	}
+	e.sessions[key] = s
+	return true
 }

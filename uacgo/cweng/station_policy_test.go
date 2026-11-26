@@ -134,7 +134,7 @@ func TestAPSessionEpochReleasesCapacityAndRejectsLateSnapshots(t *testing.T) {
 	if n, _ := table.RadioCount("ap", 1); n != 0 {
 		t.Fatal("offline station retained radio capacity", n)
 	}
-	table.WirelessSnapshot("ap", old.Add(5*time.Second), []ClientEvent{{APID: "ap", Connection: old, MAC: mac, RadioID: 1, WLANID: 1}}, map[[6]byte]bool{mac: true})
+	table.WirelessSnapshot("ap", old, old.Add(5*time.Second), []ClientEvent{{APID: "ap", Connection: old, MAC: mac, RadioID: 1, WLANID: 1}}, map[[6]byte]bool{mac: true})
 	if table.All()[0].State != "disconnected" {
 		t.Fatal("late native read resurrected offline epoch")
 	}

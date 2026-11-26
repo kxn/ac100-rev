@@ -67,9 +67,6 @@ func (m *Manager) validateResourceUsage(cfg Config) error {
 	return nil
 }
 func (m *Manager) applyControllerResources() {
-	if m.engine == nil {
-		return
-	}
 	r := controllercfg.Effective(m.config.Resources)
 	m.engine.SetResourceLimits(r.MaxAPSessions, r.CommandQueueDepth)
 }
@@ -88,8 +85,8 @@ func (m *Manager) resourceRoutes(mux *http.ServeMux) {
 		}
 		m.mu.Lock()
 		defer m.mu.Unlock()
-		value := controllercfg.Effective(m.config.Resources)
-		if err := json.Unmarshal(body, &value); err != nil {
+		value, err := controllercfg.Effective(m.config.Resources).Patch(body)
+		if err != nil {
 			jsonReply(w, 400, map[string]string{"error": err.Error()})
 			return
 		}
@@ -99,7 +96,7 @@ func (m *Manager) resourceRoutes(mux *http.ServeMux) {
 		}
 		next := m.config
 		next.Resources = &value
-		if err := m.persistConfigLocked(next, false); err != nil {
+		if err := m.persistConfigLocked(next, managementUser); err != nil {
 			jsonReply(w, 400, map[string]string{"error": err.Error()})
 			return
 		}

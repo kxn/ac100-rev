@@ -81,7 +81,7 @@ type Config struct {
 	Interface           string                      `json:"interface"`
 	Version             uint64                      `json:"version"`
 	Services            []Service                   `json:"services"`
-	Labels              map[string]string           `json:"labels"`
+	Labels              map[string]string           `json:"labels,omitempty"` // migration input only
 }
 type ApplyStatus struct {
 	EffectiveEnabled *bool     `json:"effective_enabled,omitempty"`
@@ -144,7 +144,7 @@ func New(engine *cweng.Engine, clients *cweng.ClientTable, dataDir string) (*Man
 	m.settledVersions = map[string]uint64{}
 	m.operations = map[string]APOperation{}
 	m.policyOwners = map[string]map[string]bool{}
-	m.config = Config{Services: []Service{}, Labels: map[string]string{}}
+	m.config = Config{Services: []Service{}}
 	b, err := os.ReadFile(m.path)
 	if err == nil {
 		if err = json.Unmarshal(b, &m.config); err != nil {
@@ -153,9 +153,7 @@ func New(engine *cweng.Engine, clients *cweng.ClientTable, dataDir string) (*Man
 	} else if !os.IsNotExist(err) {
 		return nil, err
 	}
-	if m.config.Labels == nil {
-		m.config.Labels = map[string]string{}
-	}
+	namesMigrated := migrateAPNames(&m.config)
 	if b, err = os.ReadFile(filepath.Join(dataDir, "known-aps.json")); err == nil {
 		_ = json.Unmarshal(b, &m.known)
 	}
@@ -252,16 +250,11 @@ func New(engine *cweng.Engine, clients *cweng.ClientTable, dataDir string) (*Man
 	engine.RegisterMeshControl(m.meshConfigure, m.meshAuthorize)
 	// Same V6 upgrade boundary as36_roam_cfg_sync.sh; old Go prototypes
 	// exposed modes which the shipped V6 Web never permits setting.
-	if m.config.Mobility != nil && m.config.Mobility.NetworkMode != 2 {
+	modeChanged := m.config.Mobility != nil && m.config.Mobility.NetworkMode != 2
+	if modeChanged {
 		p := *m.config.Mobility
 		p.NetworkMode = 2
 		m.config.Mobility = &p
-		if err := atomicJSON(m.path, m.config); err != nil {
-			return nil, err
-		}
-	}
-	if err := validateManagement(m.config); err != nil {
-		return nil, err
 	}
 	defaults := mergeOptions(standaloneAPDefaults(), m.config.APDefaults)
 	defaultsChanged := configurationKey(defaults, time.Time{}) != configurationKey(m.config.APDefaults, time.Time{})
@@ -271,10 +264,13 @@ func New(engine *cweng.Engine, clients *cweng.ClientTable, dataDir string) (*Man
 		initial := initialControllerResources(m.config)
 		m.config.Resources = &initial
 	}
+	if err := validateConfig(m.config); err != nil {
+		return nil, err
+	}
 	if err := m.validateResourceUsage(m.config); err != nil {
 		return nil, err
 	}
-	if resourcesMissing || defaultsChanged {
+	if resourcesMissing || defaultsChanged || modeChanged || namesMigrated {
 		if err := atomicJSON(m.path, m.config); err != nil {
 			return nil, err
 		}
@@ -336,9 +332,6 @@ func (m *Manager) APs() []cweng.APStatus {
 			}
 		}
 		v.ProtectionLimits = protectionLimits(v)
-		if name := m.config.Labels[v.ID]; name != "" {
-			v.Name = name
-		}
 		for _, p := range m.config.APProfiles {
 			if p.AP == v.ID {
 				if p.Name != "" {
@@ -704,9 +697,6 @@ func validate(s Service) error {
 func (m *Manager) saveService(s Service) (Service, error) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	if strings.HasSuffix(s.Security, "enterprise") {
-		return s, fmt.Errorf("RADIUS 企业认证不在本程序功能范围内")
-	}
 	for _, g := range s.Groups {
 		found := false
 		for _, group := range m.config.Groups {
@@ -725,12 +715,6 @@ func (m *Manager) saveService(s Service) (Service, error) {
 			}
 			if s.Options == nil {
 				s.Options = old.Options
-			} else if s.Options.Radius != nil && s.Options.Radius.Secret == "" && old.Options != nil && old.Options.Radius != nil {
-				r := *s.Options.Radius
-				r.Secret = old.Options.Radius.Secret
-				o := *s.Options
-				o.Radius = &r
-				s.Options = &o
 			}
 			s.WLAN = old.WLAN
 			if s.Passphrase == "" {
@@ -788,7 +772,7 @@ func (m *Manager) saveService(s Service) (Service, error) {
 	} else {
 		next.Services[idx] = s
 	}
-	if err := m.persistConfigLocked(next, false); err != nil {
+	if err := m.persistConfigLocked(next, managementUser); err != nil {
 		return s, err
 	}
 	return s, nil
@@ -874,9 +858,6 @@ func (m *Manager) Handler() http.Handler {
 			}
 			m.mu.Unlock()
 			state := ev.State
-			if (state == "associating" && time.Since(ev.Seen) > 30*time.Second) || (state != "disconnected" && time.Since(ev.Seen) > 6*time.Minute) {
-				state = "stale"
-			}
 			if !online[ev.APID] && state != "disconnected" {
 				state = "ap_offline"
 			}
@@ -953,19 +934,15 @@ func (m *Manager) Handler() http.Handler {
 			Name string `json:"name"`
 		}
 		r.Body = http.MaxBytesReader(w, r.Body, 1024)
-		if err := json.NewDecoder(r.Body).Decode(&v); err != nil || len([]byte(v.Name)) > 52 {
-			jsonReply(w, 400, map[string]string{"error": "名称最多 52 字节"})
+		if err := decodeManagement(w, r, &v); err != nil || !validAPName(v.Name) {
+			jsonReply(w, 400, map[string]string{"error": "名称最多 50 个字符"})
 			return
 		}
 		m.mu.Lock()
 		defer m.mu.Unlock()
 		next := m.config
-		next.Labels = map[string]string{}
-		for k, v := range m.config.Labels {
-			next.Labels[k] = v
-		}
-		next.Labels[r.PathValue("id")] = v.Name
-		if err := m.persistConfigLocked(next, false); err != nil {
+		setAPName(&next, r.PathValue("id"), v.Name)
+		if err := m.persistConfigLocked(next, managementUser); err != nil {
 			jsonReply(w, 500, map[string]string{"error": err.Error()})
 			return
 		}
@@ -1018,7 +995,7 @@ func (m *Manager) Handler() http.Handler {
 		defer m.mu.Unlock()
 		next := m.config
 		next.Interface = v.Name
-		if err := m.persistConfigLocked(next, false); err != nil {
+		if err := m.persistConfigLocked(next, managementUser); err != nil {
 			jsonReply(w, 500, map[string]string{"error": err.Error()})
 			return
 		}

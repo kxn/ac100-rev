@@ -46,7 +46,7 @@ func (m *Manager) exportAPsHTTP(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 		for _, c := range clients {
-			if ap.Online && c.APID == ap.ID && c.State == "connected" && !c.Seen.Before(ap.ConnectedAt) && time.Since(c.Seen) < 6*time.Minute {
+			if ap.Online && c.APID == ap.ID && c.State == "connected" && !c.Seen.Before(ap.ConnectedAt) {
 				count++
 			}
 		}

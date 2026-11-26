@@ -113,7 +113,7 @@ func (m *Manager) mergeWirelessSnapshot(ap cweng.APStatus, started time.Time, st
 		}
 		facts = append(facts, ev)
 	}
-	m.clients.WirelessSnapshot(ap.ID, started, facts, present)
+	m.clients.WirelessSnapshot(ap.ID, ap.ConnectedAt, started, facts, present)
 	return nil
 }
 
