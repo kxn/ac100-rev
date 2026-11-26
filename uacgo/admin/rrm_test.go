@@ -30,7 +30,7 @@ func rrmPair(t *testing.T) (*Manager, *cweng.Engine, *deferredAP, cweng.APStatus
 }
 func TestRRMMeasuredGraphSeparatesChannelsAndBoundsPower(t *testing.T) {
 	_, _, _, a, b := rrmPair(t)
-	r := defaultRRMRule()
+	r := rrmTestRule()
 	r.ID = "r"
 	r.Name = "Rule"
 	r.Frequency = 1
@@ -38,16 +38,16 @@ func TestRRMMeasuredGraphSeparatesChannelsAndBoundsPower(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(plan) != 2 || plan[0].Channel == plan[1].Channel || plan[0].Power != 4 || plan[1].Power != 4 {
+	if len(plan) != 2 || plan[0].Channel == plan[1].Channel || plan[0].Power != 24 || plan[1].Power != 24 {
 		t.Fatal(plan)
 	}
-	if _, err = planRRM(r, []cweng.APStatus{a, b}, Config{}, time.Now().Add(time.Minute)); err == nil {
-		t.Fatal("stale reports used for optimization")
+	if _, err = planRRM(r, []cweng.APStatus{a, b}, Config{}, time.Now().Add(time.Minute)); err != nil {
+		t.Fatal("timeout permits a graph without reports", err)
 	}
 }
 func TestRRMScanCommandsAndPersistentConfigPlan(t *testing.T) {
 	m, e, f, a, b := rrmPair(t)
-	r := defaultRRMRule()
+	r := rrmTestRule()
 	r.ID = "r"
 	r.Name = "Rule"
 	r.Frequency = 1
@@ -62,27 +62,47 @@ func TestRRMScanCommandsAndPersistentConfigPlan(t *testing.T) {
 	if !m.rrmStep(context.Background(), a) {
 		t.Fatal("scan did not hold reconciliation")
 	}
-	f.mu.Lock()
-	if len(f.packets) != 1 {
-		f.mu.Unlock()
-		t.Fatal("scan command missing")
+	// Wait through the transport FIFO; submission itself does not wait for ACK.
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+	if _, err = e.Request(ctx, a.ID, 7, nil); err != nil {
+		t.Fatal(err)
 	}
-	p := f.packets[0].Elements[0]
+	f.mu.Lock()
+	var ndps []capwap.Element
+	for _, packet := range f.packets {
+		for _, el := range packet.Elements {
+			if el.Type == 0x25 && len(el.Value) >= 10 && el.Value[6] == 0 && el.Value[7] == 0x5c {
+				ndps = append(ndps, el)
+			}
+		}
+	}
 	f.mu.Unlock()
+	if len(ndps) != 1 {
+		t.Fatal("scan command missing or duplicated", len(ndps))
+	}
+	p := ndps[0]
 	if p.Value[7] != 0x5c {
 		t.Fatal(p)
 	}
 	ndp, err := capwap.ParsePrivNdpPara(p.Value[10:])
-	if err != nil || ndp.U8b != 0xab || ndp.W2 != 60 || !bytes.Equal(ndp.Tail, []byte{1, 6, 11}) {
+	if err != nil || ndp.U8b != 0xab || ndp.W2 != 60 || !bytes.Equal(ndp.Tail, []byte{1}) || ndp.U8c != 6 || ndp.U8d != 0 || ndp.U8e != 24 {
 		t.Fatal(ndp, err)
 	}
-	// Advance the durable job's timing, independently from actual AP reports.
+	// Acknowledgements do not finish collection. Both requested radios must
+	// report, or the independent90-second timer must expire.
 	m.mu.Lock()
-	job = m.rrmJobs[job.ID]
-	job.Started = time.Now().Add(-80 * time.Second)
-	job.Scans = map[string]time.Time{a.ID: time.Now().Add(-70 * time.Second), b.ID: time.Now().Add(-70 * time.Second)}
-	m.rrmJobs[job.ID] = job
+	run := m.rrmRuns[job.ID]
+	for index, q := range run.requests {
+		run.markDispatched(index, q, time.Now())
+	}
 	m.mu.Unlock()
+	m.observeRRMReport(a.ID, a.ConnectedAt, capwap.PrivRrmNeighsList{A: 1, Neighs: a.RRMReports[0].Neighbors})
+	m.tickRRM(time.Now())
+	if m.rrmJobs[job.ID].State != "collecting" {
+		t.Fatal("partial reports finished early")
+	}
+	m.observeRRMReport(b.ID, b.ConnectedAt, capwap.PrivRrmNeighsList{A: 1, Neighs: b.RRMReports[0].Neighbors})
 	m.tickRRM(time.Now())
 	if j := m.rrmJobs[job.ID]; j.State != "applying" || len(j.Changes) != 2 || m.config.Version != 1 || len(m.config.Radios) != 2 {
 		t.Fatal(j, m.config)
@@ -97,7 +117,7 @@ func TestRRMScanCommandsAndPersistentConfigPlan(t *testing.T) {
 }
 func TestRRMRejectsConfigChangesAndInterruptedMeasurement(t *testing.T) {
 	m, e, _, _, _ := rrmPair(t)
-	r := defaultRRMRule()
+	r := rrmTestRule()
 	r.ID = "r"
 	r.Name = "Rule"
 	settleRRMTargets(m)
@@ -114,9 +134,9 @@ func TestRRMRejectsConfigChangesAndInterruptedMeasurement(t *testing.T) {
 	if restored.rrmJobs[j.ID].State != "failed" {
 		t.Fatal("restart falsely continued measurement")
 	}
-	m.config.Version++
+	m.config.Radios = append(m.config.Radios, RadioSetting{AP: "bypass", Radio: 1})
 	m.tickRRM(time.Now())
-	if m.rrmJobs[j.ID].State != "failed" || len(m.config.Radios) != 0 {
+	if m.rrmJobs[j.ID].State != "failed" || len(m.config.Radios) != 1 {
 		t.Fatal("changed config overwritten")
 	}
 }
@@ -126,25 +146,16 @@ func settleRRMTargets(m *Manager) {
 		m.settled[ap.ID] = configurationKey(effectiveRadioConfig(m.config, ap), ap.ConnectedAt)
 	}
 }
-func TestRRMBondedSpectrumAndInvalidCandidates(t *testing.T) {
-	_, _, _, a, b := rrmPair(t)
-	am, _ := parseMAC6(a.ID)
-	bm, _ := parseMAC6(b.ID)
-	node := func(ap cweng.APStatus, other [6]byte) rrmNode {
-		return rrmNode{AP: ap, Cap: cweng.RadioCapability{RadioID: 1}, BandID: 1, Band: RRMBand{Bandwidth: 3}, Report: cweng.RRMReport{Neighbors: []capwap.RrmNeigh{{MAC: other, Samples: []capwap.RrmRSSI{{Radio: 1, RSSI: -45}}}}}}
-	}
-	aa, bb := node(a, bm), node(b, am)
-	if channelCost(aa, bb, 48, 52) != 0 || channelCost(aa, bb, 36, 48) == 0 {
-		t.Fatal("bonded spectrum overlap wrong")
-	}
-	c := cweng.RadioCapability{Band: "5 GHz", Channels: []int{36, 149, 165}}
-	if got := rrmAllowed(c, RRMBand{Bandwidth: 5, Channels: c.Channels}); len(got) != 1 || got[0] != 36 {
+func TestRRMCandidateOrderComesFromAPMutexDomain(t *testing.T) {
+	c := cweng.RadioCapability{Band: "5 GHz", Channels: []int{36, 149, 165}, MutexChannels: "149 36"}
+	got := rrmAllowed(c, RRMBand{Bandwidth: 5, Channels: []int{36, 149, 165}})
+	if len(got) != 2 || got[0] != 149 || got[1] != 36 {
 		t.Fatal(got)
 	}
 }
 func TestRRMRequiresSettledConfiguration(t *testing.T) {
 	m, _, _, _, _ := rrmPair(t)
-	r := defaultRRMRule()
+	r := rrmTestRule()
 	r.ID = "r"
 	r.Name = "r"
 	m.mu.Lock()
@@ -153,4 +164,14 @@ func TestRRMRequiresSettledConfiguration(t *testing.T) {
 	if err == nil {
 		t.Fatal("started scan while AP was configuring")
 	}
+}
+
+// Deliberate test inputs, not firmware editor defaults.
+func rrmTestRule() RRMRule {
+	r := defaultRRMRule()
+	r.Enabled, r.Channel, r.Power = true, true, true
+	r.Band2G.MinPower, r.Band2G.MaxPower = 3, 24
+	r.Band5G.MinPower, r.Band5G.MaxPower, r.Band5G.Bandwidth = 5, 27, 3
+	r.Band5G.Channels = []int{36, 40, 44, 48, 149, 153, 157, 161}
+	return r
 }

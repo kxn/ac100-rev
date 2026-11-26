@@ -1,0 +1,98 @@
+# V6 UAC/Web 策略对照与整改
+
+2026-11-27。对照用户提供的 **TL-AC100 V6.0 1.0.3 Build260817 Rel.68871n**。本轮依据是本地固件的入口、调用点、数据布局、常量和分支；没有运行原厂 UAC 或用设备外部试验推导、证明调度算法。此前部署的 `587d414` 不代表本轮代码，当前改动尚未部署。
+
+## 证据与边界
+
+- UAC SHA256：`b12d1584fcafda2a71aa9038b41b7e1c5b893b350f3e6edf5105e445d024a912`。
+- librrm_business.so SHA256：`62a9c14282900ac5bec5d09a69b97ed98b259243c883c4b41b845d63e24ab62e`。
+- [静态证据](mobility-firmware-evidence.json)：129 个函数指纹、真实 JAL、原表、默认队列、功率/带宽/信道常量和源文件哈希。`tools/audit_mobility_firmware.py` 校验固件版本后重建清单和 Go 表，不执行被分析程序。ELF 没有 section header，读取 PT_LOAD/PT_DYNAMIC；旧版地址不能用于 V6。
+- [原厂目录](original-feature-inventory.json)覆盖 23 个 AP 控制器模块；[双向索引](uac-web-parity-map.json)将模块范围、17 条功能链、Go 文件和回归关联。索引检查不是语义等价证明。
+- 原始反编译在本机忽略目录 `.local/ac100/parity-decomp/`、`parity-rrm-decomp/`、`protocol-v6-decomp/`，不提交完整固件或私人抓包。
+
+**不能恢复的依据不冒充原厂事实。** 升级包不含设备 flash 的运行配置；`/etc/config` 是运行时软链接，`/etc/tmp_uc_conf/uc.conf` 只是键白名单。QEMU 的重建 profile 不能证明原厂容量、默认限额或所有初始化值。编译常量、启动 SQL 默认值、原厂 Web 新建表单默认值分别注明来源；它们也不是同一种默认值。本轮基于 V6，不推定 V4 行为相同。
+
+## 正式程序只有一个无线配置来源
+
+`cmd/acd` 原先同时注册 `StoreWserviceConfig/RegisterWserviceHandlers` 和 Web 管理器，前者在 Configure 从旧 SQLite WLAN/RF 表下发另一套配置；还启动独立 JCS 写入口。现已从正式启动路径移除二者。AP 身份编号继续使用原有 `apmngr.db`，无线服务、射频、策略由 `admin/controller.json` 一处管理；启动不再创建 Portal 等原型数据库。
+
+`TestStandaloneIgnoresLegacyWirelessDatabase` 启动真实主程序入口，通过本机 UDP 完成 Discovery/Join/Configure：事先植入旧库的 SSID 不得进入应答，Portal 数据库不得被创建。研究用 JCS/SQLite 适配器、旧协议编解码仍可在独立包中参考，不属于当前 Web 功能。
+
+统一命令队列将**提交**与**应答**分离。`Engine.QueueAP` 直接使用会话快照引用，不在入站回调中重新取会话锁；每个根传输按 FIFO 发送、匹配 ACK 和重传，Mesh 子会话共用父队列。漫游/RRM 一次提交整批命令，不因首台 AP 的 ACK 延迟改变策略触发和批次。重连/关闭拒绝旧会话命令，字节在入队时复制。
+
+## 关联、事件与站点事实
+
+原链 `74a4b0 → 749290/7498c0 → 744b70 → 7666b4/758cf8` 已对应到引擎和管理器。服务/射频错误26、均衡拒绝27、容量不足11、MAC无效25；成功按原厂立即更新站点 DB。删除了自编的全网服务人数配额、PPSK 人数配额和30秒预约。
+
+入站监听按原次序分层：priority1 的 private0b；priority80 的首个52→56→54→53→bd；priority90 的首个49及首个58；priority100 的33→34→2→8a→3→4d→c6→bd单一生命周期事件。上游已有非零错误时生命周期入口退出。统计、RSSI、IP 只能更新已存在且位置匹配的客户端，不能生成关联。
+
+- private34/8a 的许可请求、同步上报和结果字段分开；c6 按子项的报文顺序执行，不聚合到末尾重排。原 c6/type9 即使检查失败仍执行同步关联的分支予以保留。
+- MLO 保留根和 peer DB 行，各链路计入对应射频容量；任一链路解除时按 subcap95 清整组。Web 折叠展示 MLD 并附链路数据，内部计数不使用折叠列表。
+- AP 会话 epoch、客户端迁移序号防迟到通知覆盖新状态。客户端回调在 ClientMu 解锁后触发，避免锁反转。
+- 源站点统计断连保留905秒、每60秒扫描；重关联撤销删除。MLO 缺测的 -95 展示哨兵不伪造成真实 RSSI 历史。
+- 52 为38字节站点统计、53 为20+14×n、54 为42+32×radio+28×VAP；字段和单位具名，不再使用不透明字节数组猜测。bd 的 BSSID 索引保留未提及槽位，仅替换该槽旧 BSSID。
+- c6 设备名称/能力/OUI/主机名/类别/UA 接入；按固件提取2029条 OUI 与识别优先级。上报名称持久化，手工名称覆盖。
+
+## 负载均衡
+
+private0b `4f0a04` 记录发现；关联 `4f0dfc → 4f0adc → 4f6f54` 使用该发现表。
+
+每 MAC 共享发现/拒绝计数；最多10台 AP，更新移到尾部。距**最后拒绝**满60秒清失败数，达到拒绝上限后允许接入。源 AP 人数达到门限，另一已发现的在线 AP 人数更少且差值达到门限时拒绝。没有额外同 SSID/VLAN/规则过滤，没有再做一次 RSSI 门限。
+
+300秒定时扫描并清理满900秒的发现；AP 离开清该 AP 发现。MLO 按不同 link MAC 和 MLD 走原检查。规则绑定重复包括停用规则也拒绝，不以列表首条覆盖冲突。
+
+## 当前有效漫游路径
+
+`wsta_roam_pkt_init@4e9b78 → 4e89ac → private58@4e8440 → 4e6564`。**调用点 `4e713c` 的 JAL 目标是 `roam_nbr_select@4e5638`**，不是 ELF 中同样存在的旧 `_roaming_nbr_select@4e4b3c`。58 的对应字节是 RSSI/BandMode，不是原 Go 的 Reason/Flags。
+
+BSTM 邻居先按整份报告识别 RSSI/RCPI，RCPI 换算为 `raw/2-110`；过滤信号修正为 `max(-95, RSSI-10)`，估算速率用未减10的 RSSI。STA/AP PHY、流数、带宽取原有组合，保留 STA MCS。`4eb314/4eab48` 使用编译表、整数斜率及16位结果；Mesh 回传使用 `Rwifi*Rbackhaul/(Rwifi+Rbackhaul)`。
+
+无 BSTM 时用独立 RSSI 邻居表，最多12条，老化 `(min_interval*3+1)>>1`；不是均衡 probe 表。未知速率保持 -1。`nbr_cmp@4e0d40` 按估算速率、频段、修正 RSSI 降序；保留原 quicksort 的同分次序，不加 MAC/AP 人数排序。
+
+有效选择器保留：
+
+1. 目标启用 RSSI 触发时，修正信号门限2G -85 / 5G -87，否则 -75。
+2. 负载门限2G70 / 5G85；速率已知，且 `Rnew>=Rcur+floor(Rcur/5)`、`Rnew>Rcur+19`。
+3. 默认最多4候选，不把 wire 容量6当默认策略。
+4. 无正常候选且当前信号<-85时有首候选回退；源循环遗留的 band 变量语义保留，不按直觉修正。
+
+private59 的 AP 并集包括未入选的已知邻居；候选 bitmap 与并集各司其职。全部站点按128分包处理，不截断报告、不覆盖上一批，不在 ACK 后增加 AC 冷却或无限重算/重排。
+
+PMK private49 固定101字节：operation/result/radio/WLAN、pairwise、iface17、nonce16、站点及AP MAC、PMK-R0及name；旧前两字节误名和截断接受已修正。缓存按逻辑无线服务隔离，原操作/未命中/错误状态分开；断连60秒、分钟扫描、重关联取消。
+
+默认漫游规则来自 `_wsta_roam_sql_create_cfg_table@4d8ca8` 和 `4da7b4` 插入规则0：k/v开、r关，2G -75/踢除门限-80、5G -80/-85，速率20/踢除10，检查1秒、差值8、限制回连2秒、统计间隔30秒。修正了原 Go 的自定值；已有显式配置不擅自重置。
+
+## V6 网络模式与旧 ACS
+
+Web `wireless_network_mode_set` **无条件 EFORBID**，`cfgsync.d/36_roam_cfg_sync.sh` 强制配置和实际模式为2。当前产品只读模式2和不支持 AP 列表；删除了自行开放的自动/高性能模式、sticky配置哈希和共同信道 ACS。
+
+旧自动模式计数/ACS 函数留在 ELF，不代表本版 Web 可启用。RRM 尝试智能 ACS 的 `527894 → 4e418c` 因模式2失败后进入普通 SCA/TPC。不得把旧路径的5AP/30客户端触发加到当前模式。
+
+## RRM：原库和外层任务一起移植
+
+有效链 `rrm_task@52603c → 527c70 → 52763c → librrm_exec_by_param(so+ab44)`，活动函数为 so+5094 SCA / so+677c TPC。纯计算在 `uacgo/rrm`，报文、时钟、回合和应用在 `admin/rrm_runtime.go`。
+
+- 工作邻居上限6、方向1、评分模式1。同信道且 RSSI>=-85 时评分 `(RSSI+100)^2/100`，无自编邻道线性代价。
+- 有向图保留重复边权重 `(4*old+new)/5`、-127哨兵和排序同分次序。SCA 局部根+前6出邻居，最后一维最快枚举，首个最小值胜出；提交后重算并排序。原 Go 三轮坐标下降已删除。
+- TPC 使用其它 AP 指向自己的入边、RSSI排序和**第三邻居**，不足3强邻居不降低。无邻居向上界中点提高；使用原10级功率/无符号算术。每次库调用重置工作边界，仅保留结果等级，不使用自编“最强邻居”公式。
+- 冻结参与集合及 DB 顺序；有效射频、AP mutex 字符串与规则候选取交集。报告 first65/first5d 的入口优先级保留。低5G后高5G；初始图和第二轮平滑图分开，第二轮不加新邻居，不把平滑图冒充初始基线。
+- 每批全量提交后启动90秒等待；空发送集合也等待。每节点首次报告计数，重复报告可更新图，收到数大于预期不冒充收齐。最多两轮，NDP发送等级与上次算法结果独立；TPC-only 的第二次采集不能因等级没变而跳过。
+- NDP magic/功率/测量 PHY 归一化 `522a54` 与最终 RF 配置不同。最终 `51fbbc` 总是应用规则带宽，包括只优化功率时；按2G再5G、DB顺序走 RF setter、带宽兼容步骤和 peer 联动。
+- 原 Web 在优化期间禁止修改 RF/WLAN；统一持久化边界覆盖导入、分组/模板继承、整机 RFMode 和 RegionCode。标签不取消优化；AP Join 的自动分组属于设备事件，不被误当 Web 编辑或改变冻结测量集合。
+- 定时规则按原299秒/599秒冲突窗口校验，包含跨日/周边界；规则编辑与正在进行的任务参数快照分开。没有自行排队等待空闲的调度策略。
+
+Go 对 C 中无可定义结果的非法输入/除零路径做明确拒绝或防护，不声称复刻未定义行为。源码向量用于检查此移植的分支，不用假 AP 测试反推算法。
+
+## 射频和 EDCA
+
+RRST `73a788 → 73aa14 → 73abf0 → 73afbc → 73b61c → 714b9c → 72750c`：按原行序/预匹配标记选择，保持原遍历语义，不做最小修改成本优化；不自动启用 peer，无匹配时不动 peer。`5dd2d8` 的单射频归一化独立使用 table0，不与当前 table 的 peer 行搜索混为全局组合校验。继承草稿先按每台AP归一化，再叠加已保存的控制器RF行，避免读出时再次归一化、反向撤销peer结果。手工 RF setter 和 RRM 最终应用均沿这些入口；备份快照不是一次额外的用户 RF 编辑，不在导入时凭空跑联合优化。
+
+b2 是9字节，首字节是 Reserved。Join 取首个 b2，用 radio1 feature bitmap 初始化全部射频；未设置字段由 `7301dc` 和 RUN 的 `7304f0` 分两阶段填充：MU-MIMO 未设置补1，OFDMA/TWT补0，显式0不覆盖。73ea84 下发也使用 radio1控制位；保留原始各射频 Features 和独立 ControlFeatures，Web 跟随控制能力展示。
+
+EDCA 从单射频参数扩为命名规则：`74108c/725b88/741dd0`，原8队列来自 `8ec530`。规则频段占用在停用时仍禁止冲突，AP场景按型号/子能力；缺少场景保持原队列，不造参数。无规则 Join 禁用，解绑沿原旧值关闭；规则生效后不在每次轮询覆盖后续手工编辑。EDCA事件只持久化它拥有的WMM/队列字段，不能把整份RF快照写成覆盖层、遮住后续信道/功率继承；手工高级编辑分字段接管，省略的可选EDCA仍保留原值。WLAN/EDCA 共用原虚拟频段位映射：cap92按模型模式列表的首个包含项编号，不按当前模式或物理radioID直接当位号。
+
+原厂 Lua 有但不构成功能的例子：`rail_high_speed_mode_switch` 在 `727f14` 明确不支持；`central_forward_switch` 留在共享 Lua/SQL，但当前 `6e3970/6e2fd4` 和发送链不消费，发送函数中“central switch”日志实际紧跟 MLO C0配置。`5f5ee0 calibrate_load` 是名称/MAC文件批量改名，不能杜撰成射频校准算法。`local_wserv_sync` 调用本机 wlan_mssid，属于用户排除的 AC 本机无线。
+
+## 当前验证
+
+全量 Go 测试、`go vet`、race、源码表重建、两套能力界面（10页、46次提交）和实际启动入口回归用于检查 Go 实现。具体最新执行结果见 [验收入口](ac-acceptance.md) 与 [工作记录](parity-worklog.md)。未将这次未部署的代码冒充真机验收；多AP空口切换、其它硬件效果及长期运行不在此次算法静态对照证据之内。

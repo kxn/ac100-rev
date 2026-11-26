@@ -132,107 +132,156 @@ func ParsePrivStaIPList(v []byte) (*PrivStaIPList, error) {
 	return p, nil
 }
 
-// PrivRssiStatistics is 0x53: rbytes(8) rbytes(8) r32 rbytes(6) rbytes(8)
-// (cw_priv_rssi_statistics_parse @0x5bf28c).
+// PrivRssiStatistics is private0x53: load[8], noise[8], count32,
+// then count * {MAC[6], per-radio RSSI[8]}; V6 6b2740, max400 rows.
+type RssiStatisticsStation struct {
+	MAC  [6]byte
+	RSSI [8]int8
+}
 type PrivRssiStatistics struct {
-	BSSIDs [8]byte
-	SNRs   [8]byte
-	W      uint32
-	BSSID  [6]byte
-	Rates  [8]byte
+	ChannelLoad [8]uint8
+	NoiseFloor  [8]int8
+	Stations    []RssiStatisticsStation
 }
 
-// AssembleValue writes the 34 bytes.
 func (p PrivRssiStatistics) AssembleValue() []byte {
-	b := append([]byte(nil), p.BSSIDs[:]...)
-	b = append(b, p.SNRs[:]...)
-	b = AppendUint32BE(b, p.W)
-	b = append(b, p.BSSID[:]...)
-	return append(b, p.Rates[:]...)
-}
-
-// ParsePrivRssiStatistics decodes the 34 bytes.
-func ParsePrivRssiStatistics(v []byte) (*PrivRssiStatistics, error) {
-	if len(v) != 34 {
-		return nil, ErrShortPacket
+	b := append([]byte{}, p.ChannelLoad[:]...)
+	for _, n := range p.NoiseFloor {
+		b = append(b, byte(n))
 	}
-	p := &PrivRssiStatistics{W: Uint32BE(v[16:])}
-	copy(p.BSSIDs[:], v[:8])
-	copy(p.SNRs[:], v[8:16])
-	copy(p.BSSID[:], v[20:26])
-	copy(p.Rates[:], v[26:34])
-	return p, nil
-}
-
-// PrivApStatistics is 0x54 (cw_priv_ap_statistics_parse @0x5a7f04,
-// retrieve sequence r8 r8 r8 rbytes(8) r8 r16 r32×7 r8 r8 r16 r16 r16
-// r8×4 r32×4 r8×6 rbytes(6) r16 r8 r8 r32×4 = 102 bytes).
-type PrivApStatistics struct {
-	A, B, C    uint8
-	Blk8       [8]byte
-	D          uint8
-	U16a       uint16
-	W1         [7]uint32
-	E, F       uint8
-	U16b, U16c uint16
-	U16d       uint16
-	G          [4]uint8
-	W2         [4]uint32
-	H          [6]uint8
-	MAC        [6]byte
-	U16e       uint16
-	I, J       uint8
-	W3         [4]uint32
-}
-
-// AssembleValue writes the 102 bytes.
-func (p *PrivApStatistics) AssembleValue() []byte {
-	b := []byte{p.A, p.B, p.C}
-	b = append(b, p.Blk8[:]...)
-	b = append(b, p.D)
-	b = AppendUint16BE(b, p.U16a)
-	for _, w := range p.W1 {
-		b = AppendUint32BE(b, w)
-	}
-	b = append(b, p.E, p.F)
-	for _, u := range []uint16{p.U16b, p.U16c, p.U16d} {
-		b = AppendUint16BE(b, u)
-	}
-	b = append(b, p.G[:]...)
-	for _, w := range p.W2 {
-		b = AppendUint32BE(b, w)
-	}
-	b = append(b, p.H[:]...)
-	b = append(b, p.MAC[:]...)
-	b = AppendUint16BE(b, p.U16e)
-	b = append(b, p.I, p.J)
-	for _, w := range p.W3 {
-		b = AppendUint32BE(b, w)
+	b = AppendUint32BE(b, uint32(len(p.Stations)))
+	for _, s := range p.Stations {
+		b = append(b, s.MAC[:]...)
+		for _, n := range s.RSSI {
+			b = append(b, byte(n))
+		}
 	}
 	return b
 }
-
-// ParsePrivApStatistics decodes the 102 bytes.
-func ParsePrivApStatistics(v []byte) (*PrivApStatistics, error) {
-	if len(v) != 102 {
+func ParsePrivRssiStatistics(v []byte) (*PrivRssiStatistics, error) {
+	if len(v) < 20 {
 		return nil, ErrShortPacket
 	}
-	p := &PrivApStatistics{A: v[0], B: v[1], C: v[2], D: v[11],
-		U16a: Uint16BE(v[12:]), E: v[42], F: v[43],
-		U16b: Uint16BE(v[44:]), U16c: Uint16BE(v[46:]), U16d: Uint16BE(v[48:]),
-		U16e: Uint16BE(v[82:]), I: v[84], J: v[85]}
-	copy(p.Blk8[:], v[3:11])
-	for i := 0; i < 7; i++ {
-		p.W1[i] = Uint32BE(v[14+i*4:])
+	n := Uint32BE(v[16:])
+	if n > 400 || uint64(len(v)) != 20+uint64(n)*14 {
+		return nil, ErrShortPacket
 	}
-	copy(p.G[:], v[50:54])
-	for i := 0; i < 4; i++ {
-		p.W2[i] = Uint32BE(v[54+i*4:])
+	p := &PrivRssiStatistics{Stations: []RssiStatisticsStation{}}
+	copy(p.ChannelLoad[:], v[:8])
+	for i := range p.NoiseFloor {
+		p.NoiseFloor[i] = int8(v[8+i])
 	}
-	copy(p.H[:], v[70:76])
-	copy(p.MAC[:], v[76:82])
-	for i := 0; i < 4; i++ {
-		p.W3[i] = Uint32BE(v[86+i*4:])
+	for v = v[20:]; len(v) > 0; v = v[14:] {
+		var s RssiStatisticsStation
+		copy(s.MAC[:], v[:6])
+		for i := range s.RSSI {
+			s.RSSI[i] = int8(v[6+i])
+		}
+		p.Stations = append(p.Stations, s)
+	}
+	return p, nil
+}
+
+// PrivApStatistics is private0x54: a42-byte global/header followed by
+// radio-count *32 and VAP-count *28. V6 69ed48/69e080; counts <=8/64.
+type APStatisticsGlobal struct {
+	CPUCount          uint8
+	CPUUtilization    [8]byte
+	MemoryUtilization uint8
+	Capabilities      uint16
+	Counters          [7]uint32
+}
+type APRadioStatistics struct {
+	Radio              uint8     `json:"radio_id"`
+	Channel            uint8     `json:"channel"`
+	Bandwidth          uint16    `json:"bandwidth_code"`
+	TxPower            uint16    `json:"power_dbm"`
+	Capabilities       uint16    `json:"capabilities"`
+	NoiseFloor         int8      `json:"noise_floor_dbm"`
+	ChannelLoad        uint8     `json:"channel_load_percent"`
+	RetryPercent       uint8     `json:"retry_percent"`
+	LossPercent        uint8     `json:"loss_percent"`
+	Counters           [4]uint32 `json:"rate_traffic_counters"`
+	Interference       uint8     `json:"interference_percent"`
+	UpLoad             uint8     `json:"up_load_percent"`
+	DownLoad           uint8     `json:"down_load_percent"`
+	WeakStationPercent uint8     `json:"weak_station_percent"`
+}
+type APVAPStatistics struct {
+	Radio, WLAN               uint8
+	BSSID                     [6]byte
+	Capabilities              uint16
+	RetryPercent, LossPercent uint8
+	Counters                  [4]uint32
+}
+type PrivApStatistics struct {
+	Global APStatisticsGlobal
+	Radios []APRadioStatistics
+	VAPs   []APVAPStatistics
+}
+
+func (p *PrivApStatistics) AssembleValue() []byte {
+	g := p.Global
+	b := []byte{byte(len(p.Radios)), byte(len(p.VAPs)), g.CPUCount}
+	b = append(b, g.CPUUtilization[:]...)
+	b = append(b, g.MemoryUtilization)
+	b = AppendUint16BE(b, g.Capabilities)
+	for _, v := range g.Counters {
+		b = AppendUint32BE(b, v)
+	}
+	for _, r := range p.Radios {
+		b = append(b, r.Radio, r.Channel)
+		for _, v := range []uint16{r.Bandwidth, r.TxPower, r.Capabilities} {
+			b = AppendUint16BE(b, v)
+		}
+		b = append(b, byte(r.NoiseFloor), r.ChannelLoad, r.RetryPercent, r.LossPercent)
+		for _, v := range r.Counters {
+			b = AppendUint32BE(b, v)
+		}
+		b = append(b, r.Interference, r.UpLoad, r.DownLoad, r.WeakStationPercent)
+	}
+	for _, v := range p.VAPs {
+		b = append(b, v.Radio, v.WLAN)
+		b = append(b, v.BSSID[:]...)
+		b = AppendUint16BE(b, v.Capabilities)
+		b = append(b, v.RetryPercent, v.LossPercent)
+		for _, n := range v.Counters {
+			b = AppendUint32BE(b, n)
+		}
+	}
+	return b
+}
+func ParsePrivApStatistics(v []byte) (*PrivApStatistics, error) {
+	if len(v) < 42 || v[0] > 8 || v[1] > 64 || v[2] < 1 || v[2] > 8 || len(v) != 42+int(v[0])*32+int(v[1])*28 {
+		return nil, ErrShortPacket
+	}
+	nr, nv := int(v[0]), int(v[1])
+	p := &PrivApStatistics{Radios: []APRadioStatistics{}, VAPs: []APVAPStatistics{}}
+	g := &p.Global
+	g.CPUCount = v[2]
+	copy(g.CPUUtilization[:], v[3:11])
+	g.MemoryUtilization = v[11]
+	g.Capabilities = Uint16BE(v[12:])
+	for i := range g.Counters {
+		g.Counters[i] = Uint32BE(v[14+i*4:])
+	}
+	v = v[42:]
+	for i := 0; i < nr; i++ {
+		r := APRadioStatistics{Radio: v[0], Channel: v[1], Bandwidth: Uint16BE(v[2:]), TxPower: Uint16BE(v[4:]), Capabilities: Uint16BE(v[6:]), NoiseFloor: int8(v[8]), ChannelLoad: v[9], RetryPercent: v[10], LossPercent: v[11], Interference: v[28], UpLoad: v[29], DownLoad: v[30], WeakStationPercent: v[31]}
+		for j := range r.Counters {
+			r.Counters[j] = Uint32BE(v[12+j*4:])
+		}
+		p.Radios = append(p.Radios, r)
+		v = v[32:]
+	}
+	for i := 0; i < nv; i++ {
+		r := APVAPStatistics{Radio: v[0], WLAN: v[1], Capabilities: Uint16BE(v[8:]), RetryPercent: v[10], LossPercent: v[11]}
+		copy(r.BSSID[:], v[2:8])
+		for j := range r.Counters {
+			r.Counters[j] = Uint32BE(v[12+j*4:])
+		}
+		p.VAPs = append(p.VAPs, r)
+		v = v[28:]
 	}
 	return p, nil
 }

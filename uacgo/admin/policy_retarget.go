@@ -18,11 +18,7 @@ func retargetPolicies(cfg *Config, old, target string) {
 	if cfg.Mesh != nil {
 		cfg.Mesh.Members = retargetMeshMembers(cfg.Mesh.Members, old, target)
 	}
-	if cfg.Bluetooth != nil {
-		for i := range cfg.Bluetooth.Rules {
-			cfg.Bluetooth.Rules[i].APs = retargetIDs(cfg.Bluetooth.Rules[i].APs, old, target)
-		}
-	}
+
 	if cfg.Rates != nil {
 		cfg.Rates.APs = retargetIDs(cfg.Rates.APs, old, target)
 	}
@@ -41,6 +37,9 @@ func retargetPolicies(cfg *Config, old, target string) {
 	}
 	for i := range cfg.RRM {
 		cfg.RRM[i].APs = retargetIDs(cfg.RRM[i].APs, old, target)
+	}
+	for i := range cfg.EDCARules {
+		cfg.EDCARules[i].APs = retargetIDs(cfg.EDCARules[i].APs, old, target)
 	}
 	if label, ok := cfg.Labels[old]; ok {
 		cfg.Labels[target] = label

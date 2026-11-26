@@ -40,6 +40,7 @@ func TestNativeWirelessSnapshotRetainsAPTrafficCounters(t *testing.T) {
 	at := time.Now()
 	mac := [6]byte{2, 1, 2, 3, 4, 5}
 	up := uint32(1234)
+	table.StationEvent(ClientEvent{MAC: mac, APID: "a", RadioID: 1, WLANID: 1, Kind: "associate", Seen: at})
 	table.StationEvent(ClientEvent{MAC: mac, APID: "a", RadioID: 1, WLANID: 1, State: "connected", Kind: "statistics", Seen: at, Statistics: &ClientStatistics{NegotiatedMbps: 100, Bandwidth: 3, UpstreamKbps: &up}})
 	ev := ClientEvent{MAC: mac, APID: "a", RadioID: 1, WLANID: 1, Statistics: &ClientStatistics{NegotiatedMbps: 1200, Bandwidth: -1}}
 	table.WirelessSnapshot("a", at.Add(time.Second), []ClientEvent{ev}, map[[6]byte]bool{mac: true})

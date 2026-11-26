@@ -182,3 +182,16 @@ func TestRadioModeWMMAndBandwidthCombinations(t *testing.T) {
 		t.Fatal("legacy mode cannot disable WMM", err)
 	}
 }
+
+func TestAPReportedFeatureDefaults(t *testing.T) {
+	c := cweng.RadioCapability{Features: map[string]bool{"downlink_mumimo": true, "twt": true}, AXDefaults: &cweng.RadioFeatureDefaults{DownlinkMUMIMO: 0, TWT: 1, GI: 2}}
+	a := defaultRadioAdvanced(c)
+	if a.DownlinkMUMIMO || !a.TWT || a.GI != 2 || a.UplinkMUMIMO {
+		t.Fatal(a)
+	}
+	c.AXDefaults = nil
+	a = defaultRadioAdvanced(c)
+	if !a.DownlinkMUMIMO || a.TWT || a.GI != -1 {
+		t.Fatal("RUN fallback MU-MIMO default missing", a)
+	}
+}

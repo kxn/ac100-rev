@@ -75,7 +75,14 @@ func hasInt(xs []int, v int) bool {
 	}
 	return false
 }
+func radioControlFeatures(c cweng.RadioCapability) map[string]bool {
+	if c.ControlFeatures != nil {
+		return c.ControlFeatures
+	}
+	return c.Features
+}
 func defaultRadioAdvanced(c cweng.RadioCapability) RadioAdvanced {
+	features := radioControlFeatures(c)
 	mode := 6
 	if c.Band == "5 GHz" {
 		mode = 7
@@ -87,7 +94,27 @@ func defaultRadioAdvanced(c cweng.RadioCapability) RadioAdvanced {
 	if !hasInt(c.Bandwidths, bandwidth) && len(c.Bandwidths) > 0 {
 		bandwidth = c.Bandwidths[0]
 	}
-	return RadioAdvanced{Mode: mode, Bandwidth: bandwidth, MaxClients: c.MaxClients, WMM: true, ShortGI: true, BroadcastProbe: true, Fragmentation: 2346, RTS: 2346, Beacon: 100, DTIM: 1, ManagementRate: 1, DownlinkMUMIMO: c.Features["downlink_mumimo"], UplinkMUMIMO: c.Features["uplink_mumimo"], GI: -1}
+	a := RadioAdvanced{Mode: mode, Bandwidth: bandwidth, MaxClients: c.MaxClients, WMM: true, ShortGI: true, BroadcastProbe: true, Fragmentation: 2346, RTS: 2346, Beacon: 100, DTIM: 1, ManagementRate: 1, GI: -1, DownlinkMUMIMO: features["downlink_mumimo"], UplinkMUMIMO: features["uplink_mumimo"]}
+	// Join @7301dc first accepts the AP b2 defaults. RUN @742e24 then
+	// invokes @7304f0: unset MU-MIMO becomes1, unset OFDMA/TWT becomes0.
+	// Explicit AP-reported zero values survive the second phase.
+	if d := c.AXDefaults; d != nil {
+		if d.DownlinkMUMIMO != 255 {
+			a.DownlinkMUMIMO = features["downlink_mumimo"] && d.DownlinkMUMIMO == 1
+		}
+		if d.UplinkMUMIMO != 255 {
+			a.UplinkMUMIMO = features["uplink_mumimo"] && d.UplinkMUMIMO == 1
+		}
+		a.DownlinkOFDMA = radioControlFeatures(c)["downlink_ofdma"] && d.DownlinkOFDMA == 1
+		a.UplinkOFDMA = radioControlFeatures(c)["uplink_ofdma"] && d.UplinkOFDMA == 1
+		a.TWT = radioControlFeatures(c)["twt"] && d.TWT == 1
+		if radioControlFeatures(c)["twt"] && d.GI >= -1 && d.GI <= 2 {
+			a.GI = int(d.GI)
+		}
+		a.Enable6G = radioControlFeatures(c)["enable_6g"] && d.Enable6G == 1
+		a.PSC6G = radioControlFeatures(c)["enable_6g"] && d.PSC6G == 1
+	}
+	return a
 }
 func radioNeedsWMM(mode int) bool { return !hasInt([]int{0, 1, 2, 5}, mode) }
 func radioModeBandwidth(mode, bandwidth int) bool {
@@ -146,7 +173,7 @@ func validateAdvanced(r RadioSetting, ap cweng.APStatus, c cweng.RadioCapability
 		return fmt.Errorf("AP 不支持公平调度")
 	}
 	for name, enabled := range map[string]bool{"downlink_mumimo": a.DownlinkMUMIMO, "uplink_mumimo": a.UplinkMUMIMO, "downlink_ofdma": a.DownlinkOFDMA, "uplink_ofdma": a.UplinkOFDMA, "twt": a.TWT, "enable_6g": a.Enable6G} {
-		if enabled && (!ap.HasCapability(70) || !c.Features[name]) {
+		if enabled && (!ap.HasCapability(70) || !radioControlFeatures(c)[name]) {
 			return fmt.Errorf("AP 不支持 %s", name)
 		}
 	}
@@ -180,13 +207,8 @@ func validateAdvanced(r RadioSetting, ap cweng.APStatus, c cweng.RadioCapability
 		if err != nil {
 			return err
 		}
-		if len(resolved.Queues) != 8 {
-			return fmt.Errorf("EDCA 需要八个队列")
-		}
-		for _, q := range resolved.Queues {
-			if q.AIFS < 1 || q.AIFS > 255 || q.CWMin < 0 || q.CWMin > 15 || q.CWMax < q.CWMin || q.CWMax > 15 || q.TXOP < 0 || q.TXOP > 65535 {
-				return fmt.Errorf("EDCA 队列参数无效")
-			}
+		if err := validateEDCAQueues(resolved.Queues); err != nil {
+			return err
 		}
 	}
 	return nil
@@ -256,13 +278,15 @@ func advancedRadioElements(r RadioSetting, ap cweng.APStatus, c cweng.RadioCapab
 				adv.Tail6[0] |= 1 << i
 			}
 		}
-		if a.GI > 0 {
+		if radioControlFeatures(c)["twt"] && a.GI > 0 {
 			adv.Tail6[0] |= byte(a.GI) << 5
 		}
 		if a.Enable6G {
 			adv.Tail6[0] |= 128
 		}
-		adv.Tail6[1] = boolean(a.PSC6G)
+		if radioControlFeatures(c)["enable_6g"] {
+			adv.Tail6[1] = boolean(a.PSC6G)
+		}
 	}
 	priv(8, adv.AssembleValue())
 	priv(0x0a, legacyRateValue(defaultRatePolicy(), r.Radio))

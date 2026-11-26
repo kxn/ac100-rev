@@ -1,0 +1,689 @@
+{
+  "firmware": "TL-AC100 V6.0 1.0.3 Build 260817 Rel.68871n",
+  "meaning": "Bidirectional review index and file coverage guard, NOT a mathematical equivalence proof or exhaustive device validation. Source hashes and algorithm evidence are recorded separately.",
+  "features": [
+    {
+      "id": "transport",
+      "title": "AP 接入、命令、会话",
+      "firmware_modules": [
+        "apmng_status",
+        "apmng_set_status"
+      ],
+      "go_files": [
+        "uacgo/cweng/command_queue.go",
+        "uacgo/cweng/control.go",
+        "uacgo/cweng/dtls.go",
+        "uacgo/cweng/dtls_pion.go",
+        "uacgo/cweng/engine.go",
+        "uacgo/cweng/fsm.go",
+        "uacgo/cweng/liveness.go",
+        "uacgo/cweng/manage.go",
+        "uacgo/cweng/registry.go",
+        "uacgo/cweng/rpc.go",
+        "uacgo/cweng/session.go",
+        "uacgo/cweng/v6profile.go"
+      ],
+      "regressions": [
+        "uacgo/cweng/apcfg_test.go",
+        "uacgo/cweng/apelem_test.go",
+        "uacgo/cweng/apstore_test.go",
+        "uacgo/cweng/apupd_test.go",
+        "uacgo/cweng/arp_report_test.go",
+        "uacgo/cweng/association_audit_test.go",
+        "uacgo/cweng/capabilities_test.go",
+        "uacgo/cweng/client_service_test.go",
+        "uacgo/cweng/client_snapshot_test.go",
+        "uacgo/cweng/command_queue_test.go",
+        "uacgo/cweng/control_test.go",
+        "uacgo/cweng/dtls_pion_test.go",
+        "uacgo/cweng/dtls_test.go",
+        "uacgo/cweng/engine_test.go",
+        "uacgo/cweng/led_test.go",
+        "uacgo/cweng/manage_test.go",
+        "uacgo/cweng/mesh_control_test.go",
+        "uacgo/cweng/mesh_report_test.go",
+        "uacgo/cweng/mesh_transport_test.go",
+        "uacgo/cweng/observed_test.go",
+        "uacgo/cweng/pion_smoke_test.go",
+        "uacgo/cweng/ports_test.go",
+        "uacgo/cweng/privctrl_test.go",
+        "uacgo/cweng/radio_linkage_test.go",
+        "uacgo/cweng/radio_modes_test.go",
+        "uacgo/cweng/retrans_test.go",
+        "uacgo/cweng/rpc_test.go",
+        "uacgo/cweng/session_request_test.go",
+        "uacgo/cweng/station_policy_test.go",
+        "uacgo/cweng/storecfg_test.go",
+        "uacgo/cweng/udp_smoke_test.go",
+        "uacgo/cweng/v6profile_test.go",
+        "uacgo/cweng/wservice_test.go",
+        "uacgo/cweng/wsta_test.go"
+      ],
+      "basis": "CAPWAP/FSM 与型号能力；FIFO 提交和 ACK 分开，会话 epoch 防止旧事件覆盖。设备固定容量/主机告警不移植。"
+    },
+    {
+      "id": "ap-management",
+      "title": "AP 管理、模板、分组、复制替换",
+      "firmware_modules": [
+        "apmng_set",
+        "apmng_usb"
+      ],
+      "go_files": [
+        "uacgo/admin/ap_export.go",
+        "uacgo/admin/ap_lifecycle.go",
+        "uacgo/admin/assets/management.js",
+        "uacgo/admin/group_strategy.go",
+        "uacgo/admin/management.go",
+        "uacgo/admin/management_http.go",
+        "uacgo/admin/management_state.go",
+        "uacgo/admin/management_wire.go",
+        "uacgo/admin/options_capability.go",
+        "uacgo/admin/policy_retarget.go",
+        "uacgo/cweng/ports.go",
+        "uacgo/cweng/radio_modes.go"
+      ],
+      "regressions": [
+        "uacgo/admin/ap_export_test.go",
+        "uacgo/admin/group_strategy_test.go",
+        "uacgo/admin/management_copy_test.go",
+        "uacgo/admin/management_test.go",
+        "uacgo/admin/policy_retarget_test.go",
+        "uacgo/admin/ports_test.go"
+      ],
+      "basis": "5da88c/5da518 Join、5f70f0 分组编辑；有序快照、包含端点、禁用范围仍占用、Mesh 父子分支和升级跳过。calibrate_load 是批量命名，不是 RF 算法。"
+    },
+    {
+      "id": "operations",
+      "title": "AP 重启、复位、升级与计划",
+      "firmware_modules": [
+        "apmng_set",
+        "apmng_upgrade"
+      ],
+      "go_files": [
+        "uacgo/admin/assets/upgrade.js",
+        "uacgo/admin/operations.go",
+        "uacgo/admin/schedule.go",
+        "uacgo/admin/upgrade.go",
+        "uacgo/cweng/apupd.go",
+        "uacgo/firmware/image.go"
+      ],
+      "regressions": [
+        "uacgo/admin/management_test.go",
+        "uacgo/admin/schedule_test.go",
+        "uacgo/admin/upgrade_test.go",
+        "uacgo/firmware/image_test.go"
+      ],
+      "basis": "设备操作保留；AC 系统重启/系统固件升级排除。升级传输完成与设备重连后的版本确认分开。"
+    },
+    {
+      "id": "wlan",
+      "title": "无线服务、绑定、VLAN 池、组播",
+      "firmware_modules": [
+        "apmng_wserv"
+      ],
+      "go_files": [
+        "uacgo/admin/assets/multicast.js",
+        "uacgo/admin/assignments.go",
+        "uacgo/admin/auto_binding.go",
+        "uacgo/admin/commit.go",
+        "uacgo/admin/lifecycle.go",
+        "uacgo/admin/multicast_groups.go",
+        "uacgo/admin/service_advanced.go",
+        "uacgo/admin/vlan_pool.go",
+        "uacgo/admin/wlan_state.go"
+      ],
+      "regressions": [
+        "uacgo/admin/assignments_test.go",
+        "uacgo/admin/auto_binding_test.go",
+        "uacgo/admin/multicast_groups_test.go",
+        "uacgo/admin/reconcile_integration_test.go",
+        "uacgo/admin/service_wire_test.go",
+        "uacgo/admin/vlan_pool_test.go"
+      ],
+      "basis": "有效 PSK/Open/MLO、隔离/限速/组播/时间/绑定/池；RADIUS/Portal/PPSK 认证排除。local_wserv_sync 属本机 WLAN。central_forward_switch 在共享 Lua/SQL 保留，活动 JCS/发送路径不消费，不凭日志名造命令。"
+    },
+    {
+      "id": "radio",
+      "title": "射频设置、RRST、能力初始化",
+      "firmware_modules": [
+        "apmng_rf"
+      ],
+      "go_files": [
+        "uacgo/admin/assets/app.js",
+        "uacgo/admin/native_radio.go",
+        "uacgo/admin/radio.go",
+        "uacgo/admin/radio_advanced.go",
+        "uacgo/admin/radio_inheritance.go",
+        "uacgo/admin/radio_linkage.go",
+        "uacgo/cweng/apelem.go",
+        "uacgo/cweng/capabilities.go",
+        "uacgo/cweng/radio_linkage.go"
+      ],
+      "regressions": [
+        "uacgo/admin/native_radio_test.go",
+        "uacgo/admin/radio_advanced_test.go",
+        "uacgo/admin/radio_inheritance_test.go",
+        "uacgo/admin/radio_linkage_test.go",
+        "uacgo/admin/rf_mode_test.go",
+        "uacgo/cweng/capabilities_test.go",
+        "uacgo/cweng/radio_linkage_test.go"
+      ],
+      "basis": "73abf0 有序行匹配、714b9c peer 联动、5dd2d8 独立归一化；73d0f0→7301dc→742e24→7304f0 两阶段 AX 默认值，使用 radio1 feature bitmap。rail_high_speed_mode_switch 在727f14未实现。"
+    },
+    {
+      "id": "edca",
+      "title": "EDCA 命名规则、八队列和场景",
+      "firmware_modules": [
+        "apmng_rf"
+      ],
+      "go_files": [
+        "uacgo/admin/assets/edca.js",
+        "uacgo/admin/edca.go"
+      ],
+      "regressions": [
+        "uacgo/admin/edca_test.go",
+        "uacgo/admin/radio_advanced_test.go"
+      ],
+      "basis": "74108c/725b88/741dd0/8ec530：频段绑定占用、按型号场景/保留队列、WMM、无规则 Join 禁用；规则生效不覆盖随后手工编辑。"
+    },
+    {
+      "id": "rates",
+      "title": "完整 a/b/g/n/ac/ax 速率表",
+      "firmware_modules": [
+        "apmng_rate"
+      ],
+      "go_files": [
+        "uacgo/admin/assets/rates.js",
+        "uacgo/admin/rates.go"
+      ],
+      "regressions": [
+        "uacgo/admin/rates_test.go"
+      ],
+      "basis": "AP 下发和每制式速率集合；不是漫游估算速率表。"
+    },
+    {
+      "id": "band-steering",
+      "title": "双频优选、射频 RSSI 引导",
+      "firmware_modules": [
+        "apmng_band_navigation",
+        "apmng_rf"
+      ],
+      "go_files": [
+        "uacgo/admin/band_navigation.go",
+        "uacgo/admin/navigation_interlock.go"
+      ],
+      "regressions": [
+        "uacgo/admin/band_navigation_test.go",
+        "uacgo/admin/navigation_interlock_test.go"
+      ],
+      "basis": "633a60 仅能力3+全局配置下发，不加同服务/VLAN/射频开启门禁；0x3a 与射频0x4c分开。实际踢除由 AP 执行。"
+    },
+    {
+      "id": "association",
+      "title": "关联许可、MLO、站点统计",
+      "firmware_modules": [
+        "apmng_client",
+        "apmng_status"
+      ],
+      "go_files": [
+        "uacgo/admin/admission.go",
+        "uacgo/admin/client_service.go",
+        "uacgo/admin/client_snapshot.go",
+        "uacgo/admin/client_state.go",
+        "uacgo/admin/telemetry.go",
+        "uacgo/cweng/client_snapshot.go",
+        "uacgo/cweng/observed.go",
+        "uacgo/cweng/station_extra.go",
+        "uacgo/cweng/telemetry.go",
+        "uacgo/cweng/wireless_statistics.go",
+        "uacgo/cweng/wsta.go",
+        "uacgo/terminal/recognition.go",
+        "uacgo/terminal/tables_generated.go"
+      ],
+      "regressions": [
+        "uacgo/admin/admission_test.go",
+        "uacgo/admin/client_history_test.go",
+        "uacgo/admin/client_service_test.go",
+        "uacgo/admin/client_state_test.go",
+        "uacgo/capwap/station_extra_test.go",
+        "uacgo/cweng/association_audit_test.go",
+        "uacgo/cweng/client_snapshot_test.go",
+        "uacgo/cweng/station_policy_test.go",
+        "uacgo/terminal/recognition_test.go"
+      ],
+      "basis": "74a4b0/744b70/749290/7498c0：原返回码和监听顺序；统计不能创建关联。52/53/54/c6/bd 结构、计量单位、终端识别和 MLO peer/根展示分离。"
+    },
+    {
+      "id": "client-management",
+      "title": "客户端展示、名称、下线和历史",
+      "firmware_modules": [
+        "apmng_client",
+        "apmng_status"
+      ],
+      "go_files": [
+        "uacgo/admin/assets/history.js",
+        "uacgo/admin/client_history.go",
+        "uacgo/admin/client_management.go",
+        "uacgo/admin/history.go",
+        "uacgo/cweng/client_history.go"
+      ],
+      "regressions": [
+        "uacgo/admin/client_history_test.go",
+        "uacgo/admin/client_service_test.go",
+        "uacgo/admin/client_state_test.go",
+        "uacgo/admin/history_test.go",
+        "uacgo/cweng/association_audit_test.go"
+      ],
+      "basis": "保留无线状态，不展示机器 CPU/内存/认证；c6 名称上报持久化，手工名称覆盖；历史基于真实测量时间。"
+    },
+    {
+      "id": "balance",
+      "title": "客户端数负载均衡",
+      "firmware_modules": [
+        "apmng_balance"
+      ],
+      "go_files": [
+        "uacgo/admin/assets/mobility.js",
+        "uacgo/admin/balance_decision.go",
+        "uacgo/admin/mobility.go",
+        "uacgo/mobility/balance.go"
+      ],
+      "regressions": [
+        "uacgo/admin/admission_test.go",
+        "uacgo/admin/mobility_test.go",
+        "uacgo/mobility/balance_test.go"
+      ],
+      "basis": "4f0a04/4f6f54/4f263c：0b发现、10AP、共享失败数、最后拒绝60s、300s扫描900s老化；移除虚构的同SSID/VLAN/规则及第二次RSSI门禁。"
+    },
+    {
+      "id": "roaming",
+      "title": "无缝漫游、估算、PMK 和结果分发",
+      "firmware_modules": [
+        "apmng_roam"
+      ],
+      "go_files": [
+        "uacgo/admin/mobility_scan.go",
+        "uacgo/admin/mobility_statistics.go",
+        "uacgo/admin/pmk.go",
+        "uacgo/admin/roam_decision.go",
+        "uacgo/mobility/balance.go",
+        "uacgo/mobility/pmk.go",
+        "uacgo/mobility/rate.go",
+        "uacgo/mobility/select.go",
+        "uacgo/mobility/station_db.go",
+        "uacgo/mobility/statistics.go",
+        "uacgo/mobility/tables_generated.go"
+      ],
+      "regressions": [
+        "uacgo/admin/bssid_state_test.go",
+        "uacgo/admin/mobility_mode_test.go",
+        "uacgo/admin/mobility_test.go",
+        "uacgo/mobility/balance_test.go",
+        "uacgo/mobility/pmk_test.go",
+        "uacgo/mobility/rate_test.go",
+        "uacgo/mobility/select_test.go",
+        "uacgo/mobility/statistics_test.go"
+      ],
+      "basis": "4e89ac→4e8440→4e6564→4e5638；JAL不是旧_roaming_nbr_select。原整数表/排序/四候选/弱信号回退；不增加ACK冷却。V6 Web模式只读2，老ACS内部路径不开放。"
+    },
+    {
+      "id": "rrm",
+      "title": "原 SCA/TPC、测量任务和计划",
+      "firmware_modules": [
+        "apmng_rrm"
+      ],
+      "go_files": [
+        "uacgo/admin/assets/rrm.js",
+        "uacgo/admin/rrm.go",
+        "uacgo/admin/rrm_jobs.go",
+        "uacgo/admin/rrm_runtime.go",
+        "uacgo/admin/rrm_schedule.go",
+        "uacgo/rrm/channel.go",
+        "uacgo/rrm/power.go"
+      ],
+      "regressions": [
+        "uacgo/admin/config_store_test.go",
+        "uacgo/admin/rrm_runtime_test.go",
+        "uacgo/admin/rrm_test.go",
+        "uacgo/rrm/firmware_test.go"
+      ],
+      "basis": "527c70/52763c→librrm_business.so+ab44→5094/677c；原有向图、局部枚举和第三入边功率；90s、低高5G/两轮/冻结集合/基线与平滑图/按顺序提交。"
+    },
+    {
+      "id": "mesh",
+      "title": "Mesh 授权、发现、拓扑和子 AP",
+      "firmware_modules": [
+        "apmng_mesh"
+      ],
+      "go_files": [
+        "uacgo/admin/assets/mesh.js",
+        "uacgo/admin/mesh.go",
+        "uacgo/admin/mesh_members.go",
+        "uacgo/cweng/mesh_control.go",
+        "uacgo/cweng/mesh_report.go",
+        "uacgo/cweng/mesh_transport.go"
+      ],
+      "regressions": [
+        "uacgo/admin/mesh_members_test.go",
+        "uacgo/admin/mesh_test.go",
+        "uacgo/cweng/mesh_control_test.go",
+        "uacgo/cweng/mesh_report_test.go",
+        "uacgo/cweng/mesh_transport_test.go"
+      ],
+      "basis": "Mesh AP 配置与协调保留；成员策略独立于任务历史，子 AP 独立会话而共享父传输队列。"
+    },
+    {
+      "id": "protection",
+      "title": "AP DHCP/ARP/ND 防护、风暴/代理",
+      "firmware_modules": [
+        "apmng_arpdefend",
+        "apmng_dhcp_defense",
+        "apmng_bcast_storm_ctrl"
+      ],
+      "go_files": [
+        "uacgo/admin/assets/protection.js",
+        "uacgo/admin/protection.go",
+        "uacgo/admin/protection_scan.go",
+        "uacgo/admin/storm.go",
+        "uacgo/cweng/arp_report.go"
+      ],
+      "regressions": [
+        "uacgo/admin/arp_scan_test.go",
+        "uacgo/admin/protection_test.go",
+        "uacgo/cweng/arp_report_test.go"
+      ],
+      "basis": "AP执行的信任库、混合地址、绑定/容量/旧新标志、八协议和代理保留。AC Linux 防火墙/主机 DHCP/ARP 防护不移植。"
+    },
+    {
+      "id": "selective-dhcp",
+      "title": "TP-Link AP 专用 DHCP 和接口",
+      "firmware_modules": [
+        "apmng_set"
+      ],
+      "go_files": [
+        "uacgo/admin/controller_identity.go",
+        "uacgo/dhcpserver/serve_linux.go",
+        "uacgo/dhcpserver/serve_other.go",
+        "uacgo/dhcpserver/server.go"
+      ],
+      "regressions": [
+        "uacgo/admin/server_test.go",
+        "uacgo/dhcpserver/network_test.go",
+        "uacgo/dhcpserver/server_test.go"
+      ],
+      "basis": "用户明确保留 AP-only 服务；精确 Option60、Mesh Discover 特例与普通客户端静默；普通 DHCP/DNS/NAT 仅实验工具。"
+    },
+    {
+      "id": "controller-core",
+      "title": "控制器配置事务和 Web 框架",
+      "firmware_modules": [
+        "apmng_set",
+        "apmng_status"
+      ],
+      "go_files": [
+        "uacgo/admin/apply_error.go",
+        "uacgo/admin/assets/index.html",
+        "uacgo/admin/assets/style.css",
+        "uacgo/admin/config_store.go",
+        "uacgo/admin/config_validation.go",
+        "uacgo/admin/model_result.go",
+        "uacgo/admin/policy_state.go",
+        "uacgo/admin/server.go",
+        "uacgo/cmd/acd/main.go"
+      ],
+      "regressions": [
+        "tools/check_admin_ui.py",
+        "uacgo/admin/config_store_test.go",
+        "uacgo/admin/server_test.go",
+        "uacgo/cmd/acd/main_test.go"
+      ],
+      "basis": "Go 程序架构对应；持久化、脱敏、导入校验和原Web RRM修改门禁。HTTP/JSON外观重新设计，不声称和原UI像素/API路径一致。 正式启动不再注册旧 SQLite WLAN/RF 或 JCS；AP 身份编号单独持久化。"
+    }
+  ],
+  "controller_review": {
+    "apmng_arpdefend": {
+      "scope": "retained_or_mixed",
+      "features": [
+        "protection"
+      ],
+      "note": "按上列功能的有效入口保留；共享 Lua 的系统/认证/运维字段不自动变成产品功能。"
+    },
+    "apmng_audit": {
+      "scope": "excluded",
+      "features": [],
+      "note": "认证/外部无线审计已排除。"
+    },
+    "apmng_balance": {
+      "scope": "retained_or_mixed",
+      "features": [
+        "balance"
+      ],
+      "note": "按上列功能的有效入口保留；共享 Lua 的系统/认证/运维字段不自动变成产品功能。"
+    },
+    "apmng_band_navigation": {
+      "scope": "retained_or_mixed",
+      "features": [
+        "band-steering"
+      ],
+      "note": "按上列功能的有效入口保留；共享 Lua 的系统/认证/运维字段不自动变成产品功能。"
+    },
+    "apmng_bcast_storm_ctrl": {
+      "scope": "retained_or_mixed",
+      "features": [
+        "protection"
+      ],
+      "note": "按上列功能的有效入口保留；共享 Lua 的系统/认证/运维字段不自动变成产品功能。"
+    },
+    "apmng_bluetooth_set": {
+      "scope": "excluded",
+      "features": [],
+      "note": "用户明确排除 AP 蓝牙，产品配置/API/UI/运行观察已删除，协议参考编解码可保留。"
+    },
+    "apmng_client": {
+      "scope": "retained_or_mixed",
+      "features": [
+        "association",
+        "client-management"
+      ],
+      "note": "按上列功能的有效入口保留；共享 Lua 的系统/认证/运维字段不自动变成产品功能。"
+    },
+    "apmng_dhcp_defense": {
+      "scope": "retained_or_mixed",
+      "features": [
+        "protection"
+      ],
+      "note": "按上列功能的有效入口保留；共享 Lua 的系统/认证/运维字段不自动变成产品功能。"
+    },
+    "apmng_ftp": {
+      "scope": "excluded",
+      "features": [],
+      "note": "网络运维、FTP/远程日志已排除。"
+    },
+    "apmng_mesh": {
+      "scope": "retained_or_mixed",
+      "features": [
+        "mesh"
+      ],
+      "note": "按上列功能的有效入口保留；共享 Lua 的系统/认证/运维字段不自动变成产品功能。"
+    },
+    "apmng_passthrough": {
+      "scope": "excluded",
+      "features": [],
+      "note": "云穿透/转发入口，云管理排除；AP 所需本地原生 RPC 由 cweng/rpc.go 保留。"
+    },
+    "apmng_rate": {
+      "scope": "retained_or_mixed",
+      "features": [
+        "rates"
+      ],
+      "note": "按上列功能的有效入口保留；共享 Lua 的系统/认证/运维字段不自动变成产品功能。"
+    },
+    "apmng_report": {
+      "scope": "excluded",
+      "features": [],
+      "note": "外部服务器统计推送/认证运维不属于本地无线状态展示，已排除。"
+    },
+    "apmng_rf": {
+      "scope": "retained_or_mixed",
+      "features": [
+        "radio",
+        "edca",
+        "band-steering"
+      ],
+      "note": "按上列功能的有效入口保留；共享 Lua 的系统/认证/运维字段不自动变成产品功能。"
+    },
+    "apmng_roam": {
+      "scope": "retained_or_mixed",
+      "features": [
+        "roaming"
+      ],
+      "note": "按上列功能的有效入口保留；共享 Lua 的系统/认证/运维字段不自动变成产品功能。"
+    },
+    "apmng_rrm": {
+      "scope": "retained_or_mixed",
+      "features": [
+        "rrm"
+      ],
+      "note": "按上列功能的有效入口保留；共享 Lua 的系统/认证/运维字段不自动变成产品功能。"
+    },
+    "apmng_sensor": {
+      "scope": "excluded",
+      "features": [],
+      "note": "Sensor/WIPS/探针测试属于排除的网络运维；普通 AP 的无线状态保留。"
+    },
+    "apmng_set": {
+      "scope": "retained_or_mixed",
+      "features": [
+        "ap-management",
+        "operations",
+        "selective-dhcp",
+        "controller-core"
+      ],
+      "note": "按上列功能的有效入口保留；共享 Lua 的系统/认证/运维字段不自动变成产品功能。"
+    },
+    "apmng_set_status": {
+      "scope": "retained_or_mixed",
+      "features": [
+        "transport"
+      ],
+      "note": "按上列功能的有效入口保留；共享 Lua 的系统/认证/运维字段不自动变成产品功能。"
+    },
+    "apmng_status": {
+      "scope": "retained_or_mixed",
+      "features": [
+        "transport",
+        "association",
+        "client-management",
+        "controller-core"
+      ],
+      "note": "按上列功能的有效入口保留；共享 Lua 的系统/认证/运维字段不自动变成产品功能。"
+    },
+    "apmng_upgrade": {
+      "scope": "retained_or_mixed",
+      "features": [
+        "operations"
+      ],
+      "note": "按上列功能的有效入口保留；共享 Lua 的系统/认证/运维字段不自动变成产品功能。"
+    },
+    "apmng_usb": {
+      "scope": "retained_or_mixed",
+      "features": [
+        "ap-management"
+      ],
+      "note": "按上列功能的有效入口保留；共享 Lua 的系统/认证/运维字段不自动变成产品功能。"
+    },
+    "apmng_wserv": {
+      "scope": "retained_or_mixed",
+      "features": [
+        "wlan"
+      ],
+      "note": "按上列功能的有效入口保留；共享 Lua 的系统/认证/运维字段不自动变成产品功能。"
+    }
+  },
+  "supporting_or_reference_files": {
+    "uacgo/capwap/ap_password.go": "CAPWAP wire infrastructure/reference; active elements are linked by feature tests, unused original codecs are not product features",
+    "uacgo/capwap/association_legacy.go": "CAPWAP wire infrastructure/reference; active elements are linked by feature tests, unused original codecs are not product features",
+    "uacgo/capwap/channel_scan.go": "CAPWAP wire infrastructure/reference; active elements are linked by feature tests, unused original codecs are not product features",
+    "uacgo/capwap/control.go": "CAPWAP wire infrastructure/reference; active elements are linked by feature tests, unused original codecs are not product features",
+    "uacgo/capwap/edca_presets.go": "CAPWAP wire infrastructure/reference; active elements are linked by feature tests, unused original codecs are not product features",
+    "uacgo/capwap/elem_acdesc.go": "CAPWAP wire infrastructure/reference; active elements are linked by feature tests, unused original codecs are not product features",
+    "uacgo/capwap/elem_apcfg.go": "CAPWAP wire infrastructure/reference; active elements are linked by feature tests, unused original codecs are not product features",
+    "uacgo/capwap/elem_batch10.go": "CAPWAP wire infrastructure/reference; active elements are linked by feature tests, unused original codecs are not product features",
+    "uacgo/capwap/elem_batch10b.go": "CAPWAP wire infrastructure/reference; active elements are linked by feature tests, unused original codecs are not product features",
+    "uacgo/capwap/elem_batch11.go": "CAPWAP wire infrastructure/reference; active elements are linked by feature tests, unused original codecs are not product features",
+    "uacgo/capwap/elem_batch12.go": "CAPWAP wire infrastructure/reference; active elements are linked by feature tests, unused original codecs are not product features",
+    "uacgo/capwap/elem_batch13.go": "CAPWAP wire infrastructure/reference; active elements are linked by feature tests, unused original codecs are not product features",
+    "uacgo/capwap/elem_batch14.go": "CAPWAP wire infrastructure/reference; active elements are linked by feature tests, unused original codecs are not product features",
+    "uacgo/capwap/elem_batch15.go": "CAPWAP wire infrastructure/reference; active elements are linked by feature tests, unused original codecs are not product features",
+    "uacgo/capwap/elem_batch16.go": "CAPWAP wire infrastructure/reference; active elements are linked by feature tests, unused original codecs are not product features",
+    "uacgo/capwap/elem_batch17.go": "CAPWAP wire infrastructure/reference; active elements are linked by feature tests, unused original codecs are not product features",
+    "uacgo/capwap/elem_batch18.go": "CAPWAP wire infrastructure/reference; active elements are linked by feature tests, unused original codecs are not product features",
+    "uacgo/capwap/elem_batch19.go": "CAPWAP wire infrastructure/reference; active elements are linked by feature tests, unused original codecs are not product features",
+    "uacgo/capwap/elem_batch20.go": "CAPWAP wire infrastructure/reference; active elements are linked by feature tests, unused original codecs are not product features",
+    "uacgo/capwap/elem_batch21.go": "CAPWAP wire infrastructure/reference; active elements are linked by feature tests, unused original codecs are not product features",
+    "uacgo/capwap/elem_batch22.go": "CAPWAP wire infrastructure/reference; active elements are linked by feature tests, unused original codecs are not product features",
+    "uacgo/capwap/elem_batch23.go": "CAPWAP wire infrastructure/reference; active elements are linked by feature tests, unused original codecs are not product features",
+    "uacgo/capwap/elem_batch4.go": "CAPWAP wire infrastructure/reference; active elements are linked by feature tests, unused original codecs are not product features",
+    "uacgo/capwap/elem_batch5.go": "CAPWAP wire infrastructure/reference; active elements are linked by feature tests, unused original codecs are not product features",
+    "uacgo/capwap/elem_batch7.go": "CAPWAP wire infrastructure/reference; active elements are linked by feature tests, unused original codecs are not product features",
+    "uacgo/capwap/elem_batch8.go": "CAPWAP wire infrastructure/reference; active elements are linked by feature tests, unused original codecs are not product features",
+    "uacgo/capwap/elem_batch9.go": "CAPWAP wire infrastructure/reference; active elements are linked by feature tests, unused original codecs are not product features",
+    "uacgo/capwap/elem_ieee80211.go": "CAPWAP wire infrastructure/reference; active elements are linked by feature tests, unused original codecs are not product features",
+    "uacgo/capwap/elem_priv.go": "CAPWAP wire infrastructure/reference; active elements are linked by feature tests, unused original codecs are not product features",
+    "uacgo/capwap/elem_priv2.go": "CAPWAP wire infrastructure/reference; active elements are linked by feature tests, unused original codecs are not product features",
+    "uacgo/capwap/elem_station_new.go": "CAPWAP wire infrastructure/reference; active elements are linked by feature tests, unused original codecs are not product features",
+    "uacgo/capwap/elem_wsrvpara_ext.go": "CAPWAP wire infrastructure/reference; active elements are linked by feature tests, unused original codecs are not product features",
+    "uacgo/capwap/elem_wsrvpara_new.go": "CAPWAP wire infrastructure/reference; active elements are linked by feature tests, unused original codecs are not product features",
+    "uacgo/capwap/elem_wsrvpara_new_ext.go": "CAPWAP wire infrastructure/reference; active elements are linked by feature tests, unused original codecs are not product features",
+    "uacgo/capwap/elem_wsta.go": "CAPWAP wire infrastructure/reference; active elements are linked by feature tests, unused original codecs are not product features",
+    "uacgo/capwap/elem_wtpdesc.go": "CAPWAP wire infrastructure/reference; active elements are linked by feature tests, unused original codecs are not product features",
+    "uacgo/capwap/element.go": "CAPWAP wire infrastructure/reference; active elements are linked by feature tests, unused original codecs are not product features",
+    "uacgo/capwap/elements_standard.go": "CAPWAP wire infrastructure/reference; active elements are linked by feature tests, unused original codecs are not product features",
+    "uacgo/capwap/fragment.go": "CAPWAP wire infrastructure/reference; active elements are linked by feature tests, unused original codecs are not product features",
+    "uacgo/capwap/header.go": "CAPWAP wire infrastructure/reference; active elements are linked by feature tests, unused original codecs are not product features",
+    "uacgo/capwap/mesh_public.go": "CAPWAP wire infrastructure/reference; active elements are linked by feature tests, unused original codecs are not product features",
+    "uacgo/capwap/packet.go": "CAPWAP wire infrastructure/reference; active elements are linked by feature tests, unused original codecs are not product features",
+    "uacgo/capwap/reassembly.go": "CAPWAP wire infrastructure/reference; active elements are linked by feature tests, unused original codecs are not product features",
+    "uacgo/capwap/state_pull.go": "CAPWAP wire infrastructure/reference; active elements are linked by feature tests, unused original codecs are not product features",
+    "uacgo/capwap/station_extra.go": "CAPWAP wire infrastructure/reference; active elements are linked by feature tests, unused original codecs are not product features",
+    "uacgo/capwap/vendor_list.go": "CAPWAP wire infrastructure/reference; active elements are linked by feature tests, unused original codecs are not product features",
+    "uacgo/cweng/apcfg.go": "Transport/model/database infrastructure or retained research listener; not an extra product setting",
+    "uacgo/cweng/apstore.go": "Transport/model/database infrastructure or retained research listener; not an extra product setting",
+    "uacgo/cweng/attach.go": "Transport/model/database infrastructure or retained research listener; not an extra product setting",
+    "uacgo/cweng/bluetooth_report.go": "Transport/model/database infrastructure or retained research listener; not an extra product setting",
+    "uacgo/cweng/led.go": "Transport/model/database infrastructure or retained research listener; not an extra product setting",
+    "uacgo/cweng/number_list.go": "Transport/model/database infrastructure or retained research listener; not an extra product setting",
+    "uacgo/cweng/privctrl.go": "Transport/model/database infrastructure or retained research listener; not an extra product setting",
+    "uacgo/cweng/store.go": "Transport/model/database infrastructure or retained research listener; not an extra product setting",
+    "uacgo/cweng/storecfg.go": "Transport/model/database infrastructure or retained research listener; not an extra product setting",
+    "uacgo/cweng/wservice.go": "Transport/model/database infrastructure or retained research listener; not an extra product setting",
+    "uacgo/internal/legacydtls/server.go": "Transport/model/database infrastructure or retained research listener; not an extra product setting",
+    "uacgo/internal/testroot/testroot.go": "Transport/model/database infrastructure or retained research listener; not an extra product setting",
+    "uacgo/jcs/apmngr.go": "Legacy UAC/JCS/SQLite research compatibility; no claim of standalone Web feature parity",
+    "uacgo/jcs/apmngr_ext.go": "Legacy UAC/JCS/SQLite research compatibility; no claim of standalone Web feature parity",
+    "uacgo/jcs/apmngr_read.go": "Legacy UAC/JCS/SQLite research compatibility; no claim of standalone Web feature parity",
+    "uacgo/jcs/authed_backup.go": "Legacy UAC/JCS/SQLite research compatibility; no claim of standalone Web feature parity",
+    "uacgo/jcs/batch3.go": "Legacy UAC/JCS/SQLite research compatibility; no claim of standalone Web feature parity",
+    "uacgo/jcs/batch3cfg.go": "Legacy UAC/JCS/SQLite research compatibility; no claim of standalone Web feature parity",
+    "uacgo/jcs/batch3kv.go": "Legacy UAC/JCS/SQLite research compatibility; no claim of standalone Web feature parity",
+    "uacgo/jcs/batch3rt.go": "Legacy UAC/JCS/SQLite research compatibility; no claim of standalone Web feature parity",
+    "uacgo/jcs/batch3rt2.go": "Legacy UAC/JCS/SQLite research compatibility; no claim of standalone Web feature parity",
+    "uacgo/jcs/batch3senTest.go": "Legacy UAC/JCS/SQLite research compatibility; no claim of standalone Web feature parity",
+    "uacgo/jcs/batch3test.go": "Legacy UAC/JCS/SQLite research compatibility; no claim of standalone Web feature parity",
+    "uacgo/jcs/deepinspect.go": "Legacy UAC/JCS/SQLite research compatibility; no claim of standalone Web feature parity",
+    "uacgo/jcs/jcs.go": "Legacy UAC/JCS/SQLite research compatibility; no claim of standalone Web feature parity",
+    "uacgo/jcs/mesh_topology.go": "Legacy UAC/JCS/SQLite research compatibility; no claim of standalone Web feature parity",
+    "uacgo/jcs/wportal.go": "Legacy UAC/JCS/SQLite research compatibility; no claim of standalone Web feature parity",
+    "uacgo/jcs/wportal_backup.go": "Legacy UAC/JCS/SQLite research compatibility; no claim of standalone Web feature parity",
+    "uacgo/jcs/wservice.go": "Legacy UAC/JCS/SQLite research compatibility; no claim of standalone Web feature parity",
+    "uacgo/jcs/wservice_rd.go": "Legacy UAC/JCS/SQLite research compatibility; no claim of standalone Web feature parity",
+    "uacgo/store/schemas.go": "Legacy UAC/JCS/SQLite research compatibility; no claim of standalone Web feature parity",
+    "uacgo/store/store.go": "Legacy UAC/JCS/SQLite research compatibility; no claim of standalone Web feature parity"
+  },
+  "limits": [
+    "Flash-only profile limits/defaults cannot be recovered from the update image. Reconstructed QEMU profile is not original evidence.",
+    "V4 device behavior is not established by this V6 firmware review.",
+    "No hardware or original-UAC oracle executions used to infer/prove algorithms. Fake AP tests validate Go transport/state and source-derived vectors.",
+    "Current source changes have not been deployed to the lab daemon."
+  ]
+}

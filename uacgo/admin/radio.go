@@ -44,7 +44,10 @@ func reportingControl(cfg Config, ap string) capwap.PrivStatisticsControl {
 	// stats_db_ctl_rssi_update uses the shortest enabled RSSI consumer interval,
 	// capped at 120 seconds. The other two statistics streams remain enabled.
 	p := capwap.PrivStatisticsControl{A: 1, C: 1, D: 120, E: 120, F: 120}
-	s := roamingFor(cfg.Mobility, ap, cfg)
+	s := defaultRoamSettings()
+	if cfg.Mobility != nil {
+		s = cfg.Mobility.Default
+	}
 	if cfg.Mobility != nil && s.Statistics {
 		p.B = 1
 		p.E = uint16(min(120, s.StatisticsInterval))
@@ -213,6 +216,8 @@ func (m *Manager) saveRadioHTTP(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 	manualChannel := r.Channel != nil
+	manualAdvanced := r.Advanced != nil
+	requestedAdvanced := r.Advanced
 	manualLinkage := manualChannel || r.Advanced != nil || r.Enabled != nil
 	var capability *cweng.RadioCapability
 	var selectedAP cweng.APStatus
@@ -278,6 +283,9 @@ func (m *Manager) saveRadioHTTP(w http.ResponseWriter, req *http.Request) {
 		jsonReply(w, 400, map[string]string{"error": err.Error()})
 		return
 	}
+	if manualLinkage {
+		r = normalizeLinkageRadio(r, *capability, next, selectedAP)
+	}
 	if idx < 0 {
 		next.Radios = append(next.Radios, r)
 	} else {
@@ -292,21 +300,18 @@ func (m *Manager) saveRadioHTTP(w http.ResponseWriter, req *http.Request) {
 		jsonReply(w, 400, map[string]string{"error": err.Error()})
 		return
 	}
-	if manualChannel {
-		if err := m.propagateMobilityChannelLocked(&next, selectedAP, *capability, *r.Channel); err != nil {
-			jsonReply(w, 400, map[string]string{"error": err.Error()})
-			return
-		}
-	}
+
 	if err := m.validateRestorableConfig(next); err != nil {
 		jsonReply(w, 400, map[string]string{"error": err.Error()})
 		return
 	}
-	if err := atomicJSON(m.path, next); err != nil {
+	if manualAdvanced {
+		markManualEDCA(&next, r.AP, r.Radio, requestedAdvanced)
+	}
+	if err := m.persistConfigLocked(next, false); err != nil {
 		jsonReply(w, 500, map[string]string{"error": err.Error()})
 		return
 	}
-	m.config = next
 	jsonReply(w, 202, map[string]string{"status": "saved"})
 }
 

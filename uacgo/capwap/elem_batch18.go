@@ -52,55 +52,39 @@ func ParsePrivArpDefend(v []byte) (*PrivArpDefend, error) {
 	return &PrivArpDefend{Enable: v[0], Count: v[1], W1: Uint32BE(v[2:]), Tail: append([]byte{}, v[6:]...)}, nil
 }
 
-// PrivStaPMKReq is 0x49 (min=max=0x65=101):
-// u8 radio + u8 wlan_id + u8 + u8 + BE32 + 0x11B + 0x10B + 6B MAC.
-// (cw_priv_sta_pmk_req_parse.)
+// PrivStaPMKReq is private0x49, exactly101 bytes in V6 (6b14d8/6b1350).
+// The first two bytes are operation/result, not radio/WLAN.
 type PrivStaPMKReq struct {
-	Radio      uint8
-	WlanID     uint8
-	U8a        uint8
-	U8b        uint8
-	W          uint32
-	Data       [0x11]byte
-	Salt       [0x10]byte
-	MAC        [6]byte
-	VendorTail []byte
+	Operation, Result, Radio, WLAN uint8
+	Pairwise                       uint32
+	Interface                      [17]byte
+	Nonce                          [16]byte
+	MAC, APMAC                     [6]byte
+	PMKR0                          [32]byte
+	PMKR0Name                      [16]byte
 }
 
-// AssembleValue writes the 0x65-byte value.
 func (p PrivStaPMKReq) AssembleValue() []byte {
-	b := []byte{p.Radio, p.WlanID, p.U8a, p.U8b}
-	b = AppendUint32BE(b, p.W)
-	b = append(b, p.Data[:]...)
-	b = append(b, p.Salt[:]...)
+	b := []byte{p.Operation, p.Result, p.Radio, p.WLAN}
+	b = AppendUint32BE(b, p.Pairwise)
+	b = append(b, p.Interface[:]...)
+	b = append(b, p.Nonce[:]...)
 	b = append(b, p.MAC[:]...)
-	b = append(b, p.VendorTail...)
-	return b
+	b = append(b, p.APMAC[:]...)
+	b = append(b, p.PMKR0[:]...)
+	return append(b, p.PMKR0Name[:]...)
 }
-
-// ParsePrivStaPMKReq decodes the 0x65-byte value.
 func ParsePrivStaPMKReq(v []byte) (*PrivStaPMKReq, error) {
-	if len(v) < 8 {
+	if len(v) != 101 || v[2] >= 32 || v[3] >= 17 {
 		return nil, ErrShortPacket
 	}
-	p := &PrivStaPMKReq{
-		Radio: v[0], WlanID: v[1], U8a: v[2], U8b: v[3], W: Uint32BE(v[4:])}
-	// data block: 17 bytes starting at +8
-	if len(v) >= 8+0x11 {
-		copy(p.Data[:], v[8:8+0x11])
-	}
-	// salt block: 16 bytes after data
-	if len(v) >= 8+0x11+0x10 {
-		copy(p.Salt[:], v[8+0x11:8+0x11+0x10])
-	}
-	// mac block: 6 bytes after salt
-	if len(v) >= 8+0x11+0x10+6 {
-		copy(p.MAC[:], v[8+0x11+0x10:8+0x11+0x10+6])
-	}
-	// carry vendor tail verbatim
-	if len(v) > 8+0x11+0x10+6 {
-		p.VendorTail = append([]byte(nil), v[8+0x11+0x10+6:]...)
-	}
+	p := &PrivStaPMKReq{Operation: v[0], Result: v[1], Radio: v[2], WLAN: v[3], Pairwise: Uint32BE(v[4:])}
+	copy(p.Interface[:], v[8:25])
+	copy(p.Nonce[:], v[25:41])
+	copy(p.MAC[:], v[41:47])
+	copy(p.APMAC[:], v[47:53])
+	copy(p.PMKR0[:], v[53:85])
+	copy(p.PMKR0Name[:], v[85:101])
 	return p, nil
 }
 

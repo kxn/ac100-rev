@@ -19,18 +19,16 @@ func TestBatch10Roundtrips(t *testing.T) {
 		t.Fatal("below min length must fail")
 	}
 
-	// 0x52: typed 34-byte records (mac + u8×6 + BE16 + BE32 + BE16 + u8×2 + BE32×3)
+	// V6 0x52: exactly38 wire bytes, including all four32-bit counters.
 	rec := StaStatisticsRecord{}
 	for i := range rec.MAC {
 		rec.MAC[i] = byte(i + 0x10)
 	}
-	for i := range rec.U8 {
-		rec.U8[i] = byte(i)
-	}
-	rec.U16a, rec.U32a, rec.U16b = 42, 7, 8
+	rec.Radio, rec.WLAN, rec.RSSI, rec.Bandwidth = 1, 2, -60, 3
+	rec.NegotiatedMbps, rec.SupportWord, rec.Capabilities = 42, 7, 8
 	sta := PrivStaStatisticsReq{Count: 1, Records: []StaStatisticsRecord{rec}}
 	if v, err := ParsePrivStaStatisticsReq(sta.AssembleValue()); err != nil ||
-		v.Count != 1 || v.Records[0].U16a != 42 || !bytes.Equal(v.Records[0].MAC[:], rec.MAC[:]) {
+		v.Count != 1 || v.Records[0].NegotiatedMbps != 42 || !bytes.Equal(v.Records[0].MAC[:], rec.MAC[:]) {
 		t.Fatalf("sta stats: %v", err)
 	}
 	bad := PrivStaStatisticsReq{Count: 1}

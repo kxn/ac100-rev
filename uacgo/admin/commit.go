@@ -28,8 +28,7 @@ func (m *Manager) commitAP(ctx context.Context, ap cweng.APStatus, cfg Config) {
 	failed := cfg.BandNavigation != nil && ap.HasCapability(3) && m.applied[bandKey] == configurationKey(cfg.BandNavigation, ap.ConnectedAt) && m.status[bandKey].State == "failed"
 	failed = failed || m.status[ap.ID+"/rates"].State == "failed" || m.status[ap.ID+"/protection"].State == "failed" || m.status[ap.ID+"/storm"].State == "failed"
 	failed = failed || m.status[ap.ID+"/balance"].State == "failed" || m.status[ap.ID+"/roaming"].State == "failed"
-	failed = failed || m.status[ap.ID+"/roaming-mode"].State == "failed" || m.status[ap.ID+"/bluetooth"].State == "failed"
-	failed = failed || m.status[ap.ID+"/radio-linkage"].State == "failed"
+	failed = failed || m.status[ap.ID+"/roaming-mode"].State == "failed"
 	failed = failed || m.status[ap.ID+"/mesh-network"].State == "failed"
 	failed = failed || m.status[ap.ID+"/multicast-groups"].State == "failed"
 	for _, s := range cfg.Services {

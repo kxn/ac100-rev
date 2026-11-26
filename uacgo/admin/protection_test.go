@@ -172,16 +172,15 @@ func TestStormProxyAndProtocolCapabilities(t *testing.T) {
 		t.Fatal("unsupported extensions sent")
 	}
 }
-func TestAPMeshBluetoothAndUSBOptions(t *testing.T) {
+func TestAPMeshAndUSBOptions(t *testing.T) {
 	b := true
-	mode := 2
 	ap := cweng.APStatus{GeneralCapabilities: []uint32{0, 1 << 12, 1<<13 | 1<<15, 1 << 4}, SubCapabilities: map[uint16]uint32{77: 1}}
-	o := APOptions{Mesh: &b, USB: &b, Bluetooth: &mode}
+	o := APOptions{Mesh: &b, USB: &b}
 	els, err := managementElements(o, ap)
 	if err != nil {
 		t.Fatal(err)
 	}
-	want := map[uint16][]byte{0x76: {0, 1, 0, 0x15, 0, 2, 0, 1}, 0xd7: {0, 1, 0, 2, 0, 1, 1}, 0xa7: {1, 0, 0, 0, 1, 255, 255, 255, 255}}
+	want := map[uint16][]byte{0x76: {0, 1, 0, 0x15, 0, 2, 0, 1}, 0xd7: {0, 1, 0, 2, 0, 1, 1}}
 	for _, el := range els {
 		v := el.Value
 		typ := binary.BigEndian.Uint16(v[6:])

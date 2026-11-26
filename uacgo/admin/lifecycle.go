@@ -42,11 +42,10 @@ func (m *Manager) deleteServiceHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	next.Version++
-	if err := atomicJSON(m.path, next); err != nil {
+	if err := m.persistConfigLocked(next, false); err != nil {
 		jsonReply(w, 500, map[string]string{"error": err.Error()})
 		return
 	}
-	m.config = next
 	jsonReply(w, 202, map[string]string{"status": "deleting"})
 }
 
@@ -73,10 +72,9 @@ func (m *Manager) finishDeletions() {
 		return
 	}
 	next.Version++
-	if atomicJSON(m.path, next) != nil {
+	if m.persistConfigLocked(next, false) != nil {
 		return
 	}
-	m.config = next
 	for key, status := range m.status {
 		for _, id := range removed {
 			if status.Service == id {
@@ -98,7 +96,7 @@ func (m *Manager) radioDefaultsHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 		for _, c := range ap.Capabilities {
 			if int(c.RadioID) == n {
-				jsonReply(w, 200, defaultRadioAdvanced(c))
+				jsonReply(w, 200, defaultAPRadio(ap, c).Advanced)
 				return
 			}
 		}

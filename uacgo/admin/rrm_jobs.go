@@ -11,20 +11,26 @@ import (
 	"time"
 	"uacgo/capwap"
 	"uacgo/cweng"
+	firmware "uacgo/rrm"
 )
 
 type RRMJob struct {
-	ID             string               `json:"id"`
-	Rule           RRMRule              `json:"rule"`
-	State          string               `json:"state"`
-	Error          string               `json:"error,omitempty"`
-	Started        time.Time            `json:"started"`
-	Updated        time.Time            `json:"updated"`
-	BaseVersion    uint64               `json:"base_version"`
-	AppliedVersion uint64               `json:"applied_version,omitempty"`
-	Targets        map[string]time.Time `json:"targets"`
-	Scans          map[string]time.Time `json:"scans"`
-	Changes        []RRMChange          `json:"changes"`
+	Round            int                  `json:"round"`
+	Pass             int                  `json:"pass"`
+	CollectUntil     time.Time            `json:"collect_until"`
+	ID               string               `json:"id"`
+	Rule             RRMRule              `json:"rule"`
+	State            string               `json:"state"`
+	Error            string               `json:"error,omitempty"`
+	Started          time.Time            `json:"started"`
+	Updated          time.Time            `json:"updated"`
+	BaseSignature    string               `json:"base_signature,omitempty"`
+	AppliedSignature string               `json:"applied_signature,omitempty"`
+	BaseVersion      uint64               `json:"base_version"`
+	AppliedVersion   uint64               `json:"applied_version,omitempty"`
+	Targets          map[string]time.Time `json:"targets"`
+	Scans            map[string]time.Time `json:"scans"`
+	Changes          []RRMChange          `json:"changes"`
 }
 
 func (m *Manager) rrmPath() string    { return filepath.Join(filepath.Dir(m.path), "rrm-jobs.json") }
@@ -76,9 +82,6 @@ func (m *Manager) loadRRMJobs() error {
 	return nil
 }
 func (m *Manager) startRRM(rule RRMRule, id string) (RRMJob, error) { // Manager.mu held.
-	if m.mobilityScan.State == "collecting" || m.mobilityScan.State == "planning" || m.mobilityScan.State == "applying" {
-		return RRMJob{}, fmt.Errorf("高性能漫游信道测量正在运行")
-	}
 	if err := validateRRMRules([]RRMRule{rule}, m.config); err != nil {
 		return RRMJob{}, err
 	}
@@ -93,7 +96,7 @@ func (m *Manager) startRRM(rule RRMRule, id string) (RRMJob, error) { // Manager
 	if id == "" {
 		id = newManagementID("rrm")
 	}
-	j := RRMJob{ID: id, Rule: rule, State: "collecting", Started: time.Now(), Updated: time.Now(), BaseVersion: m.config.Version, Targets: map[string]time.Time{}, Scans: map[string]time.Time{}}
+	j := RRMJob{ID: id, Rule: rule, State: "collecting", Started: time.Now(), Updated: time.Now(), BaseVersion: m.config.Version, BaseSignature: wirelessConfigKey(m.config), Targets: map[string]time.Time{}, Scans: map[string]time.Time{}}
 	for _, ap := range m.known {
 		if !ap.Online || !rule.matches(ap.ID, m.config) {
 			continue
@@ -102,7 +105,7 @@ func (m *Manager) startRRM(rule RRMRule, id string) (RRMJob, error) { // Manager
 			return RRMJob{}, fmt.Errorf("AP %s 正在升级", ap.ID)
 		}
 		if !ap.HasCapability(27) {
-			return RRMJob{}, fmt.Errorf("AP %s 不支持全局优化", ap.ID)
+			continue
 		}
 		active := m.config
 		active.Services = append([]Service{}, active.Services...)
@@ -113,30 +116,12 @@ func (m *Manager) startRRM(rule RRMRule, id string) (RRMJob, error) { // Manager
 			return RRMJob{}, fmt.Errorf("AP %s 配置尚未同步完成", ap.ID)
 		}
 		selected := 0
-		five := 0
 		effective := effectiveRadioConfig(m.config, ap)
 		for _, c := range ap.Capabilities {
 			if c.FunctionType == 1 || c.Band != "2.4 GHz" && c.Band != "5 GHz" || rule.Frequency == 1 && c.Band != "2.4 GHz" || rule.Frequency == 2 && c.Band != "5 GHz" || radioDisabled(effective, ap.ID, c.RadioID) {
 				continue
 			}
 			selected++
-			b := rule.Band2G
-			if c.Band == "5 GHz" {
-				b = rule.Band5G
-				five++
-				if five > 1 && len(b.SecondChannels) > 0 {
-					b.Channels = b.SecondChannels
-				}
-			}
-			if rule.Channel && !hasInt(c.Bandwidths, b.Bandwidth) {
-				return RRMJob{}, fmt.Errorf("AP %s 射频 %d 不支持所选带宽", ap.ID, c.RadioID)
-			}
-			if rule.Channel && len(rrmAllowed(c, b)) == 0 {
-				return RRMJob{}, fmt.Errorf("AP %s 射频 %d 没有兼容带宽的候选信道", ap.ID, c.RadioID)
-			}
-			if rule.Power && (b.MinPower > c.MaxPower || b.MaxPower < c.MinPower) {
-				return RRMJob{}, fmt.Errorf("优化功率超出 AP %s 能力", ap.ID)
-			}
 		}
 		if selected == 0 {
 			continue
@@ -146,102 +131,140 @@ func (m *Manager) startRRM(rule RRMRule, id string) (RRMJob, error) { // Manager
 	if len(j.Targets) == 0 {
 		return RRMJob{}, fmt.Errorf("没有符合规则的在线 AP")
 	}
+	aps := []cweng.APStatus{}
+	for ap := range j.Targets {
+		aps = append(aps, m.known[ap])
+	}
+	nodes, err := rrmNodes(rule, aps, m.config, time.Now())
+	if err != nil {
+		return RRMJob{}, err
+	}
+	j.Targets = map[string]time.Time{}
+	for _, n := range nodes {
+		j.Targets[n.AP.ID] = n.AP.ConnectedAt
+	}
+	run := newRRMRun(nodes)
+	run.beginPass(rule, time.Now())
+	if m.rrmRuns == nil {
+		m.rrmRuns = map[string]*rrmRun{}
+	}
+	m.rrmRuns[id] = run
+	j.Round = run.round
+	j.Pass = run.pass
+	j.CollectUntil = run.deadline
 	m.rrmJobs[id] = j
 	if err := m.saveRRMJobs(); err != nil {
 		delete(m.rrmJobs, id)
+		delete(m.rrmRuns, id)
 		return RRMJob{}, err
 	}
+	m.dispatchRRMCommandsLocked(&j, run)
+	m.rrmJobs[id] = j
+	_ = m.saveRRMJobs()
 	return j, nil
 }
-func ndpElement(mac [6]byte, ap cweng.APStatus, c cweng.RadioCapability, channels []int) capwap.Element {
-	power := c.DefaultPower
-	for _, r := range ap.RadioStatus {
-		if r.Radio == c.RadioID {
-			power = int(r.Power)
-		}
+func ndpElement(mac [6]byte, n rrmNode, channel int, level uint8) capwap.Element {
+	a := defaultRadioAdvanced(n.Cap)
+	if n.Setting.Advanced != nil {
+		a = *n.Setting.Advanced
 	}
-	tail := []byte{}
-	for _, ch := range channels {
-		if hasInt(c.Channels, ch) && len(tail) < 32 {
-			tail = append(tail, byte(ch))
-		}
+	// RRM measurement uses the current PHY with the requested optimization
+	// bandwidth; the FE preserve path is not used by this business entrypoint.
+	a.Bandwidth = n.Band.Bandwidth
+	a = rrmMeasurementMode(a, n.Cap)
+	bw := a.Bandwidth
+	if bw == 2 {
+		bw = 0
 	}
-	// V6 uac_rrm_init: magic AB, NDP counts/period/length 1/60/16,
-	// modes FE preserve the AP's current mode and bandwidth during measurement.
-	p := capwap.PrivNdpPara{MAC: mac, U8a: c.RadioID, U8b: 0xab, W1: 1, W2: 60, W3: 16, U8c: 0xfe, U8d: 0xfe, U8e: byte(power), U8f: byte(len(tail)), Tail: tail}
+	power := firmware.PowerForLevel(level, uint8(n.Cap.MaxPower), uint8(n.Cap.MinPower))
+	// rdmngr_db_get_real_max_tx_pwr @72de04, default profile @8edd28:
+	// all38 supported fixed channels have a50dBm upper bound; auto has
+	// the hardware bound. The Linux host's region configuration is unrelated.
+	if n.Setting.Channel != nil && *n.Setting.Channel != 0 && power > 50 {
+		power = 50
+	}
+	p := capwap.PrivNdpPara{MAC: mac, U8a: n.Cap.RadioID, U8b: 0xab, W1: 1, W2: 60, W3: 16, U8c: byte(a.Mode), U8d: byte(bw), U8e: power, U8f: 1, Tail: []byte{byte(channel)}}
 	return privateSetting(0x5c, p.AssembleValue())
+}
+func (m *Manager) observeRRMReport(ap string, connection time.Time, report capwap.PrivRrmNeighsList) {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	for id, run := range m.rrmRuns {
+		job := m.rrmJobs[id]
+		if job.State != "collecting" || !job.Targets[ap].Equal(connection) {
+			continue
+		}
+		for i, n := range run.nodes {
+			if n.AP.ID != ap || n.Cap.RadioID != report.A {
+				continue
+			}
+			if !run.received[i] {
+				run.received[i] = true
+				run.receivedCount++
+			}
+			if q, ok := run.requests[i]; ok {
+				q.received = true
+			}
+			run.ingest(i, report.Neighs, run.round > 1)
+			m.wakeRRMLocked()
+		}
+	}
+}
+
+// Queue the complete frozen set while holding the business-state lock, just
+// as the firmware holds its runtime reference during serv_packet_send calls.
+// QueueAP never takes a session lock and never waits for an ACK.
+func (m *Manager) dispatchRRMCommandsLocked(job *RRMJob, run *rrmRun) {
+	for _, band := range []int{0, 1} {
+		for i, n := range run.nodes {
+			q, ok := run.requests[i]
+			if !ok || q.sent || n.BandID != band {
+				continue
+			}
+			element := ndpElement(m.ndpMAC, n, q.channel, run.levels[i])
+			if p, err := capwap.ParsePrivNdpPara(element.Value[10:]); err == nil {
+				run.levels[i] = firmware.LevelForPower(p.U8e, uint8(n.Cap.MaxPower), uint8(n.Cap.MinPower))
+			}
+			ticket, err := m.engine.QueueAP(context.Background(), n.AP, 7, []capwap.Element{element})
+			if err != nil {
+				delete(run.requests, i) // original count increases only on successful queueing
+				m.status[n.AP.ID+"/rrm-measurement"] = ApplyStatus{AP: n.AP.ID, Service: "rrm-measurement", State: "failed", Error: err.Error(), At: time.Now()}
+				continue
+			}
+			run.markDispatched(i, q, time.Now())
+			job.Scans[n.AP.ID] = time.Now()
+			ap := n.AP
+			go func() {
+				_, err := ticket.Wait(context.Background())
+				if err == nil {
+					return
+				}
+				m.mu.Lock()
+				defer m.mu.Unlock()
+				if current, ok := m.known[ap.ID]; ok && current.ConnectedAt.Equal(ap.ConnectedAt) {
+					m.status[ap.ID+"/rrm-measurement"] = ApplyStatus{AP: ap.ID, Service: "rrm-measurement", State: "failed", Error: err.Error(), At: time.Now()}
+				}
+			}()
+		}
+	}
+	// @527944 arms the collection timer after queueing, including an empty set.
+	run.deadline = time.Now().Add(rrmCollectionTimeout)
+	job.CollectUntil = run.deadline
+	m.wakeRRMLocked()
 }
 func (m *Manager) rrmStep(ctx context.Context, ap cweng.APStatus) bool {
 	m.mu.Lock()
-	var job RRMJob
-	found := false
-	for _, j := range m.rrmJobs {
-		if j.State == "collecting" {
-			if _, ok := j.Targets[ap.ID]; ok {
-				job = j
-				found = true
-				break
+	defer m.mu.Unlock()
+	for _, job := range m.rrmJobs {
+		if job.State == "collecting" {
+			if connection, ok := job.Targets[ap.ID]; ok && connection.Equal(ap.ConnectedAt) {
+				return true
 			}
 		}
 	}
-	m.mu.Unlock()
-	if !found {
-		return false
-	}
-	if !job.Targets[ap.ID].Equal(ap.ConnectedAt) {
-		m.failRRM(job.ID, "AP 在无线测量期间重新接入")
-		return false
-	}
-	if _, sent := job.Scans[ap.ID]; !sent {
-		five := 0
-		effective := effectiveRadioConfig(m.snapshot(), ap)
-		for _, c := range ap.Capabilities {
-			if c.FunctionType == 1 {
-				continue
-			}
-			if c.Band == "5 GHz" {
-				five++
-			}
-			channels := job.Rule.Band2G.Channels
-			if c.Band == "5 GHz" {
-				if job.Rule.Frequency == 1 {
-					continue
-				}
-				channels = job.Rule.Band5G.Channels
-				if five > 1 && len(job.Rule.Band5G.SecondChannels) > 0 {
-					channels = job.Rule.Band5G.SecondChannels
-				}
-			} else if c.Band == "2.4 GHz" {
-				if job.Rule.Frequency == 2 {
-					continue
-				}
-			} else {
-				continue
-			}
-			if radioDisabled(effective, ap.ID, c.RadioID) {
-				continue
-			}
-			if _, err := m.engine.Request(ctx, ap.ID, 7, []capwap.Element{ndpElement(m.ndpMAC, ap, c, channels)}); err != nil {
-				m.failRRM(job.ID, err.Error())
-				return false
-			}
-		}
-		m.mu.Lock()
-		j := m.rrmJobs[job.ID]
-		if j.State == "collecting" {
-			j.Scans[ap.ID] = time.Now()
-			j.Updated = time.Now()
-			m.rrmJobs[j.ID] = j
-			if err := m.saveRRMJobs(); err != nil {
-				j.State = "failed"
-				j.Error = err.Error()
-				m.rrmJobs[j.ID] = j
-			}
-		}
-		m.mu.Unlock()
-	}
-	return true
+	return false
 }
+
 func (m *Manager) failRRM(id, reason string) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -288,37 +311,55 @@ func (m *Manager) tickRRM(now time.Time) { // Called after AP snapshots refresh.
 		}
 		switch j.State {
 		case "collecting":
-			if j.BaseVersion != m.config.Version {
+			if j.BaseSignature != wirelessConfigKey(m.config) {
 				fail("测量期间配置已更改，取消本轮优化")
 				break
 			}
 			aps := []cweng.APStatus{}
-			last := j.Started
-			ready := true
+			run := m.rrmRuns[id]
+			if run == nil {
+				fail("无线优化运行状态已丢失")
+				break
+			}
 			for ap, connection := range j.Targets {
 				a := m.known[ap]
 				if !a.Online || !a.ConnectedAt.Equal(connection) {
 					fail("目标 AP 离线或连接已更换")
-					ready = false
 					break
 				}
 				aps = append(aps, a)
-				sent, ok := j.Scans[ap]
-				ready = ready && ok
-				if sent.After(last) {
-					last = sent
-				}
 			}
-			if j.State == "failed" {
+			if j.State == "failed" || !run.collected(now) {
 				break
 			}
-			if !ready || now.Sub(last) < 65*time.Second {
-				if now.Sub(j.Started) > 3*time.Minute {
-					fail("无线测量超时")
-				}
+			if run.pass == 0 && run.multi5G {
+				run.pass = 1
+				run.beginPass(j.Rule, now)
+				j.Pass = run.pass
+				j.CollectUntil = run.deadline
+				j.Scans = map[string]time.Time{}
+				m.dispatchRRMCommandsLocked(&j, run)
+				changed = true
 				break
 			}
-			plan, err := planRRM(j.Rule, aps, m.config, j.Started)
+			powerChanged, err := run.calculate(j.Rule, run.round == 1)
+			if err != nil {
+				fail(err.Error())
+				break
+			}
+			if j.Rule.Power && powerChanged && run.round == 1 {
+				run.round = 2
+				run.pass = 0
+				run.beginPass(j.Rule, now)
+				j.Round = run.round
+				j.Pass = run.pass
+				j.CollectUntil = run.deadline
+				j.Scans = map[string]time.Time{}
+				m.dispatchRRMCommandsLocked(&j, run)
+				changed = true
+				break
+			}
+			plan, err := run.changes(j.Rule, m.config)
 			if err != nil {
 				fail(err.Error())
 				break
@@ -348,12 +389,13 @@ func (m *Manager) tickRRM(now time.Time) { // Called after AP snapshots refresh.
 				fail(err.Error())
 				break
 			}
-			if err = m.saveManagement(next); err != nil {
+			if err = m.saveManagementResult(next, true); err != nil {
 				fail(err.Error())
 				break
 			}
 			j.Changes = plan
 			j.AppliedVersion = m.config.Version
+			j.AppliedSignature = wirelessConfigKey(m.config)
 			j.State = "applying"
 			j.Updated = now
 			changed = true
@@ -361,7 +403,7 @@ func (m *Manager) tickRRM(now time.Time) { // Called after AP snapshots refresh.
 				m.invalidateRadioSettingsLocked(ap)
 			}
 		case "applying":
-			if m.config.Version != j.AppliedVersion {
+			if j.AppliedSignature != "" && wirelessConfigKey(m.config) != j.AppliedSignature {
 				fail("优化下发期间配置已更改，请核对当前射频设置")
 				break
 			}
@@ -407,6 +449,9 @@ func (m *Manager) tickRRM(now time.Time) { // Called after AP snapshots refresh.
 			}
 		}
 		m.rrmJobs[id] = j
+		if j.State != "collecting" {
+			delete(m.rrmRuns, id)
+		}
 	}
 	if changed {
 		_ = m.saveRRMJobs()
@@ -428,7 +473,7 @@ func (m *Manager) rrmRoutes(mux *http.ServeMux) {
 		defer m.mu.Unlock()
 		next := m.config
 		next.RRM = rows
-		if err := m.saveManagement(next); err != nil {
+		if err := m.saveManagementResult(next, true); err != nil {
 			jsonReply(w, 400, map[string]string{"error": err.Error()})
 			return
 		}
@@ -457,4 +502,36 @@ func (m *Manager) rrmRoutes(mux *http.ServeMux) {
 		}
 		jsonReply(w, 404, map[string]string{"error": "无线优化规则不存在"})
 	})
+}
+
+func (m *Manager) wakeRRMLocked() {
+	select {
+	case m.rrmWake <- struct{}{}:
+	default:
+	}
+}
+
+// Report completion and the vendor90-second deadline wake the business task
+// directly. They must not inherit the UI inventory polling interval.
+func (m *Manager) runRRM(ctx context.Context) {
+	for {
+		m.mu.Lock()
+		deadline := time.Now().Add(24 * time.Hour)
+		for id, run := range m.rrmRuns {
+			if m.rrmJobs[id].State == "collecting" && !run.deadline.IsZero() && run.deadline.Before(deadline) {
+				deadline = run.deadline
+			}
+		}
+		m.mu.Unlock()
+		timer := time.NewTimer(max(time.Duration(0), time.Until(deadline)))
+		select {
+		case <-ctx.Done():
+			timer.Stop()
+			return
+		case <-m.rrmWake:
+			timer.Stop()
+		case <-timer.C:
+		}
+		m.tickRRM(time.Now())
+	}
 }

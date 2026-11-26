@@ -27,50 +27,40 @@ func ParseDuplicateIPv6Address(v []byte) (*DuplicateAddr, error) {
 //
 //	6B mac + u8×6 + BE16 + BE32 + BE16 + u8×2 + BE32×4
 type StaStatisticsRecord struct {
-	MAC  [6]byte
-	U8   [6]byte
-	U16a uint16
-	U32a uint32
-	U16b uint16
-	U8b  [2]byte
-	U32  [4]uint32
+	MAC                                                [6]byte
+	Radio, WLAN, AuthType, Cipher                      uint8
+	RSSI, Bandwidth                                    int8
+	NegotiatedMbps                                     uint16
+	SupportWord                                        uint32
+	Capabilities                                       uint16
+	RetryPercent, LossPercent                          uint8
+	UpstreamKbps, DownstreamKbps, UploadKB, DownloadKB uint32
 }
 
-// AssembleRecord writes the 38 wire bytes.
 func (r *StaStatisticsRecord) AssembleRecord() []byte {
-	b := append([]byte(nil), r.MAC[:]...)
-	b = append(b, r.U8[:]...)
-	b = AppendUint16BE(b, r.U16a)
-	b = AppendUint32BE(b, r.U32a)
-	b = AppendUint16BE(b, r.U16b)
-	b = append(b, r.U8b[:]...)
-	for _, w := range r.U32 {
-		b = AppendUint32BE(b, w)
+	b := append([]byte{}, r.MAC[:]...)
+	b = append(b, r.Radio, r.WLAN, r.AuthType, r.Cipher, byte(r.RSSI), byte(r.Bandwidth))
+	b = AppendUint16BE(b, r.NegotiatedMbps)
+	b = AppendUint32BE(b, r.SupportWord)
+	b = AppendUint16BE(b, r.Capabilities)
+	b = append(b, r.RetryPercent, r.LossPercent)
+	for _, v := range []uint32{r.UpstreamKbps, r.DownstreamKbps, r.UploadKB, r.DownloadKB} {
+		b = AppendUint32BE(b, v)
 	}
 	return b
 }
-
-// ParseStaStatisticsRecord decodes one 38-byte record.
 func ParseStaStatisticsRecord(v []byte) (*StaStatisticsRecord, error) {
 	if len(v) != 38 {
 		return nil, ErrShortPacket
 	}
-	r := &StaStatisticsRecord{}
+	r := &StaStatisticsRecord{Radio: v[6], WLAN: v[7], AuthType: v[8], Cipher: v[9], RSSI: int8(v[10]), Bandwidth: int8(v[11]), NegotiatedMbps: Uint16BE(v[12:]), SupportWord: Uint32BE(v[14:]), Capabilities: Uint16BE(v[18:]), RetryPercent: v[20], LossPercent: v[21], UpstreamKbps: Uint32BE(v[22:]), DownstreamKbps: Uint32BE(v[26:]), UploadKB: Uint32BE(v[30:]), DownloadKB: Uint32BE(v[34:])}
 	copy(r.MAC[:], v[:6])
-	copy(r.U8[:], v[6:12])
-	r.U16a = Uint16BE(v[12:])
-	r.U32a = Uint32BE(v[14:])
-	r.U16b = Uint16BE(v[18:])
-	copy(r.U8b[:], v[20:22])
-	for i := 0; i < 4; i++ {
-		r.U32[i] = Uint32BE(v[22+i*4:])
-	}
 	return r, nil
 }
 
 // PrivStaStatisticsReq is element 0x0052 (min 4 max 0x1db4):
 // BE32 record count + count × 38-byte typed records
-// (cw_priv_sta_statistics_parse @0x5c7c9c).
+// (V6 cw_priv_sta_statistics_parse / dump @0x6a1da4).
 type PrivStaStatisticsReq struct {
 	Count   uint32
 	Records []StaStatisticsRecord
@@ -87,7 +77,7 @@ func (p PrivStaStatisticsReq) AssembleValue() []byte {
 
 // ParsePrivStaStatisticsReq decodes count + typed records (each record is
 // exactly 38 bytes per the vendor parse sequence (cw_priv_sta_statistics
-// _parse @0x5c7c9c: r32 count + per-record rbytes(6) r8×6 r16 r32 r16
+// V6 parse: r32 count + per-record rbytes(6) r8×6 r16 r32 r16
 // r8×2 r32×4 = 38 bytes).
 func ParsePrivStaStatisticsReq(v []byte) (*PrivStaStatisticsReq, error) {
 	if len(v) < 4 {

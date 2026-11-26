@@ -93,9 +93,6 @@ func (m *Manager) upgradeBusyLocked(ap string) bool {
 	return false
 }
 func (m *Manager) queueUpgrades(image string, aps []string, when time.Time) ([]UpgradeJob, error) { // mu held; all-or-nothing batch validation.
-	if m.mobilityScan.State == "collecting" || m.mobilityScan.State == "planning" || m.mobilityScan.State == "applying" {
-		return nil, fmt.Errorf("高性能漫游信道测量正在运行")
-	}
 	im, ok := m.upgrades.Images[image]
 	if !ok {
 		return nil, fmt.Errorf("固件不存在")
@@ -293,10 +290,6 @@ func (m *Manager) upgradeStep(ctx context.Context, ap cweng.APStatus, cfg Config
 	if job.State != "queued" {
 		m.mu.Unlock()
 		return true
-	}
-	if m.mobilityScan.State == "collecting" || m.mobilityScan.State == "planning" || m.mobilityScan.State == "applying" {
-		m.mu.Unlock()
-		return false
 	}
 	// Allow initial configuration to finish before pausing normal reconciliation.
 	if m.settled[ap.ID] != configurationKey(effectiveRadioConfig(cfg, ap), ap.ConnectedAt) {

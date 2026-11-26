@@ -13,7 +13,6 @@ type APOptions struct {
 	RFMode            *APRFMode        `json:"rf_mode,omitempty"`
 	USB               *bool            `json:"usb,omitempty"`
 	Mesh              *bool            `json:"mesh,omitempty"`
-	Bluetooth         *int             `json:"bluetooth,omitempty"`
 	Radios            []RadioSetting   `json:"radios,omitempty"`
 	EchoSeconds       *uint8           `json:"echo_seconds,omitempty"`
 	EchoMisses        *uint32          `json:"echo_misses,omitempty"`
@@ -59,9 +58,10 @@ type APProfile struct {
 	Options  APOptions `json:"options"`
 }
 type APGroup struct {
-	ID      string    `json:"id"`
-	Name    string    `json:"name"`
-	Options APOptions `json:"options"`
+	ID       string           `json:"id"`
+	Name     string           `json:"name"`
+	Options  APOptions        `json:"options"`
+	Strategy *APGroupStrategy `json:"strategy,omitempty"`
 }
 type APTemplate struct {
 	ID       string    `json:"id"`
@@ -139,9 +139,6 @@ func validLabel(s string, max int) bool {
 	return utf8.ValidString(s) && len([]byte(s)) <= max && !strings.ContainsAny(s, "\x00\r\n")
 }
 func validateAPOptions(o APOptions) error {
-	if o.Bluetooth != nil && (*o.Bluetooth < -1 || *o.Bluetooth > 2) {
-		return fmt.Errorf("蓝牙模式必须为 -1–2")
-	}
 	seenRadios := map[uint8]bool{}
 	for _, r := range o.Radios {
 		if r.AP != "" || r.Radio == 0 || r.Radio > 31 || seenRadios[r.Radio] {
@@ -198,6 +195,9 @@ func validateAPOptions(o APOptions) error {
 	return nil
 }
 func validateManagement(cfg Config) error {
+	if err := validateGroupStrategies(cfg.Groups); err != nil {
+		return err
+	}
 	if err := validateAPOptions(cfg.APDefaults); err != nil {
 		return err
 	}
@@ -252,8 +252,8 @@ func redactAPOptions(o APOptions) APOptions {
 	return o
 }
 func publicManagement(cfg Config) Config {
+	cfg.EDCAState = nil
 	cfg.Mesh = publicMesh(cfg.Mesh)
-	cfg.Bluetooth = publicBluetooth(cfg.Bluetooth)
 	cfg.APDefaults = redactAPOptions(cfg.APDefaults)
 	cfg.APProfiles = append([]APProfile{}, cfg.APProfiles...)
 	for i := range cfg.APProfiles {

@@ -114,10 +114,9 @@ func (m *Manager) saveMeshMembersLocked(rows []MeshMemberPolicy) error {
 	p.Members = rows
 	next.Mesh = &p
 	next.Version++
-	if err := atomicJSON(m.path, next); err != nil {
+	if err := m.persistConfigLocked(next, false); err != nil {
 		return err
 	}
-	m.config = next
 	return nil
 }
 

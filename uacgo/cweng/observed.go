@@ -52,6 +52,23 @@ func privateElements(p *capwap.ParsedPacket, visit func(uint16, []byte)) {
 }
 
 func (e *Engine) RegisterObservationHandlers() {
+	e.Register(9, 65, "v6_rrm_neighbors", func(ctx *Ctx, req, rsp *capwap.ParsedPacket) bool {
+		privateElements(privatePacketForTypes(req, []uint16{0x5d}), func(typ uint16, b []byte) {
+			if typ != 0x5d {
+				return
+			}
+			if p, err := capwap.ParsePrivRrmNeighsList(b); err == nil {
+				if ctx.Session.rrmReports == nil {
+					ctx.Session.rrmReports = map[uint8]RRMReport{}
+				}
+				ctx.Session.rrmReports[p.A] = RRMReport{Radio: p.A, Mode: p.B, ReceivedAt: time.Now(), Neighbors: p.Neighs}
+				if e.OnRRMReport != nil {
+					e.OnRRMReport(sessionID(ctx.Session), ctx.Session.Created, *p)
+				}
+			}
+		})
+		return true
+	})
 	observe := func(ctx *Ctx, req, rsp *capwap.ParsedPacket) bool {
 		privateElements(req, func(typ uint16, b []byte) {
 			if ctx.Session.apEntry != nil {
@@ -96,15 +113,6 @@ func (e *Engine) RegisterObservationHandlers() {
 				}
 				return
 			}
-			if typ == 0xdd {
-				if r, err := parseBluetoothServerStatus(b); err == nil {
-					if ctx.Session.bluetoothServers == nil {
-						ctx.Session.bluetoothServers = map[uint8]BluetoothServerStatus{}
-					}
-					ctx.Session.bluetoothServers[r.Server] = r
-				}
-				return
-			}
 			if typ == 0x9c {
 				if rows, err := capwap.ParseChannelScanReport(b); err == nil {
 					ctx.Session.channelScan = &ChannelScanReport{ReceivedAt: time.Now(), Channels: rows}
@@ -114,15 +122,6 @@ func (e *Engine) RegisterObservationHandlers() {
 			if typ == 0xca {
 				if report, err := parseARPScan(b); err == nil {
 					ctx.Session.arpScan = report
-				}
-				return
-			}
-			if typ == 0x5d {
-				if p, err := capwap.ParsePrivRrmNeighsList(b); err == nil {
-					if ctx.Session.rrmReports == nil {
-						ctx.Session.rrmReports = map[uint8]RRMReport{}
-					}
-					ctx.Session.rrmReports[p.A] = RRMReport{Radio: p.A, Mode: p.B, ReceivedAt: time.Now(), Neighbors: p.Neighs}
 				}
 				return
 			}
@@ -163,4 +162,48 @@ func (e *Engine) RegisterObservationHandlers() {
 		})
 		return true
 	})
+}
+
+func firstPrivateElement(p *capwap.ParsedPacket, typ uint16) ([]byte, bool) {
+	var value []byte
+	found := false
+	privateElements(p, func(t uint16, b []byte) {
+		if t == typ && !found {
+			value = b
+			found = true
+		}
+	})
+	return value, found
+}
+func privatePacketForTypes(p *capwap.ParsedPacket, types []uint16) *capwap.ParsedPacket {
+	out := *p
+	out.Elements = nil
+	for _, typ := range types {
+		if b, ok := firstPrivateElement(p, typ); ok {
+			out.Elements = append(out.Elements, capwap.Element{Type: 0x25, Value: capwap.VendorEnvelopeValue(0, 0, []capwap.PrivElementValue{{Type: typ, Value: b}})})
+		}
+	}
+	return &out
+}
+
+// _uac_wsta_pkt_wtp_event_listener @74a4b0 chooses a single lifecycle
+// element by type priority, independently of its position in the packet.
+func stationEventPacket(p *capwap.ParsedPacket) *capwap.ParsedPacket {
+	for _, typ := range []uint16{0x33, 0x34} {
+		for _, el := range p.Elements {
+			if el.Type == typ {
+				out := *p
+				out.Elements = []capwap.Element{el}
+				return &out
+			}
+		}
+	}
+	for _, typ := range []uint16{2, 0x8a, 3, 0x4d, 0xc6, 0xbd} {
+		if _, ok := firstPrivateElement(p, typ); ok {
+			return privatePacketForTypes(p, []uint16{typ})
+		}
+	}
+	out := *p
+	out.Elements = nil
+	return &out
 }

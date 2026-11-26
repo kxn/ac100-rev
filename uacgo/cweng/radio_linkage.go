@@ -68,7 +68,9 @@ func ParseRadioLinkage(table, control []byte) (*RadioLinkage, error) {
 			if l > 31 {
 				return nil, capwap.ErrLenMismatch
 			}
-			out.DefaultBandwidths = append([]byte{}, v...)
+			for _, raw := range v {
+				out.DefaultBandwidths = append(out.DefaultBandwidths, byte(rrstBandwidth(strconv.Itoa(int(raw)))))
+			}
 		case 3:
 			if l > 31 {
 				return nil, capwap.ErrLenMismatch
@@ -140,12 +142,19 @@ func ParseRadioLinkage(table, control []byte) (*RadioLinkage, error) {
 						member.BindID = v[0]
 					} // Original tolerates APs reporting a malformed bind-ID field.
 				case 4:
-					for _, s := range strings.Fields(string(v)) {
-						bw, err := strconv.Atoi(s)
-						if err != nil || bw < 0 || bw > 7 {
-							return nil, fmt.Errorf("invalid RRST bandwidth")
+					// get_apdb_bandwidth_flag_bit @6f9b3c uses the string
+					// table {1,2,0,3,4,5}; the wire value is not the enum.
+					var mask uint8
+					for k, token := range strings.Fields(string(v)) {
+						if k == 6 {
+							break
 						}
-						member.Bandwidths = append(member.Bandwidths, bw)
+						mask |= 1 << rrstBandwidth(token)
+					}
+					for bit := 0; bit < 8; bit++ {
+						if mask&(1<<bit) != 0 {
+							member.Bandwidths = append(member.Bandwidths, bit)
+						}
 					}
 				case 5:
 					for _, s := range strings.Fields(string(v)) {
@@ -177,10 +186,12 @@ func ParseRadioLinkage(table, control []byte) (*RadioLinkage, error) {
 							}
 						}
 						for ch := lo; ch <= hi; ch++ {
-							if len(member.Channels) >= 256 {
-								return nil, fmt.Errorf("too many RRST channels")
+							if len(member.Channels) == 51 {
+								break
 							}
-							member.Channels = append(member.Channels, ch)
+							if ch == 0 || rrstLegalChannel(ch) {
+								member.Channels = append(member.Channels, ch)
+							}
 						}
 					}
 				}
@@ -204,4 +215,28 @@ func refreshRadioLinkage(ap *APEntry) {
 	if p, err := ParseRadioLinkage(ap.linkageTable, ap.linkageControl); err == nil {
 		ap.RadioLinkage = p
 	}
+}
+
+// V6 get_apdb_bandwidth_flag_bit returns 6 for an unknown token. Keep
+// that reserved bit in the capability table rather than treating it as 20 MHz.
+func rrstBandwidth(token string) int {
+	for i, value := range []string{"1", "2", "0", "3", "4", "5"} {
+		if token == value {
+			return i
+		}
+	}
+	return 6
+}
+
+// _apdb_is_chnl_legal @6f3b18 and the 25-word table @885110.
+func rrstLegalChannel(ch int) bool {
+	if ch >= 1 && ch <= 13 {
+		return true
+	}
+	for _, c := range [...]int{36, 40, 44, 48, 52, 56, 60, 64, 100, 104, 108, 112, 116, 120, 124, 128, 132, 136, 140, 144, 149, 153, 157, 161, 165} {
+		if c == ch {
+			return true
+		}
+	}
+	return false
 }

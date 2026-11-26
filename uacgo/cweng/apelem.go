@@ -72,6 +72,7 @@ func WTPName(v []byte) string { return string(v) }
 // APEntry is the AP identity derived from a Join Request — the input record
 // for the AP management table (the vendor's _apmngr_try_create_ap_entry...).
 type APEntry struct {
+	EntryID             uint32
 	RadioLinkage        *RadioLinkage
 	linkageTable        []byte
 	linkageControl      []byte
@@ -104,6 +105,7 @@ type APEntry struct {
 // ParseAPEntry extracts the identity fields from a parsed Join Request.
 func ParseAPEntry(req *capwap.ParsedPacket) (*APEntry, error) {
 	e := &APEntry{}
+	var featureDefaults *RadioFeatureDefaults
 	for _, el := range req.Elements {
 		switch el.Type {
 		case 0x32:
@@ -177,6 +179,9 @@ func ParseAPEntry(req *capwap.ParsedPacket) (*APEntry, error) {
 							e.Capabilities = c.Radios
 						}
 					}
+					if binary.BigEndian.Uint16(v) == 0xb2 && featureDefaults == nil {
+						featureDefaults = parseRadioFeatureDefaults(v[4 : 4+n])
+					}
 					if binary.BigEndian.Uint16(v) == 0x8f && n >= 2 {
 						b := v[4 : 4+n]
 						count := int(binary.BigEndian.Uint16(b))
@@ -247,6 +252,26 @@ func ParseAPEntry(req *capwap.ParsedPacket) (*APEntry, error) {
 			}
 		}
 	}
+	// V6 initializes/checks and serializes Wi-Fi6 fields using radio1's
+	// extension bitmap for every radio (@73d0f0, @742e24, @73ea84).
+	firstFeatures := map[string]bool{}
+	for _, c := range e.Capabilities {
+		if c.RadioID == 1 {
+			firstFeatures = c.Features
+		}
+	}
+	for i := range e.Capabilities {
+		features := map[string]bool{}
+		for name, value := range firstFeatures {
+			features[name] = value
+		}
+		e.Capabilities[i].ControlFeatures = features
+		if featureDefaults != nil && e.HasCapability(70) {
+			d := *featureDefaults
+			e.Capabilities[i].AXDefaults = &d
+		}
+	}
+
 	refreshRadioLinkage(e)
 	return e, nil
 }

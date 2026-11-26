@@ -2,7 +2,6 @@ package admin
 
 import (
 	"bytes"
-	"context"
 	"testing"
 	"time"
 	"uacgo/capwap"
@@ -18,7 +17,7 @@ func TestRoamControlWireAndPolicyReferenceValidation(t *testing.T) {
 	r.R = true
 	r.Band2G.RSSIKick = true
 	// Independent field sequence from V6 @0x4e8a94, signed RSSI on the wire.
-	want := []byte{1, 1, 1, 1, 181, 1, 171, 20, 0, 5, 1, 181, 0, 171, 20, 0, 5, 3, 8, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+	want := []byte{1, 1, 1, 1, 181, 1, 176, 20, 0, 10, 1, 176, 0, 171, 20, 0, 10, 1, 8, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
 	if got := r.wire(0); !bytes.Equal(got, want) {
 		t.Fatalf("roam control %x", got)
 	}
@@ -47,6 +46,7 @@ func TestBalanceRequiresCoverageSameServiceAndHasBoundedRejections(t *testing.T)
 		t.Fatal("unknown coverage rejected")
 	}
 	m.clients.StationEvent(cweng.ClientEvent{MAC: mac, APID: "b", RadioID: 1, WLANID: 1, Kind: "probe", Seen: time.Now()})
+	m.observeBalanceProbe("b", time.Now(), mac)
 	for i := 0; i < 2; i++ {
 		if m.admitClient("a", 1, 1, mac, nil) {
 			t.Fatal("overloaded AP did not yield")
@@ -59,7 +59,7 @@ func TestBalanceRequiresCoverageSameServiceAndHasBoundedRejections(t *testing.T)
 		t.Fatal("probe created online client")
 	}
 	m.known["b"] = cweng.APStatus{ID: "b", Online: false}
-	m.balanceFailures = nil
+	m.balance.ForgetAP("b")
 	if !m.admitClient("a", 1, 1, mac, nil) {
 		t.Fatal("offline target caused rejection")
 	}
@@ -75,7 +75,8 @@ func TestRoamingTriggerAcrossTwoUDPSimulatedAPs(t *testing.T) {
 	b.MAC = b.ID
 	bssid := [6]byte{2, 5, 4, 3, 2, 1}
 	b.Telemetry = &cweng.WirelessTelemetry{VAPs: []cweng.WirelessVAP{{RadioID: 1, SSID: "Office", BSSID: "02:05:04:03:02:01"}}}
-	b.RadioStatus = []cweng.RadioStatus{{Radio: 1, Channel: 6}}
+	b.Capabilities = []cweng.RadioCapability{{RadioID: 1, Band: "2.4 GHz", TxStreams: 2, SupportAX: true}}
+	b.RadioStatistics = []cweng.RadioStatistics{{APRadioStatistics: capwap.APRadioStatistics{Radio: 1, Channel: 6}}}
 	m.known = map[string]cweng.APStatus{a.ID: a, b.ID: b}
 	p := defaultMobility()
 	s := Service{ID: "office", SSID: "Office", Security: "open", Enabled: true, Radios: []uint8{1}}
@@ -88,38 +89,30 @@ func TestRoamingTriggerAcrossTwoUDPSimulatedAPs(t *testing.T) {
 	mac := [6]byte{2, 1, 2, 3, 4, 5}
 	rssi := int8(-80)
 	m.clients.StationEvent(cweng.ClientEvent{MAC: mac, APID: a.ID, RadioID: 1, WLANID: 1, State: "connected", Kind: "associate", RSSI: &rssi, Seen: time.Now()})
-	trigger := capwap.PrivRoamingTrigger{Radio: 1, Stations: []capwap.RoamTriggerStation{{MAC: mac, WLAN: 1, Neighbors: []capwap.RoamNeighborReport{{BSSID: bssid, Signal: 100}}}}}
+	trigger := capwap.PrivRoamingTrigger{Radio: 1, Stations: []capwap.RoamTriggerStation{{MAC: mac, WLAN: 1, RSSI: -80, Neighbors: []capwap.RoamNeighborReport{{BSSID: bssid, RCPI: 100}}}}}
 	pkt, _ := capwap.NewParsedPacket(9)
 	pkt.Control.SeqNum = 5
 	pkt.Elements = []capwap.Element{privateSetting(0x58, trigger.AssembleValue())}
-	if _, err := f.conn.Write(pkt.Assemble()); err != nil {
-		t.Fatal(err)
-	}
-	until := time.Now().Add(time.Second)
-	for {
-		m.mu.Lock()
-		_, ok := m.roamJobs[a.ID]
-		m.mu.Unlock()
-		if ok {
-			break
-		}
-		if time.Now().After(until) {
-			t.Fatal("roam event was not handled", a.ID, m.roamJobs, e.APs())
-		}
-		time.Sleep(time.Millisecond)
-	}
 	g.mu.Lock()
 	g.rejectPrivate, g.rejectCount = 0x59, 1
 	g.mu.Unlock()
-	m.applyRoamingJobs(context.Background(), a)
-	m.mu.Lock()
-	_, pending := m.roamJobs[a.ID]
-	limited := !m.roamLast[mac].IsZero()
-	m.mu.Unlock()
-	if !pending || limited {
-		t.Fatal("failed delivery started hysteresis or lost retry")
+	if _, err := f.conn.Write(pkt.Assemble()); err != nil {
+		t.Fatal(err)
 	}
-	m.applyRoamingJobs(context.Background(), a)
+	until := time.Now().Add(2 * time.Second)
+	for {
+		m.mu.Lock()
+		_, pending := m.roamJobs[a.ID]
+		handled := len(m.roamHistory) > 0 && m.status[a.ID+"/roaming-result"].State == "acknowledged" && m.status[b.ID+"/roaming-result"].State == "failed"
+		m.mu.Unlock()
+		if handled && !pending {
+			break
+		}
+		if time.Now().After(until) {
+			t.Fatal("roam submissions were not completed")
+		}
+		time.Sleep(time.Millisecond)
+	}
 	f.mu.Lock()
 	deliveries := 0
 	for _, p := range f.packets {
@@ -156,8 +149,8 @@ func TestRoamingTriggerAcrossTwoUDPSimulatedAPs(t *testing.T) {
 	if m.clients.All()[0].APID != a.ID {
 		t.Fatal("selection fabricated handoff")
 	}
-	// Hysteresis and disabled radios suppress a repeated candidate.
-	if got := m.calculateRoaming(a, trigger, time.Now()); len(got.Stations[0].Candidates) != 0 {
-		t.Fatal("roaming ping pong not restrained")
+	// Transport ACKs do not invent a firmware policy cooldown.
+	if got := m.calculateRoaming(a, trigger, time.Now()); len(got.Stations[0].Candidates) != 1 {
+		t.Fatal("transport ACK changed candidate selection")
 	}
 }

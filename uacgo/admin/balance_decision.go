@@ -1,74 +1,42 @@
 package admin
 
-import "time"
+import (
+	"time"
+	"uacgo/mobility"
+)
 
-type balanceFailureKey struct {
-	AP, Rule string
-	MAC      [6]byte
-}
-type balanceFailure struct {
-	Count   int
-	Started time.Time
+// Discovery and admission are separate firmware callbacks. Generic RSSI and
+// statistics observations must not populate the private0b discovery table.
+func (m *Manager) observeBalanceProbe(ap string, connection time.Time, mac [6]byte) {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	if known, ok := m.known[ap]; ok && known.ConnectedAt.After(connection) {
+		return
+	}
+	rule := balanceFor(m.config.Mobility, ap, m.config)
+	if rule == nil || !rule.Enabled {
+		return
+	}
+	m.balance.Probe(mobility.MAC(mac), ap, time.Now())
 }
 
-// Called with Manager.mu held. Only APs that have recently heard this station
-// and offer its logical service are candidates. Unknown coverage is not a
-// reason to reject a client. Original V6 expires failure counts after 60s.
-func (m *Manager) balanceAdmission(ap string, radio uint8, mac [6]byte, s Service, now time.Time) bool {
+// mu held. The vendor's discovery/count algorithm lives outside the Web layer.
+func (m *Manager) balanceAdmission(ap string, radio uint8, mac [6]byte, _ Service, now time.Time) bool {
 	rule := balanceFor(m.config.Mobility, ap, m.config)
 	if rule == nil || !rule.Enabled || m.clients == nil {
 		return true
 	}
-	counts := map[string]int{}
+	aps := map[string]mobility.APCount{}
+	for id, known := range m.known {
+		aps[id] = mobility.APCount{Online: known.Online}
+	}
 	for _, c := range m.clients.All() {
-		if c.State == "connected" && now.Sub(c.Seen) < 6*time.Minute && c.MAC != mac {
-			counts[c.APID]++
+		known, ok := m.known[c.APID]
+		if ok && known.Online && c.State == "connected" && !c.Seen.Before(known.ConnectedAt) {
+			v := aps[c.APID]
+			v.Clients++
+			aps[c.APID] = v
 		}
 	}
-	if counts[ap] < rule.Clients {
-		return true
-	}
-	candidate := false
-	for _, o := range m.clients.Observations(mac) {
-		if o.APID == ap || !m.known[o.APID].Online || !rule.PolicyTarget.matches(o.APID, m.config) || !serviceTargets(s, o.APID, m.config) || radioDisabled(m.config, o.APID, o.RadioID) {
-			continue
-		}
-		if o.RSSI != nil && int(*o.RSSI) < rule.RSSI {
-			continue
-		}
-		if m.assignments[o.APID][s.ID][o.RadioID] == 0 {
-			continue
-		}
-		bound, vlan := binding(s, o.APID, o.RadioID)
-		_, sourceVLAN := binding(s, ap, radio)
-		if !selectedServiceRadios(s, m.known[o.APID])[o.RadioID] || !bound || vlan != sourceVLAN {
-			continue
-		}
-		if counts[ap]-counts[o.APID] >= rule.Difference {
-			candidate = true
-			break
-		}
-	}
-	if !candidate {
-		return true
-	}
-	if m.balanceFailures == nil {
-		m.balanceFailures = map[balanceFailureKey]balanceFailure{}
-	}
-	for k, v := range m.balanceFailures {
-		if now.Sub(v.Started) > time.Minute {
-			delete(m.balanceFailures, k)
-		}
-	}
-	key := balanceFailureKey{ap, rule.ID, mac}
-	v := m.balanceFailures[key]
-	if v.Started.IsZero() {
-		v.Started = now
-	}
-	if v.Count >= rule.MaxFailures {
-		return true
-	}
-	v.Count++
-	m.balanceFailures[key] = v
-	return false
+	return m.balance.Admit(mobility.MAC(mac), ap, mobility.BalanceRule{Clients: uint32(rule.Clients), Difference: uint32(rule.Difference), MaxFailures: uint32(rule.MaxFailures)}, aps, now)
 }

@@ -19,6 +19,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"path/filepath"
 	"strconv"
 	"sync"
 	"syscall"
@@ -29,7 +30,6 @@ import (
 
 	"uacgo/capwap"
 	"uacgo/cweng"
-	"uacgo/jcs"
 	"uacgo/store"
 )
 
@@ -104,11 +104,15 @@ func main() {
 	if err != nil {
 		log.Fatalf("load apdb: %v", err)
 	}
-	stores, err := store.OpenAll(*dataDir + "/dbs")
+	// AP identity IDs are the only retained SQLite state in the standalone
+	// daemon. WLAN/RF configuration has one authority: admin/controller.json.
+	// Do not attach the prototype's separate Wserv/Rdmngr DB readers or JCS
+	// writers; otherwise old tables can push different settings during Join.
+	apStore, err := store.Open(filepath.Join(*dataDir, "dbs", "apmngr.db"), store.SchemaApentrycfgTable, store.SchemaApentryrunTable)
 	if err != nil {
 		log.Fatalf("open config dbs: %v", err)
 	}
-	defer stores.CloseAll()
+	defer apStore.Close()
 
 	e, err := cweng.NewEngine(uint16(*port))
 	if err != nil {
@@ -167,14 +171,9 @@ func main() {
 		}
 	}
 	e.UseAPDB(apdb)
-	e.RegisterAttachHandlers(fileIdentity{id: id, apdb: apdb})
+	e.RegisterAttachHandlers(fileIdentity{id: id, port: uint16(*port)})
 	e.RegisterV6Compatibility()
-	e.UseStore(&cweng.SQLiteAPStore{Cfg: stores.Apmngr.DB(), Run: stores.Apmngr.DB()})
-	rateDefault, err := cweng.LoadRateDefault(*dataDir + "/rate-default.bin")
-	if err != nil {
-		log.Printf("rate defaults: %v (SSID/radio envelopes fall back to fixture values)", err)
-	}
-	e.RegisterWserviceHandlers(&cweng.StoreWserviceConfig{Stores: stores, RateDefault: rateDefault})
+	e.UseStore(&cweng.SQLiteAPStore{Cfg: apStore.DB(), Run: apStore.DB()})
 	clients := cweng.NewClientTable()
 	e.RegisterWstaHandlers(clients)
 	e.RegisterObservationHandlers()
@@ -204,21 +203,6 @@ func main() {
 			}
 		}()
 	}
-	var modelList []any
-	for _, ap := range apdb.APList {
-		modelList = append(modelList, map[string]any{
-			"ap_name": ap.APName, "id": ap.ID, "model_count": len(ap.Models)})
-	}
-	// JCS AF_UNIX server (the binary's /tmp/jcs.service.srv.uac endpoint)
-	jcsSrv := jcs.NewServer()
-	jcs.RegisterApmngrJCS(jcsSrv, stores.Apmngr.DB(), modelList)
-	svcPath := jcs.ServicePath("uac")
-	go func() {
-		if err := jcsSrv.Serve(svcPath); err != nil {
-			log.Printf("jcs serve %s: %v", svcPath, err)
-		}
-	}()
-
 	log.Printf("acd (uac-go) listening on :%d, max_sessions=%d, ac=%s, apdb=%s (%d models)",
 		*port, e.MaxSessions, id.ACName, apdb.Version, len(apdb.APList))
 	if err := e.Run(); err != nil && ctx.Err() == nil {
@@ -229,7 +213,7 @@ func main() {
 // fileIdentity adapts identity.json to the engine's IdentityProvider.
 type fileIdentity struct {
 	id   *cweng.Identity
-	apdb *cweng.APDB
+	port uint16
 }
 
 func (f fileIdentity) ACDescriptor() capwap.ACDescriptor {
@@ -258,7 +242,11 @@ func (f fileIdentity) ControlAddress() ([4]byte, uint16) {
 			copy(ip[:], p.To4())
 		}
 	}
-	return ip, f.id.ControlPort
+	port := f.port
+	if port == 0 {
+		port = f.id.ControlPort
+	}
+	return ip, port
 }
 
 func (f fileIdentity) LocalAddress() [4]byte {

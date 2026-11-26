@@ -150,10 +150,9 @@ func (m *Manager) bandNavigationHTTP(w http.ResponseWriter, r *http.Request) {
 	next := m.config
 	next.Version++
 	next.BandNavigation = &b
-	if err := atomicJSON(m.path, next); err != nil {
+	if err := m.persistConfigLocked(next, false); err != nil {
 		jsonReply(w, 500, map[string]string{"error": err.Error()})
 		return
 	}
-	m.config = next
 	jsonReply(w, 202, map[string]string{"status": "saved"})
 }

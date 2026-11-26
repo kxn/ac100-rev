@@ -16,12 +16,6 @@ func TestWirelessOptionsIndependentV6Oracle(t *testing.T) {
 	}{
 		{"psk", func(s *Service) {}, "010200000064030001020200015180001273796e7468657469632d746573742d6b6579"},
 		{"isolation", func(s *Service) { o := serviceOptions(*s); o.Isolate = true; s.Options = &o; s.Hidden = true }, "010200000064030101020200015180001273796e7468657469632d746573742d6b6579"},
-		{"radius", func(s *Service) {
-			s.Security = "wpa2-enterprise"
-			o := serviceOptions(*s)
-			o.Radius = &RadiusOptions{IP: "192.168.70.200", Port: 1812, AccountingPort: 1813, Secret: "synthetic-radius"}
-			s.Options = &o
-		}, "01020000006403000202020001518001c0a846c801c0a846c801c0a846c8071407150715001073796e7468657469632d726164697573"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

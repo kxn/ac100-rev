@@ -124,7 +124,7 @@ func TestLegacyAssociationPermitEchoesPhysicalBackfill(t *testing.T) {
 	if hex.EncodeToString(result) != hex.EncodeToString(want) {
 		t.Fatalf("missing permit %x", result)
 	}
-	if v := table.All(); len(v) != 1 || v[0].State != "associating" || v[0].RSSI == nil || *v[0].RSSI != -20 {
+	if v := table.All(); len(v) != 1 || v[0].State != "connected" || v[0].RSSI == nil || *v[0].RSSI != -20 {
 		t.Fatal(v)
 	}
 }
@@ -162,13 +162,12 @@ func TestClientIPv6ReportPreservesIPv4(t *testing.T) {
 	}
 }
 
-func TestExistingClientReportsAfterControllerRestart(t *testing.T) {
+func TestUnknownStationStatisticsCannotInventAssociation(t *testing.T) {
 	table := NewClientTable()
 	mac := [6]byte{2, 3, 4, 5, 6, 7}
 	table.StationEvent(ClientEvent{Kind: "ip", APID: "ap", MAC: mac, IP: "192.0.2.2"})
 	table.StationEvent(ClientEvent{Kind: "statistics", APID: "ap", MAC: mac, RadioID: 2, WLANID: 1, Statistics: &ClientStatistics{NegotiatedMbps: 1201}})
-	v := table.All()[0]
-	if v.State != "connected" || v.RadioID != 2 || v.IP != "192.0.2.2" || v.Statistics == nil {
-		t.Fatal(v)
+	if len(table.All()) != 0 {
+		t.Fatal("statistics/IP created wireless membership")
 	}
 }

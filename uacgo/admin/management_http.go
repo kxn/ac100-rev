@@ -29,6 +29,34 @@ func keepAccount(next, old APOptions) APOptions {
 	return next
 }
 func (m *Manager) saveManagement(next Config) error {
+	return m.saveManagementFrom(next, managementUser)
+}
+
+type managementWrite uint8
+
+const (
+	managementUser managementWrite = iota
+	managementRRM
+	managementAPEvent
+	managementRestore
+)
+
+func (m *Manager) saveManagementResult(next Config, rrmResult bool) error {
+	if rrmResult {
+		return m.saveManagementFrom(next, managementRRM)
+	}
+	return m.saveManagement(next)
+}
+func (m *Manager) saveManagementFrom(next Config, source managementWrite) error {
+	if err := validateGroupStrategies(next.Groups); err != nil {
+		return err
+	}
+	next = m.compileGroupEdits(next)
+	prior := m.config
+	if source == managementRestore {
+		prior = next
+	}
+	next, _ = m.compileEDCARulesAgainst(next, prior)
 	if next.Mesh != nil && next.Mesh.Members == nil {
 		p := *next.Mesh
 		if old := m.config.Mesh; old != nil && old.Members != nil {
@@ -45,10 +73,9 @@ func (m *Manager) saveManagement(next Config) error {
 		return err
 	}
 	next.Version = m.config.Version + 1
-	if err := atomicJSON(m.path, next); err != nil {
+	if err := m.persistConfigLocked(next, source == managementRRM || source == managementAPEvent); err != nil {
 		return err
 	}
-	m.config = next
 	return nil
 }
 func (m *Manager) managementRoutes(mux *http.ServeMux) {
@@ -163,6 +190,9 @@ func (m *Manager) groupHTTP(w http.ResponseWriter, r *http.Request) {
 		if old.ID == g.ID {
 			idx = i
 			g.Options = keepAccount(g.Options, old.Options)
+			if g.Strategy == nil {
+				g.Strategy = old.Strategy
+			}
 		}
 	}
 	if g.ID == "" {
@@ -398,7 +428,7 @@ func (m *Manager) restoreHTTP(w http.ResponseWriter, r *http.Request) {
 	if next.Labels == nil {
 		next.Labels = map[string]string{}
 	}
-	if err := m.saveManagement(next); err != nil {
+	if err := m.saveManagementFrom(next, managementRestore); err != nil {
 		jsonReply(w, 400, map[string]string{"error": err.Error()})
 		return
 	}

@@ -41,13 +41,15 @@ func ParsePrivFailStation(v []byte) (*PrivFailStation, error) {
 // count <=200, variable station rows with <=12 neighbor reports per row.
 // The old 26-byte prototype encoded one row as the entire message.
 type RoamNeighborReport struct {
-	BSSID        [6]byte
-	Signal, B, C uint8
+	BSSID               [6]byte
+	RCPI, RSNI, Channel uint8
 }
 type RoamTriggerStation struct {
-	MAC                 [6]byte
-	WLAN, Reason, Flags uint8
-	Neighbors           []RoamNeighborReport
+	MAC       [6]byte
+	WLAN      uint8
+	RSSI      int8
+	BandMode  uint8
+	Neighbors []RoamNeighborReport
 }
 type PrivRoamingTrigger struct {
 	Radio, ChannelLoad uint8
@@ -59,10 +61,10 @@ func (p PrivRoamingTrigger) AssembleValue() []byte {
 	b := AppendUint32BE([]byte{p.Radio, p.ChannelLoad, byte(p.NoiseFloor)}, uint32(len(p.Stations)))
 	for _, s := range p.Stations {
 		b = append(b, s.MAC[:]...)
-		b = append(b, s.WLAN, s.Reason, s.Flags, byte(len(s.Neighbors)))
+		b = append(b, s.WLAN, byte(s.RSSI), s.BandMode, byte(len(s.Neighbors)))
 		for _, n := range s.Neighbors {
 			b = append(b, n.BSSID[:]...)
-			b = append(b, n.Signal, n.B, n.C)
+			b = append(b, n.RCPI, n.RSNI, n.Channel)
 		}
 	}
 	return b
@@ -83,7 +85,7 @@ func ParsePrivRoamingTrigger(v []byte) (*PrivRoamingTrigger, error) {
 		}
 		var s RoamTriggerStation
 		copy(s.MAC[:], v)
-		s.WLAN, s.Reason, s.Flags = v[6], v[7], v[8]
+		s.WLAN, s.RSSI, s.BandMode = v[6], int8(v[7]), v[8]
 		count := int(v[9])
 		v = v[10:]
 		if len(v) < count*9 {
@@ -92,7 +94,7 @@ func ParsePrivRoamingTrigger(v []byte) (*PrivRoamingTrigger, error) {
 		for j := 0; j < count; j++ {
 			var r RoamNeighborReport
 			copy(r.BSSID[:], v)
-			r.Signal, r.B, r.C = v[6], v[7], v[8]
+			r.RCPI, r.RSNI, r.Channel = v[6], v[7], v[8]
 			s.Neighbors = append(s.Neighbors, r)
 			v = v[9:]
 		}

@@ -13,11 +13,11 @@ func TestWirelessHistoryPersistsFreshSamplesAndConfirmedTransitions(t *testing.T
 	m, e := testController(t)
 	now := time.Now()
 	mac := [6]byte{2, 1, 2, 3, 4, 5}
-	m.clients.StationEvent(cweng.ClientEvent{MAC: mac, APID: "a", RadioID: 1, WLANID: 1, Kind: "associate", State: "associating", Seen: now.Add(-time.Second)})
+	m.clients.StationEvent(cweng.ClientEvent{MAC: mac, APID: "a", RadioID: 1, WLANID: 1, Kind: "probe", Seen: now.Add(-time.Second)})
 	if len(m.clients.Transitions(0)) != 0 {
 		t.Fatal("admission permission counted as online")
 	}
-	m.clients.StationEvent(cweng.ClientEvent{MAC: mac, APID: "a", RadioID: 1, WLANID: 1, Kind: "statistics", Statistics: &cweng.ClientStatistics{}, Seen: now})
+	m.clients.StationEvent(cweng.ClientEvent{MAC: mac, APID: "a", RadioID: 1, WLANID: 1, Kind: "associate", Seen: now})
 	ap := cweng.APStatus{ID: "a", Online: true, Telemetry: &cweng.WirelessTelemetry{ReceivedAt: now, Radios: []cweng.WirelessRadio{{RadioID: 1, ReceivedAt: now, StatisticsAt: now, Data: map[string]json.RawMessage{"channelUsage": json.RawMessage(`[10,20,30]`)}}}}}
 	m.captureHistory([]cweng.APStatus{ap}, now)
 	m.captureHistory([]cweng.APStatus{ap}, now.Add(time.Minute))

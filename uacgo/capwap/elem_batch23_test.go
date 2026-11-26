@@ -34,28 +34,34 @@ func TestBatch23Roundtrips(t *testing.T) {
 	if v, err := ParsePrivStaIPList(w); err != nil || v.Rows[0].IP[0] != 10 {
 		t.Fatalf("sta ip list: %v", err)
 	}
-	rs := PrivRssiStatistics{W: 9}
-	rs.BSSIDs[0] = 1
-	rs.Rates[7] = 8
+	rs := PrivRssiStatistics{Stations: []RssiStatisticsStation{{MAC: [6]byte{2, 1, 2, 3, 4, 5}, RSSI: [8]int8{-50, -60}}, {MAC: [6]byte{2, 1, 2, 3, 4, 6}}}}
+	rs.ChannelLoad[0] = 1
+	rs.NoiseFloor[7] = -95
 	w = rs.AssembleValue()
-	if len(w) != 34 {
-		t.Fatalf("rssi stat wire = %d", len(w))
+	if len(w) != 48 || Uint32BE(w[16:]) != 2 || w[26] != 206 {
+		t.Fatal("V6 RSSI list layout differs")
 	}
-	if v, err := ParsePrivRssiStatistics(w); err != nil || v.W != 9 || v.BSSIDs[0] != 1 {
-		t.Fatalf("rssi stat: %v", err)
+	if v, err := ParsePrivRssiStatistics(w); err != nil || len(v.Stations) != 2 || v.ChannelLoad[0] != 1 || v.Stations[0].RSSI[0] != -50 {
+		t.Fatal(v, err)
 	}
-	ap := PrivApStatistics{A: 1, D: 2, U16a: 3, I: 4, J: 5}
-	ap.Blk8[0] = 0x88
-	ap.MAC[5] = 0x99
-	ap.W1[6] = 7
-	ap.W3[3] = 8
+	for _, bad := range [][]byte{w[:34], w[:47], append(append([]byte{}, w...), 0)} {
+		if _, err := ParsePrivRssiStatistics(bad); err == nil {
+			t.Fatal("malformed RSSI count accepted")
+		}
+	}
+
+	ap := PrivApStatistics{Global: APStatisticsGlobal{CPUCount: 1, CPUUtilization: [8]byte{0x88}, Counters: [7]uint32{0, 0, 0, 0, 0, 0, 7}}, Radios: []APRadioStatistics{{Radio: 1}, {Radio: 2, Counters: [4]uint32{0, 0, 0, 8}}}, VAPs: []APVAPStatistics{{Radio: 1, WLAN: 2, BSSID: [6]byte{2, 0, 0, 0, 0, 0x99}}}}
 	w = ap.AssembleValue()
-	if len(w) != 102 {
-		t.Fatalf("ap stat wire = %d", len(w))
+	if len(w) != 134 || w[0] != 2 || w[1] != 1 || w[42] != 1 || w[74] != 2 {
+		t.Fatal("V6 AP-stat counts/layout differ")
 	}
 	v, err := ParsePrivApStatistics(w)
-	if err != nil || v.A != 1 || v.D != 2 || v.U16a != 3 || v.Blk8[0] != 0x88 ||
-		v.MAC[5] != 0x99 || v.W1[6] != 7 || v.W3[3] != 8 || !bytes.Equal([]byte{v.I, v.J}, []byte{4, 5}) {
-		t.Fatalf("ap stat: %v %+v", err, v)
+	if err != nil || len(v.Radios) != 2 || len(v.VAPs) != 1 || v.Global.CPUUtilization[0] != 0x88 || v.Global.Counters[6] != 7 || v.Radios[1].Counters[3] != 8 || v.VAPs[0].BSSID[5] != 0x99 || !bytes.Equal(v.AssembleValue(), w) {
+		t.Fatal(v, err)
+	}
+	for _, bad := range [][]byte{w[:102], w[:133], append(append([]byte{}, w...), 0)} {
+		if _, err := ParsePrivApStatistics(bad); err == nil {
+			t.Fatal("truncated AP counts accepted")
+		}
 	}
 }

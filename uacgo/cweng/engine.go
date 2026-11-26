@@ -18,6 +18,8 @@ import (
 // one UDP socket pair (v4+v6 combined in Go), a session table, per-message
 // handler chains registered by the subsystems, and the session FSM.
 type Engine struct {
+	outboundMu     sync.Mutex
+	outbound       map[*Session]*commandQueue
 	apdb           *APDB
 	mu             sync.Mutex
 	conn           *net.UDPConn
@@ -52,12 +54,22 @@ type Engine struct {
 	OnEntReset func(*Session) error
 	OnEntRun   func(*Session) error
 	OnDelete   func(*Session)
+	OnAPState  func(APStatus)
 	// Set before Run. Nil retains protocol-only operation for engine users.
-	AdmitStation func(ap string, radio, wlan uint8) bool
+	ObserveAssociation func(ap string, radio, wlan uint8, mac [6]byte) bool
+	AdmitStation       func(ap string, radio, wlan uint8) bool
 	// Runs under the AP session lock; must not call session/engine readers.
-	AdmitClient        func(ap string, radio, wlan uint8, mac [6]byte, rssi *int8) bool
-	meshChildAuthorize func(string, time.Time, string, uint8) bool
-	OnRoamingTrigger   func(ap string, connection time.Time, report capwap.PrivRoamingTrigger)
+	CheckAssociation    func(ap string, radio, wlan uint8, mac [6]byte, rssi *int8, mlo *capwap.AssociationMLO) uint32
+	AdmitClient         func(ap string, radio, wlan uint8, mac [6]byte, rssi *int8) bool
+	meshChildAuthorize  func(string, time.Time, string, uint8) bool
+	OnRoamingTrigger    func(ap string, connection time.Time, report capwap.PrivRoamingTrigger)
+	OnStationDiscovery  func(ap string, connection time.Time, mac [6]byte)
+	OnStationStatistics func(ap string, connection time.Time, stats capwap.StaStatisticsRecord)
+	OnRSSIStatistics    func(ap string, connection time.Time, stats capwap.PrivRssiStatistics)
+	OnAPStatistics      func(ap string, connection time.Time, stats capwap.PrivApStatistics)
+	OnBSSIDLocations    func(ap string, connection time.Time, rows []capwap.BSSIDLocation)
+	OnRRMReport         func(ap string, connection time.Time, report capwap.PrivRrmNeighsList)
+	OnStationPMK        func(ap string, connection time.Time, special bool, request capwap.PrivStaPMKReq) *capwap.PrivStaPMKReq
 }
 
 // LocalPort returns the bound UDP port (test/diagnostic helper).
@@ -369,6 +381,7 @@ func (e *Engine) handlePlainDatagram(raw []byte, addr *net.UDPAddr) {
 		if e.legacyDTLS != nil {
 			s.transportGeneration = e.legacyDTLS.Generation(addr.String())
 		}
+		s.onAPState = e.OnAPState
 		s.onTeardown = func(x *Session) { e.removeSession(x) }
 		s.onEnterRun = func(x *Session) error {
 			if e.OnEntRun != nil {

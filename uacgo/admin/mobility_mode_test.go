@@ -4,55 +4,27 @@ import (
 	"bytes"
 	"context"
 	"testing"
-	"time"
-	"uacgo/cweng"
 )
 
-func TestAutomaticMobilityModeCapacityAndStickyCompatibility(t *testing.T) {
+func TestV6ModeIsCompatibilityAndLegacyModesCannotBeConfigured(t *testing.T) {
 	m, _ := testController(t)
 	p := defaultMobility()
-	cfg := Config{Mobility: &p}
-	for i := 0; i < 5; i++ {
-		id := string(rune('a' + i))
-		m.known[id] = cweng.APStatus{ID: id, Online: true}
+	if p.NetworkMode != 2 || m.effectiveMobilityMode(Config{Mobility: &p}) != 2 {
+		t.Fatal("V6 shipped mode")
 	}
-	if m.effectiveMobilityMode(cfg) != 1 {
-		t.Fatal("small installation should use high performance")
-	}
-	m.known["f"] = cweng.APStatus{ID: "f", Online: true}
-	if m.effectiveMobilityMode(cfg) != 2 {
-		t.Fatal("six APs should select compatibility")
-	}
-	delete(m.known, "f")
-	if m.effectiveMobilityMode(cfg) != 2 {
-		t.Fatal("capacity fluctuations must not repeatedly rescan")
-	}
-	p.Default.Difference++
-	if m.effectiveMobilityMode(cfg) != 1 {
-		t.Fatal("manual settings update should reevaluate automatic mode")
-	}
-	for i := byte(0); i < 31; i++ {
-		m.clients.StationEvent(cweng.ClientEvent{MAC: [6]byte{2, 0, 0, 0, 1, i}, APID: "a", RadioID: 1, WLANID: 1, State: "connected", Kind: "associate", Seen: time.Now()})
-	}
-	if m.effectiveMobilityMode(cfg) != 2 {
-		t.Fatal("31 confirmed clients should select compatibility")
-	}
-	p.NetworkMode = 1
-	if m.effectiveMobilityMode(cfg) != 1 {
-		t.Fatal("forced high performance ignored")
-	}
-	p.NetworkMode = 2
-	if m.effectiveMobilityMode(cfg) != 2 {
-		t.Fatal("forced compatibility ignored")
+	for _, mode := range []int{0, 1} {
+		p.NetworkMode = mode
+		if p.validate(Config{}) == nil {
+			t.Fatal("V6 Web-forbidden mode accepted", mode)
+		}
 	}
 }
-
 func TestMobilityModeAndRSSIStatisticsActuallyReachAP(t *testing.T) {
 	m, e := testController(t)
 	f, ap := newDeferredAP(t, e)
 	ap.GeneralCapabilities = []uint32{1 << 25, 0, 1 << 8}
 	p := defaultMobility()
-	p.NetworkMode = 1
+	p.NetworkMode = 2
 	p.Default.Statistics = true
 	p.Default.StatisticsInterval = 17
 	cfg := Config{Mobility: &p}
@@ -68,14 +40,14 @@ func TestMobilityModeAndRSSIStatisticsActuallyReachAP(t *testing.T) {
 			}
 		}
 	}
-	if !bytes.Equal(got[0x9d], []byte{5, 0, 15}) {
-		t.Fatalf("missing high-performance silence parameters %x", got[0x9d])
+	if !bytes.Equal(got[0x9d], []byte{3, 0, 30}) {
+		t.Fatalf("missing compatibility silence parameters %x", got[0x9d])
 	}
 	if !bytes.Equal(got[0x55], []byte{1, 1, 1, 0, 120, 0, 17, 0, 120}) {
 		t.Fatalf("RSSI statistics switch/period ignored %x", got[0x55])
 	}
-	if b := got[0x57]; len(b) != 36 || int8(b[4]) != -65 || int8(b[11]) != -65 {
-		t.Fatalf("high-performance RSSI not applied %x", b)
+	if b := got[0x57]; len(b) != 36 || int8(b[4]) != -75 || int8(b[11]) != -80 {
+		t.Fatalf("compatibility RSSI not applied %x", b)
 	}
 }
 

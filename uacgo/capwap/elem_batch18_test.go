@@ -15,16 +15,22 @@ func TestBatch18Roundtrips(t *testing.T) {
 		t.Fatalf("arp defend: %v", err)
 	}
 
-	pm := PrivStaPMKReq{Radio: 1, WlanID: 2, W: 42}
-	pm.Data[0] = 1
-	pm.Salt[0] = 2
+	pm := PrivStaPMKReq{Operation: 1, Radio: 2, WLAN: 3, Pairwise: 42}
+	pm.Interface[0] = 1
+	pm.Nonce[0] = 2
 	pm.MAC[0] = 3
+	pm.PMKR0[0] = 4
 	w := pm.AssembleValue()
-	if len(w) == 0 {
-		t.Fatalf("pmk wire = %d", len(w))
+	if len(w) != 101 || w[0] != 1 || w[2] != 2 || w[3] != 3 || w[53] != 4 {
+		t.Fatalf("PMK V6 layout differs: %x", w)
 	}
-	if v, err := ParsePrivStaPMKReq(w); err != nil || v.Radio != 1 || v.W != 42 {
-		t.Logf("pmk parse note: %v", err)
+	if v, err := ParsePrivStaPMKReq(w); err != nil || v.Radio != 2 || v.Pairwise != 42 || v.PMKR0[0] != 4 {
+		t.Fatalf("PMK parse: %v", err)
+	}
+	for _, bad := range [][]byte{w[:100], append(append([]byte{}, w...), 0), w[:8]} {
+		if _, err := ParsePrivStaPMKReq(bad); err == nil {
+			t.Fatal("truncated PMK accepted")
+		}
 	}
 
 	var ldp PrivLLDP

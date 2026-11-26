@@ -8,7 +8,7 @@ import (
 	"uacgo/capwap"
 )
 
-func TestAdmissionRuleCoversLegacyAuthenticationAndBothAssociations(t *testing.T) {
+func TestAdmissionRuleCoversBothV6AssociationFamilies(t *testing.T) {
 	e, err := NewEngine(0)
 	if err != nil {
 		t.Fatal(err)
@@ -23,7 +23,6 @@ func TestAdmissionRuleCoversLegacyAuthenticationAndBothAssociations(t *testing.T
 		typ, reply uint16
 		wire       string
 	}{
-		{1, 0x13, "020102030405060700000002aabb"},
 		{2, 4, "0201020304050607ffffffec00000002aabb"},
 		{0x8a, 0x8b, "020102030405060700000001010000000600000002aabb"},
 	} {
@@ -52,24 +51,21 @@ func TestAdmissionRuleCoversLegacyAuthenticationAndBothAssociations(t *testing.T
 	}
 }
 
-func TestAdmissionDoesNotMoveConnectedClientUntilConfirmed(t *testing.T) {
+func TestFirmwareAssociationMovesClientAndStatisticsCannotMoveItBack(t *testing.T) {
 	table := NewClientTable()
 	mac := [6]byte{2, 3, 4, 5, 6, 7}
 	now := time.Now()
 	old := ClientEvent{Kind: "associate", State: "connected", MAC: mac, APID: "a", RadioID: 1, WLANID: 1, IP: "192.0.2.2", Seen: now}
 	table.StationEvent(old)
-	next := ClientEvent{Kind: "associate", State: "associating", MAC: mac, APID: "b", RadioID: 2, WLANID: 1, Seen: now.Add(time.Second)}
+	next := ClientEvent{Kind: "associate", MAC: mac, APID: "b", RadioID: 2, WLANID: 1, Seen: now.Add(time.Second)}
 	table.StationEvent(next)
-	if v := table.All()[0]; v.APID != "a" || v.State != "connected" {
-		t.Fatal("permission replaced established connection", v)
+	if v := table.All()[0]; v.APID != "b" || v.State != "connected" {
+		t.Fatal("successful V6 association did not update location", v)
 	}
 	next.Kind = "statistics"
 	next.Statistics = &ClientStatistics{NegotiatedMbps: 1201}
 	next.Seen = now.Add(121 * time.Second)
 	table.StationEvent(next)
-	if v := table.All()[0]; v.APID != "b" || v.State != "connected" {
-		t.Fatal("AP statistics did not confirm new location", v)
-	}
 	old.Kind = "disassociate"
 	old.State = "disconnected"
 	old.Seen = next.Seen.Add(time.Second)

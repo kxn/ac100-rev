@@ -1,7 +1,6 @@
 package admin
 
 import (
-	"sync"
 	"testing"
 	"time"
 	"uacgo/cweng"
@@ -37,51 +36,29 @@ func TestAdmissionRequiresEnabledBoundServiceAndRadio(t *testing.T) {
 	}
 }
 
-func TestServiceAdmissionAtomicAcrossAPsAndReassociation(t *testing.T) {
+// Wireless service count was never a V6 global admission quota. The source
+// checks the target radio maximum in wsta_db_sta_assoc; probes don't reserve it.
+func TestFirmwareRadioCapacityIsLocalAndHasNoAdmissionReservation(t *testing.T) {
 	m, _ := testController(t)
-	s := Service{ID: "limited", Enabled: true, Radios: []uint8{1, 2}, Options: &WirelessOptions{MaxClients: 1}}
+	s := Service{ID: "office", Enabled: true, Radios: []uint8{1, 2}}
 	m.config.Services = []Service{s}
 	for _, ap := range []string{"a", "b"} {
+		m.known[ap] = cweng.APStatus{ID: ap, Online: true, Capabilities: []cweng.RadioCapability{{RadioID: 1, MaxClients: 1}, {RadioID: 2, MaxClients: 1}}}
 		for _, r := range []uint8{1, 2} {
 			if _, err := m.allocate(ap, s.ID, r, 2); err != nil {
 				t.Fatal(err)
 			}
 		}
 	}
-	var wg sync.WaitGroup
-	accepted := make(chan [6]byte, 2)
-	for i, ap := range []string{"a", "b"} {
-		wg.Add(1)
-		go func(i int, ap string) {
-			defer wg.Done()
-			mac := [6]byte{2, 0, 0, 0, 0, byte(i + 1)}
-			if m.admitClient(ap, 1, 1, mac, nil) {
-				accepted <- mac
-			}
-		}(i, ap)
+	one, two := [6]byte{2, 1}, [6]byte{2, 2}
+	if m.checkAssociation("a", 1, 1, one, nil, nil) != 0 || m.checkAssociation("a", 1, 1, two, nil, nil) != 0 {
+		t.Fatal("permission invented a reservation")
 	}
-	wg.Wait()
-	close(accepted)
-	var winner [6]byte
-	n := 0
-	for mac := range accepted {
-		winner = mac
-		n++
+	m.clients.StationEvent(cweng.ClientEvent{MAC: one, APID: "a", RadioID: 1, WLANID: 1, Kind: "associate", Seen: time.Now().Add(-time.Hour)})
+	if got := m.checkAssociation("a", 1, 1, two, nil, nil); got != 0x11 {
+		t.Fatalf("radio full code %x", got)
 	}
-	if n != 1 {
-		t.Fatalf("accepted %d simultaneous clients", n)
-	}
-	if !m.admitClient("b", 2, 1, winner, nil) {
-		t.Fatal("same station roaming counted twice")
-	}
-	m.clients.StationEvent(cweng.ClientEvent{MAC: winner, APID: "b", RadioID: 2, WLANID: 1, Kind: "associate", State: "connected", Seen: time.Now()})
-	m.admissions[winner] = admissionReservation{Service: s.ID, Until: time.Now().Add(-time.Minute)}
-	other := [6]byte{2, 0, 0, 0, 0, 3}
-	if m.admitClient("a", 1, 1, other, nil) {
-		t.Fatal("confirmed client ignored after reservation expiry")
-	}
-	m.clients.StationEvent(cweng.ClientEvent{MAC: winner, APID: "b", RadioID: 2, WLANID: 1, Kind: "disassociate", State: "disconnected", Seen: time.Now()})
-	if !m.admitClient("a", 1, 1, other, nil) {
-		t.Fatal("disconnected client still occupies slot")
+	if m.checkAssociation("b", 1, 1, two, nil, nil) != 0 || m.checkAssociation("a", 2, 1, two, nil, nil) != 0 || m.checkAssociation("a", 1, 1, one, nil, nil) != 0 {
+		t.Fatal("another radio/AP or reassociation was blocked")
 	}
 }

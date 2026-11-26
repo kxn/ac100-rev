@@ -149,10 +149,9 @@ func (m *Manager) poolHTTP(w http.ResponseWriter, r *http.Request) {
 	} else {
 		next.VLANPools[idx] = p
 	}
-	if err := atomicJSON(m.path, next); err != nil {
+	if err := m.persistConfigLocked(next, false); err != nil {
 		jsonReply(w, 500, map[string]string{"error": err.Error()})
 		return
 	}
-	m.config = next
 	jsonReply(w, 202, map[string]any{"status": "saved", "pool": p})
 }

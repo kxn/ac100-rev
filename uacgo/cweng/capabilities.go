@@ -14,33 +14,54 @@ import (
 // meanings: _apdb_pkt_parse_radio (legacy 0x0060e514; V6 0x0070ae08).
 // The TLV container and actual values are checked against the V6 AP Join.
 type RadioCapability struct {
-	Source           string            `json:"source"`
-	Alternate        *RadioCapability  `json:"alternate_band,omitempty"`
-	FunctionType     int               `json:"function_type"`
-	RadioID          uint8             `json:"radio_id"`
-	Band             string            `json:"band"`
-	MaxSSID          int               `json:"max_ssid"`
-	MaxClients       int               `json:"max_clients"`
-	MinPower         int               `json:"min_power_dbm"`
-	MaxPower         int               `json:"max_power_dbm"`
-	DefaultPower     int               `json:"default_power_dbm"`
-	SupportAC        bool              `json:"support_11ac"`
-	SupportAX        bool              `json:"support_11ax"`
-	SupportBE        bool              `json:"support_11be"`
-	Support160       bool              `json:"support_160mhz"`
-	Support240       bool              `json:"support_240mhz"`
-	Support80P80     bool              `json:"support_80p80mhz"`
-	SupportWPA3      bool              `json:"support_wpa3"`
-	TxStreams        int               `json:"tx_streams"`
-	RxStreams        int               `json:"rx_streams"`
-	DefaultBandwidth *int              `json:"default_bandwidth,omitempty"`
-	MutexChannels    string            `json:"mutex_channels,omitempty"`
-	Channels         []int             `json:"channels"`
-	Modes            []int             `json:"modes"`
-	Bandwidths       []int             `json:"bandwidths"`
-	Features         map[string]bool   `json:"features"`
-	Raw              map[string]string `json:"raw_subtypes"`
+	AXDefaults       *RadioFeatureDefaults `json:"feature_defaults,omitempty"`
+	ControlFeatures  map[string]bool       `json:"control_features,omitempty"`
+	Source           string                `json:"source"`
+	Alternate        *RadioCapability      `json:"alternate_band,omitempty"`
+	FunctionType     int                   `json:"function_type"`
+	RadioID          uint8                 `json:"radio_id"`
+	Band             string                `json:"band"`
+	MaxSSID          int                   `json:"max_ssid"`
+	MaxClients       int                   `json:"max_clients"`
+	MinPower         int                   `json:"min_power_dbm"`
+	MaxPower         int                   `json:"max_power_dbm"`
+	DefaultPower     int                   `json:"default_power_dbm"`
+	SupportAC        bool                  `json:"support_11ac"`
+	SupportAX        bool                  `json:"support_11ax"`
+	SupportBE        bool                  `json:"support_11be"`
+	Support160       bool                  `json:"support_160mhz"`
+	Support240       bool                  `json:"support_240mhz"`
+	Support80P80     bool                  `json:"support_80p80mhz"`
+	SupportWPA3      bool                  `json:"support_wpa3"`
+	TxStreams        int                   `json:"tx_streams"`
+	RxStreams        int                   `json:"rx_streams"`
+	DefaultBandwidth *int                  `json:"default_bandwidth,omitempty"`
+	MutexChannels    string                `json:"mutex_channels,omitempty"`
+	Channels         []int                 `json:"channels"`
+	Modes            []int                 `json:"modes"`
+	Bandwidths       []int                 `json:"bandwidths"`
+	Features         map[string]bool       `json:"features"`
+	Raw              map[string]string     `json:"raw_subtypes"`
 }
+
+// Private b2, cw_priv_11ax_feature_default_value_parse @6b2e80.
+// rdmngr_capwap_callback_join_req_listen @73d0f0 consumes its first instance.
+type RadioFeatureDefaults struct {
+	Reserved                     uint8 `json:"reserved"`
+	DownlinkMUMIMO, UplinkMUMIMO uint8
+	DownlinkOFDMA, UplinkOFDMA   uint8
+	TWT                          uint8
+	GI                           int8
+	Enable6G, PSC6G              uint8
+}
+
+func parseRadioFeatureDefaults(b []byte) *RadioFeatureDefaults {
+	if len(b) != 9 {
+		return nil
+	}
+	return &RadioFeatureDefaults{b[0], b[1], b[2], b[3], b[4], b[5], int8(b[6]), b[7], b[8]}
+}
+
 type APCapabilities struct {
 	ExtWirePhys  int
 	SupportTrunk bool

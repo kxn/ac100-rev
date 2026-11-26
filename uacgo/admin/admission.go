@@ -1,59 +1,91 @@
 package admin
 
-import "time"
+import (
+	"time"
+	"uacgo/capwap"
+)
 
-type admissionReservation struct {
-	Service string
-	Until   time.Time
-}
-
-// Reserve admissions atomically across APs/radios. Reassociation of the same
-// station does not consume another slot. Permission is not an online report.
+// Compatibility for protocol-only callers; the real engine path preserves
+// the vendor result code and evaluates MLO as one association transaction.
 func (m *Manager) admitClient(ap string, radio, wlan uint8, mac [6]byte, rssi *int8) bool {
+	return m.checkAssociation(ap, radio, wlan, mac, rssi, nil) == 0
+}
+func (m *Manager) checkAssociation(ap string, radio, wlan uint8, mac [6]byte, rssi *int8, mlo *capwap.AssociationMLO) uint32 {
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	if mac == [6]byte{} || mac[0]&1 != 0 || radio == 0 || wlan == 0 || radioDisabled(m.config, ap, radio) {
-		return false
+	if mlo != nil && len(mlo.Links) > 0 {
+		radio = mlo.Links[0].Radio
+		wlan = mlo.Links[0].WLAN
+	}
+	if !m.admitStationLocked(ap, radio, wlan) {
+		return 0x26
+	}
+	if mac == [6]byte{} || mac[0]&1 != 0 {
+		return 0x25
+	}
+	if mlo != nil {
+		for _, link := range mlo.Links {
+			if !m.admitStationLocked(ap, link.Radio, link.WLAN) {
+				return 0x26
+			}
+		}
 	}
 	now := time.Now()
-	for _, s := range m.config.Services {
-		if s.Deleting || !s.Enabled || !serviceTargets(s, ap, m.config) || !serviceOptions(s).Schedule.active(now) || m.assignments[ap][s.ID][radio] != wlan {
-			continue
-		}
-		selected := selectedServiceRadios(s, m.known[ap])[radio]
-		bound, _ := binding(s, ap, radio)
-		if !selected || !bound {
-			continue
-		}
-		limit := serviceOptions(s).MaxClients
-		seen := map[[6]byte]bool{}
-		if m.clients != nil {
-			for _, c := range m.clients.All() {
-				if c.State == "connected" && now.Sub(c.Seen) < 6*time.Minute && m.assignments[c.APID][s.ID][c.RadioID] == uint8(c.WLANID) && c.WLANID > 0 {
-					seen[c.MAC] = true
-				}
+	service := m.serviceForSlotLocked(ap, radio, wlan)
+	if service == nil {
+		return 0x26
+	}
+	rejected := false
+	if mlo != nil {
+		// balance_allow_mlo_sta_conect_wtp @4ef344 evaluates every non-MLD
+		// link, then the MLD itself; a rejection doesn't skip later counters.
+		for _, link := range mlo.Links {
+			if link.MAC != mlo.MAC && !m.balanceAdmission(ap, link.Radio, link.MAC, *service, now) {
+				rejected = true
 			}
 		}
-		for id, r := range m.admissions {
-			if now.After(r.Until) {
-				delete(m.admissions, id)
-			} else if r.Service == s.ID {
-				seen[id] = true
+		if !m.balanceAdmission(ap, radio, mlo.MAC, *service, now) {
+			rejected = true
+		}
+	} else if !m.balanceAdmission(ap, radio, mac, *service, now) {
+		rejected = true
+	}
+	if rejected {
+		return 0x27
+	}
+	// MLO peer records enforce per-radio capacity. The MLD container is
+	// not an extra radio client (wsta_db_sta_assoc @758cf8, flags1/0).
+	if mlo != nil {
+		for _, link := range mlo.Links {
+			if link.MAC != mlo.MAC && !m.radioCapacityLocked(ap, link.Radio, link.MAC) {
+				return 0x11
 			}
 		}
-		if limit > 0 && !seen[mac] && len(seen) >= limit {
-			return false
+		return 0
+	}
+	if !m.radioCapacityLocked(ap, radio, mac) {
+		return 0x11
+	}
+	return 0
+}
+func (m *Manager) radioCapacityLocked(ap string, radio uint8, mac [6]byte) bool {
+	known := m.known[ap]
+	limit := 0
+	for _, c := range known.Capabilities {
+		if c.RadioID == radio {
+			limit = c.MaxClients
 		}
-		if !m.balanceAdmission(ap, radio, mac, s, now) {
-			return false
+	}
+	for _, r := range effectiveRadioConfig(m.config, known).Radios {
+		if r.AP == ap && r.Radio == radio && r.Advanced != nil {
+			limit = r.Advanced.MaxClients
 		}
-		if m.admissions == nil {
-			m.admissions = map[[6]byte]admissionReservation{}
-		}
-		m.admissions[mac] = admissionReservation{s.ID, now.Add(30 * time.Second)}
+	}
+	if m.clients == nil || limit <= 0 {
 		return true
 	}
-	return false
+	count, associated := m.clients.RadioCount(ap, radio)
+	return associated[mac] || count < limit
 }
 
 // Association authorization follows the configured logical service and its
@@ -61,6 +93,9 @@ func (m *Manager) admitClient(ap string, radio, wlan uint8, mac [6]byte, rssi *i
 func (m *Manager) admitStation(ap string, radio, wlan uint8) bool {
 	m.mu.Lock()
 	defer m.mu.Unlock()
+	return m.admitStationLocked(ap, radio, wlan)
+}
+func (m *Manager) admitStationLocked(ap string, radio, wlan uint8) bool {
 	if radio == 0 || radio > 31 || wlan == 0 || wlan > 16 || radioDisabled(m.config, ap, radio) {
 		return false
 	}
@@ -76,4 +111,13 @@ func (m *Manager) admitStation(ap string, radio, wlan uint8) bool {
 		}
 	}
 	return false
+}
+
+// AP inventory/synchronization reports describe an association already made.
+// They still require a bound service and DB capacity, but do not run the
+// admission balancing policy again (_uac_wsta_pkt_sta_info_list @74a320).
+func (m *Manager) observeAssociation(ap string, radio, wlan uint8, mac [6]byte) bool {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	return m.admitStationLocked(ap, radio, wlan) && m.radioCapacityLocked(ap, radio, mac)
 }

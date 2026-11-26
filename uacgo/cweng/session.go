@@ -51,16 +51,15 @@ type AcDataCounters struct {
 //	addr / acData / State(+0xb4) / EchoInterval(+0xd0) /
 //	LastReqSeq(+0xa6) / LastRspBuf(+0xd4) / EchoWatchdog(+0xc8)
 type Session struct {
-	meshParent       *Session
-	meshReport       *MeshReport
-	fragmentID       uint16
-	bluetoothServers map[uint8]BluetoothServerStatus
-	channelScan      *ChannelScanReport
-	arpScan          *ARPScanReport
-	rrmReports       map[uint8]RRMReport
-	rpc              map[uint32]chan []byte
-	rpcSeq           uint32
-	mu               sync.Mutex
+	meshParent  *Session
+	meshReport  *MeshReport
+	fragmentID  uint16
+	channelScan *ChannelScanReport
+	arpScan     *ARPScanReport
+	rrmReports  map[uint8]RRMReport
+	rpc         map[uint32]chan []byte
+	rpcSeq      uint32
+	mu          sync.Mutex
 
 	acData *AcDataCounters
 
@@ -84,6 +83,8 @@ type Session struct {
 	Created             time.Time
 	transportGeneration [32]byte
 	radioStatus         map[uint8]RadioStatus
+	radioStatistics     map[uint8]RadioStatistics
+	vapStatistics       []capwap.APVAPStatistics
 	telemetry           *WirelessTelemetry
 	reports             map[uint16]APReport
 	reportedSSIDs       []ReportedSSID
@@ -98,6 +99,7 @@ type Session struct {
 	closed chan struct{}
 
 	// hooks (set by engine)
+	onAPState    func(APStatus)
 	onTeardown   func(*Session)
 	onEnterRun   func(*Session) error
 	onEnterReset func(*Session) error
@@ -165,6 +167,9 @@ func (s *Session) teardown() {
 	s.dead = true
 	close(s.closed)
 	s.cancelRspRetransmit()
+	if s.onAPState != nil {
+		s.onAPState(s.statusLocked())
+	}
 	if s.onTeardown != nil {
 		s.onTeardown(s)
 	}
@@ -173,6 +178,12 @@ func (s *Session) teardown() {
 // enterRun fires ent event 1 (session entered RUN) to the registered
 // listeners (multi_link / apmngr / uac_nms_report registered ent 1 handlers).
 func (s *Session) enterRun() error {
+	if s.onAPState != nil {
+		v := s.statusLocked()
+		v.Online = true
+		v.State = StateNames[StateRun]
+		s.onAPState(v)
+	}
 	if s.onEnterRun != nil {
 		return s.onEnterRun(s)
 	}

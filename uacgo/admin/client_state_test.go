@@ -10,7 +10,7 @@ func TestClientRecoveryJoinsConfirmedWirelessMACsOnly(t *testing.T) {
 	m, _ := testController(t)
 	mac := [6]byte{2, 1, 2, 3, 4, 5}
 	wired := [6]byte{2, 1, 2, 3, 4, 6}
-	m.clients.StationEvent(cweng.ClientEvent{MAC: mac, APID: "ap", RadioID: 2, WLANID: 1, Kind: "statistics", Statistics: &cweng.ClientStatistics{}, Seen: time.Now()})
+	m.clients.StationEvent(cweng.ClientEvent{MAC: mac, APID: "ap", RadioID: 2, WLANID: 1, Kind: "associate", Statistics: &cweng.ClientStatistics{}, Seen: time.Now()})
 	stations := []byte(`{"error_code":0,"wireless":{"sta_list":[{"sta_list_1":{"mac":"02-01-02-03-04-05","connect_time":"123"}}]}}`)
 	hosts := []byte(`{"error_code":0,"hosts_info":{"host_info":[{"host_info_1":{"mac":"02-01-02-03-04-05","ip":"192.0.2.20"}},{"host_info_2":{"mac":"02-01-02-03-04-06","ip":"192.0.2.21"}}]}}`)
 	if err := m.mergeClientFacts("other", stations, hosts); err != nil {

@@ -1,13 +1,19 @@
 package cweng
 
-import "time"
+import (
+	"time"
+	"uacgo/capwap"
+)
 
 // WirelessSnapshot reconciles a fresh, complete AP wireless station table.
 // Wired hosts never enter this path. Events received after the read started
 // take precedence, and a snapshot cannot move a client from another live AP.
 func (t *ClientTable) WirelessSnapshot(ap string, started time.Time, rows []ClientEvent, present map[[6]byte]bool) {
 	t.mu.Lock()
-	defer t.mu.Unlock()
+	defer t.unlockAndNotify(t.transitionSeq)
+	if epoch, ok := t.epochs[ap]; ok && (!epoch.Online || started.Before(epoch.Connection)) {
+		return
+	}
 	for _, ev := range rows {
 		if ev.RSSI != nil {
 			ev.RSSIAt = started
@@ -29,6 +35,12 @@ func (t *ClientTable) WirelessSnapshot(ap string, started time.Time, rows []Clie
 				merged.NegotiatedMbps = ev.Statistics.NegotiatedMbps
 				ev.Statistics = &merged
 			}
+			// This native table has no MLO grouping/device fields. Absence of
+			// such fields cannot erase the richer typed CAPWAP facts.
+			ev.MLD = old.MLD
+			ev.MLOPeer = old.MLOPeer
+			ev.MLOLinks = append([]capwap.AssociationLink{}, old.MLOLinks...)
+			ev.Device = cloneDevice(old.Device)
 			ev.IPv6 = old.IPv6
 			if ev.IP == "" {
 				ev.IP = old.IP
@@ -49,7 +61,16 @@ func (t *ClientTable) WirelessSnapshot(ap string, started time.Time, rows []Clie
 		t.recordTransition(old, ok, ev)
 		t.m[ev.MAC] = ev
 	}
+	groupPresent := map[[6]byte]bool{}
 	for mac, old := range t.m {
+		if old.APID == ap && old.MLD != nil && present[mac] {
+			groupPresent[*old.MLD] = true
+		}
+	}
+	for mac, old := range t.m {
+		if old.MLD != nil && groupPresent[*old.MLD] {
+			continue
+		}
 		if old.APID == ap && old.State == "connected" && old.Seen.Before(started) && !present[mac] {
 			old.State = "disconnected"
 			old.Kind = "wireless_snapshot"

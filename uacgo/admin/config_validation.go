@@ -8,16 +8,19 @@ import (
 // Runs under Manager.mu. Import/copy/group edits must obey the same structural
 // constraints as individual editors; known APs additionally check capabilities.
 func (m *Manager) validateRestorableConfig(cfg Config) error {
-	if err := validateMesh(cfg.Mesh); err != nil {
+	if err := validateEDCARules(cfg.EDCARules, cfg); err != nil {
 		return err
 	}
-	if err := validateBluetooth(cfg.Bluetooth, cfg); err != nil {
+	if err := validateMesh(cfg.Mesh); err != nil {
 		return err
 	}
 	if err := validateStorm(cfg.Storm); err != nil {
 		return err
 	}
 	if err := validateProtection(cfg.Protection, cfg); err != nil {
+		return err
+	}
+	if err := validateRRMTimeConflicts(cfg); err != nil {
 		return err
 	}
 	if err := validateRRMRules(cfg.RRM, cfg); err != nil {
@@ -119,20 +122,14 @@ func (m *Manager) validateRestorableConfig(cfg Config) error {
 		if err := validateProtectionForAP(cfg.Protection, protectionFor(cfg.Protection, ap.ID, cfg), ap); err != nil {
 			return err
 		}
-		hasRadio := false
 		for _, r := range effectiveRadioConfig(cfg, ap).Radios {
 			if r.AP == ap.ID {
-				hasRadio = true
 				if err := validateKnownRadio(r, ap); err != nil {
 					return err
 				}
 			}
 		}
-		if hasRadio {
-			if err := validateRadioLinkage(cfg, ap); err != nil {
-				return err
-			}
-		}
+
 	}
 	retired := map[string]bool{}
 	for _, id := range cfg.RetiredAPs {

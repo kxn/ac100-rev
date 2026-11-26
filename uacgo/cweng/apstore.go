@@ -45,6 +45,7 @@ func (st *SQLiteAPStore) UpsertAP(ap *APEntry) error {
 	if err = tx.Commit(); err != nil {
 		return err
 	}
+	ap.EntryID = uint32(id)
 	_, err = st.Run.Exec(`INSERT INTO ApEntryRun_table(entry_id,ap_role,status,errno) VALUES(?,?,-1,-1) ON CONFLICT(entry_id) DO UPDATE SET status=-1`, id, "ap")
 	return err
 }

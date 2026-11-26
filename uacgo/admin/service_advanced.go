@@ -11,7 +11,6 @@ import (
 )
 
 type WirelessOptions struct {
-	MaxClients  int                `json:"max_clients,omitempty"`
 	VLANPool    uint16             `json:"vlan_pool,omitempty"`
 	Schedule    *ServiceSchedule   `json:"schedule,omitempty"`
 	MLO         bool               `json:"mlo"`
@@ -73,8 +72,8 @@ func serviceSSID(s Service) ([]byte, error) {
 }
 func validateWirelessOptions(s Service) error {
 	o := serviceOptions(s)
-	if o.MaxClients < 0 || o.MaxClients > 65535 {
-		return fmt.Errorf("无线服务客户端上限为 0–65535，0 表示不限")
+	if o.Radius != nil {
+		return fmt.Errorf("RADIUS 不在本程序功能范围内")
 	}
 	if err := o.Schedule.validate(); err != nil {
 		return err

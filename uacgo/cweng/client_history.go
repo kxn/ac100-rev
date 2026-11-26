@@ -18,6 +18,25 @@ type ClientTransition struct {
 	Source    string    `json:"source"`
 }
 
+func (t *ClientTable) unlockAndNotify(after uint64) {
+	callback := t.OnTransition
+	var pending []ClientTransition
+	if callback != nil {
+		for i := len(t.transitions) - 1; i >= 0 && t.transitions[i].Sequence > after; i-- {
+			v := t.transitions[i]
+			if v.VLAN != nil {
+				n := *v.VLAN
+				v.VLAN = &n
+			}
+			pending = append(pending, v)
+		}
+	}
+	t.mu.Unlock()
+	for i := len(pending) - 1; i >= 0; i-- {
+		callback(pending[i])
+	}
+}
+
 func (t *ClientTable) recordTransition(old ClientEvent, known bool, next ClientEvent) {
 	kind := ""
 	if next.State == "connected" && (!known || old.State != "connected") {
@@ -60,4 +79,63 @@ func (t *ClientTable) Transitions(after uint64) []ClientTransition {
 		}
 	}
 	return out
+}
+
+// uac_wstation_free_sta_by_mac on a failed PMK lookup releases the currently
+// associated location, which can be different from the requesting AP.
+func (t *ClientTable) DisconnectStation(mac [6]byte, at time.Time) {
+	t.mu.Lock()
+	old, ok := t.m[mac]
+	if !ok {
+		t.mu.Unlock()
+		return
+	}
+	after := t.transitionSeq
+	next := old
+	next.State = "disconnected"
+	next.Seen = at
+	next.Kind = "pmk_lookup_failed"
+	t.m[mac] = next
+	t.recordTransition(old, true, next)
+	t.unlockAndNotify(after)
+}
+
+// AP lifecycle, rather than an arbitrary station age cutoff, releases the
+// old epoch's DB membership. Newer RUN events and late old teardowns cannot
+// delete one another's station records.
+func (t *ClientTable) APState(ap string, connection time.Time, online bool, at time.Time) {
+	t.mu.Lock()
+	after := t.transitionSeq
+	if t.epochs == nil {
+		t.epochs = map[string]clientEpoch{}
+	}
+	if epoch := t.epochs[ap]; epoch.Connection.After(connection) {
+		t.mu.Unlock()
+		return
+	}
+	t.epochs[ap] = clientEpoch{connection, online}
+	for mac, old := range t.m {
+		if old.APID != ap || old.State != "connected" {
+			continue
+		}
+		if online {
+			if old.Connection == connection || old.Connection.IsZero() && !old.Seen.Before(connection) {
+				continue
+			}
+		} else if !old.Connection.IsZero() && old.Connection != connection {
+			continue
+		}
+		next := old
+		next.State = "disconnected"
+		next.Kind = "ap_offline"
+		next.Seen = at
+		t.m[mac] = next
+		t.recordTransition(old, true, next)
+	}
+	t.unlockAndNotify(after)
+}
+
+type clientEpoch struct {
+	Connection time.Time
+	Online     bool
 }

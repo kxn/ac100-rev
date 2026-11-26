@@ -17,6 +17,41 @@ type ClientLabel struct {
 	Note string `json:"note"`
 }
 
+// V6 c6/subtype6 -> wsta_config_sql_update_name @770350 persists a
+// device-reported name. User labels stay separate, as the original Web's
+// username overlay does; a reconnect must not lose the reported name.
+func (m *Manager) observeClientName(report cweng.ClientEvent) {
+	if report.Device == nil {
+		return
+	}
+	name := report.Device.Name
+	id := net.HardwareAddr(report.MAC[:]).String()
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	current := false
+	for _, c := range m.clients.All() {
+		if c.MAC == report.MAC && c.APID == report.APID && c.Connection.Equal(report.Connection) && c.State == "connected" && c.Device != nil && c.Device.Name == name {
+			current = true
+			break
+		}
+	}
+	if !current {
+		return
+	}
+	if m.config.ReportedClientNames[id] == name {
+		return
+	}
+	next := m.config
+	next.ReportedClientNames = map[string]string{}
+	for k, v := range m.config.ReportedClientNames {
+		next.ReportedClientNames[k] = v
+	}
+	next.ReportedClientNames[id] = name
+	if err := m.saveManagement(next); err != nil {
+		m.status["client-name/"+id] = ApplyStatus{Service: "client-name", State: "failed", Error: err.Error(), At: time.Now()}
+	}
+}
+
 func (m *Manager) clientRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("POST /api/clients/{mac}/label", func(w http.ResponseWriter, r *http.Request) {
 		mac, err := net.ParseMAC(r.PathValue("mac"))
@@ -86,15 +121,19 @@ func (m *Manager) clientRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("GET /api/clients/export", func(w http.ResponseWriter, r *http.Request) {
 		m.mu.Lock()
 		labels := m.config.ClientLabels
+		reportedNames := m.config.ReportedClientNames
 		m.mu.Unlock()
 		w.Header().Set("Content-Type", "text/csv; charset=utf-8")
 		w.Header().Set("Content-Disposition", `attachment; filename="wireless-clients.csv"`)
 		out := csv.NewWriter(w)
 		defer out.Flush()
 		_ = out.Write([]string{"MAC", "名称", "备注", "AP", "射频", "WLAN", "SSID", "VLAN", "IPv4/主地址", "IPv6", "状态", "RSSI", "协商Mbps", "最近上报"})
-		for _, ev := range m.clients.All() {
+		for _, ev := range m.clients.Display() {
 			mac := net.HardwareAddr(ev.MAC[:]).String()
 			label := labels[mac]
+			if label.Name == "" {
+				label.Name = reportedNames[mac]
+			}
 			rssi, rate, vlan := "", "", ""
 			if ev.VLAN != nil {
 				vlan = fmt.Sprint(*ev.VLAN)

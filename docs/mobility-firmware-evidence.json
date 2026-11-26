@@ -1,0 +1,1916 @@
+{
+  "v6_product_mode_boundary": {
+    "configured_and_actual_mode_after_migration": 2,
+    "web_mode_write": "EFORBID",
+    "source_files": [
+      {
+        "path": "usr/lib/lua/luci/controller/admin/apmng_roam.lua",
+        "sha256": "55c553f0bf52a468f675d57156940eadd097fbde7f6e9617611929c424fda78b"
+      },
+      {
+        "path": "etc/cfgsync.d/36_roam_cfg_sync.sh",
+        "sha256": "48640ca56e2e79c9e1b895e990df76115fc75a1e0fbdb761a2d080c9c498b2c9"
+      }
+    ],
+    "legacy_automatic_mode_count_order": "4e90e8 callback runs before 7a4588 increments active AP count"
+  },
+  "firmware": "TL-AC100 V6.0 1.0.3 Build 260817 Rel.68871n",
+  "meaning": "Static binary facts. This is not a Go implementation-completion or device-test report.",
+  "inputs": {
+    "usr/sbin/uac": "b12d1584fcafda2a71aa9038b41b7e1c5b893b350f3e6edf5105e445d024a912",
+    "usr/lib/librrm_business.so": "62a9c14282900ac5bec5d09a69b97ed98b259243c883c4b41b845d63e24ab62e"
+  },
+  "uac_functions": [
+    {
+      "name": "rdmngr_db_sqlite_cb",
+      "address": "0x00727f14",
+      "size": 4336,
+      "bytes_sha256": "e2889dda49470ffbb44b981a43ebabc4dd4180a60579970f6c6ced10647f80bb"
+    },
+    {
+      "name": "_apmngr_jcs_ap_calibrate_load",
+      "address": "0x005f5ee0",
+      "size": 848,
+      "bytes_sha256": "1c754fa50851e9025b1227bce38a51dbdb008a4b9ce7acdcde9700ab95641dd2"
+    },
+    {
+      "name": "_uac_wserv_jcs_add",
+      "address": "0x006e3970",
+      "size": 9948,
+      "bytes_sha256": "4b4c90a1f0442f0e0afb687ed74f43186aef902325febb8e652141752bfef55c"
+    },
+    {
+      "name": "_uac_wserv_jcs_set",
+      "address": "0x006e2fd4",
+      "size": 1468,
+      "bytes_sha256": "95dedcc0bffe80623de164d7d9d128f4068b187137c772ce15c43578fbd6a737"
+    },
+    {
+      "name": "_uac_wserv_packet_send_callback",
+      "address": "0x006dbd74",
+      "size": 11016,
+      "bytes_sha256": "c774ded44de2962fbf13f86773b20a1abec641d0acf83543ffffeef3e2da5fbf"
+    },
+    {
+      "name": "apmngr_db_sqlite_group_restore",
+      "address": "0x005b2e70",
+      "size": 1028,
+      "bytes_sha256": "638a18c6e7ed958826d19778d68a273af5a73b2d9241fb6958722c8ebf6dbfc8"
+    },
+    {
+      "name": "band_navigation_wtp_packt_send",
+      "address": "0x00633a60",
+      "size": 572,
+      "bytes_sha256": "6e207ff64f3f0fd9530f0b237304e6dd2eb2d3689f46b02642f4cd045289d1e5"
+    },
+    {
+      "name": "band_navigation_db_init",
+      "address": "0x00633e60",
+      "size": 560,
+      "bytes_sha256": "f88f97768740e3b687d736b2fb927572c79cf436822a5e9868e62b7c14817111"
+    },
+    {
+      "name": "apmngr_switch_group_handle",
+      "address": "0x005da88c",
+      "size": 232,
+      "bytes_sha256": "948677e9f8544672cf9daca1508b99f2765b6264c2c6f5d4fe362dee568c9eb6"
+    },
+    {
+      "name": "apmngr_update_group_by_ip_strategy",
+      "address": "0x005da518",
+      "size": 884,
+      "bytes_sha256": "6c0600831ac2d3a5907a8f981eb75004dd2a2af2a5a0aa46819be05219d6d8c7"
+    },
+    {
+      "name": "apmngr_switch_group_by_ip_strategy",
+      "address": "0x005f70f0",
+      "size": 972,
+      "bytes_sha256": "61eab8a9bc82de6d5f42ca1a71a2b9a64456ee686c09df2144b2f56d771d44d3"
+    },
+    {
+      "name": "_apmngr_jcs_group_add",
+      "address": "0x005f74bc",
+      "size": 1204,
+      "bytes_sha256": "62f2d51fbe37a15641b921874371c3f71ec56ae87151427f9a607fc7baff8267"
+    },
+    {
+      "name": "_apmngr_jcs_group_set",
+      "address": "0x005f67dc",
+      "size": 1304,
+      "bytes_sha256": "24014945154f90ee825d068266a271391746adc6d64bfe7fb0dda6326d6f88c3"
+    },
+    {
+      "name": "apmngr_db_foreach_group_proc",
+      "address": "0x005b94d4",
+      "size": 552,
+      "bytes_sha256": "c8309ba01ea899857fa1045094b2168abd9516a4319e2461d8f5beb4980b005f"
+    },
+    {
+      "name": "apmngr_db_group_add",
+      "address": "0x005b96fc",
+      "size": 384,
+      "bytes_sha256": "639026e6c32ad1f33a3f3c1c521d697809c7c17bb91fc6cecc5fc121f50a9356"
+    },
+    {
+      "name": "_uac_wsta_pkt_wtp_event_listener",
+      "address": "0x0074a4b0",
+      "size": 808,
+      "bytes_sha256": "02c6a269bbbb5ddfaa3513ae7b330d082dad474c45fd19e25c0f6c666ddf5520"
+    },
+    {
+      "name": "_uac_wsta_do_check",
+      "address": "0x00744b70",
+      "size": 584,
+      "bytes_sha256": "7e5ac83f4620d5e2f17180bcc76cb5a7d95095b0a9a2bd30b7773da2cec8b75a"
+    },
+    {
+      "name": "_uac_wsta_pkt_associcate",
+      "address": "0x00749290",
+      "size": 1584,
+      "bytes_sha256": "c4a18330b62eba960d915a07cb96ee3d017570d24c0bfbe9e61206ba693bb4fb"
+    },
+    {
+      "name": "_uac_wsta_pkt_associcate_new",
+      "address": "0x007498c0",
+      "size": 2656,
+      "bytes_sha256": "f6da25d75ecf2a7e821143808189ef8230ed099490a3c00eb5a07428df54db01"
+    },
+    {
+      "name": "wsta_db_sta_assoc",
+      "address": "0x00758cf8",
+      "size": 7296,
+      "bytes_sha256": "91762280eb7a144af17815e33ac390fdd07e9a29b127a82b469af0b438d26d29"
+    },
+    {
+      "name": "_multi_link_status_switch",
+      "address": "0x007a4588",
+      "size": 400,
+      "bytes_sha256": "707b6e92acceb18008688336202024b329169c5eb28ee0a54b5742b29e26e05b"
+    },
+    {
+      "name": "_wsta_roam_read_config",
+      "address": "0x004ddc54",
+      "size": 2080,
+      "bytes_sha256": "883ea658006b1ce39b5d0424fec41a35552911c2c5003915bbde57cfa034649e"
+    },
+    {
+      "name": "_stats_sta_support_cal",
+      "address": "0x0040f314",
+      "size": 100,
+      "bytes_sha256": "448e20cd2ea5f3d2a26ca9b057ca24524cb597ee8b71a7046675980ce9e1cb1f"
+    },
+    {
+      "name": "_stats_pkt_sta_request",
+      "address": "0x007b4a30",
+      "size": 788,
+      "bytes_sha256": "c8705ec66b8a91ad78372cecd6426a77fc83605464f3c037cc39d01c1a38d149"
+    },
+    {
+      "name": "_stats_pkt_rssi_request",
+      "address": "0x007b51b4",
+      "size": 632,
+      "bytes_sha256": "71a5c21a89b7a35e67a6ca7903d622d55b0f813351c5b5b3c0de356447b7d579"
+    },
+    {
+      "name": "_stats_pkt_ap_request",
+      "address": "0x007b4ec4",
+      "size": 752,
+      "bytes_sha256": "2908c09675e79f93185422e0f5415e1548f223337a824d7944e443c096a3a739"
+    },
+    {
+      "name": "stats_db_sta_update_nbr",
+      "address": "0x007aecb8",
+      "size": 720,
+      "bytes_sha256": "bd114098b69678c2eee6f8ac730b0d86c911b6b476a3cd6de2e8a0c882e193db"
+    },
+    {
+      "name": "stats_db_radio_set_chload_and_nf",
+      "address": "0x007b0c18",
+      "size": 292,
+      "bytes_sha256": "17f4eb1353004f6e1acc6511ea40b1d45cd24b0bc6a3f51c02f9febd2ad9824f"
+    },
+    {
+      "name": "rrm_business_static_optimize_original_version_one",
+      "address": "0x00527c70",
+      "size": 2872,
+      "bytes_sha256": "96662b6064d90f3feef1602499d799c66d31c73d350e1fe52ae748eda476d7a2"
+    },
+    {
+      "name": "rrm_business_librrm_cfg_init",
+      "address": "0x00527038",
+      "size": 344,
+      "bytes_sha256": "61fe9713d18b0e514ff3c7351cebc75ffd133f76f39395e90f1544fcb50e9a24"
+    },
+    {
+      "name": "rrm_business_librrm_rd_info_init",
+      "address": "0x00527240",
+      "size": 600,
+      "bytes_sha256": "fae0d82909eb49e31ccfb6452c33688375ec736af5b1ff28f848141fd21b0a15"
+    },
+    {
+      "name": "rrm_business_librrm_rd_info_result_apply",
+      "address": "0x00527498",
+      "size": 420,
+      "bytes_sha256": "263a013e47534f9441a9746ead2ae4abc24e1851d04a246a710a6d600ce46640"
+    },
+    {
+      "name": "wsta_roam_pkt_init",
+      "address": "0x004e9b78",
+      "size": 1032,
+      "bytes_sha256": "d530cee555424f51a3a1dd9f3b5124db888f695d5c2659c47b1af3e9d244d72d"
+    },
+    {
+      "name": "_wsta_roam_pkt_wtp_event_listener",
+      "address": "0x004e89ac",
+      "size": 232,
+      "bytes_sha256": "b34f18a84c646a049f4dafe233686e9353e21a1b5e33b38b11858197c2e55a1e"
+    },
+    {
+      "name": "_wsta_roam_pkt_roaming_trigger_request",
+      "address": "0x004e8440",
+      "size": 444,
+      "bytes_sha256": "72640c2d48710f41c4c7014db8c91d2b1e3e09ef280e8cc288dacf22258759be"
+    },
+    {
+      "name": "_wsta_roam_pkt_roaming_by_rssi_low",
+      "address": "0x004e6564",
+      "size": 7900,
+      "bytes_sha256": "8b87ea2465fed7e2b0ade702c3da2d48452d8f342c4cec3f6b8e1de3c1e04cb4"
+    },
+    {
+      "name": "roam_nbr_select",
+      "address": "0x004e5638",
+      "size": 2836,
+      "bytes_sha256": "06b456dd3a66424ac0f4822e045c956261183dc1cd86e249bff680edcbf0bc6a"
+    },
+    {
+      "name": "nbr_cmp",
+      "address": "0x004e0d40",
+      "size": 276,
+      "bytes_sha256": "0b2b160a02c691804d975ec0890d59571d915460b5ff7f2e512b4d2e3e5c9d6c"
+    },
+    {
+      "name": "_roaming_nbr_select",
+      "address": "0x004e4b3c",
+      "size": 1216,
+      "bytes_sha256": "2f0e46aab3497665b542694541be400c5bdbe80a88a4cd8e4d4162f3c51856ed"
+    },
+    {
+      "name": "_rssi_sort_fun",
+      "address": "0x004e3c04",
+      "size": 392,
+      "bytes_sha256": "485f1aa31fd34c9856ffae06cb2b90f068092a4bd014b7ed001e0f2d8f563b09"
+    },
+    {
+      "name": "_nbr_filter",
+      "address": "0x004e3af8",
+      "size": 268,
+      "bytes_sha256": "20cb8589bfa56595a408be2d1463efdcf972dd759098b8f605fae1045194a058"
+    },
+    {
+      "name": "wss_steer_candidate_rate_estimate",
+      "address": "0x004eb314",
+      "size": 1036,
+      "bytes_sha256": "9e7cc21aac7aab32da010bd4edc6e0deb5c770abc7d9e49cc1cacc9288b4475b"
+    },
+    {
+      "name": "estimate_rate_from_snr",
+      "address": "0x004eab48",
+      "size": 936,
+      "bytes_sha256": "12f9276fdd6476ef0dad9ba31c12a5339a3582e60e1b5feb8c59de6be19c3cef"
+    },
+    {
+      "name": "_sta_caps_calculate",
+      "address": "0x004ea640",
+      "size": 524,
+      "bytes_sha256": "b356da2a662732f336c41fc66b5131d62c83dc551ddac5c02f77b37c30d5b72d"
+    },
+    {
+      "name": "_wlan_caps_calculate",
+      "address": "0x004ea84c",
+      "size": 700,
+      "bytes_sha256": "d5c52f2c1b161912d2b1c7dcf2a2e6e846145b36ea380fe54ad0260b693bd331"
+    },
+    {
+      "name": "_steer_candidate_caps_calculate",
+      "address": "0x004ea4c0",
+      "size": 384,
+      "bytes_sha256": "69e228e5158bba9d243a2e4607689049ce8fa8cca5e759f7fe2f293b4e3c84a0"
+    },
+    {
+      "name": "stats_db_sta_get_nbr_set",
+      "address": "0x007aef88",
+      "size": 904,
+      "bytes_sha256": "7be9f88906c5b7ffb797afd9776ced429ee9b9a443419d2ffcce721405d91b0d"
+    },
+    {
+      "name": "_wsta_roam_pkt_pmk_request",
+      "address": "0x004e46c0",
+      "size": 1108,
+      "bytes_sha256": "0810a8aa59c78227d5f3b00d185c90d94fc2cfac8a26fd71ab7864014181ecd9"
+    },
+    {
+      "name": "cw_priv_sta_pmk_req_parse",
+      "address": "0x006b14d8",
+      "size": 464,
+      "bytes_sha256": "7e1776e63c5dd8175dd6046ec4622887f15585a11b71ee3619b338cffd6d1e26"
+    },
+    {
+      "name": "cw_priv_roaming_trigger_dump",
+      "address": "0x006823fc",
+      "size": 652,
+      "bytes_sha256": "422e1828af2d9018ffc363031469337ba098983c004acf690018d8d3b8f94f75"
+    },
+    {
+      "name": "balance_capwap_callback_wtp_event_request_listen",
+      "address": "0x004f0a04",
+      "size": 216,
+      "bytes_sha256": "a82a8a7ab6c546aa5e8a8e7f4ac0d16b386949e9a60b36ea3f08e3ba7211390d"
+    },
+    {
+      "name": "balance_sta_want_connect_wtp",
+      "address": "0x004f079c",
+      "size": 616,
+      "bytes_sha256": "bb46e0fde21b2916c5139b36e2b4ee61f9b21d5f6f6f12933faa3adc1ab8361c"
+    },
+    {
+      "name": "balance_wsta_callback_balance_sta_check",
+      "address": "0x004f0dfc",
+      "size": 884,
+      "bytes_sha256": "23837834ba4c4bc5b507633ae03a961e81baa581a8c73af8a1e98e9d76c31eff"
+    },
+    {
+      "name": "balance_allow_sta_conect_wtp",
+      "address": "0x004f0adc",
+      "size": 800,
+      "bytes_sha256": "b74246baaf8ed9ba8508f2cd4c9e6a0977f9bf2d3161d51acce121923ac1476b"
+    },
+    {
+      "name": "balance_db_dis_sta_check",
+      "address": "0x004f6f54",
+      "size": 2248,
+      "bytes_sha256": "c49652bc108cdf5124147cb1b99472d248093d2cbdaf34fb5b81faa67479004a"
+    },
+    {
+      "name": "balance_cnt_wtp_entry_update",
+      "address": "0x004f2ed0",
+      "size": 960,
+      "bytes_sha256": "38d5eae009550e9cdd6fb21b26e03fa74c131a08beca7ba57a41f7bb581876af"
+    },
+    {
+      "name": "balance_cnt_wtp_delete_timer_callback",
+      "address": "0x004f263c",
+      "size": 580,
+      "bytes_sha256": "532011942195a23ed13f9d29a6f1610d9f8c17171949c92cf50e0f2375a420c1"
+    },
+    {
+      "name": "check_cur_wireless_network_mode",
+      "address": "0x004e42f8",
+      "size": 252,
+      "bytes_sha256": "9ddfa22dcf40bc3b0f9efd31a3cee10f6119a9ee61a5a3598ab13539dbe8fb14"
+    },
+    {
+      "name": "wireless_network_mode_change_handle",
+      "address": "0x004e2cd8",
+      "size": 416,
+      "bytes_sha256": "ecd2c6a9b726fb26bbcaff53abdeeca252b541a524415c9c24fee1f8a9c9a4d4"
+    },
+    {
+      "name": "_wsta_intelligent_roam_sta_change_ap_info",
+      "address": "0x004e2e78",
+      "size": 328,
+      "bytes_sha256": "6d5435cefd29bad698a524b643acb40f32a4c8e231cd1283c04b5b34d3bb010e"
+    },
+    {
+      "name": "_wsta_intelligent_roam_set_rd_info_by_sta",
+      "address": "0x004e34ac",
+      "size": 952,
+      "bytes_sha256": "20cbdea93aa4eeb7aece71addbbae7e5ecc7ff7d5fc398f5d0dbdf09590b4efe"
+    },
+    {
+      "name": "_wsta_intelligent_roam_do_acs",
+      "address": "0x004e418c",
+      "size": 364,
+      "bytes_sha256": "afa1718aabff4cceef1dfff1d1fe94cdde27db8364a4e3bfe235e02a6bffb207"
+    },
+    {
+      "name": "wsta_roam_chnl_handle",
+      "address": "0x004e43f4",
+      "size": 716,
+      "bytes_sha256": "482531ffc9480f65f6691e39a1ffb0e3c6911d3e432ff735d7edacc2ace9dab3"
+    },
+    {
+      "name": "wsta_roam_chnl_handle_thread",
+      "address": "0x004e2668",
+      "size": 1648,
+      "bytes_sha256": "c32b5f6e3e133ece95d46d73f4e5c0074e7a4870f5330cfae81ba0da69a93b45"
+    },
+    {
+      "name": "rrm_business_librrm_exec",
+      "address": "0x0052763c",
+      "size": 600,
+      "bytes_sha256": "a48f51e3f6dcad99cc7c9620d35932c75d88624351a2c49e12e29327ce91b7c0"
+    },
+    {
+      "name": "rrm_business_intelligent_optimize",
+      "address": "0x00527894",
+      "size": 176,
+      "bytes_sha256": "0ff5f50cd94a360d2e862f80dafd40c6a481b1bfaba968e87336a866a5023f64"
+    },
+    {
+      "name": "rdmngr_db_rrst_matched_row_find",
+      "address": "0x0073a788",
+      "size": 652,
+      "bytes_sha256": "8d7b9f35f9b069632bb78cafc2d566ddf6b0504a7910534b4fd89f0b3d353a63"
+    },
+    {
+      "name": "rdmngr_db_rrst_matched_row_pre_match",
+      "address": "0x0073aa14",
+      "size": 476,
+      "bytes_sha256": "f8c35da06619ebec519735426f6466b9a2880518d7507ad6b0b53311503989cc"
+    },
+    {
+      "name": "rdmngr_db_rrst_matched_row_search_strategy",
+      "address": "0x0073abf0",
+      "size": 972,
+      "bytes_sha256": "119e988c0e370c1cc3d605e7c1ac07713e666b47b2faf4a896c93ed761f50895"
+    },
+    {
+      "name": "rdmngr_db_get_radio_cfg_linked_strategy",
+      "address": "0x0073b61c",
+      "size": 1932,
+      "bytes_sha256": "32655ce0e1ad47a3c876693084d8883936b26e82085b9f91656ec3cb39fc1968"
+    },
+    {
+      "name": "rdmngr_db_check_and_do_peer_radio_linked_modify",
+      "address": "0x0072750c",
+      "size": 2272,
+      "bytes_sha256": "45dc83c2aef5ea9b4725d278576a1220a258d1f7a27b66d7e45e423f49d40d74"
+    },
+    {
+      "name": "apmngr_get_linkage_chnl_bwMode",
+      "address": "0x005dd2d8",
+      "size": 1640,
+      "bytes_sha256": "a54a24ccbd8d8b7102b2f503bca39150d1e4cc2072023cdd108c8da5cec877ee"
+    },
+    {
+      "name": "rdmngr_db_init_comPara",
+      "address": "0x00726b98",
+      "size": 2020,
+      "bytes_sha256": "5b3938b207abc7d9430f1d09e289f3a6509ce3327facd68d44aece07968e4009"
+    },
+    {
+      "name": "apdb_get_default_bw_by_id",
+      "address": "0x00701ee0",
+      "size": 380,
+      "bytes_sha256": "af3e20def9943b1e2dc01f071ad2876e3e9455fd90e36d2fe3d05f72fab4e733"
+    },
+    {
+      "name": "apdb_get_default_chnl_by_id",
+      "address": "0x00701d64",
+      "size": 380,
+      "bytes_sha256": "d2dddfc6197f2fb6be356e7f5371663959bf925c51359ed204faa4d9a722a44d"
+    },
+    {
+      "name": "uac_rdmngr_chnl_pwr_modify_by_rdid",
+      "address": "0x00720e2c",
+      "size": 1908,
+      "bytes_sha256": "01275433482d414d01ac851c3d3dc0150a0822bfa20646ceecd78b3c9de96dd6"
+    },
+    {
+      "name": "rdmngr_db_get_real_max_tx_pwr",
+      "address": "0x0072de04",
+      "size": 176,
+      "bytes_sha256": "0b3b6efb43b53b7b030d56ad049e6fd9777eb11b7898f79116d7a40789c36b08"
+    },
+    {
+      "name": "rrm_ops_neigh_info_collect",
+      "address": "0x005231e4",
+      "size": 460,
+      "bytes_sha256": "7d2f2a176cb2cd5939a399d5fb9f1a940500f05188f7fe6fa90acf6fa148a026"
+    },
+    {
+      "name": "rrm_ops_pkt_ndp_recv",
+      "address": "0x0051eccc",
+      "size": 1728,
+      "bytes_sha256": "a574cd07d8f9b71244336e4dfc7361a1887a8892b309ed7cc96871682dcbe81d"
+    },
+    {
+      "name": "rrm_ops_apply_all_result",
+      "address": "0x0051fbbc",
+      "size": 512,
+      "bytes_sha256": "43bb083b98da106bd8256aae081e223e12b6b3c1e81a57e59990a9fc01e45cb0"
+    },
+    {
+      "name": "rrm_ops_rd_info_ndp_collect_init",
+      "address": "0x0051f4fc",
+      "size": 160,
+      "bytes_sha256": "d3870fc42a0e85f4c12db655224df262404e6a70e848a2063d5209d7e6763457"
+    },
+    {
+      "name": "rrm_ops_algo_result_save",
+      "address": "0x0051fdbc",
+      "size": 256,
+      "bytes_sha256": "d14fec6fb2f48e7ed45997bd2970aa69837d018575918dcbcd1a844a66367bd2"
+    },
+    {
+      "name": "rrm_business_neighbor_collect_and_process",
+      "address": "0x005279e0",
+      "size": 656,
+      "bytes_sha256": "42f17df2a80353a3218704365e61f3b5d11eefdcd3add5e86b4b6029e3556b13"
+    },
+    {
+      "name": "rrm_ops_get_bw_mode_for_160m_bw_cfg",
+      "address": "0x0051bef0",
+      "size": 284,
+      "bytes_sha256": "a00e4e786ecc6894b460ad0149ec8db10529284146cda57f47855e0cc9ca066f"
+    },
+    {
+      "name": "band_navigation_packet_send",
+      "address": "0x00633400",
+      "size": 528,
+      "bytes_sha256": "51d8603b8ec290ed5fb41ba1df0ebf5f3098403cdcf2f60d0c16b370451d57e5"
+    },
+    {
+      "name": "_uac_wsta_pkt_sta_extra_info",
+      "address": "0x00745f28",
+      "size": 1636,
+      "bytes_sha256": "60aa5974c1d8a61356344316dd45073abfd64f41dd3607d80bea50bbc2940c82"
+    },
+    {
+      "name": "cw_priv_sta_extra_info_parse",
+      "address": "0x0068ea40",
+      "size": 1164,
+      "bytes_sha256": "44b1450e1271b62867547efd3777e625cbaebfbc5b6515f830538b4a6ada3b31"
+    },
+    {
+      "name": "cw_priv_sta_extra_info_dump",
+      "address": "0x0068ddac",
+      "size": 1008,
+      "bytes_sha256": "e0c12f0b0027b157b08a4ea39488f3ca6da6aee94349909e3da10e1654ff2be0"
+    },
+    {
+      "name": "uac_wstation_mlo_peer_assoc",
+      "address": "0x00766458",
+      "size": 604,
+      "bytes_sha256": "ef1390f9ce15522f3e99d14406a5123c74baa9f5561b5aad5336333d8aee516b"
+    },
+    {
+      "name": "_uac_wsta_pkt_deassocicate",
+      "address": "0x007459fc",
+      "size": 824,
+      "bytes_sha256": "3beb5de40bd54f5dcde5d7ed2e83e8501e602d5ab4e56be49602a84af5f706cf"
+    },
+    {
+      "name": "wsta_db_get_rd_sta_num",
+      "address": "0x00753844",
+      "size": 748,
+      "bytes_sha256": "6fb8bab374db4874416e1d7bf794fbd3a5f81c312aef56778c417d31c1e43c1b"
+    },
+    {
+      "name": "_uac_wsta_get_entry",
+      "address": "0x007670c8",
+      "size": 4404,
+      "bytes_sha256": "8c608fb5e566cbc46e88ea3f55f23cd9d4ef5d1a5623ef0884b14ce09285d890"
+    },
+    {
+      "name": "_stats_pkt_wtp_event_listener",
+      "address": "0x007b5694",
+      "size": 432,
+      "bytes_sha256": "03fe8bcbe6807bd278e151e364c33a1c9a485eb142540e07aaa719ad67f78874"
+    },
+    {
+      "name": "_stats_sta_assoc_cb",
+      "address": "0x007b4214",
+      "size": 160,
+      "bytes_sha256": "5b9d225c991c83dec05aee9231fc76b6c7ce5e726bac9e604edc9d320c579f6d"
+    },
+    {
+      "name": "_stats_sta_deassoc_cb",
+      "address": "0x007b42b4",
+      "size": 96,
+      "bytes_sha256": "070c49f3509beb3b96081e7cd15b23dfa176bcb25161483cf3bca27f2aa91424"
+    },
+    {
+      "name": "_stats_sta_idle_timer_handle",
+      "address": "0x007a9b48",
+      "size": 236,
+      "bytes_sha256": "6603caad52aaef50d3c91645fe2d9d9a1d33e2e7ddd54661b29d27d9deb5f5a8"
+    },
+    {
+      "name": "stats_db_sta_start_del_timer_by_mac",
+      "address": "0x007ae6b8",
+      "size": 172,
+      "bytes_sha256": "466b9f77e719309f3e53a448a31f956d651e213bf0d29ccc3a8fb3ad8c798c1c"
+    },
+    {
+      "name": "stats_db_sta_update_cnt_target",
+      "address": "0x007ae310",
+      "size": 936,
+      "bytes_sha256": "1bee9b11035621249c7aa05f722b87cd6f5051128b567f56f85d1aa563eff7d5"
+    },
+    {
+      "name": "cw_priv_sta_statistics_dump",
+      "address": "0x006a1da4",
+      "size": 656,
+      "bytes_sha256": "cc4c338df8c3f831bbe7cce6f4ab06d333cccb1cc2f4983eb647747337ea889e"
+    },
+    {
+      "name": "uac_wstation_recognition_handle",
+      "address": "0x0076a7c8",
+      "size": 936,
+      "bytes_sha256": "394327b79cef24f8f1309e92e3738391c63e8ec94b09fd9922134f1b09718226"
+    },
+    {
+      "name": "uac_wsta_recognition_match_handle",
+      "address": "0x0076a43c",
+      "size": 908,
+      "bytes_sha256": "ce3d7443190af18a1bbd007a982eb9acfbb2ce9881695f7563e7e893c901c937"
+    },
+    {
+      "name": "wsta_db_recog_match_feature_value",
+      "address": "0x00751738",
+      "size": 1116,
+      "bytes_sha256": "14a96974459a5d363436a5bb58b9b15e409139de9866d111931c262669b138cc"
+    },
+    {
+      "name": "wsta_db_recognition_result_get",
+      "address": "0x00751d24",
+      "size": 472,
+      "bytes_sha256": "abfe5514195e7b043c244f63aabd6a2778da56dc206363ccd1cc522a56d5a92a"
+    },
+    {
+      "name": "wsta_db_match_mac_oui_value",
+      "address": "0x0074d704",
+      "size": 312,
+      "bytes_sha256": "8955aaf3a04002ca953b526e34a3bb6e10f08bcabce8443b37f46abae8e73f5a"
+    },
+    {
+      "name": "wsta_db_init_buttom_half",
+      "address": "0x0074e474",
+      "size": 5396,
+      "bytes_sha256": "183ec55209cb8a65da1544f30e516364299695c49da2432ae4b6c45f3bed33f2"
+    },
+    {
+      "name": "cw_priv_ac_msg_pull_parse",
+      "address": "0x006a0c24",
+      "size": 1740,
+      "bytes_sha256": "c33a34bb1d632b3ee1d0e2cf54f991a933c81f446e54d4c81cbe8bf88633cf7b"
+    },
+    {
+      "name": "_stats_pkt_sta_or_bssid_update",
+      "address": "0x007b55ac",
+      "size": 232,
+      "bytes_sha256": "a81dc61ba1c024af1cdce30067881f25c6c796fde101b83f64be711b9d365271"
+    },
+    {
+      "name": "_stats_pkt_bssid_update",
+      "address": "0x007b542c",
+      "size": 384,
+      "bytes_sha256": "231c87582b58461ebaf7c49dcdb79a3009a48c436478a46dabda5020761440a9"
+    },
+    {
+      "name": "stats_db_bssid_update",
+      "address": "0x007b1190",
+      "size": 492,
+      "bytes_sha256": "9cd909395d5c9046461c31331cd60728a448104828b94c9b20bb5bb825e5bc6a"
+    },
+    {
+      "name": "stats_db_ssid_update",
+      "address": "0x007b1e44",
+      "size": 1188,
+      "bytes_sha256": "8d22fdcc38cacd939bb2b50e83560e7764eb69f704d6ce378a8d54ca7bf92c82"
+    },
+    {
+      "name": "rdmngr_db_init_11ax_feature",
+      "address": "0x007301dc",
+      "size": 788,
+      "bytes_sha256": "659c385d77534b2a7ad60019cc3e8a2666794d43e9a558c6b02202d231e93da2"
+    },
+    {
+      "name": "rdmngr_db_check_11ax_feature",
+      "address": "0x007304f0",
+      "size": 572,
+      "bytes_sha256": "a6cadd6e44d5e3086b14eb554c59441edf1098203c2f0a030e74814cd0007976"
+    },
+    {
+      "name": "rdmngr_capwap_callback_join_req_listen",
+      "address": "0x0073d0f0",
+      "size": 1036,
+      "bytes_sha256": "878b0068af016960f4c2a0cf8833c21f6711537add66ed03f5e2957e358834b1"
+    },
+    {
+      "name": "rdmngr_multilink_callback_rdmngr_add",
+      "address": "0x00742e24",
+      "size": 1008,
+      "bytes_sha256": "5fe8143eee1b67130d0ab06786fd54fb737a1aba4b53a6972ba2f97952d2d49d"
+    },
+    {
+      "name": "rdmngr_wtp_pkt_send",
+      "address": "0x0073ea84",
+      "size": 9272,
+      "bytes_sha256": "5e16b47f9cbbe11862c03c11f722e288597605bb2c39d101107e2743c563009a"
+    },
+    {
+      "name": "edca_rule_to_ap",
+      "address": "0x0074108c",
+      "size": 1904,
+      "bytes_sha256": "1a41e00185ecfb0c324978d530c542ed91ba9d97cd8e22ab9f54c1c4d7aaeecd"
+    },
+    {
+      "name": "edca_rule_jcs_add",
+      "address": "0x00711fb0",
+      "size": 808,
+      "bytes_sha256": "4cdcab9ce7ee2b15c9349250cb0ed3af7e39919177dd8b9db62d75964d215bff"
+    },
+    {
+      "name": "edca_rule_jcs_set",
+      "address": "0x007129b4",
+      "size": 1368,
+      "bytes_sha256": "adfe1cd183cb8421401e6e0641eb79b409453fbbcf63e0a6effaab0f0b0f8708"
+    },
+    {
+      "name": "edca_rule_jcs_del",
+      "address": "0x00710cc0",
+      "size": 884,
+      "bytes_sha256": "0249fc49b2abab8b714093b6868e2d84a71ceb8da16ee632a3704790b116391d"
+    },
+    {
+      "name": "check_edca_rule_bind_ap_or_group_conflict",
+      "address": "0x00725b88",
+      "size": 3084,
+      "bytes_sha256": "3203f39f327e91506831da7fe38647852ab568024e66f2042abde2f3f136aed2"
+    },
+    {
+      "name": "edca_disable_with_no_rule_to_ap",
+      "address": "0x00741dd0",
+      "size": 1260,
+      "bytes_sha256": "4990770c06e0b131416d0c0b6088cdc942867ccea5d69c328f84094695f72378"
+    },
+    {
+      "name": "get_edca_default_value",
+      "address": "0x00730ec4",
+      "size": 124,
+      "bytes_sha256": "060c62ef7c8849f53523186021b655e954448e1d57da4da9387a04e2ae0e9f8b"
+    },
+    {
+      "name": "rdmngr_db_init_edca",
+      "address": "0x00726b10",
+      "size": 136,
+      "bytes_sha256": "deed96906b2acfb5162b3068d0bc6d2072bb863fe8c344db3985a7975f263a52"
+    },
+    {
+      "name": "get_virtual_freq_band_with_type",
+      "address": "0x00729de0",
+      "size": 932,
+      "bytes_sha256": "040c076cd70199cb41db2e00ddca35ad151a759c8194a39e5cbc2baa9bb41fb7"
+    },
+    {
+      "name": "apdb_set_freq_band_idx_by_rf_mode",
+      "address": "0x006fa788",
+      "size": 744,
+      "bytes_sha256": "f1782451dab416512b3f1e9a45380005fa174256a99f985db273536a00d4ac06"
+    },
+    {
+      "name": "_wsta_roam_sql_create_cfg_table",
+      "address": "0x004d8ca8",
+      "size": 336,
+      "bytes_sha256": "eb3c663bbaed9c1a320725aea30f7b45af631271021ffdabe738c132debaec2c"
+    },
+    {
+      "name": "_wsta_roam_sql_load_db",
+      "address": "0x004da7b4",
+      "size": 1084,
+      "bytes_sha256": "26d99b8b1f6830512c70f938d56a7a0899ea89b0003c3009a300905af9ea4410"
+    },
+    {
+      "name": "rrm_business_neighbor_collect",
+      "address": "0x00527944",
+      "size": 156,
+      "bytes_sha256": "98949b26b94aebd267f3840d345b6df3f589acb09d98e032c14d98c22a99cd5c"
+    },
+    {
+      "name": "rrm_ops_trigger_rrm_by_rule",
+      "address": "0x00525590",
+      "size": 680,
+      "bytes_sha256": "39dcc212d1d6afd7624b96ee2c5c3336e02ba8b9ce039599c2077f0d9ce2c8d1"
+    }
+  ],
+  "active_candidate_call": {
+    "instruction_address": "0x004e713c",
+    "instruction": "0x0c13958e",
+    "target": "0x004e5638",
+    "function": "roam_nbr_select"
+  },
+  "compiled_defaults": {
+    "base_address": "0x008cc370",
+    "bytes": "0000001e000000050000000200000000ffffffff050455460000",
+    "auto_high_performance_max_clients": 30,
+    "auto_high_performance_max_aps": 5,
+    "roaming_control_strategy": 2,
+    "legacy_rssi_cross_band_adjustment": 5,
+    "max_selected_neighbors": 4,
+    "max_channel_load_5g": 85,
+    "max_channel_load_2g": 70
+  },
+  "station_retention": {
+    "base_seconds_address": "0x008f5630",
+    "base_seconds": 900,
+    "disconnect_extra_seconds": 5,
+    "sweep_seconds": 60
+  },
+  "edca_defaults": {
+    "address": "0x008ec530",
+    "queue_rows_aifs_cwmin_cwmax_txop": [
+      [
+        1,
+        2,
+        3,
+        47
+      ],
+      [
+        1,
+        3,
+        4,
+        94
+      ],
+      [
+        2,
+        4,
+        6,
+        0
+      ],
+      [
+        3,
+        4,
+        10,
+        0
+      ],
+      [
+        2,
+        2,
+        3,
+        47
+      ],
+      [
+        2,
+        3,
+        4,
+        94
+      ],
+      [
+        2,
+        4,
+        10,
+        0
+      ],
+      [
+        3,
+        4,
+        10,
+        0
+      ]
+    ]
+  },
+  "additional_source_files": [
+    {
+      "path": "etc/terminal_feature.json",
+      "sha256": "8582bc7f3e72d5cca4648a3f68d00aa4eba3ba46ec98de7761dde7340d5743fe"
+    },
+    {
+      "path": "etc/macFactory.js",
+      "sha256": "cb1280355368882371e7e0d02def5d0c5b3e6e78bde10e3e763d732637024ba7"
+    },
+    {
+      "path": "usr/lib/lua/luci/controller/admin/time_mngt.lua",
+      "sha256": "4e1c52641046a01c9fd7e8c9b11d7ae51d9e198e4a676574fbd847951a119a85"
+    },
+    {
+      "path": "usr/lib/lua/luci/torchlight/uac/ac_validator.lua",
+      "sha256": "f21ebc22bb59e5544e7ddb697511e8639cc6714615e3847d494b42469ac1d7b9"
+    },
+    {
+      "path": "usr/lib/lua/luci/controller/admin/apmng_rf.lua",
+      "sha256": "473e79266c46290304153b570e246dc5112ae27d91db7e57221785dd43726a82"
+    },
+    {
+      "path": "usr/lib/lua/luci/controller/admin/apmng_rrm.lua",
+      "sha256": "26d18fe82414021e02af9cfe723931de6c621b79ed9659d32a67d26057b2e0be"
+    }
+  ],
+  "rate_estimation": {
+    "table_format": "[SNR threshold byte, padding byte, big-endian uint16 rate]; 5 PHY modes x 14 entries per band",
+    "table_addresses": {
+      "5g": "0x008cc3e0",
+      "2g": "0x008cc4f8"
+    },
+    "bandwidth_multipliers_address": "0x008cc390",
+    "bandwidth_multipliers": [
+      [
+        1,
+        1,
+        1,
+        1
+      ],
+      [
+        52,
+        108,
+        108,
+        108
+      ],
+      [
+        52,
+        108,
+        234,
+        468
+      ],
+      [
+        234,
+        468,
+        980,
+        1960
+      ],
+      [
+        234,
+        468,
+        980,
+        1960
+      ]
+    ],
+    "tables": {
+      "5g": [
+        [
+          [
+            7,
+            0,
+            3
+          ],
+          [
+            10,
+            0,
+            6
+          ],
+          [
+            13,
+            0,
+            9
+          ],
+          [
+            14,
+            0,
+            13
+          ],
+          [
+            18,
+            0,
+            19
+          ],
+          [
+            22,
+            0,
+            26
+          ],
+          [
+            23,
+            0,
+            29
+          ],
+          [
+            25,
+            0,
+            33
+          ],
+          [
+            255,
+            0,
+            33
+          ],
+          [
+            255,
+            0,
+            33
+          ],
+          [
+            255,
+            0,
+            33
+          ],
+          [
+            255,
+            0,
+            33
+          ],
+          [
+            255,
+            0,
+            33
+          ],
+          [
+            255,
+            0,
+            33
+          ]
+        ],
+        [
+          [
+            15,
+            0,
+            7
+          ],
+          [
+            17,
+            0,
+            14
+          ],
+          [
+            19,
+            0,
+            21
+          ],
+          [
+            21,
+            0,
+            28
+          ],
+          [
+            24,
+            0,
+            43
+          ],
+          [
+            26,
+            0,
+            57
+          ],
+          [
+            28,
+            0,
+            65
+          ],
+          [
+            31,
+            0,
+            72
+          ],
+          [
+            255,
+            0,
+            72
+          ],
+          [
+            255,
+            0,
+            72
+          ],
+          [
+            255,
+            0,
+            72
+          ],
+          [
+            255,
+            0,
+            72
+          ],
+          [
+            255,
+            0,
+            72
+          ],
+          [
+            255,
+            0,
+            72
+          ]
+        ],
+        [
+          [
+            15,
+            0,
+            7
+          ],
+          [
+            17,
+            0,
+            14
+          ],
+          [
+            19,
+            0,
+            21
+          ],
+          [
+            21,
+            0,
+            28
+          ],
+          [
+            24,
+            0,
+            43
+          ],
+          [
+            26,
+            0,
+            57
+          ],
+          [
+            28,
+            0,
+            65
+          ],
+          [
+            31,
+            0,
+            72
+          ],
+          [
+            34,
+            0,
+            86
+          ],
+          [
+            38,
+            0,
+            96
+          ],
+          [
+            255,
+            0,
+            96
+          ],
+          [
+            255,
+            0,
+            96
+          ],
+          [
+            255,
+            0,
+            96
+          ],
+          [
+            255,
+            0,
+            96
+          ]
+        ],
+        [
+          [
+            16,
+            0,
+            8
+          ],
+          [
+            17,
+            0,
+            17
+          ],
+          [
+            19,
+            0,
+            25
+          ],
+          [
+            22,
+            0,
+            34
+          ],
+          [
+            25,
+            0,
+            51
+          ],
+          [
+            27,
+            0,
+            68
+          ],
+          [
+            29,
+            0,
+            77
+          ],
+          [
+            32,
+            0,
+            86
+          ],
+          [
+            34,
+            0,
+            103
+          ],
+          [
+            37,
+            0,
+            114
+          ],
+          [
+            41,
+            0,
+            129
+          ],
+          [
+            43,
+            0,
+            143
+          ],
+          [
+            255,
+            0,
+            143
+          ],
+          [
+            255,
+            0,
+            143
+          ]
+        ],
+        [
+          [
+            16,
+            0,
+            8
+          ],
+          [
+            17,
+            0,
+            17
+          ],
+          [
+            19,
+            0,
+            25
+          ],
+          [
+            22,
+            0,
+            34
+          ],
+          [
+            25,
+            0,
+            51
+          ],
+          [
+            27,
+            0,
+            68
+          ],
+          [
+            29,
+            0,
+            77
+          ],
+          [
+            32,
+            0,
+            86
+          ],
+          [
+            34,
+            0,
+            103
+          ],
+          [
+            37,
+            0,
+            114
+          ],
+          [
+            41,
+            0,
+            129
+          ],
+          [
+            43,
+            0,
+            143
+          ],
+          [
+            47,
+            0,
+            154
+          ],
+          [
+            52,
+            0,
+            172
+          ]
+        ]
+      ],
+      "2g": [
+        [
+          [
+            7,
+            0,
+            3
+          ],
+          [
+            10,
+            0,
+            6
+          ],
+          [
+            13,
+            0,
+            9
+          ],
+          [
+            14,
+            0,
+            13
+          ],
+          [
+            18,
+            0,
+            19
+          ],
+          [
+            22,
+            0,
+            26
+          ],
+          [
+            23,
+            0,
+            29
+          ],
+          [
+            25,
+            0,
+            33
+          ],
+          [
+            255,
+            0,
+            33
+          ],
+          [
+            255,
+            0,
+            33
+          ],
+          [
+            255,
+            0,
+            33
+          ],
+          [
+            255,
+            0,
+            33
+          ],
+          [
+            255,
+            0,
+            33
+          ],
+          [
+            255,
+            0,
+            33
+          ]
+        ],
+        [
+          [
+            7,
+            0,
+            7
+          ],
+          [
+            8,
+            0,
+            14
+          ],
+          [
+            10,
+            0,
+            21
+          ],
+          [
+            13,
+            0,
+            28
+          ],
+          [
+            16,
+            0,
+            43
+          ],
+          [
+            21,
+            0,
+            57
+          ],
+          [
+            24,
+            0,
+            65
+          ],
+          [
+            27,
+            0,
+            72
+          ],
+          [
+            255,
+            0,
+            72
+          ],
+          [
+            255,
+            0,
+            72
+          ],
+          [
+            255,
+            0,
+            72
+          ],
+          [
+            255,
+            0,
+            72
+          ],
+          [
+            255,
+            0,
+            72
+          ],
+          [
+            255,
+            0,
+            72
+          ]
+        ],
+        [
+          [
+            6,
+            0,
+            8
+          ],
+          [
+            9,
+            0,
+            17
+          ],
+          [
+            12,
+            0,
+            25
+          ],
+          [
+            14,
+            0,
+            34
+          ],
+          [
+            17,
+            0,
+            51
+          ],
+          [
+            21,
+            0,
+            68
+          ],
+          [
+            23,
+            0,
+            77
+          ],
+          [
+            29,
+            0,
+            86
+          ],
+          [
+            32,
+            0,
+            103
+          ],
+          [
+            35,
+            0,
+            114
+          ],
+          [
+            38,
+            0,
+            129
+          ],
+          [
+            41,
+            0,
+            143
+          ],
+          [
+            255,
+            0,
+            143
+          ],
+          [
+            255,
+            0,
+            143
+          ]
+        ],
+        [
+          [
+            6,
+            0,
+            8
+          ],
+          [
+            9,
+            0,
+            17
+          ],
+          [
+            12,
+            0,
+            25
+          ],
+          [
+            14,
+            0,
+            34
+          ],
+          [
+            17,
+            0,
+            51
+          ],
+          [
+            21,
+            0,
+            68
+          ],
+          [
+            23,
+            0,
+            77
+          ],
+          [
+            29,
+            0,
+            86
+          ],
+          [
+            32,
+            0,
+            103
+          ],
+          [
+            35,
+            0,
+            114
+          ],
+          [
+            38,
+            0,
+            129
+          ],
+          [
+            41,
+            0,
+            143
+          ],
+          [
+            255,
+            0,
+            143
+          ],
+          [
+            255,
+            0,
+            143
+          ]
+        ],
+        [
+          [
+            6,
+            0,
+            8
+          ],
+          [
+            9,
+            0,
+            17
+          ],
+          [
+            12,
+            0,
+            25
+          ],
+          [
+            14,
+            0,
+            34
+          ],
+          [
+            17,
+            0,
+            51
+          ],
+          [
+            21,
+            0,
+            68
+          ],
+          [
+            23,
+            0,
+            77
+          ],
+          [
+            29,
+            0,
+            86
+          ],
+          [
+            32,
+            0,
+            103
+          ],
+          [
+            35,
+            0,
+            114
+          ],
+          [
+            38,
+            0,
+            129
+          ],
+          [
+            41,
+            0,
+            143
+          ],
+          [
+            45,
+            0,
+            154
+          ],
+          [
+            50,
+            0,
+            172
+          ]
+        ]
+      ]
+    }
+  },
+  "unlisted_internal_entries": {
+    "apdb_packet_parse_rrst": "0x0070b64c",
+    "get_apdb_bandwidth_flag_bit": "0x006f9b3c",
+    "_uac_rdmngr_linked_modify": "0x00714b9c"
+  },
+  "rrst_wire_tables": {
+    "bandwidth_string_pointer_table": "0x00886484",
+    "bandwidth_tokens_in_enum_order": [
+      "1",
+      "2",
+      "0",
+      "3",
+      "4",
+      "5"
+    ],
+    "unknown_bandwidth_bit": 6,
+    "legal_5g_channels_address": "0x00885110",
+    "legal_5g_channels": [
+      36,
+      40,
+      44,
+      48,
+      52,
+      56,
+      60,
+      64,
+      100,
+      104,
+      108,
+      112,
+      116,
+      120,
+      124,
+      128,
+      132,
+      136,
+      140,
+      144,
+      149,
+      153,
+      157,
+      161,
+      165
+    ]
+  },
+  "rrm_radio_power_profile": {
+    "address": "0x008edd28",
+    "channel_power_pairs": [
+      [
+        1,
+        50
+      ],
+      [
+        2,
+        50
+      ],
+      [
+        3,
+        50
+      ],
+      [
+        4,
+        50
+      ],
+      [
+        5,
+        50
+      ],
+      [
+        6,
+        50
+      ],
+      [
+        7,
+        50
+      ],
+      [
+        8,
+        50
+      ],
+      [
+        9,
+        50
+      ],
+      [
+        10,
+        50
+      ],
+      [
+        11,
+        50
+      ],
+      [
+        12,
+        50
+      ],
+      [
+        13,
+        50
+      ],
+      [
+        36,
+        50
+      ],
+      [
+        40,
+        50
+      ],
+      [
+        44,
+        50
+      ],
+      [
+        48,
+        50
+      ],
+      [
+        52,
+        50
+      ],
+      [
+        56,
+        50
+      ],
+      [
+        60,
+        50
+      ],
+      [
+        64,
+        50
+      ],
+      [
+        100,
+        50
+      ],
+      [
+        104,
+        50
+      ],
+      [
+        108,
+        50
+      ],
+      [
+        112,
+        50
+      ],
+      [
+        116,
+        50
+      ],
+      [
+        120,
+        50
+      ],
+      [
+        124,
+        50
+      ],
+      [
+        128,
+        50
+      ],
+      [
+        132,
+        50
+      ],
+      [
+        136,
+        50
+      ],
+      [
+        140,
+        50
+      ],
+      [
+        144,
+        50
+      ],
+      [
+        149,
+        50
+      ],
+      [
+        153,
+        50
+      ],
+      [
+        157,
+        50
+      ],
+      [
+        161,
+        50
+      ],
+      [
+        165,
+        50
+      ],
+      [
+        0,
+        0
+      ],
+      [
+        0,
+        0
+      ]
+    ]
+  },
+  "rrm_library_exports": [
+    {
+      "name": "rrm_business_static_optimize_original",
+      "address": "0x000077a0",
+      "size": 13220
+    },
+    {
+      "name": "librrm_exec_by_param",
+      "address": "0x0000ab44",
+      "size": 3824
+    },
+    {
+      "name": "librrm_static_rrm_cfg_dump",
+      "address": "0x0000ba34",
+      "size": 784
+    },
+    {
+      "name": "librrm_rd_info_dump",
+      "address": "0x0000bd44",
+      "size": 824
+    },
+    {
+      "name": "librrm_dump_switch_set",
+      "address": "0x0000c07c",
+      "size": 296
+    }
+  ],
+  "rrm_active_got_targets": [
+    {
+      "got": "0x00025240",
+      "target": "0x00005094",
+      "role": "static channel allocation"
+    },
+    {
+      "got": "0x00025248",
+      "target": "0x0000677c",
+      "role": "transmit power control version one"
+    }
+  ]
+}

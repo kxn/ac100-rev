@@ -32,9 +32,7 @@ func supportedInheritedOptions(o APOptions, ap cweng.APStatus) APOptions {
 	if !ap.HasCapability(100) {
 		o.USB = nil
 	}
-	if !ap.HasCapability(77) || o.Bluetooth != nil && (*o.Bluetooth == 0 && (!ap.HasCapability(102) || ap.SubCapabilities[102]&1 == 0) || *o.Bluetooth == 2 && !ap.HasCapability(79)) {
-		o.Bluetooth = nil
-	}
+
 	if !ap.HasCapability(42) {
 		o.LEDWiFiSync = nil
 	}
@@ -112,22 +110,22 @@ func inheritedRadioOptions(o APOptions, ap cweng.APStatus) APOptions {
 				v.Mode = nil
 				a.EDCA = &v
 			}
-			if !ap.HasCapability(70) || !c.Features["downlink_mumimo"] {
+			if !ap.HasCapability(70) || !radioControlFeatures(*c)["downlink_mumimo"] {
 				a.DownlinkMUMIMO = false
 			}
-			if !ap.HasCapability(70) || !c.Features["uplink_mumimo"] {
+			if !ap.HasCapability(70) || !radioControlFeatures(*c)["uplink_mumimo"] {
 				a.UplinkMUMIMO = false
 			}
-			if !ap.HasCapability(70) || !c.Features["downlink_ofdma"] {
+			if !ap.HasCapability(70) || !radioControlFeatures(*c)["downlink_ofdma"] {
 				a.DownlinkOFDMA = false
 			}
-			if !ap.HasCapability(70) || !c.Features["uplink_ofdma"] {
+			if !ap.HasCapability(70) || !radioControlFeatures(*c)["uplink_ofdma"] {
 				a.UplinkOFDMA = false
 			}
-			if !ap.HasCapability(70) || !c.Features["twt"] {
+			if !ap.HasCapability(70) || !radioControlFeatures(*c)["twt"] {
 				a.TWT = false
 			}
-			if !ap.HasCapability(70) || !c.Features["enable_6g"] {
+			if !ap.HasCapability(70) || !radioControlFeatures(*c)["enable_6g"] {
 				a.Enable6G = false
 				a.PSC6G = false
 			}

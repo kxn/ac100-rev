@@ -90,6 +90,7 @@ func (e *Engine) handleMeshPublic(parent *Session, req *capwap.ParsedPacket) boo
 				child.meshParent = parent
 				child.apEntry = ap
 				child.transportGeneration = parent.transportGeneration
+				child.onAPState = e.OnAPState
 				child.onTeardown = e.removeSession
 				child.onDelete = e.removeSession
 				child.onEnterRun = func(s *Session) error {

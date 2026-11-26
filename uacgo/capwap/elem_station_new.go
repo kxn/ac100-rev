@@ -52,18 +52,18 @@ type AssociationMLO struct {
 type AssociationLink struct {
 	Radio, WLAN uint8
 	MAC         [6]byte
-	Word        uint32
+	RSSI        int32 `json:"rssi_dbm"`
 }
 
 func ParseAssociationMLO(b []byte) (*AssociationMLO, error) {
-	if len(b) < 7 || b[6] > 3 || len(b) != 7+int(b[6])*12 {
+	if len(b) < 7 || b[6] < 1 || b[6] > 3 || len(b) != 7+int(b[6])*12 {
 		return nil, ErrShortPacket
 	}
 	out := &AssociationMLO{}
 	copy(out.MAC[:], b[:6])
 	seen := map[[6]byte]bool{}
 	for b = b[7:]; len(b) > 0; b = b[12:] {
-		l := AssociationLink{Radio: b[0], WLAN: b[1], Word: Uint32BE(b[8:])}
+		l := AssociationLink{Radio: b[0], WLAN: b[1], RSSI: int32(Uint32BE(b[8:]))}
 		copy(l.MAC[:], b[2:8])
 		if l.Radio == 0 || l.Radio >= 32 || l.WLAN == 0 || l.WLAN > 16 || l.MAC == [6]byte{} || l.MAC[0]&1 != 0 || seen[l.MAC] {
 			return nil, ErrShortPacket

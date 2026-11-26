@@ -22,6 +22,7 @@ import (
 	"time"
 	"uacgo/capwap"
 	"uacgo/cweng"
+	"uacgo/mobility"
 	"unicode/utf8"
 )
 
@@ -56,27 +57,29 @@ func (r RadioList) MarshalJSON() ([]byte, error) {
 }
 
 type Config struct {
-	Mesh            *MeshConfig            `json:"mesh,omitempty"`
-	Storm           *StormConfig           `json:"storm,omitempty"`
-	Protection      *ProtectionConfig      `json:"protection,omitempty"`
-	RRM             []RRMRule              `json:"rrm"`
-	MulticastGroups []MulticastGroup       `json:"multicast_groups"`
-	Bluetooth       *BluetoothConfig       `json:"bluetooth,omitempty"`
-	Mobility        *MobilityConfig        `json:"mobility,omitempty"`
-	Rates           *RatePolicy            `json:"rates,omitempty"`
-	RetiredAPs      []string               `json:"retired_aps"`
-	ClientLabels    map[string]ClientLabel `json:"client_labels"`
-	APDefaults      APOptions              `json:"ap_defaults"`
-	APProfiles      []APProfile            `json:"ap_profiles"`
-	Groups          []APGroup              `json:"groups"`
-	Templates       []APTemplate           `json:"templates"`
-	BandNavigation  *BandNavigation        `json:"band_navigation,omitempty"`
-	VLANPools       []VLANPool             `json:"vlan_pools"`
-	Radios          []RadioSetting         `json:"radios"`
-	Interface       string                 `json:"interface"`
-	Version         uint64                 `json:"version"`
-	Services        []Service              `json:"services"`
-	Labels          map[string]string      `json:"labels"`
+	EDCARules           []EDCARule                  `json:"edca_rules"`
+	EDCAState           map[string]EDCABindingState `json:"edca_state,omitempty"`
+	ReportedClientNames map[string]string           `json:"reported_client_names,omitempty"`
+	Mesh                *MeshConfig                 `json:"mesh,omitempty"`
+	Storm               *StormConfig                `json:"storm,omitempty"`
+	Protection          *ProtectionConfig           `json:"protection,omitempty"`
+	RRM                 []RRMRule                   `json:"rrm"`
+	MulticastGroups     []MulticastGroup            `json:"multicast_groups"`
+	Mobility            *MobilityConfig             `json:"mobility,omitempty"`
+	Rates               *RatePolicy                 `json:"rates,omitempty"`
+	RetiredAPs          []string                    `json:"retired_aps"`
+	ClientLabels        map[string]ClientLabel      `json:"client_labels"`
+	APDefaults          APOptions                   `json:"ap_defaults"`
+	APProfiles          []APProfile                 `json:"ap_profiles"`
+	Groups              []APGroup                   `json:"groups"`
+	Templates           []APTemplate                `json:"templates"`
+	BandNavigation      *BandNavigation             `json:"band_navigation,omitempty"`
+	VLANPools           []VLANPool                  `json:"vlan_pools"`
+	Radios              []RadioSetting              `json:"radios"`
+	Interface           string                      `json:"interface"`
+	Version             uint64                      `json:"version"`
+	Services            []Service                   `json:"services"`
+	Labels              map[string]string           `json:"labels"`
 }
 type ApplyStatus struct {
 	EffectiveEnabled *bool     `json:"effective_enabled,omitempty"`
@@ -98,17 +101,18 @@ type Manager struct {
 	upgrades             upgradeCatalog
 	upgradeActive        map[string]*upgradeRuntime
 	ndpMAC               [6]byte
+	rrmWake              chan struct{}
+	rrmRuns              map[string]*rrmRun
 	rrmJobs              map[string]RRMJob
-	roamJobs             map[string]roamJob
+	roamJobs             map[string][]*roamJob
 	roamHistory          []RoamDecision
-	roamLast             map[[6]byte]time.Time
-	mobilityMode         int
-	mobilityModeConfig   string
-	mobilityScan         MobilityScan
-	bluetoothOwned       map[string][]uint8
-	balanceFailures      map[balanceFailureKey]balanceFailure
+	roamSequence         uint64
+	balance              mobility.Balance
+	pmkTransitions       map[[6]byte]uint64
+	pmks                 mobility.PMKCache
+	stationStatistics    mobility.StationDB
+	bssidLocations       map[[6]byte]bssidLocation
 	clientRefresh        map[string]time.Time
-	admissions           map[[6]byte]admissionReservation
 	policyOwners         map[string]map[string]bool
 	operations           map[string]APOperation
 	pendingDeletes       map[string]map[string]map[uint8]uint8
@@ -213,12 +217,6 @@ func New(engine *cweng.Engine, clients *cweng.ClientTable, dataDir string) (*Man
 	if err := m.loadMeshJobs(); err != nil {
 		return nil, err
 	}
-	if err := m.loadBluetoothOwned(); err != nil {
-		return nil, err
-	}
-	if err := m.loadMobilityScan(); err != nil {
-		return nil, err
-	}
 	if err := m.loadControllerIdentity(); err != nil {
 		return nil, err
 	}
@@ -229,12 +227,37 @@ func New(engine *cweng.Engine, clients *cweng.ClientTable, dataDir string) (*Man
 		return nil, err
 	}
 	clients.ResolveService = m.resolveClientService
+	m.rrmWake = make(chan struct{}, 1)
+	m.balance.Start(time.Now())
+	m.pmks.Start(time.Now())
+	m.stationStatistics.Start(time.Now())
+	clients.OnTransition = m.observePMKTransition
+	clients.OnDeviceName = m.observeClientName
 	engine.RegisterUpdHandlers(m.confirmImage)
 	engine.RegisterImageActions(m.confirmImageAction)
 	engine.AdmitStation = m.admitStation
-	engine.AdmitClient = m.admitClient
+	engine.ObserveAssociation = m.observeAssociation
+	engine.CheckAssociation = m.checkAssociation
+	engine.OnAPState = m.observeAPState
 	engine.OnRoamingTrigger = m.queueRoaming
+	engine.OnStationDiscovery = m.observeBalanceProbe
+	engine.OnStationPMK = m.handlePMK
+	engine.OnStationStatistics = m.observeStationStatistics
+	engine.OnRSSIStatistics = m.observeRSSIStatistics
+	engine.OnAPStatistics = m.observeAPStatistics
+	engine.OnBSSIDLocations = m.observeBSSIDLocations
+	engine.OnRRMReport = m.observeRRMReport
 	engine.RegisterMeshControl(m.meshConfigure, m.meshAuthorize)
+	// Same V6 upgrade boundary as36_roam_cfg_sync.sh; old Go prototypes
+	// exposed modes which the shipped V6 Web never permits setting.
+	if m.config.Mobility != nil && m.config.Mobility.NetworkMode != 2 {
+		p := *m.config.Mobility
+		p.NetworkMode = 2
+		m.config.Mobility = &p
+		if err := atomicJSON(m.path, m.config); err != nil {
+			return nil, err
+		}
+	}
 	if err := validateManagement(m.config); err != nil {
 		return nil, err
 	}
@@ -269,7 +292,9 @@ func (m *Manager) APs() []cweng.APStatus {
 	live := m.engine.APs()
 	m.mu.Lock()
 	defer m.mu.Unlock()
+	wasOnline := map[string]bool{}
 	for id, v := range m.known {
+		wasOnline[id] = v.Online
 		v.Online = false
 		v.State = "OFFLINE"
 		m.known[id] = v
@@ -282,6 +307,15 @@ func (m *Manager) APs() []cweng.APStatus {
 	}
 	out := []cweng.APStatus{}
 	for _, v := range m.known {
+		if wasOnline[v.ID] && !v.Online {
+			m.balance.ForgetAP(v.ID)
+
+			for _, c := range m.clients.All() {
+				if c.APID == v.ID {
+					m.pmks.Disconnect(mobility.MAC(c.MAC), time.Now())
+				}
+			}
+		}
 		v.ProtectionLimits = protectionLimits(v)
 		if name := m.config.Labels[v.ID]; name != "" {
 			v.Name = name
@@ -318,6 +352,11 @@ func (m *Manager) snapshot() Config {
 }
 
 func (m *Manager) Run(ctx context.Context) {
+	rrmDone := make(chan struct{})
+	go func() { defer close(rrmDone); m.runRRM(ctx) }()
+	defer func() {
+		<-rrmDone
+	}()
 	ticker := time.NewTicker(2 * time.Second)
 	defer ticker.Stop()
 	// One worker per AP; a stalled AP never serializes all other controllers.
@@ -349,8 +388,12 @@ func (m *Manager) Run(ctx context.Context) {
 			m.captureHistory(aps, time.Now())
 			m.observeMeshJobs(aps, time.Now())
 			m.observeUpgrades(time.Now())
+			m.mu.Lock()
+			m.balance.Tick(time.Now())
+			m.pmks.Tick(time.Now())
+			m.stationStatistics.Tick(time.Now())
+			m.mu.Unlock()
 			m.tickRRM(time.Now())
-			m.tickMobilityScan(time.Now())
 			cfg := m.snapshot()
 			m.mu.Lock()
 			if time.Since(lastSave) > 30*time.Second {
@@ -392,21 +435,18 @@ func (m *Manager) reconcileAP(ctx context.Context, ap cweng.APStatus, cfg Config
 	if m.rrmStep(ctx, ap) {
 		return
 	}
+	if changed, err := m.ensureEDCARules(); err != nil {
+		return
+	} else if changed {
+		cfg = m.snapshot()
+	}
 	if err := m.applyAPManagement(ctx, ap, cfg); err != nil {
 		return
 	}
 	cfg = effectiveRadioConfig(cfg, ap)
-	navigation, reason := effectiveBandNavigation(ap, cfg)
-	before := navigation
-	if navigation != nil && !m.configurationSettled(ap, cfg) {
-		paused := *navigation
-		paused.Enabled = false
-		before = &paused
-		reason = "无线配置同步中，暂缓引导"
-	}
-	m.applyBandNavigation(ctx, ap, before)
-	m.navigationReason(ap.ID, reason)
-	if before != nil && ap.HasCapability(3) {
+	navigation := cfg.BandNavigation
+	m.applyBandNavigation(ctx, ap, navigation)
+	if navigation != nil && ap.HasCapability(3) {
 		m.mu.Lock()
 		failed := m.status[ap.ID+"/band-navigation"].State == "failed"
 		m.mu.Unlock()
@@ -417,25 +457,15 @@ func (m *Manager) reconcileAP(ctx context.Context, ap cweng.APStatus, cfg Config
 	m.applyStorm(ctx, ap, cfg)
 	m.applyProtection(ctx, ap, cfg)
 	m.applyPools(ctx, ap, cfg)
-	linkageErr := validateRadioLinkage(cfg, ap)
-	m.mu.Lock()
-	if linkageErr != nil {
-		m.status[ap.ID+"/radio-linkage"] = ApplyStatus{AP: ap.ID, Service: "radio-linkage", State: "failed", Error: linkageErr.Error(), At: time.Now()}
-	} else {
-		delete(m.status, ap.ID+"/radio-linkage")
-	}
-	m.mu.Unlock()
 	for _, radio := range cfg.Radios {
-		if radio.AP == ap.ID && linkageErr == nil {
+		if radio.AP == ap.ID {
 			m.reconcileRadio(ctx, ap, radio, cfg.Version)
 		}
 	}
 	m.applyRates(ctx, ap, cfg)
 	m.applyMobility(ctx, ap, cfg)
-	m.applyBluetooth(ctx, ap, cfg)
 	m.applyMesh(ctx, ap, cfg)
 	m.applyMulticastGroups(ctx, ap, cfg)
-	m.applyRoamingJobs(ctx, ap)
 	for _, service := range cfg.Services {
 		// Effective schedule was evaluated once with the batch snapshot.
 		key := ap.ID + "/" + service.ID
@@ -487,12 +517,9 @@ func (m *Manager) reconcileAP(ctx context.Context, ap cweng.APStatus, cfg Config
 
 	m.commitAP(ctx, ap, cfg)
 	if m.configurationSettled(ap, cfg) {
-		navigation, reason = effectiveBandNavigation(ap, cfg)
-		m.applyBandNavigation(ctx, ap, navigation)
-		m.navigationReason(ap.ID, reason)
 		m.refreshClientFacts(ctx, ap)
-		m.applyMobilityScan(ctx, ap, cfg)
 	}
+
 }
 func wlanElements(s Service, radio uint8) []capwap.Element {
 	if !s.Enabled {
@@ -620,7 +647,7 @@ func validate(s Service) error {
 	if !utf8.ValidString(s.SSID) || len([]byte(s.SSID)) < 1 || strings.ContainsAny(s.SSID, "\x00\r\n") {
 		return errors.New("SSID 必须为 1–32 字节，不能包含控制字符")
 	}
-	if !hasString([]string{"open", "wpa-psk", "wpa2-psk", "wpa-wpa2-psk", "wpa2-wpa3-psk", "wpa-enterprise", "wpa2-enterprise", "wpa-wpa2-enterprise"}, s.Security) {
+	if !hasString([]string{"open", "wpa-psk", "wpa2-psk", "wpa-wpa2-psk", "wpa2-wpa3-psk"}, s.Security) {
 		return errors.New("安全方式无效")
 	}
 	if strings.HasSuffix(s.Security, "psk") {
@@ -742,10 +769,9 @@ func (m *Manager) saveService(s Service) (Service, error) {
 	} else {
 		next.Services[idx] = s
 	}
-	if err := atomicJSON(m.path, next); err != nil {
+	if err := m.persistConfigLocked(next, false); err != nil {
 		return s, err
 	}
-	m.config = next
 	return s, nil
 }
 func jsonReply(w http.ResponseWriter, status int, v any) {
@@ -820,10 +846,13 @@ func (m *Manager) Handler() http.Handler {
 		for _, ap := range m.APs() {
 			online[ap.ID] = ap.Online
 		}
-		for _, ev := range m.clients.All() {
+		for _, ev := range m.clients.Display() {
 			mac := net.HardwareAddr(ev.MAC[:]).String()
 			m.mu.Lock()
 			label := m.config.ClientLabels[mac]
+			if label.Name == "" {
+				label.Name = m.config.ReportedClientNames[mac]
+			}
 			m.mu.Unlock()
 			state := ev.State
 			if (state == "associating" && time.Since(ev.Seen) > 30*time.Second) || (state != "disconnected" && time.Since(ev.Seen) > 6*time.Minute) {
@@ -832,7 +861,7 @@ func (m *Manager) Handler() http.Handler {
 			if !online[ev.APID] && state != "disconnected" {
 				state = "ap_offline"
 			}
-			rows = append(rows, map[string]any{"vlan_id": ev.VLAN, "ssid": ev.SSID, "service_id": ev.ServiceID, "name": label.Name, "note": label.Note, "mac": mac, "ip": ev.IP, "ipv6": ev.IPv6, "mlo": ev.MLD != nil, "ap_id": ev.APID, "radio_id": ev.RadioID, "wlan_id": ev.WLANID, "state": state, "rssi_dbm": ev.RSSI, "last_seen": ev.Seen, "statistics": ev.Statistics, "connected_at": ev.ConnectedAt, "mlo_links": ev.MLOLinks})
+			rows = append(rows, map[string]any{"vlan_id": ev.VLAN, "ssid": ev.SSID, "service_id": ev.ServiceID, "name": label.Name, "note": label.Note, "mac": mac, "ip": ev.IP, "ipv6": ev.IPv6, "mlo": ev.MLD != nil, "ap_id": ev.APID, "radio_id": ev.RadioID, "wlan_id": ev.WLANID, "state": state, "rssi_dbm": ev.RSSI, "last_seen": ev.Seen, "statistics": ev.Statistics, "connected_at": ev.ConnectedAt, "mlo_links": ev.MLOLinks, "radio_entries": ev.LinkStatus, "device": ev.Device})
 		}
 		sort.Slice(rows, func(i, j int) bool { return rows[i]["mac"].(string) < rows[j]["mac"].(string) })
 		jsonReply(w, 200, rows)
@@ -870,11 +899,10 @@ func (m *Manager) Handler() http.Handler {
 	})
 	mux.HandleFunc("POST /api/radios", m.saveRadioHTTP)
 	m.mobilityRoutes(mux)
-	m.bluetoothRoutes(mux)
 	m.meshRoutes(mux)
-	m.mobilityScanRoutes(mux)
 	m.multicastRoutes(mux)
 	m.rrmRoutes(mux)
+	m.edcaRoutes(mux)
 	mux.HandleFunc("POST /api/vlan-pools", m.poolHTTP)
 	mux.HandleFunc("DELETE /api/vlan-pools/{id}", m.poolHTTP)
 	mux.HandleFunc("GET /api/radios/defaults", m.radioDefaultsHTTP)
@@ -917,11 +945,10 @@ func (m *Manager) Handler() http.Handler {
 			next.Labels[k] = v
 		}
 		next.Labels[r.PathValue("id")] = v.Name
-		if err := atomicJSON(m.path, next); err != nil {
+		if err := m.persistConfigLocked(next, false); err != nil {
 			jsonReply(w, 500, map[string]string{"error": err.Error()})
 			return
 		}
-		m.config = next
 		jsonReply(w, 200, map[string]string{"status": "saved"})
 	})
 	mux.HandleFunc("GET /api/interfaces", func(w http.ResponseWriter, r *http.Request) {
@@ -971,11 +998,10 @@ func (m *Manager) Handler() http.Handler {
 		defer m.mu.Unlock()
 		next := m.config
 		next.Interface = v.Name
-		if err := atomicJSON(m.path, next); err != nil {
+		if err := m.persistConfigLocked(next, false); err != nil {
 			jsonReply(w, 500, map[string]string{"error": err.Error()})
 			return
 		}
-		m.config = next
 		jsonReply(w, 200, map[string]string{"status": "saved", "message": "已保存，程序下次启动生效"})
 	})
 	sub, _ := fs.Sub(assets, "assets")
@@ -1022,6 +1048,10 @@ func hasString(xs []string, v string) bool {
 // mu held. Session-specific failures cannot block a new session, but WLAN
 // ownership and deletion intent must survive until the new commit completes.
 func (m *Manager) clearAPSessionLocked(ap string, connection time.Time) {
+	if known, ok := m.known[ap]; !ok || known.ConnectedAt == connection {
+		m.balance.ForgetAP(ap)
+
+	}
 	suffix := "/" + connection.Format(time.RFC3339Nano)
 	for key, value := range m.applied {
 		if strings.HasPrefix(key, ap+"/") && strings.HasSuffix(value, suffix) {

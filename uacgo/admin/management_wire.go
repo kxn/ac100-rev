@@ -45,24 +45,6 @@ func managementElements(o APOptions, ap cweng.APStatus) ([]capwap.Element, error
 		}
 		out = append(out, privateSetting(0xd7, []byte{0, 1, 0, 2, 0, 1, boolean(*o.USB)}))
 	}
-	if o.Bluetooth != nil {
-		if !ap.HasCapability(77) {
-			return nil, fmt.Errorf("AP 未声明蓝牙能力")
-		}
-		if *o.Bluetooth == 0 && (!ap.HasCapability(102) || ap.SubCapabilities[102]&1 == 0) || *o.Bluetooth == 2 && !ap.HasCapability(79) {
-			return nil, fmt.Errorf("AP 未声明该蓝牙工作模式能力")
-		}
-
-		enabled, mode := byte(1), uint32(0xffffffff)
-		if *o.Bluetooth == -1 {
-			enabled = 0
-		} else if ap.SubCapabilities[77]&1 != 0 {
-			mode = map[int]uint32{0: 4, 1: 2, 2: 1}[*o.Bluetooth]
-		}
-		b := binary.BigEndian.AppendUint32([]byte{enabled}, mode)
-		b = binary.BigEndian.AppendUint32(b, 0xffffffff)
-		out = append(out, privateSetting(0xa7, b))
-	}
 
 	// V6 apmngr_pkt_config_update_request_pkt_send @0x6119c4:
 	// CW Timers = discovery20/echo. Private05 is client keepalive/miss count,

@@ -1,5 +1,7 @@
 # 本轮持续实现记录
 
+> 本文按时间追加，前文的阶段结论可能已被后续修正。当前范围和代码结论见 [策略对照](mobility-parity-audit.md) 与 [功能对应](feature-parity.md)，不能把历史阶段记录当作当前实现清单。
+
 用户已明确要求：除 RADIUS 和此前排除的菜单外，补齐所有保留缺口；管理逻辑可用模拟 AP 验证，现有 AP 设置逐项验证；额外 AP/终端留到最后实际需要时集中提出。不能在核查、单项修复或仅列缺项后停止。
 
 实施顺序：
@@ -162,3 +164,55 @@ RRST：7f矩阵(table_mask32/radioNum8/featureMask32/cols8/可选regions)及90�
 23:37 UI 修复最终回归通过：49次提交，两能力×三台模拟AP×10页，无JS错误，radio8及高级参数保持。模拟客户端固定后还将信号断言限定在弹窗内，避免主表同值造成选择器歧义；不是产品错误。包含全部改动的Go全测试与两目标无CGO构建再次通过，Go源码的vet/核心race此前已通过且此后仅更改静态资源。最终版重启后仅等待AP RUN/commit、查询状态/导出/历史，不重复改AP射频或跑吞吐。私有汇总将保存到.local/ac100/ac-acceptance-summary.json。
 
 23:39 最终版部署确认：AP已RUN且configuration-commit应答，无failed/blocked/pending配置；API已收到本次会话的GoAC-Lab客户端（radio2/WLAN1/实际IP），RSSI历史确认有新会话测量点，非只读取旧历史。AP CSV导出1台、AP数量趋势正常。证据汇总.local/ac100/ac-acceptance-summary.json已落盘，含最终二进制SHA256、检查结果和只读基础冒烟索引。本轮AC管理修复已部署完成；没有新增吞吐、PHY或逐开关AP行为测试。
+
+2026-11-27 原厂策略复核/架构整改继续：用户明确要求调度/漫游触发、算法完全按原固件，不许外部测试证明、不许自编；新增排除AP蓝牙。又要求全部保留代码双向核查、发现即改、有必要重构，不停工问确认。
+
+587d414的策略等价结论被推翻：有效候选为roam_nbr_select@4e5638（JAL@4e713c已从原字节校验），旧_roaming_nbr_select不是触发路径；真实策略速率/频段/RSSI排序、20%且20Mbps改善、负载70/85、默认4候选、弱回退。PMK/53/54结构及处理缺失；均衡计数/时钟/规则绑定、模式/ACS和RRM均有差异。完整依据/迁移状态见mobility-parity-audit.md，不能再把Go现有测试通过当原厂等价。
+
+新增tools/audit_mobility_firmware.py从PT_LOAD/PT_DYNAMIC校验UAC/so SHA256、34函数字节指纹、JAL和速率表，并生成mobility/tables_generated.go。独立mobility包已有原表速率估算、原有效选择器/原quicksort（含弱回退last-band汇编行为）、均衡状态机及源码边界单元向量。均衡已从admin移出并接private0b专属回调，删同SSID/VLAN附加过滤，global-per-MAC拒绝数/最后拒绝60秒/10AP LRU/每300秒清理900秒、AP断开清理，现有admin/cweng与新包测试通过。速率/选择器尚未接Manager，PMK/统计/模式/ACS/RRM仍待继续。
+
+正在后台导出所有V6 private编解码到.local/ac100/protocol-v6-decomp，日志protocol-v6-audit.log（终端session96311）；用于逐项双向核查。没有部署新代码，没有外部AP/吞吐/PHY测试。继续工作，不要以审计文件或模块初步通过为由结束任务。
+
+00:15 左右继续（源码未部署）：mobility已新增原表驱动rate/selector和PMKCache（状态1/2顺序、同service校验、断开60秒/每60秒扫、关联取消），源码边界向量通过；均衡已接线，候选/PMK仍待接线。V6所有private编解码导出已完成，protocol-v6-audit.log最后Save succeeded，输出protocol-v6-decomp。发现并修正capwap0x49固定101字节语义、截断校验（旧test竟用Logf掩盖失败）；0x53从固定单记录34字节改20+14*n上限400；0x54从固定102字节改42+32*nRadio+28*nVAP（8/64上限）。相关旧prototype测试改为独立V6长度/偏移/坏计数向量，core包通过，admin最后一次全包仍在等待session55007结果。
+
+新提取的统计数据依据：_stats_pkt_sta_request@7b4a30 / stats_db_sta_update@7ad90c：0x52 U32a是STA support位图（NSS低4、PHY次4、MCS8..15），按频段累积最大协商带宽与support，_stats_sta_support_cal@40f314逐分量取最大保留新高16。0x53 _stats_pkt_rssi_request@7b51b4：头8字节radio load+8字节noise，逐MAC8射频RSSI；仅已有无线客户端、同逻辑service在目标AP对应槽存在时更新邻居表（排除当前AP当前radio），不是probe。原stats注册msg9优先80，比漫游90和wsta100早。0x54 stats_db_radio_update@7b08b4/get@7b0324：radio32字节语义由cw_priv_ap_statistics_dump@69e0b4确认：RID,channel,bw16,power16,cap16,nf,load,retry,loss,4个rate/traffic32,干扰/上行占比/下行占比/弱信号占比；VAP28字节RID,WLAN,BSSID6,cap16,retry,loss,4个rate/traffic32。目前新codec0x54字段仍暂用A/Values16/Bytes等泛名，下一步按已确认语义重命名并接真实统计。
+
+PMK gate原APentry+28c为General第三个32位词：蓝牙bit77与0x2000独立核对，因此operation3 gate是General66（&4），不是subcap。operation0 inform、1 request、2 response、3兼容特殊request（需cap66）；成功3按原4e46c0调用uac_wstation_assoc@7666b4直接更新关联，非新准入。PMK Pairwise是wire32的实际名称，非寿命。keys在+53 32字节、name+85 16，MAC+41/APMAC+47，echo其它请求字段。普通PMK成功不代表关联。原wsta_roam_init注册assoc与disconnect回调；Go需在ClientTable transition解锁后通知或在PMK前同步transition游标，不能锁内回调Manager制造反向锁。
+
+### 2026-11-27 后续源码复核（仍在执行，未部署）
+
+- 实际V6Web禁止模式修改；36_roam_cfg_sync.sh强制配置/实际模式2。移除Go自编自动/高性能/ACS共同信道任务和手动信道跨AP传播，旧Go配置启动时迁移模式2；保留只读实际模式与不支持AP查询。对应静态文件hash已加入manifest。
+- 关联立即入站点表（749290/7498c0），统计/IP不能创建或移动站点；删30秒预约和不属于原无线服务的全网人数配额，射频容量失败11、服务26、均衡27可透传。MLO均衡用各link MAC后MLD，成功关联以MLD为主身份；继续核对MLO别名统计路径。
+- 蓝牙Web/API、配置、运行时命令和管理开关均移出产品；RADIUS禁止规则统一到服务验证，避免备份/批量入口绕过。仍有历史低层codec/旧文档待清理。
+- 53/54/52真实结构、按频段PHY输入、RSSI邻居、PMK键与缓存、漫游即时批次及128站点分包已接入。统计回调优先级80、漫游90、关联100；AP生命周期立即建立Manager会话事实，避免首次统计落在2秒inventory间隙。APEntry从SQLite获得稳定entry_id用于原厂RRM输入顺序。
+- 新rrm纯Go库单次SCA/TPC已接入planRRM，去掉三轮坐标下降、对称化RSSI、最强邻居功率、RRST联合搜索、自造第二5G候选集。原厂work-init方向1、评分1为仅同信道平方RSSI；APmutex域先与规则取交集、保留AP顺序。已找到外层至多2轮和重新NDP采集、初始功率等级10、90秒采集计时/提前收齐、每邻居只读第一个RSSI样本等，任务时序与报告累计正在重构，未标完成。
+- 额外发现RRST原Go“最少修改代价”策略无依据，原厂实际是预匹配/按表顺序搜索；后续要从733a788/733aa14/733abf0及调用者重建，不能留旧算法。
+- 所有检查均基于本地原固件代码及离线向量；未用AP/外部试验推导或证明调度算法；新代码未部署、未提交或推送。
+
+2026-11-27 源码策略整改继续（未部署）：
+
+- RRST 的带宽 wire1/2/0 映射到 enum0/1/2，范围只展开固件合法信道表，最多51项；默认带宽也做同样映射。移除最少改动评分、自动启停同机射频和 RRM 联合优化，按 73aa14/73abf0 的预匹配、表顺序、状态兼容和 72750c 的同信道/互斥信道、模式与带宽联动移植。独立 RF 归一化沿用 5dd2d8 的 table0 与控制默认值。
+- RRM 接上原 so 的 SCA/TPC，NDP priority65、单信道、2G/低5G及多5G的高5G pass、90秒/收齐报告唤醒、两轮 TPC、初始baseline与第二轮smoothed区分。第二轮不会添加新邻居，库输入保留初始baseline。上轮算法结果独立于当前NDP等级，TPC-only也按该缓存判定二轮。最终始终应用规则带宽，再按2G/5G及DB顺序经过RF setter、归一化和peer联动。独立worker处理事件/截止时间，不依赖UI的2秒轮询。
+- 成功关联按V6立即写站点DB；0x34/0xc6同步报告、统计/RSSI/IP各走对应入口。生命周期listener按33→34→2→8a→3→4d→c6→bd选择一个事件；balance0b在priority1独立接收。统计按52/56/54/53/bd的原入口顺序；PMK49先于漫游58。
+- 新增c6安全解析、正常/VLAN/MLO关联位置、在线时长、设备元数据；MLO保留独立peer记录、原厂射频人数口径及任一链路断开时整组释放，Web只展示MLD并附每链路RSSI/速率。普通关联清理旧MLO记录。PMK通知加序号，防止解锁后较旧通知覆盖新状态。
+- 漫游失败只由CAPWAP同序号重传处理，管理层不再重排旧决策后无限重发。移除双频优选的SSID/VLAN/提交状态附加门禁；漫游规则补原厂重复绑定禁止。默认射频配置从控制器能力与RRST控制默认值建立，不继续沿用AP旧配置/把观测信道固定化。
+- 移除剩余BLE运行状态/能力标签，补UI的MLO链路信息。静态证据清单扩为79个函数指纹，加入RRST带宽/信道表和原厂功率表。
+- 最近全量Go回归及核心race通过；以上是进展记录。仍在做其余代码双向审查、补边界向量、更新UI回归和文档；不据此宣称全部完成，不用实机外部试验推导策略。
+
+## 2026-11-27：本轮静态对照整改与交叉回归收尾
+
+以下取代上文涉及本轮尚未接入核心、旧网络模式、旧ACK冷却、旧BLE范围的阶段描述。当前对照入口见 `mobility-parity-audit.md`，原厂→Go及Go→原厂/基础设施分类见 `uac-web-parity-map.json`。本轮发现的策略偏移和配置权威问题均已落实到源码；不将此表述扩展为全部参数/型号或形式化等价证明。
+
+- 有效漫游、估算、PMK、均衡和原SCA/TPC内外两层已接入；事件优先级、站点/MLO生命周期、52/53/54/c6/bd语义、BSSID索引和终端识别统一。129函数指纹、原JAL/常量/速率表及2029 OUI可由工具重建，所有策略依据来自本地原固件。
+- 新增统一根传输FIFO：入站回调安全入队、立即批量提交、分别匹配ACK和重传；去掉业务层顺序等ACK导致的漫游/RRM触发偏移。RRM用独立唤醒/截止时钟、冻结节点、有序低高频收集、原两轮判定和最终RF setter。
+- 从原SQL规则0纠正默认漫游两频门限、检查1秒、限制回连2秒、统计间隔30秒。V6只读兼容模式2，不能从内部旧ACS函数存在推断Web允许修改模式。已有显式配置不强制改成默认。
+- 补齐IP自动分组：包含端点和停用范围冲突、Join/组编辑不同入口、同一AP快照和组遍历顺序、Mesh初始化继承及父子分支、升级中跳过、替换退役AP不复活。分组改变与各无线策略/服务继承共用配置事务。
+- EDCA补命名规则、AP/组/16bit虚拟频段绑定、动态模式和型号场景、原八队列及校验范围、Join无规则关闭/解绑旧规则语义。随后交叉审查发现整份RF写回会冻结继承，改为仅覆盖WMM/EDCA字段的独立状态；手工编辑分字段接管，省略可选EDCA不清队列，普通保存不重跑规则，规则事件可再次接管。备份恢复恢复备份内策略/手工状态，不能沿用恢复前缓存。
+- 继承RF草稿在各AP上逐射频归一化；已经保存的RF/peer结果不在读取时再次用table0改写。保持单射频归一化与当前RRST表有序peer搜索的区别，删除原“最小修改/联合组合最优”模型。原Wi-Fi6 Join/RUN两阶段默认值和radio1控制能力位与UI统一。
+- 最后复核真正的可执行入口发现双配置源：正式 `acd` 已取消原型SQLite WLAN/RF应答生成和JCS服务器注册，只留稳定AP身份编号存储；Web `controller.json` 是正式无线配置权威，不再启动时创建Portal数据库。新增真实主进程入口的本机UDP回归，植入旧SSID库也不能下发旧SSID；宣告端口跟随实际监听端口。
+- 配置写入区分用户编辑、RRM结果、AP事件和备份恢复。RRM期间RF/WLAN/继承/整机RFMode/Region/EDCA的修改门禁统一；标签不误取消任务，AP入网设备事实不误当Web编辑。AP蓝牙产品配置、API、表单和观察路径已删除，RADIUS/Portal及AC Linux功能维持排除。
+- 核对共享字段实际入口：rail字段在727f14不支持；central字段留在SQL/Lua而无当前活动JCS/发送消费，“central switch”日志实际是MLO分支；calibrate_load是名称/MAC批量命名；local_wserv_sync是本机WLAN。没有为这些名称脑补AP算法。
+
+最终检查均通过：`go test ./...`、`go vet ./...`、`go test -race ./...`；CGO_ENABLED=0 的 Linux amd64/arm64、Windows amd64 三构建；全部Web JS语法；Python工具编译；23原厂模块/17功能链/182 Go源码文件的双向索引及固件源码哈希；129函数/常量/表和2029 OUI重建；`git diff --check`。UI回归两套能力×10页、46次模拟表单提交、无JS错误；HTTP写操作被模拟拦截，不修改AP。
+
+**未部署、未提交/推送本轮改动。** 实验守护进程仍为历史 `587d414`。没有用真实AP、平板或原厂UAC外部执行推导/证明策略；真实空口互通不冒充本轮证据。固件更新包不含flash运行profile，重建QEMU容量/默认值不当作原厂事实；V4及其它硬件效果不据此认定一致。

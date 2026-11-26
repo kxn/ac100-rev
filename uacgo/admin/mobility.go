@@ -5,9 +5,11 @@ import (
 	"encoding/binary"
 	"fmt"
 	"net/http"
+	"sort"
 	"time"
 	"uacgo/capwap"
 	"uacgo/cweng"
+	"uacgo/mobility"
 )
 
 type PolicyTarget struct {
@@ -66,15 +68,19 @@ type MobilityConfig struct {
 }
 
 func defaultRoamSettings() RoamSettings {
-	b := RoamBand{Type: 1, RSSI: -75, RSSIKickThreshold: -85, Rate: 20, RateKickThreshold: 5}
-	return RoamSettings{K: true, V: true, Band2G: b, Band5G: b, CheckInterval: 3, Difference: 8, BlacklistTime: 3, HighPerformanceRSSI: -65, StatisticsInterval: 60}
+	// _wsta_roam_sql_load_db inserts rule0 using the SQL defaults created
+	// by _wsta_roam_sql_create_cfg_table @4d8ca8; cfgsync36 has the same schema.
+	b2 := RoamBand{Type: 1, RSSI: -75, RSSIKickThreshold: -80, Rate: 20, RateKickThreshold: 10}
+	b5 := RoamBand{Type: 1, RSSI: -80, RSSIKickThreshold: -85, Rate: 20, RateKickThreshold: 10}
+	return RoamSettings{K: true, V: true, Band2G: b2, Band5G: b5, CheckInterval: 1, Difference: 8, BlacklistTime: 2, HighPerformanceRSSI: -65, StatisticsInterval: 30}
 }
+
 func defaultMobility() MobilityConfig {
-	return MobilityConfig{Default: defaultRoamSettings(), Balance: []BalanceRule{}, Roaming: []RoamRule{}}
+	return MobilityConfig{NetworkMode: 2, Default: defaultRoamSettings(), Balance: []BalanceRule{}, Roaming: []RoamRule{}}
 }
 func (p MobilityConfig) validate(cfg Config) error {
-	if len(p.Balance) > 32 || len(p.Roaming) > 32 || p.NetworkMode < 0 || p.NetworkMode > 2 {
-		return fmt.Errorf("均衡/漫游规则最多各 32 项，网络模式为 0–2")
+	if len(p.Balance) > 32 || len(p.Roaming) > 32 || p.NetworkMode != 2 {
+		return fmt.Errorf("均衡/漫游规则最多各 32 项，V6 固件只开放兼容模式（2）")
 	}
 	groups := map[string]bool{}
 	for _, g := range cfg.Groups {
@@ -100,6 +106,14 @@ func (p MobilityConfig) validate(cfg Config) error {
 			return err
 		}
 	}
+	// Vendor balance DB rejects double binding, including disabled rules.
+	for i, a := range p.Balance {
+		for _, b := range p.Balance[i+1:] {
+			if policyTargetsOverlap(a.PolicyTarget, b.PolicyTarget, cfg) {
+				return fmt.Errorf("均衡规则不能重复绑定同一 AP 或分组")
+			}
+		}
+	}
 	if err := p.Default.validate(); err != nil {
 		return err
 	}
@@ -118,10 +132,17 @@ func (p MobilityConfig) validate(cfg Config) error {
 			return err
 		}
 	}
+	for i, a := range p.Roaming {
+		for _, b := range p.Roaming[i+1:] {
+			if policyTargetsOverlap(a.PolicyTarget, b.PolicyTarget, cfg) {
+				return fmt.Errorf("漫游规则不能重复绑定同一 AP 或分组")
+			}
+		}
+	}
 	return nil
 }
 func (r RoamSettings) validate() error {
-	if r.CheckInterval < 1 || r.CheckInterval > 10 || r.Difference < 5 || r.Difference > 15 || r.BlacklistTime < 0 || r.BlacklistTime > 10 || r.HighPerformanceRSSI < -70 || r.HighPerformanceRSSI > -50 || r.StatisticsInterval < 1 || r.StatisticsInterval > 3600 {
+	if r.CheckInterval < 1 || r.CheckInterval > 10 || r.Difference < 5 || r.Difference > 15 || r.BlacklistTime < 0 || r.BlacklistTime > 10 || r.HighPerformanceRSSI < -70 || r.HighPerformanceRSSI > -50 || r.StatisticsInterval < 1 || r.StatisticsInterval > 65535 {
 		return fmt.Errorf("漫游检查间隔、差值、黑名单或统计参数无效")
 	}
 	for _, b := range []RoamBand{r.Band2G, r.Band5G} {
@@ -143,6 +164,7 @@ func (r RoamSettings) wire(mode int) []byte {
 		b[o], b[o+1], b[o+2], b[o+3], b[o+4], b[o+5], b[o+6] = byte(v.Type), byte(v.RSSI), boolean(v.RSSIKick), byte(v.RSSIKickThreshold), byte(v.Rate), boolean(v.RateKick), byte(v.RateKickThreshold)
 	}
 	b[17], b[18], b[19] = byte(r.CheckInterval), byte(r.Difference), byte(r.BlacklistTime)
+	b[20] = mobility.FirmwareStrategy
 	return b
 }
 func balanceFor(p *MobilityConfig, ap string, cfg Config) *BalanceRule {
@@ -196,9 +218,6 @@ func (m *Manager) applyPolicy(ctx context.Context, ap cweng.APStatus, kind strin
 	m.mu.Unlock()
 }
 func (m *Manager) applyMobility(ctx context.Context, ap cweng.APStatus, cfg Config) {
-	if cfg.Mobility == nil && !m.policyOwned(ap.ID, "balance") && !m.policyOwned(ap.ID, "roaming") {
-		return
-	}
 	r := balanceFor(cfg.Mobility, ap.ID, cfg)
 	enabled := r != nil && r.Enabled
 	mask := binary.BigEndian.AppendUint32(nil, 1)
@@ -225,49 +244,25 @@ func (m *Manager) applyMobility(ctx context.Context, ap cweng.APStatus, cfg Conf
 	}
 }
 
-// V6 check_cur_wireless_network_mode: automatic mode uses high performance
-// up to five APs / thirty clients. Compatibility remains sticky until settings
-// are changed, avoiding repeated RF scans as clients enter and leave.
-func (m *Manager) effectiveMobilityMode(cfg Config) int {
-	m.mu.Lock()
-	defer m.mu.Unlock()
-	return m.effectiveMobilityModeLocked(cfg)
-}
-func (m *Manager) effectiveMobilityModeLocked(cfg Config) int {
-	configured := 0
-	if cfg.Mobility != nil {
-		configured = cfg.Mobility.NetworkMode
-	}
-	key := configurationKey(cfg.Mobility, time.Time{})
-	if configured != 0 {
-		m.mobilityMode, m.mobilityModeConfig = configured, key
-		return configured
-	}
-	if m.mobilityMode == 2 && m.mobilityModeConfig == key {
-		return 2
-	}
-	aps := 0
-	for _, ap := range m.known {
-		if ap.Online {
-			aps++
-		}
-	}
-	clients := 0
-	if m.clients != nil {
-		for _, c := range m.clients.All() {
-			if c.State == "connected" && time.Since(c.Seen) < 6*time.Minute {
-				clients++
+// V6 Web wireless_network_mode_set returns EFORBID; cfgsync.d/36_roam_cfg_sync.sh
+// explicitly migrates both configured/actual modes to2. The automatic/high
+// performance helpers in UAC are retained binary code, not exposed V6 policy.
+func (m *Manager) effectiveMobilityMode(_ Config) int       { return 2 }
+func (m *Manager) effectiveMobilityModeLocked(_ Config) int { return 2 }
+func (m *Manager) mobilityRoutes(mux *http.ServeMux) {
+	mux.HandleFunc("GET /api/mobility/status", func(w http.ResponseWriter, r *http.Request) {
+		m.mu.Lock()
+		defer m.mu.Unlock()
+		unsupported := []string{}
+		for _, ap := range m.known {
+			if ap.Online && !ap.HasCapability(72) {
+				unsupported = append(unsupported, ap.ID)
 			}
 		}
-	}
-	m.mobilityMode = 1
-	if aps > 5 || clients > 30 {
-		m.mobilityMode = 2
-	}
-	m.mobilityModeConfig = key
-	return m.mobilityMode
-}
-func (m *Manager) mobilityRoutes(mux *http.ServeMux) {
+		sort.Strings(unsupported)
+		jsonReply(w, 200, map[string]any{"configured_mode": 2, "actual_mode": 2, "mode_writable": false, "unsupported_aps": unsupported})
+	})
+
 	mux.HandleFunc("GET /api/mobility/events", func(w http.ResponseWriter, r *http.Request) {
 		m.mu.Lock()
 		defer m.mu.Unlock()
@@ -299,4 +294,35 @@ func (m *Manager) mobilityRoutes(mux *http.ServeMux) {
 		}
 		jsonReply(w, 202, map[string]string{"status": "saved"})
 	})
+}
+
+// Checks both explicit selectors and the current AP→group assignments. Future
+// membership changes run the same validation, so they cannot create overlaps.
+func policyTargetsOverlap(a, b PolicyTarget, cfg Config) bool {
+	if len(a.APs)+len(a.Groups) == 0 || len(b.APs)+len(b.Groups) == 0 {
+		return true
+	}
+	for _, x := range a.Groups {
+		for _, y := range b.Groups {
+			if x == y {
+				return true
+			}
+		}
+	}
+	aps := map[string]bool{}
+	for _, x := range a.APs {
+		aps[x] = true
+	}
+	for _, x := range b.APs {
+		aps[x] = true
+	}
+	for _, x := range cfg.APProfiles {
+		aps[x.AP] = true
+	}
+	for ap := range aps {
+		if a.matches(ap, cfg) && b.matches(ap, cfg) {
+			return true
+		}
+	}
+	return false
 }

@@ -1,5 +1,8 @@
 # ac100-rev
 
+> 2026-11-27：本轮已按 V6 原固件有效入口整改调度策略，并建立双向核查索引。已部署的 `587d414` 和此前模拟/单 AP 结果不证明算法等价。当前改动未部署；整改状态和源码依据见 [调度策略对照](docs/mobility-parity-audit.md)。
+
+
 Reverse-engineering workspace for the TP-Link TL-AC100 `uac` binary (CAPWAP
 AC controller, MIPS32 big-endian, dynamically linked against uClibc/GnuTLS)
 and a from-scratch, pure-Go reimplementation of it.
@@ -52,19 +55,24 @@ disassembly, Ghidra pseudocode, registries) or to keep reversing, see
 exact commands, env vars, known pitfalls).
 
 The daemon reads its runtime data from a data directory (see
-`cmd/acd` flags): `identity.json` / `profile.ini` / `apdb.json` /
-`rate-default.bin`. `profile.ini` values marked `(recon)` are
-reconstructions pending calibration against a live device
-(`uci show profile`).
+`cmd/acd` flags): `identity.json` / `profile.ini` / `apdb.json`.
+Standalone WLAN/RF configuration has one authority in `controller.json`;
+SQLite retains AP identity IDs. The legacy JCS server and SQLite WLAN/RF
+response builders are research adapters and are not registered by `acd`.
+`rate-default.bin` is only needed by those reference adapters. Profile values
+marked `(recon)` are reconstructed deployment settings, not proof of the
+original device's flash defaults or capacity.
 
 ## Evidence method
 
-Every conclusion that landed in the Go code was re-derived directly from
-the `uac` binary this pass (disassembly, decompilation, shipped symbol
-tables, vendor packet fixtures) — earlier analysis documents were treated
-as references only. `notes/00-architecture.md` records the address anchors
-section by section; `tools/` regenerates the corpus from
-`firmware/usr/sbin/uac`.
+Current V6 strategy and protocol conclusions are traced to the supplied
+firmware's active entry points, call sites and compiled data. The version-pinned
+[policy audit](docs/mobility-parity-audit.md) and
+[bidirectional index](docs/uac-web-parity-map.json) distinguish active code,
+excluded features, legacy research adapters and unknown flash-only settings.
+Older address notes and fixture tests are references; they do not prove V6
+policy equivalence. `tools/audit_mobility_firmware.py` and
+`tools/check_parity_map.py` reproduce the static evidence checks.
 
 Implementation and device-validation boundaries are documented in
 [uacgo/docs/ondevice-verify.md](uacgo/docs/ondevice-verify.md). Pion DTLS 1.2

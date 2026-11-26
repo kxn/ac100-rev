@@ -91,7 +91,7 @@ func (m *Manager) mergeWirelessSnapshot(ap cweng.APStatus, started time.Time, st
 		if matches != 1 {
 			continue
 		}
-		ev := cweng.ClientEvent{SSID: ssid, ServiceID: matchedService, MAC: id, APID: ap.ID, RadioID: uint8(radio), WLANID: uint32(wlan), IP: ips[normalizeMAC(mac.String())]}
+		ev := cweng.ClientEvent{Connection: ap.ConnectedAt, SSID: ssid, ServiceID: matchedService, MAC: id, APID: ap.ID, RadioID: uint8(radio), WLANID: uint32(wlan), IP: ips[normalizeMAC(mac.String())]}
 		if vlanText != "" {
 			vlanID := uint16(vlan)
 			ev.VLAN = &vlanID
