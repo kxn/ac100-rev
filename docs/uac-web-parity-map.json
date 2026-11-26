@@ -500,6 +500,8 @@
         "uacgo/admin/apply_error.go",
         "uacgo/admin/assets/index.html",
         "uacgo/admin/assets/style.css",
+        "uacgo/admin/assets/navigation.js",
+        "uacgo/admin/assets/views.js",
         "uacgo/admin/config_store.go",
         "uacgo/admin/config_validation.go",
         "uacgo/admin/model_result.go",

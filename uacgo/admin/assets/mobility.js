@@ -1,8 +1,217 @@
-'use strict';
-let mobilityEdit=null,mobilityStatus={};
-function policyTargetFields(p){return `<div class="form-grid"><label>AP（与分组都留空时应用全部）<select name="aps" multiple>${data.aps.map(a=>`<option value="${esc(a.id)}" ${p.aps?.includes(a.id)?'selected':''}>${esc(apName(a.id))}</option>`).join('')}</select></label><label>AP 分组<select name="groups" multiple>${(data.config.groups||[]).map(g=>`<option value="${esc(g.id)}" ${p.groups?.includes(g.id)?'selected':''}>${esc(g.name)}</option>`).join('')}</select></label></div>`}
-function readPolicyTarget(f){return {aps:[...f.elements.aps.selectedOptions].map(o=>o.value),groups:[...f.elements.groups.selectedOptions].map(o=>o.value)}}
-function renderMobility(){const p=data.config.mobility;return panel('无线网络模式','当前固件使用兼容模式。',`<span>兼容模式${mobilityStatus.unsupported_aps?.length?' · '+mobilityStatus.unsupported_aps.length+' 台 AP 不支持模式参数':''}</span>`)+panel('客户端负载均衡','达到客户端数量和差值门限后，引导新客户端选择发现表中记录过它、负载较低的 AP。达到失败次数上限后允许接入。',table(['规则','应用范围','门限 / 差值','状态','操作'],(p?.balance||[]).map(r=>`<tr><td>${esc(r.name)}</td><td>${r.aps?.length||0} 台 AP · ${r.groups?.length||0} 个分组${!r.aps?.length&&!r.groups?.length?' · 全部':''}</td><td>${r.client_threshold} / ${r.difference}</td><td>${r.enabled?'启用':'停用'}</td><td><button class="text-button" data-mobility-kind="balance" data-mobility-id="${esc(r.id)}">编辑</button><button class="text-button danger" data-policy-delete="balance" data-policy-id="${esc(r.id)}">删除</button></td></tr>`).join('')),'<button class="secondary" data-mobility-kind="balance">新建均衡规则</button>')+panel('无缝漫游','默认参数用于没有命中规则的 AP；规则按列表顺序匹配。AP 必须声明智能漫游能力，客户端仍需支持相应协议。',table(['规则','802.11 k / v / r','信号门限 2.4 / 5 GHz','状态','操作'],(p?.roaming||[]).map(r=>`<tr><td>${esc(r.name)}</td><td>${['11k','11v','11r'].map(k=>r.settings[k]?'开':'关').join(' / ')}</td><td>${r.settings['2g'].rssi_trigger} / ${r.settings['5g'].rssi_trigger} dBm</td><td>${r.enabled?'启用':'停用'}</td><td><button class="text-button" data-mobility-kind="roaming" data-mobility-id="${esc(r.id)}">编辑</button><button class="text-button danger" data-policy-delete="roaming" data-policy-id="${esc(r.id)}">删除</button></td></tr>`).join('')),'<div class="toolbar"><button class="secondary" data-mobility-kind="default">默认漫游参数</button><button class="secondary" data-mobility-kind="roaming">新建漫游规则</button></div>')+panel('策略同步状态','设备应答与客户端实际切换分别记录。',table(['AP','策略','状态'],data.apply.filter(s=>['balance','roaming','roaming-mode','roaming-result'].includes(s.service_id)).map(s=>`<tr><td>${esc(apName(s.ap_id))}</td><td>${esc(s.service_id)}</td><td>${statePill(s.state)}<small>${esc(s.error||'')}</small></td></tr>`).join('')))}
-function roamSettingsFields(s){return `<div class="switch-list">${check('11k','802.11k 邻居测量',s['11k'])}${check('11v','802.11v BSS 转换',s['11v'])}${check('11r','802.11r 快速切换',s['11r'])}</div>${['2g','5g'].map(b=>`<fieldset><legend>${b==='2g'?'2.4':'5'} GHz 门限</legend><div class="form-grid">${select(b+'_threshold_type','触发条件',{1:'信号',2:'速率',3:'信号与速率'},s[b].threshold_type)}${field(b+'_rssi_trigger','信号触发（dBm）',s[b].rssi_trigger,'number','min="-95" max="-60" required')}${check(b+'_rssi_kick','允许低信号踢除',s[b].rssi_kick)}${field(b+'_rssi_kick_threshold','低信号踢除门限',s[b].rssi_kick_threshold,'number','min="-95" max="-60" required')}${field(b+'_rate_trigger','速率触发（Mbps）',s[b].rate_trigger,'number','min="1" max="40" required')}${check(b+'_rate_kick','允许低速率踢除',s[b].rate_kick)}${field(b+'_rate_kick_threshold','低速率踢除门限',s[b].rate_kick_threshold,'number','min="1" max="20" required')}</div></fieldset>`).join('')}<div class="form-grid">${field('check_interval','检查间隔（秒）',s.check_interval,'number','min="1" max="10" required')}${field('difference','漫游信号差值（dB）',s.difference,'number','min="5" max="15" required')}${field('blacklist_time','限制回连时间（秒）',s.blacklist_time,'number','min="0" max="10" required')}${check('statistics','记录漫游统计',s.statistics)}${field('statistics_interval','统计间隔（秒）',s.statistics_interval,'number','min="1" max="65535" required')}</div>`}
-document.addEventListener('click',async event=>{const b=event.target.closest('button');if(!b)return;try{if(b.dataset.policyDelete){if(!confirm('删除该策略？设备将恢复匹配其它规则或默认设置。'))return;const p=await api('mobility');p[b.dataset.policyDelete]=p[b.dataset.policyDelete].filter(r=>r.id!==b.dataset.policyId);await api('mobility',p);await refresh();return}if(!b.dataset.mobilityKind)return;const p=await api('mobility'),kind=b.dataset.mobilityKind;let item=kind==='default'?null:p[kind].find(r=>r.id===b.dataset.mobilityId);if(!item&&kind!=='default')item={id:crypto.randomUUID(),name:'',enabled:true,aps:[],groups:[],client_threshold:20,difference:4,max_failures:10,rssi_threshold:-75,settings:p.default_roaming};mobilityEdit={p,kind,item};const identity=kind==='default'?'<p class="help">兼容模式</p>':field('name','规则名称',item.name,'text','required maxlength="50"')+check('enabled','启用规则',item.enabled)+policyTargetFields(item);const fields=kind==='balance'?`<div class="form-grid">${field('client_threshold','客户端数量门限',item.client_threshold,'number','min="1" max="100" required')}${field('difference','AP 客户端数量差值',item.difference,'number','min="1" max="15" required')}${field('max_failures','最多拒绝次数',item.max_failures,'number','min="1" max="100" required')}${field('rssi_threshold','探测信号门限（dBm）',item.rssi_threshold,'number','min="-95" max="0" required')}</div>`:roamSettingsFields(kind==='default'?p.default_roaming:item.settings);openDialog('mobility',kind==='balance'?'负载均衡':kind==='default'?'默认漫游设置':'漫游规则','WIRELESS MOBILITY',`<form id="mobility-form">${identity}${fields}${formEnd()}</form>`)}catch(e){toast(e.message)}});
-document.addEventListener('submit',async event=>{const f=event.target;if(f.id!=='mobility-form')return;event.preventDefault();if(!f.reportValidity())return;const button=f.querySelector('[type=submit]');button.disabled=true;try{const {p,kind,item}=mobilityEdit,n=k=>Number(f.elements[k].value),c=k=>f.elements[k].checked;let row;if(kind!=='default')row={...item,...readPolicyTarget(f),name:f.elements.name.value,enabled:c('enabled')};if(kind==='balance'){for(const k of ['client_threshold','difference','max_failures','rssi_threshold'])row[k]=n(k)}else{const s={high_performance_rssi:kind==='default'?p.default_roaming.high_performance_rssi:item.settings.high_performance_rssi};for(const k of ['11k','11v','11r','statistics'])s[k]=c(k);for(const k of ['check_interval','difference','blacklist_time','statistics_interval'])s[k]=n(k);for(const b of ['2g','5g']){s[b]={};for(const k of ['threshold_type','rssi_trigger','rssi_kick_threshold','rate_trigger','rate_kick_threshold'])s[b][k]=n(b+'_'+k);for(const k of ['rssi_kick','rate_kick'])s[b][k]=c(b+'_'+k)}if(kind==='default'){p.default_roaming=s;p.network_mode=2}else row.settings=s}if(row){const i=p[kind].findIndex(r=>r.id===row.id);if(i<0)p[kind].push(row);else p[kind][i]=row}await api('mobility',p);$('#editor').close();dialogKind='';await refresh();toast('策略已保存，等待设备同步')}catch(e){f.querySelector('#form-error').textContent=e.message}finally{button.disabled=false}});
+"use strict";
+let mobilityEdit = null,
+  mobilityStatus = {};
+function policyTargetFields(p) {
+  return `<div class="form-grid"><label>AP（与分组都留空时应用全部）<select name="aps" multiple>${data.aps.map((a) => `<option value="${esc(a.id)}" ${p.aps?.includes(a.id) ? "selected" : ""}>${esc(apName(a.id))}</option>`).join("")}</select></label><label>AP 分组<select name="groups" multiple>${(data.config.groups || []).map((g) => `<option value="${esc(g.id)}" ${p.groups?.includes(g.id) ? "selected" : ""}>${esc(g.name)}</option>`).join("")}</select></label></div>`;
+}
+function readPolicyTarget(f) {
+  return {
+    aps: [...f.elements.aps.selectedOptions].map((o) => o.value),
+    groups: [...f.elements.groups.selectedOptions].map((o) => o.value),
+  };
+}
+function renderMobility(view) {
+  const p = data.config.mobility;
+  const content =
+    view === "balance"
+      ? panel(
+          "客户端负载均衡",
+          "达到客户端数量和差值门限后，引导新客户端选择发现表中记录过它、负载较低的 AP。达到失败次数上限后允许接入。",
+          table(
+            ["规则", "应用范围", "门限 / 差值", "状态", "操作"],
+            (p?.balance || [])
+              .map(
+                (r) =>
+                  `<tr><td>${esc(r.name)}</td><td>${r.aps?.length || 0} 台 AP · ${r.groups?.length || 0} 个分组${!r.aps?.length && !r.groups?.length ? " · 全部" : ""}</td><td>${r.client_threshold} / ${r.difference}</td><td>${r.enabled ? "启用" : "停用"}</td><td><button class="text-button" data-mobility-kind="balance" data-mobility-id="${esc(r.id)}">编辑</button><button class="text-button danger" data-policy-delete="balance" data-policy-id="${esc(r.id)}">删除</button></td></tr>`,
+              )
+              .join(""),
+          ),
+          '<button class="secondary" data-mobility-kind="balance">新建均衡规则</button>',
+        )
+      : panel(
+          "无缝漫游",
+          "默认参数用于没有命中规则的 AP；规则按列表顺序匹配。AP 必须声明智能漫游能力，客户端仍需支持相应协议。",
+          table(
+            [
+              "规则",
+              "802.11 k / v / r",
+              "信号门限 2.4 / 5 GHz",
+              "状态",
+              "操作",
+            ],
+            (p?.roaming || [])
+              .map(
+                (r) =>
+                  `<tr><td>${esc(r.name)}</td><td>${["11k", "11v", "11r"].map((k) => (r.settings[k] ? "开" : "关")).join(" / ")}</td><td>${r.settings["2g"].rssi_trigger} / ${r.settings["5g"].rssi_trigger} dBm</td><td>${r.enabled ? "启用" : "停用"}</td><td><button class="text-button" data-mobility-kind="roaming" data-mobility-id="${esc(r.id)}">编辑</button><button class="text-button danger" data-policy-delete="roaming" data-policy-id="${esc(r.id)}">删除</button></td></tr>`,
+              )
+              .join(""),
+          ),
+          '<div class="toolbar"><button class="secondary" data-mobility-kind="default">默认漫游参数</button><button class="secondary" data-mobility-kind="roaming">新建漫游规则</button></div>',
+        );
+  const kinds =
+    view === "balance"
+      ? ["balance"]
+      : ["roaming", "roaming-mode", "roaming-result"];
+  return (
+    content +
+    panel(
+      "应用状态",
+      "按设备显示此策略的下发结果。",
+      table(
+        ["AP", "策略", "状态"],
+        data.apply
+          .filter((s) => kinds.includes(s.service_id))
+          .map(
+            (s) =>
+              `<tr><td>${esc(apName(s.ap_id))}</td><td>${esc(s.service_id)}</td><td>${statePill(s.state)}<small>${esc(s.error || "")}</small></td></tr>`,
+          )
+          .join(""),
+      ),
+    )
+  );
+}
+function roamSettingsFields(s) {
+  return `<div class="switch-list">${check("11k", "802.11k 邻居测量", s["11k"])}${check("11v", "802.11v BSS 转换", s["11v"])}${check("11r", "802.11r 快速切换", s["11r"])}</div>${["2g", "5g"].map((b) => `<fieldset><legend>${b === "2g" ? "2.4" : "5"} GHz 门限</legend><div class="form-grid">${select(b + "_threshold_type", "触发条件", { 1: "信号", 2: "速率", 3: "信号与速率" }, s[b].threshold_type)}${field(b + "_rssi_trigger", "信号触发（dBm）", s[b].rssi_trigger, "number", 'min="-95" max="-60" required')}${check(b + "_rssi_kick", "允许低信号踢除", s[b].rssi_kick)}${field(b + "_rssi_kick_threshold", "低信号踢除门限", s[b].rssi_kick_threshold, "number", 'min="-95" max="-60" required')}${field(b + "_rate_trigger", "速率触发（Mbps）", s[b].rate_trigger, "number", 'min="1" max="40" required')}${check(b + "_rate_kick", "允许低速率踢除", s[b].rate_kick)}${field(b + "_rate_kick_threshold", "低速率踢除门限", s[b].rate_kick_threshold, "number", 'min="1" max="20" required')}</div></fieldset>`).join("")}<div class="form-grid">${field("check_interval", "检查间隔（秒）", s.check_interval, "number", 'min="1" max="10" required')}${field("difference", "漫游信号差值（dB）", s.difference, "number", 'min="5" max="15" required')}${field("blacklist_time", "限制回连时间（秒）", s.blacklist_time, "number", 'min="0" max="10" required')}${check("statistics", "记录漫游统计", s.statistics)}${field("statistics_interval", "统计间隔（秒）", s.statistics_interval, "number", 'min="1" max="65535" required')}</div>`;
+}
+document.addEventListener("click", async (event) => {
+  const b = event.target.closest("button");
+  if (!b) return;
+  try {
+    if (b.dataset.policyDelete) {
+      if (!confirm("删除该策略？设备将恢复匹配其它规则或默认设置。")) return;
+      const p = await api("mobility");
+      p[b.dataset.policyDelete] = p[b.dataset.policyDelete].filter(
+        (r) => r.id !== b.dataset.policyId,
+      );
+      await api("mobility", p);
+      await refresh();
+      return;
+    }
+    if (!b.dataset.mobilityKind) return;
+    const p = await api("mobility"),
+      kind = b.dataset.mobilityKind;
+    let item =
+      kind === "default"
+        ? null
+        : p[kind].find((r) => r.id === b.dataset.mobilityId);
+    if (!item && kind !== "default")
+      item = {
+        id: newID(),
+        name: "",
+        enabled: true,
+        aps: [],
+        groups: [],
+        client_threshold: 20,
+        difference: 4,
+        max_failures: 10,
+        rssi_threshold: -75,
+        settings: p.default_roaming,
+      };
+    mobilityEdit = { p, kind, item };
+    const identity =
+      kind === "default"
+        ? '<p class="help">兼容模式</p>'
+        : field(
+            "name",
+            "规则名称",
+            item.name,
+            "text",
+            'required maxlength="50"',
+          ) +
+          check("enabled", "启用规则", item.enabled) +
+          policyTargetFields(item);
+    const fields =
+      kind === "balance"
+        ? `<div class="form-grid">${field("client_threshold", "客户端数量门限", item.client_threshold, "number", 'min="1" max="100" required')}${field("difference", "AP 客户端数量差值", item.difference, "number", 'min="1" max="15" required')}${field("max_failures", "最多拒绝次数", item.max_failures, "number", 'min="1" max="100" required')}${field("rssi_threshold", "探测信号门限（dBm）", item.rssi_threshold, "number", 'min="-95" max="0" required')}</div>`
+        : roamSettingsFields(
+            kind === "default" ? p.default_roaming : item.settings,
+          );
+    openDialog(
+      "mobility",
+      kind === "balance"
+        ? "负载均衡"
+        : kind === "default"
+          ? "默认漫游设置"
+          : "漫游规则",
+      "WIRELESS MOBILITY",
+      `<form id="mobility-form">${identity}${fields}${formEnd()}</form>`,
+    );
+  } catch (e) {
+    toast(e.message);
+  }
+});
+document.addEventListener("submit", async (event) => {
+  const f = event.target;
+  if (f.id !== "mobility-form") return;
+  event.preventDefault();
+  if (!f.reportValidity()) return;
+  const button = f.querySelector("[type=submit]");
+  button.disabled = true;
+  try {
+    const { p, kind, item } = mobilityEdit,
+      n = (k) => Number(f.elements[k].value),
+      c = (k) => f.elements[k].checked;
+    let row;
+    if (kind !== "default")
+      row = {
+        ...item,
+        ...readPolicyTarget(f),
+        name: f.elements.name.value,
+        enabled: c("enabled"),
+      };
+    if (kind === "balance") {
+      for (const k of [
+        "client_threshold",
+        "difference",
+        "max_failures",
+        "rssi_threshold",
+      ])
+        row[k] = n(k);
+    } else {
+      const s = {
+        high_performance_rssi:
+          kind === "default"
+            ? p.default_roaming.high_performance_rssi
+            : item.settings.high_performance_rssi,
+      };
+      for (const k of ["11k", "11v", "11r", "statistics"]) s[k] = c(k);
+      for (const k of [
+        "check_interval",
+        "difference",
+        "blacklist_time",
+        "statistics_interval",
+      ])
+        s[k] = n(k);
+      for (const b of ["2g", "5g"]) {
+        s[b] = {};
+        for (const k of [
+          "threshold_type",
+          "rssi_trigger",
+          "rssi_kick_threshold",
+          "rate_trigger",
+          "rate_kick_threshold",
+        ])
+          s[b][k] = n(b + "_" + k);
+        for (const k of ["rssi_kick", "rate_kick"]) s[b][k] = c(b + "_" + k);
+      }
+      if (kind === "default") {
+        p.default_roaming = s;
+        p.network_mode = 2;
+      } else row.settings = s;
+    }
+    if (row) {
+      const i = p[kind].findIndex((r) => r.id === row.id);
+      if (i < 0) p[kind].push(row);
+      else p[kind][i] = row;
+    }
+    await api("mobility", p);
+    $("#editor").close();
+    dialogKind = "";
+    await refresh();
+    toast("策略已保存，等待设备同步");
+  } catch (e) {
+    f.querySelector("#form-error").textContent = e.message;
+  } finally {
+    button.disabled = false;
+  }
+});

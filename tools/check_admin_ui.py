@@ -39,6 +39,7 @@ with sync_playwright() as p:
     if row.get('advanced') is not None:row['advanced']['edca']=copy.deepcopy(rf_defaults['edca'])
    a['edca_presets']={'version':1,'scenes':[{'id':2,'name':'Office','description':'Other AP model','bands':[{'band_id':1,'queues':[{'aifs':2,'cw_min':3,'cw_max':4,'txop':47}]*8}]}]}
    conf['config']['vlan_pools']=[{'id':1,'name':'Guests','vlans':'100-110'}]
+  group_service=copy.deepcopy(conf['config']['services'][0]);group_service.update(id='fixture-group-service',ssid='Group-only service',aps=[],groups=['floor'],bindings=[]);conf['config']['services'].append(group_service)
   spare=copy.deepcopy(profile[0]);spare.update(id='02:00:00:00:00:aa',mac='02:00:00:00:00:aa',name='Fixture spare',online=True,state='RUN');offline=copy.deepcopy(spare);offline.update(id='02:00:00:00:00:ab',mac='02:00:00:00:00:ab',name='Fixture offline',online=False,state='OFFLINE');profile.extend([spare,offline])
   page=browser.new_page(viewport={'width':1440,'height':960});page.on('pageerror',lambda e:errors.append(str(e)));page.on('dialog',lambda d:d.accept())
   def route(r):
@@ -48,40 +49,56 @@ with sync_playwright() as p:
     signal_queries.append(path);r.fulfill(json={'samples':[{'at':'2026-11-26T12:00:00Z','ap_id':profile[0]['id'],'radio_id':1,'wlan_id':1,'ssid':'GoAC-Lab','rssi_dbm':-60},{'at':'2026-11-26T12:00:30Z','ap_id':profile[0]['id'],'radio_id':1,'wlan_id':1,'ssid':'GoAC-Lab','rssi_dbm':-48}]});return
    value=resources if path=='controller/resources' else profile if path=='aps' else conf if path=='config' else clients if path=='clients' else [r for r in conf['config']['radios']if r['ap_id']==profile[0]['id']]if path.endswith('/effective-radios')else rf_defaults if path.startswith('radios/defaults') else rates if path=='rates' else mobility if path=='mobility' else edca if path=='edca' else rrm if path=='rrm' else upgrades if path=='upgrades' else {'config':conf['config'].get('mesh'),'jobs':{}} if path=='mesh' else {'configured_mode':2,'actual_mode':2,'mode_writable':False,'unsupported_aps':[]} if path=='mobility/status' else storm if path=='storm/defaults' else {'ap_counts':[{'at':'2026-11-26T12:00:00Z','online':1,'offline':2,'total':3},{'at':'2026-11-26T12:01:00Z','online':2,'offline':1,'total':3}],'radios':[{'at':'2026-11-26T12:00:00Z','ap_id':profile[0]['id'],'radio_id':1,'clients':1,'channel':6,'power_dbm':15,'metrics':{'channelUsage':20}},{'at':'2026-11-26T12:01:00Z','ap_id':profile[0]['id'],'radio_id':1,'clients':2,'channel':6,'power_dbm':15,'metrics':{'channelUsage':30}}],'events':[]} if path.startswith('history?') else []
    r.fulfill(json=value)
-  page.route('**/api/**',route);page.goto('http://127.0.0.1:'+str(server.server_port));page.wait_for_selector('[data-ap]');assert page.locator('a[href="/api/aps/export"]').is_visible()
-  for tab in ['aps','services','radios','clients','management','mobility','history','protection','upgrades','interfaces','resources']:
-   page.locator('[data-tab="'+tab+'"]').click();page.wait_for_timeout(40)
-  page.locator('[data-tab="resources"]').click();page.locator('[data-resource-edit]').click();page.locator('[name="max_ap_sessions"]').fill('2048');assert page.locator('#controller-resources-form input[type="number"]').count()==len(resource_values)
+  page.route('**/api/**',route);page.goto('http://127.0.0.1:'+str(server.server_port));page.wait_for_function('document.querySelector("#connection").textContent === "控制器已连接"')
+  def visit(view):
+   family={'management':'aps','templates':'aps','apdefaults':'aps','mesh':'aps','pools':'services','multicast':'services','rates':'radios','edca':'radios','balance':'mobility','band':'mobility','rrm':'mobility','resources':'interfaces','backup':'interfaces'}.get(view,view)
+   page.locator('[data-tab="'+family+'"]').click()
+   if view!=family:page.locator('#section-navigation [data-view="'+view+'"]').click()
+   page.wait_for_url('**/#'+view)
+  assert page.locator('#summary').is_visible()
+  page.locator('.setup-step[data-view="aps"]').click();page.wait_for_url('**/#aps')
+  assert page.locator('a[href="/api/aps/export"]').is_visible()
+  visit('radios');assert page.locator('[data-radio="1"]').count()>0
+  assert page.locator('[data-rrm-new],[data-edca-new],[data-rates],[data-band-navigation]').count()==0
+  assert not page.locator('#summary').is_visible()
+
+  for tab in ['overview','aps','management','templates','apdefaults','mesh','services','pools','multicast','radios','rates','edca','mobility','balance','band','rrm','clients','history','protection','upgrades','interfaces','resources','backup']:
+   visit(tab);page.wait_for_timeout(40)
+  visit('services');group_row=page.locator('tr').filter(has_text='Group-only service');assert '分组 Floor' in group_row.inner_text() and '所有 AP' not in group_row.inner_text()
+  visit('radios');page.locator('[name="radio_ap_filter"]').select_option(profile[0]['id']);page.locator('[name="radio_ap_filter"]').focus();page.evaluate('window.uiFocusedControl=document.activeElement');page.wait_for_timeout(4200);assert page.evaluate('document.activeElement===window.uiFocusedControl')
+  visit('aps');page.locator('[data-ap="'+profile[0]['id']+'"]').click();page.locator('#dialog-body details').first.locator('summary').click();page.wait_for_timeout(4200);assert page.locator('#dialog-body details').first.evaluate('(e)=>e.open');page.locator('#close-dialog').click()
+  visit('overview');page.screenshot(path=str(OUT/('all-capabilities-overview.png'if full else 'real-capabilities-overview.png')),full_page=True)
+  visit('resources');page.locator('[data-resource-edit]').click();page.locator('[name="max_ap_sessions"]').fill('2048');assert page.locator('#controller-resources-form input[type="number"]').count()==len(resource_values)
   page.locator('#controller-resources-form [type="submit"]').click();page.wait_for_timeout(80);assert writes[-1]['path']=='controller/resources'and writes[-1]['body']['max_ap_sessions']==2048 and writes[-1]['body']['max_policy_rules']==1024
-  page.locator('[data-tab="services"]').click();page.locator('#new-service').click();page.locator('[name="ssid"]').fill('UI-Parity');page.locator('[data-editor-tab="security"]').click();page.locator('[name="passphrase"]').fill('synthetic-ui-key');assert page.locator('[name="radius_ip"]').count()==0
-  for pane in ['security','binding','qos','schedule','basic']:page.locator('[data-editor-tab="'+pane+'"]').click()
+  visit('services');page.locator('#new-service').click();page.locator('[name="ssid"]').fill('UI-Parity');page.locator('[name="passphrase"]').fill('synthetic-ui-key');page.screenshot(path=str(OUT/('all-capabilities-service.png'if full else 'real-capabilities-service.png')),full_page=True);assert page.locator('[name="radius_ip"]').count()==0
+  for pane in ['binding','qos','schedule','basic']:page.locator('[data-editor-tab="'+pane+'"]').click()
   if not full:
    assert not page.locator('[name="mc_global"]').is_visible()
   else:
-   page.locator('[data-editor-tab="binding"]').click();page.locator('[name="vlan_pool"]').select_option('1')
-  page.locator('[data-editor-tab="binding"]').click();page.locator('[name="auto_bind_frequencies"]').select_option('256')
+   page.locator('[data-editor-tab="binding"]').click();page.locator('#service-form summary').filter(has_text='VLAN 与精确射频绑定').click();page.locator('[name="vlan_pool"]').select_option('1')
+  page.locator('[data-editor-tab="binding"]').click();page.locator('[name="band_preset"]').select_option('custom');page.locator('[name="auto_bind_frequencies"]').select_option('256')
   page.locator('#service-form [type="submit"]').click();page.wait_for_timeout(80);assert not page.locator('#editor').evaluate('(e)=>e.open'),page.locator('#form-error').inner_text();assert writes[-1]['body']['auto_bind_frequencies']==256
-  page.locator('[data-tab="radios"]').click();page.locator('[data-radio="1"]').first.click();page.wait_for_selector('#radio-form')
+  visit('radios');page.locator('[data-radio="1"]').first.click();page.wait_for_selector('#radio-form')
   original_mode=page.locator('#radio-form [name="mode"]').input_value();assert page.locator('[name="wmm"]').is_disabled();assert page.locator('[name="fragmentation"]').is_disabled()
   page.locator('[name="mode"]').select_option('1');assert page.locator('[name="wmm"]').is_enabled();page.locator('[data-editor-tab="rf-performance"]').click();page.locator('[name="wmm"]').uncheck();page.locator('[data-editor-tab="rf-basic"]').click();page.locator('[name="mode"]').select_option(original_mode);assert page.locator('[name="wmm"]').is_disabled() and page.locator('[name="wmm"]').is_checked()
   for pane in ['rf-timing','rf-performance','rf-basic']:page.locator('[data-editor-tab="'+pane+'"]').click()
   if full:
    page.locator('[data-editor-tab="rf-performance"]').click();assert page.locator('[name="dcs_mode"]').count()==1;assert page.locator('[name="edca_7_txop"]').count()==1;page.locator('[name="edca_preset"]').select_option('2')
   page.locator('#radio-form [type="submit"]').click();page.wait_for_timeout(80);assert not page.locator('#editor').evaluate('(e)=>e.open'),page.locator('#form-error').inner_text()
-  page.locator('[data-band-navigation]').click();page.locator('[name="band_threshold"]').fill('22');page.locator('#band-navigation-form [type="submit"]').click();page.wait_for_timeout(80)
+  visit('band');page.locator('[data-band-navigation]').click();page.locator('[name="band_threshold"]').fill('22');page.locator('#band-navigation-form [type="submit"]').click();page.wait_for_timeout(80)
   assert writes[-1]['path']=='band-navigation' and writes[-1]['body']['threshold_5g']==22
   if full:
-   page.locator('[data-tab="services"]').click();page.locator('[data-new-pool]').click();page.locator('[name="pool_name"]').fill('UI Pool');page.locator('[name="pool_vlans"]').fill('100-110');page.locator('#pool-form [type="submit"]').click();page.wait_for_timeout(80)
+   visit('pools');page.locator('[data-new-pool]').click();page.locator('[name="pool_name"]').fill('UI Pool');page.locator('[name="pool_vlans"]').fill('100-110');page.locator('#pool-form [type="submit"]').click();page.wait_for_timeout(80)
    assert writes[-1]['path']=='vlan-pools' and writes[-1]['body']['vlans']=='100-110'
-  page.locator('[data-tab="radios"]').click();page.locator('[data-rrm-new]').click();page.wait_for_selector('#rrm-form');page.locator('[name="name"]').fill('UI RRM');page.locator('[name="rrm_5g_channels"]').fill('36,44,149,157');page.locator('[name="optimize_channel"]').check();page.locator('#rrm-form [type="submit"]').click();page.wait_for_timeout(80);assert writes[-1]['path']=='rrm/rules' and writes[-1]['body'][0]['name']=='UI RRM';page.locator('[data-rates]').click();page.wait_for_selector('#rates-form');page.locator('[data-editor-tab="rates-mcs"]').click();page.locator('[name="11ax_supported"]').fill('15');page.locator('#rates-form [type="submit"]').click();page.wait_for_timeout(80)
+  visit('rrm');page.locator('[data-rrm-new]').click();page.wait_for_selector('#rrm-form');page.locator('[name="name"]').fill('UI RRM');page.locator('[name="rrm_5g_channels"]').fill('36,44,149,157');page.locator('[name="optimize_channel"]').check();page.locator('#rrm-form [type="submit"]').click();page.wait_for_timeout(80);assert writes[-1]['path']=='rrm/rules' and writes[-1]['body'][0]['name']=='UI RRM';visit('rates');page.locator('[data-rates]').click();page.wait_for_selector('#rates-form');page.locator('[data-editor-tab="rates-mcs"]').click();page.locator('[name="11ax_supported"]').fill('15');page.locator('#rates-form [type="submit"]').click();page.wait_for_timeout(80)
   assert writes[-1]['path']=='rates' and writes[-1]['body']['11ax']['supported']==15
-  page.locator('[data-edca-new]').click();page.wait_for_selector('#edca-form');page.locator('#edca-form [name="name"]').fill('UI EDCA');page.locator('#edca-form [name="frequency_mask"]').select_option(['1','256']);page.locator('#edca-form [name="edca_0_txop"]').fill('47');page.locator('#edca-form [type="submit"]').click();page.wait_for_timeout(80);assert writes[-1]['path']=='edca/rules' and writes[-1]['body'][0]['frequency_mask']==257
+  visit('edca');page.locator('[data-edca-new]').click();page.wait_for_selector('#edca-form');page.locator('#edca-form [name="name"]').fill('UI EDCA');page.locator('#edca-form [name="frequency_mask"]').select_option(['1','256']);page.locator('#edca-form [name="edca_0_txop"]').fill('47');page.locator('#edca-form [type="submit"]').click();page.wait_for_timeout(80);assert writes[-1]['path']=='edca/rules' and writes[-1]['body'][0]['frequency_mask']==257
 
-  page.locator('[data-tab="mobility"]').click();page.locator('[data-mobility-kind="balance"]').click();page.wait_for_selector('#mobility-form');page.locator('[name="name"]').fill('UI Balance');page.locator('#mobility-form [type="submit"]').click();page.wait_for_timeout(80)
+  visit('balance');page.locator('[data-mobility-kind="balance"]').click();page.wait_for_selector('#mobility-form');page.locator('[name="name"]').fill('UI Balance');page.locator('#mobility-form [type="submit"]').click();page.wait_for_timeout(80)
   assert writes[-1]['path']=='mobility' and writes[-1]['body']['balance'][0]['name']=='UI Balance'
-  page.locator('[data-mobility-kind="default"]').click();page.wait_for_selector('#mobility-form');page.locator('#mobility-form [type="submit"]').click();page.wait_for_timeout(80)
+  visit('mobility');page.locator('[data-mobility-kind="default"]').click();page.wait_for_selector('#mobility-form');page.locator('#mobility-form [type="submit"]').click();page.wait_for_timeout(80)
   assert writes[-1]['path']=='mobility' and writes[-1]['body']['default_roaming']['2g']['rssi_trigger']==-75
-  page.locator('[data-tab="protection"]').click()
+  visit('protection')
   for kind in ['servers','bindings','rules']:
    page.locator('[data-defense-kind="'+kind+'"]').last.click();page.wait_for_selector('#defense-form');page.locator('#defense-form [name="name"]').fill('UI '+kind)
    if kind=='servers':page.locator('[name="address"]').fill('192.0.2.3')
@@ -89,37 +106,38 @@ with sync_playwright() as p:
    if kind=='rules':page.locator('[name="dhcp"]').check();page.locator('[name="servers"]').select_option('srv');page.locator('[name="bindings"]').select_option('bind')
    page.locator('#defense-form [type="submit"]').click();page.wait_for_timeout(80);assert not page.locator('#editor').evaluate('(e)=>e.open'),page.locator('#form-error').inner_text();assert writes[-1]['path']=='protection'
   page.locator('[data-storm-edit]').click();page.wait_for_selector('#storm-form');page.locator('[name="enabled"]').check();page.locator('[name="protocol_0_rate"]').fill('200');page.locator('#storm-form [type="submit"]').click();page.wait_for_timeout(80);assert writes[-1]['path']=='storm' and writes[-1]['body']['protocols'][0]['rate']==200
-  page.locator('[data-tab="upgrades"]').click();page.wait_for_selector('[data-upgrade-image]');page.locator('[data-upgrade-image]').first.click();page.wait_for_selector('#upgrade-form');page.locator('#upgrade-form input[type="checkbox"]').first.check();page.locator('#upgrade-form [type="submit"]').click();page.wait_for_timeout(80);assert writes[-1]['path']=='upgrades' and writes[-1]['body']['image_id']=='synthetic-image'
-  page.locator('[data-tab="history"]').click();page.wait_for_selector('svg path[stroke-width="2"]');assert page.locator('svg[aria-label="无线运行统计趋势"]').count()==2
-  page.locator('[data-tab="clients"]').click();page.locator('[data-client-history]').first.click();page.wait_for_selector('#dialog-body svg');assert page.locator('#dialog-body').get_by_text('-60 dBm',exact=True).is_visible();before_signals=len(signal_queries);page.locator('[name="client_history_duration"]').select_option('3600');page.wait_for_timeout(100);assert len(signal_queries)>before_signals and signal_queries[-1].endswith('duration=3600');page.locator('#close-dialog').click()
-  page.locator('[data-tab="management"]').click()
-  page.locator('[data-management-tab="mesh"]').click();page.locator('[data-mesh-config]').click();page.wait_for_selector('#mesh-form');page.locator('#mesh-form [name="enabled"]').check();page.locator('#mesh-form [name="ssid"]').fill('UI Backhaul');page.locator('#mesh-form [name="key"]').fill('MeshKey123');page.locator('#mesh-form [name="web_password"]').fill('Mesh123456');page.locator('#mesh-form [type="submit"]').click();page.wait_for_timeout(80);assert writes[-1]['path']=='mesh' and writes[-1]['body']['ssid']=='UI Backhaul'
+  visit('upgrades');page.wait_for_selector('[data-upgrade-image]');page.locator('[data-upgrade-image]').first.click();page.wait_for_selector('#upgrade-form');page.locator('#upgrade-form input[type="checkbox"]').first.check();page.locator('#upgrade-form [type="submit"]').click();page.wait_for_timeout(80);assert writes[-1]['path']=='upgrades' and writes[-1]['body']['image_id']=='synthetic-image'
+  visit('history');page.wait_for_selector('svg path[stroke-width="2"]');assert page.locator('svg[aria-label="无线运行统计趋势"]').count()==2
+  visit('clients');page.locator('[data-client-history]').first.click();page.wait_for_selector('#dialog-body svg');assert page.locator('#dialog-body').get_by_text('-60 dBm',exact=True).is_visible();before_signals=len(signal_queries);page.locator('[name="client_history_duration"]').select_option('3600');page.wait_for_timeout(100);assert len(signal_queries)>before_signals and signal_queries[-1].endswith('duration=3600');page.locator('#close-dialog').click()
+  visit('mesh');page.locator('[data-mesh-config]').click();page.wait_for_selector('#mesh-form');page.locator('#mesh-form [name="enabled"]').check();page.locator('#mesh-form [name="ssid"]').fill('UI Backhaul');page.locator('#mesh-form [name="key"]').fill('MeshKey123');page.locator('#mesh-form [name="web_password"]').fill('Mesh123456');page.locator('#mesh-form [type="submit"]').click();page.wait_for_timeout(80);assert writes[-1]['path']=='mesh' and writes[-1]['body']['ssid']=='UI Backhaul'
   if full:
    page.locator('[data-mesh-ap]').first.click();page.wait_for_selector('#mesh-form');page.locator('#mesh-form [type="submit"]').click();page.wait_for_timeout(80);assert writes[-1]['path'].endswith('/mesh') and writes[-1]['body']['action']=='discover'
-  page.locator('[data-management-tab="basic"]').click();page.locator('[data-group-new]').click();page.locator('[name="management_name"]').fill('UI Group');page.locator('[name="group_start_ip"]').fill('192.0.2.10');page.locator('[name="group_end_ip"]').fill('192.0.2.20');page.locator('[name="opt_echo_seconds"]').fill('25');page.locator('#management-form [type="submit"]').click();page.wait_for_timeout(80)
+  visit('management');page.locator('[data-group-new]').click();page.locator('[name="management_name"]').fill('UI Group');page.locator('[name="group_start_ip"]').fill('192.0.2.10');page.locator('[name="group_end_ip"]').fill('192.0.2.20');page.locator('[name="opt_echo_seconds"]').fill('25');page.locator('#management-form [type="submit"]').click();page.wait_for_timeout(80)
   assert writes[-1]['path']=='groups' and writes[-1]['body']['options']['echo_seconds']==25 and writes[-1]['body']['strategy']=={'enabled':True,'type':'ip_range','start_ip':'192.0.2.10','end_ip':'192.0.2.20'}
-  page.locator('[data-template-new]').click();page.locator('[name="management_name"]').fill('UI Template');page.locator('#management-form [type="submit"]').click();page.wait_for_timeout(80)
+  visit('templates');page.locator('[data-template-new]').click();page.locator('[name="management_name"]').fill('UI Template');page.locator('#management-form [type="submit"]').click();page.wait_for_timeout(80)
   assert writes[-1]['path']=='templates'
-  page.locator('[data-ap-defaults]').click();page.locator('[name="opt_offline_self_manage"]').select_option('on');page.locator('#management-form [type="submit"]').click();page.wait_for_timeout(80)
+  visit('management');page.locator('[data-group-edit="floor"]').click();page.locator('[name="management_name"]').fill('UI Floor');page.locator('#management-form [type="submit"]').click();page.wait_for_timeout(80);assert writes[-1]['path']=='groups' and writes[-1]['body']['name']=='UI Floor'
+  visit('templates');page.locator('[data-template-edit="template"]').click();page.locator('[name="management_name"]').fill('UI Model');page.locator('#management-form [type="submit"]').click();page.wait_for_timeout(80);assert writes[-1]['path']=='templates' and writes[-1]['body']['name']=='UI Model'
+  visit('apdefaults');page.locator('[data-ap-defaults]').click();page.locator('[name="opt_offline_self_manage"]').select_option('on');page.locator('#management-form [type="submit"]').click();page.wait_for_timeout(80)
   assert writes[-1]['path']=='ap-defaults' and writes[-1]['body']['offline_self_manage'] is True;assert next(r for r in writes[-1]['body']['radios']if r['radio_id']==8)=={'radio_id':8,'channel':11,'advanced':{'rts':2000}}
-  page.locator('[data-ap-settings]').first.click();page.locator('[name="opt_echo_seconds"]').fill('31');page.locator('[name="opt_led"]').select_option('off')
+  visit('aps');page.locator('[data-ap-settings]').first.click();page.locator('[name="opt_echo_seconds"]').fill('31');page.locator('[name="opt_led"]').select_option('off')
   if full:page.locator('[data-editor-tab="ap-advanced"]').click();page.locator('[name="opt_rf_mode_enabled"]').select_option('on');page.locator('[name="opt_rf_mode_id"]').select_option('7');page.locator('[name="opt_port_103_vlan"]').fill('100');assert page.locator('[name="opt_port_12_vlan"]').count()==0
   page.locator('#management-form [type="submit"]').click();page.wait_for_timeout(80)
   if full:assert writes[-1]['body']['options']['rf_mode']=={'enabled':True,'id':7};assert writes[-1]['body']['options']['lag']['ports']==[103,104]
   assert writes[-1]['path'].endswith('/settings') and writes[-1]['body']['options']['led'] is False
   assert not page.locator('#editor').evaluate('(e)=>e.open'),page.locator('#form-error').inner_text()
   for copy_radios in (False,True):
-   page.locator('[data-ap-copy="'+profile[0]['id']+'"]').click();page.locator('#management-copy-form [name="targets"]').select_option(spare['id']);page.locator('#management-copy-form [name="radios"]').set_checked(copy_radios);page.locator('#management-copy-form [type="submit"]').click();page.wait_for_timeout(80);assert writes[-1]['path'].endswith('/copy') and writes[-1]['body']=={'targets':[spare['id']],'radios':copy_radios}
-  page.locator('[data-ap-replace="'+offline['id']+'"]').click();page.locator('#management-replace-form [name="target"]').select_option(spare['id']);page.locator('#management-replace-form [type="submit"]').click();page.wait_for_timeout(80);assert writes[-1]['path'].endswith('/replace') and writes[-1]['body']=={'target_ap_id':spare['id']}
+   page.locator('[data-ap="'+profile[0]['id']+'"]').click();page.locator('[data-ap-copy="'+profile[0]['id']+'"]').click();page.locator('#management-copy-form [name="targets"]').select_option(spare['id']);page.locator('#management-copy-form [name="radios"]').set_checked(copy_radios);page.locator('#management-copy-form [type="submit"]').click();page.wait_for_timeout(80);assert writes[-1]['path'].endswith('/copy') and writes[-1]['body']=={'targets':[spare['id']],'radios':copy_radios}
+  page.locator('[data-ap="'+offline['id']+'"]').click();page.locator('[data-ap-replace="'+offline['id']+'"]').click();page.locator('#management-replace-form [name="target"]').select_option(spare['id']);page.locator('#management-replace-form [type="submit"]').click();page.wait_for_timeout(80);assert writes[-1]['path'].endswith('/replace') and writes[-1]['body']=={'target_ap_id':spare['id']}
   name_csv='编号,MAC地址,安装位置,设备名称\n1,02-00-00-00-00-01,Original,Updated\n'
   page.locator('#ap-names-import').set_input_files({'name':'ap-names.csv','mimeType':'text/csv','buffer':name_csv.encode()});page.wait_for_timeout(100);assert writes[-1]['path']=='aps/names/import' and writes[-1]['body']=={'csv':name_csv}
   restore={'format':'go-ac-configuration','schema':1,'config':{'services':[]}}
-  page.locator('#management-import').set_input_files({'name':'go-ac-ui-test.json','mimeType':'application/json','buffer':json.dumps(restore).encode()});page.wait_for_timeout(100);assert writes[-1]['path']=='restore' and writes[-1]['body']==restore
-  page.evaluate('window.scrollTo(0,0)');page.screenshot(path=str(OUT/('all-capabilities-desktop.png'if full else 'real-capabilities-desktop.png')),full_page=True)
+  visit('backup');page.locator('#management-import').set_input_files({'name':'go-ac-ui-test.json','mimeType':'application/json','buffer':json.dumps(restore).encode()});page.wait_for_timeout(100);assert writes[-1]['path']=='restore' and writes[-1]['body']==restore
+  visit('radios');page.evaluate('window.scrollTo(0,0)');page.screenshot(path=str(OUT/('all-capabilities-desktop.png'if full else 'real-capabilities-desktop.png')),full_page=True)
   page.set_viewport_size({'width':390,'height':844});page.screenshot(path=str(OUT/('all-capabilities-mobile.png'if full else 'real-capabilities-mobile.png')),full_page=True);page.close()
  browser.close()
 server.shutdown()
 assert not errors,errors
-assert len(writes)==50,len(writes)
+assert len(writes)==54,len(writes)
 assert next(w for w in reversed(writes) if w['path']=='radios')['body']['advanced']['edca']['preset']==2
-print(json.dumps({'profiles':2,'pages_per_profile':11,'forms_submitted':len(writes),'javascript_errors':errors,'screenshots':str(OUT)},ensure_ascii=False))
+print(json.dumps({'profiles':2,'pages_per_profile':23,'forms_submitted':len(writes),'javascript_errors':errors,'screenshots':str(OUT)},ensure_ascii=False))
