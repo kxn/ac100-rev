@@ -216,3 +216,10 @@ PMK gate原APentry+28c为General第三个32位词：蓝牙bit77与0x2000独立�
 最终检查均通过：`go test ./...`、`go vet ./...`、`go test -race ./...`；CGO_ENABLED=0 的 Linux amd64/arm64、Windows amd64 三构建；全部Web JS语法；Python工具编译；23原厂模块/17功能链/182 Go源码文件的双向索引及固件源码哈希；129函数/常量/表和2029 OUI重建；`git diff --check`。UI回归两套能力×10页、46次模拟表单提交、无JS错误；HTTP写操作被模拟拦截，不修改AP。
 
 **未部署、未提交/推送本轮改动。** 实验守护进程仍为历史 `587d414`。没有用真实AP、平板或原厂UAC外部执行推导/证明策略；真实空口互通不冒充本轮证据。固件更新包不含flash运行profile，重建QEMU容量/默认值不当作原厂事实；V4及其它硬件效果不据此认定一致。
+
+
+## 2026-11-27：按用户指令提交与部署
+
+代码提交`712f496`已部署到ac100-go.service。运行构建revision与提交一致、vcs.modified=false。部署前备份旧二进制和持久化数据，SQLite用一致性backup复制；回滚材料只存在忽略的私人目录。服务active/running、重启计数0；AP RUN，双射频verified，共13项同步状态无失败。平板只做status检查，没有切换Wi-Fi或修改射频；5200MHz、网关、DNS/HTTPS及Go显示的客户端IP/射频/统计一致。此检查只确认部署基本可用性，不用于推导/证明原厂调度算法。
+
+更新go-live-status为最新部署状态，并在mobility-parity-audit说明升级包缺失的Flash配置含义：运行/出厂持久化预置、原硬件容量、部分RF初始化参数；编译/SQL/Web中已确认的算法和默认值不属于未知项。此前“未部署”收尾记录是历史时点，不再表示当前服务状态。

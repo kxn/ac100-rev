@@ -1,5 +1,13 @@
 # 独立 Go 控制器实机进度（2026-11-26）
 
+## 2026-11-27 部署更新
+
+策略整改代码已提交并部署为 `712f49648d70392034a17b112bad2fa7568c6e75`。运行二进制的 Go 构建信息确认该 revision、`vcs.modified=false`、`CGO_ENABLED=0`；systemd 服务 active/running，重启计数0。部署前已在忽略目录私存旧二进制及数据库一致性备份。
+
+本次基本可用性检查：AP重新进入RUN，两路射频配置 verified，共13项配置同步状态无failed/blocked；原有平板保持GoAC-Lab连接在5200MHz，网关及DNS/HTTPS通过，Go客户端显示connected、正确射频、IP及统计。未运行多AP调度对比，不将此次设备检查当作原厂算法等价证明。私人部署快照和验证记录存于 `.local/ac100/deployments/`、`.local/ac100/adb-tests/`。
+
+下文为11月26日的历史设备记录。所有文档中“本轮未部署”的描述均指此前源码审计收尾时点；以本节为最新部署状态。
+
 > 历史设备记录，部署基线为 `587d414`。2026-11-27 的策略/协议/配置架构整改尚未部署，下文不代表整改后的实机结果，也不证明原厂算法等价。当前源码与依据见 [策略对照](mobility-parity-audit.md) 和 [功能对应](feature-parity.md)。AP蓝牙、RADIUS、Portal和AC主机系统功能均不在产品范围。
 
 
