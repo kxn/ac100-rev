@@ -237,6 +237,9 @@ func (m *Manager) startHighPerformanceACSLocked(now time.Time) error {
 		return err
 	}
 	if !ready {
+		if h.State != "waiting" {
+			m.event("acs.waiting", "reason", "mode_parameters_not_settled")
+		}
 		h.PendingScan, h.State, h.Error = true, "waiting", ""
 		return nil
 	}
@@ -270,6 +273,7 @@ func (m *Manager) startHighPerformanceACSLocked(now time.Time) error {
 		return nil
 	}
 	h.State, h.Error, h.Deadline = "collecting", "", now.Add(highPerformanceTimeout(m.config.Mobility))
+	m.event("acs.collection_started", "policy", mobilityPolicyVersion(m.config), "expected", h.Expected, "deadline", h.Deadline)
 	deadline := h.Deadline
 	if h.Timer != nil {
 		h.Timer.Stop()
@@ -296,7 +300,7 @@ func (m *Manager) startHighPerformanceACSLocked(now time.Time) error {
 				request.Radios = append(request.Radios, capwap.ScanRadio{Index: c.RadioID - 1, Channels: channels})
 			}
 		}
-		ticket, err := m.engine.QueueAP(context.Background(), ap, 7, []capwap.Element{privateSetting(0x9b, request.AssembleValue())})
+		ticket, err := m.engine.QueueAP(m.commandContext(context.Background(), ap, m.config.Version, "common_channel_scan"), ap, 7, []capwap.Element{privateSetting(0x9b, request.AssembleValue())})
 		if err != nil {
 			h.Error = err.Error()
 			continue
@@ -326,6 +330,7 @@ func (m *Manager) observeHighPerformanceScan(ap string, connection time.Time, ro
 	if !ok || !known.Online || known.ConnectedAt != connection {
 		return
 	}
+	m.event("acs.scan_report", "ap_id", ap, "session", connection, "samples", rows)
 	h.Reports[ap] = append([]capwap.ChannelScanSample{}, rows...)
 	h.Connections[ap] = connection
 	if len(h.Reports) >= len(h.Expected) {
@@ -345,6 +350,7 @@ func (m *Manager) finishHighPerformanceACSLocked() {
 			reports = append(reports, rows)
 		}
 	}
+	m.event("acs.collection_finished", "expected_count", len(h.Expected), "received_count", len(h.Reports), "usable_reports", len(reports), "timed_out", !time.Now().Before(h.Deadline), "active", active)
 	h.State = "completed"
 	h.resetCollection()
 	if !active {
@@ -354,6 +360,7 @@ func (m *Manager) finishHighPerformanceACSLocked() {
 	// defaults on timeout even if no sample survived. It doesn't invent RF
 	// scores from other statistics streams.
 	selection := mobility.V4SelectCommonChannels(reports)
+	m.event("acs.selection", "channels", selection.Channels, "policy", mobilityPolicyVersion(m.config), "config_version", m.config.Version)
 	next := m.withHighPerformanceSelectionLocked(m.config, selection, 0, true)
 	if wirelessConfigKey(next) != wirelessConfigKey(m.config) {
 		next.Version = m.config.Version + 1

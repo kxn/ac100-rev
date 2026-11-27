@@ -220,6 +220,7 @@ func roamingFor(p *MobilityConfig, ap string, cfg Config) RoamSettings {
 	return p.Default
 }
 func (m *Manager) applyPolicy(ctx context.Context, ap cweng.APStatus, kind string, value any, elements []capwap.Element) {
+	ctx = m.itemContext(ctx, kind)
 	key := ap.ID + "/" + kind
 	version := configurationKey(value, ap.ConnectedAt)
 	m.mu.Lock()

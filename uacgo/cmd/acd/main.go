@@ -29,6 +29,7 @@ import (
 	"uacgo/admin"
 	"uacgo/controllercfg"
 	"uacgo/dhcpserver"
+	"uacgo/internal/eventlog"
 
 	"uacgo/capwap"
 	"uacgo/cweng"
@@ -45,6 +46,9 @@ func main() {
 	interfaceName := flag.String("interface", "", "bind control traffic to this network interface (broadcast supported)")
 	dtlsCert := flag.String("dtls-cert", "", "RSA certificate for the AP DTLS 1.0 compatibility transport")
 	dtlsKey := flag.String("dtls-key", "", "matching RSA key")
+	eventPath := flag.String("event-log", "", "private structured decision and command log (JSONL)")
+	logMax := flag.Int("log-max-mib", 32, "maximum size of each diagnostic log segment")
+	logBackups := flag.Int("log-backups", 4, "rotated diagnostic log segments to retain")
 	tracePath := flag.String("trace", "", "write private wire and decrypted CAPWAP trace JSONL")
 	httpAddress := flag.String("http", "127.0.0.1:8090", "management HTTP listen address")
 	httpAllowRemote := flag.Bool("http-allow-remote", false, "explicitly allow management HTTP on a non-loopback address (trusted management networks only)")
@@ -55,6 +59,16 @@ func main() {
 	}
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer cancel()
+	var events *eventlog.Log
+	if *eventPath != "" {
+		var err error
+		events, err = eventlog.Open(*eventPath, int64(*logMax)<<20, *logBackups)
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer events.Close()
+		events.Event("controller.start", "data_dir", *dataDir, "http", *httpAddress, "control_port", *port)
+	}
 	if *interfaceName == "" {
 		var saved struct {
 			Interface string `json:"interface"`
@@ -79,6 +93,7 @@ func main() {
 		if err != nil {
 			log.Fatal(err)
 		}
+		dhcp.Events = events
 		go func() {
 			if err := dhcp.Serve(ctx); err != nil {
 				log.Fatalf("AP-only DHCP: %v", err)
@@ -111,9 +126,10 @@ func main() {
 	if err != nil {
 		log.Fatalf("listen udp %d: %v", *port, err)
 	}
+	e.Events = events
 	e.Debug = *debug
 	if *tracePath != "" {
-		f, err := os.OpenFile(*tracePath, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0600)
+		f, err := eventlog.OpenWriter(*tracePath, int64(*logMax)<<20, *logBackups)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -196,6 +212,7 @@ func main() {
 	}
 	log.Printf("acd (uac-go) listening on :%d, max_sessions=%d, ac=%s, apdb=%s (%d static, %d negotiated models)",
 		*port, e.MaxAPSessions(), id.ACName, apdb.Version, len(apdb.Models()), len(apdb.Negotiated))
+	events.Event("controller.ready", "control_ip", net.IP(e.ControlIP[:]).String(), "interface", e.BoundInterface(), "http", *httpAddress, "dhcp", *dhcpConfig != "")
 	if err := e.Run(); err != nil && ctx.Err() == nil {
 		log.Fatalf("engine: %v", err)
 	}

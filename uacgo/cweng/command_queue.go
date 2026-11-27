@@ -5,12 +5,14 @@ import (
 	"errors"
 	"fmt"
 	"uacgo/capwap"
+	"uacgo/internal/eventlog"
 )
 
 // CommandTicket separates submission from AP acknowledgement. Firmware
 // serv_packet_send queues an immutable packet; business policies must not
 // wait for one AP's ACK before issuing another AP's command.
 type CommandTicket struct {
+	ID     uint64
 	done   chan struct{}
 	result CommandResult
 	err    error
@@ -72,7 +74,7 @@ func (e *Engine) queueOnSession(ctx context.Context, s *Session, p *capwap.Parse
 	for i := range p.Elements {
 		p.Elements[i].Value = append([]byte{}, p.Elements[i].Value...)
 	}
-	ticket := &CommandTicket{done: make(chan struct{})}
+	ticket := &CommandTicket{ID: e.commandID.Add(1), done: make(chan struct{})}
 	e.outboundMu.Lock()
 	if e.outbound == nil {
 		e.outbound = map[*Session]*commandQueue{}
@@ -86,6 +88,10 @@ func (e *Engine) queueOnSession(ctx context.Context, s *Session, p *capwap.Parse
 		q = &commandQueue{wake: make(chan struct{}, 1)}
 		e.outbound[root] = q
 		go e.runCommandQueue(root, q)
+	}
+	if e.Events.Enabled() {
+		ctx = eventlog.With(ctx, "command_id", ticket.ID, "ap_id", sessionID(s), "session", s.Created, "message_type", p.Control.MsgType)
+		e.Events.Context(ctx, "command.queued", "queue_depth", len(q.jobs)+1, "elements", elementSummary(p.Elements))
 	}
 	q.jobs = append(q.jobs, queuedCommand{s, ctx, p, ticket})
 	select {
@@ -106,6 +112,7 @@ func (e *Engine) runCommandQueue(root *Session, q *commandQueue) {
 			e.outboundMu.Unlock()
 			for _, job := range pending {
 				job.ticket.err = errors.New("AP transport closed")
+				e.Events.Context(job.ctx, "command.completed", "outcome", "failed", "error", job.ticket.err.Error())
 				close(job.ticket.done)
 			}
 			return
@@ -124,6 +131,11 @@ func (e *Engine) runCommandQueue(root *Session, q *commandQueue) {
 		q.jobs = q.jobs[1:]
 		e.outboundMu.Unlock()
 		job.ticket.result, job.ticket.err = e.executeOnSession(job.ctx, job.session, job.packet, job.packet.Elements)
+		outcome := "acknowledged"
+		if job.ticket.err != nil {
+			outcome = "failed"
+		}
+		e.Events.Context(job.ctx, "command.completed", "outcome", outcome, "request_sequence", job.packet.Control.SeqNum, "response_sequence", job.ticket.result.Sequence, "result_code", job.ticket.result.Result, "error", errorText(job.ticket.err))
 		close(job.ticket.done)
 	}
 }

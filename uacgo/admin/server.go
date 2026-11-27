@@ -94,6 +94,8 @@ type ApplyStatus struct {
 	At               time.Time `json:"at"`
 }
 type Manager struct {
+	eventSequence        uint64
+	diagnostics          diagnosticState
 	highPerformance      highPerformanceState
 	meshJobs             map[string]MeshJob
 	history              WirelessHistory
@@ -240,6 +242,11 @@ func New(engine *cweng.Engine, clients *cweng.ClientTable, dataDir string) (*Man
 	clients.ResolveService = m.resolveClientService
 	m.rrmWake = make(chan struct{}, 1)
 	m.balance.Start(time.Now())
+	if m.eventsEnabled() {
+		m.balance.Observe = func(mac mobility.MAC, decision mobility.BalanceDecision) {
+			m.event("balance.decision", "client", eventMAC(mac), "decision", decision, "policy", mobilityPolicyVersion(m.config), "config_version", m.config.Version)
+		}
+	}
 	m.pmks.Start(time.Now())
 	m.stationStatistics.Start(time.Now())
 	clients.OnTransition = m.observePMKTransition
@@ -341,6 +348,7 @@ func (m *Manager) APs() []cweng.APStatus {
 	out := []cweng.APStatus{}
 	for _, v := range m.known {
 		if wasOnline[v.ID] && !v.Online {
+			m.event("ap.inventory_offline", "ap_id", v.ID, "session", v.ConnectedAt, "last_seen", v.LastSeen)
 			m.balance.ForgetAP(v.ID)
 
 			for _, c := range m.clients.All() {
@@ -431,6 +439,7 @@ func (m *Manager) Run(ctx context.Context) {
 			m.mu.Unlock()
 			m.tickRRM(time.Now())
 			m.tickHighPerformance(time.Now())
+			m.captureDiagnostics()
 			cfg := m.snapshot()
 			m.mu.Lock()
 			if time.Since(lastSave) > 30*time.Second {
@@ -458,6 +467,7 @@ func (m *Manager) Run(ctx context.Context) {
 }
 
 func (m *Manager) reconcileAP(ctx context.Context, ap cweng.APStatus, cfg Config) {
+	ctx = m.commandContext(ctx, ap, cfg.Version, "configuration_reconcile")
 	defer func() {
 		m.mu.Lock()
 		defer m.mu.Unlock()
@@ -537,6 +547,9 @@ func (m *Manager) reconcileAP(ctx context.Context, ap cweng.APStatus, cfg Config
 		err := m.apply(ctx, ap, service, cfg)
 		state.At = time.Now()
 		state.State = "acknowledged"
+		if err == nil && service.Enabled {
+			state.Reason = serviceCapabilityNote(service, ap)
+		}
 		if err == nil && service.Enabled && len(selectedServiceRadios(service, ap)) == 0 {
 			state.State = "not_applicable"
 			state.Reason = "此 AP 没有所选频段的可用覆盖射频"
@@ -595,6 +608,8 @@ func (m *Manager) ownsAny(ap string, wlan uint8) bool {
 	return false
 }
 func (m *Manager) apply(ctx context.Context, ap cweng.APStatus, s Service, cfg Config) (err error) {
+	ctx = m.itemContext(ctx, "service:"+s.ID)
+	m.event("wlan.apply", "ap_id", ap.ID, "session", ap.ConnectedAt, "service_id", s.ID, "ssid", s.SSID, "enabled", s.Enabled, "security", s.Security, "radios", selectedServiceRadios(s, ap), "config_version", cfg.Version)
 	staged := false
 	defer func() {
 		if err != nil {
@@ -824,6 +839,13 @@ func (m *Manager) Handler() http.Handler { return m.HandlerWithOptions(HTTPOptio
 // Same-origin write checks apply equally to local and remote deployments.
 func (m *Manager) HandlerWithOptions(options HTTPOptions) http.Handler {
 	mux := http.NewServeMux()
+	mux.HandleFunc("GET /api/observability", func(w http.ResponseWriter, r *http.Request) {
+		var stats any
+		if m.engine != nil {
+			stats = m.engine.Events.Stats()
+		}
+		jsonReply(w, 200, map[string]any{"enabled": m.eventsEnabled(), "stats": stats})
+	})
 	m.historyRoutes(mux)
 	m.stormRoutes(mux)
 	m.protectionScanRoutes(mux)
@@ -1040,7 +1062,7 @@ func (m *Manager) HandlerWithOptions(options HTTPOptions) http.Handler {
 	})
 	sub, _ := fs.Sub(assets, "assets")
 	mux.Handle("/", http.FileServer(http.FS(sub)))
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	return m.observeHTTP(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		host := r.Host
 		if h, _, err := net.SplitHostPort(host); err == nil {
 			host = h
@@ -1061,7 +1083,7 @@ func (m *Manager) HandlerWithOptions(options HTTPOptions) http.Handler {
 			}
 		}
 		mux.ServeHTTP(w, r)
-	})
+	}))
 }
 
 func configurationKey(v any, connected time.Time) string {

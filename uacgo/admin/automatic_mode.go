@@ -100,6 +100,8 @@ func (m *Manager) automaticStationAssociatedLocked(ap string, at time.Time) {
 }
 
 func (m *Manager) changeAutomaticModeLocked(mode int, redistribute bool, clock func() time.Time) {
+	aps, stations := m.automaticCountsLocked()
+	m.event("mode.transition_requested", "previous_mode", actualMobilityMode(m.config), "mode", mode, "redistribute_channels", redistribute, "aps", aps, "stations", stations, "limits", automaticLimits(m.config.Mobility))
 	next := m.config
 	p := *next.Mobility
 	p.CurrentMode = mode
@@ -147,6 +149,7 @@ func (m *Manager) redistributeCompatibilityChannelsLocked(cfg Config, clock func
 			continue
 		}
 		channel2, channel5 := mobility.V4RedistributionChannels(uint32(clock().Unix()))
+		m.event("mode.redistribute", "ap_id", ap.ID, "clients", counts[ap.ID], "threshold", threshold, "channel_2g", channel2, "channel_5g", channel5)
 		for _, r := range effectiveRadioConfig(cfg, ap).Radios {
 			if r.AP != ap.ID {
 				continue

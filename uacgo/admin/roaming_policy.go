@@ -65,17 +65,22 @@ func admissionResultCodes(cfg Config) (unavailable, balanceRejected uint32) {
 }
 
 func (m *Manager) selectRoamingLocked(ap string, radio uint8, mac [6]byte, currentRSSI int8, currentRate int, settings RoamSettings, neighbors []mobility.Candidate) []mobility.Candidate {
+	observer, decision := m.selectionObserver(ap, radio, mac, currentRSSI, currentRate, settings, neighbors)
+	finish := func(rows []mobility.Candidate) []mobility.Candidate {
+		m.event("roaming.selection_result", "decision_id", decision, "ap_id", ap, "client", eventMAC(mac), "selected_count", len(rows))
+		return rows
+	}
 	if roamingPolicy(m.config) == mobility.V4Policy {
 		band := radioBand(m.known[ap], radio)
 		if band < 0 {
 			band = 0
 		}
-		selection := mobility.V4Selection{CurrentRSSI: currentRSSI, CurrentBand: band, ActualMode: actualMobilityMode(m.config), ThresholdType2G: settings.Band2G.Type, ThresholdType5G: settings.Band5G.Type, RSSI2G: int8(settings.Band2G.RSSI), RSSI5G: int8(settings.Band5G.RSSI), Difference: uint8(settings.Difference)}
-		return selection.Select(neighbors, func(n mobility.Candidate) bool {
+		selection := mobility.V4Selection{Observe: observer, CurrentRSSI: currentRSSI, CurrentBand: band, ActualMode: actualMobilityMode(m.config), ThresholdType2G: settings.Band2G.Type, ThresholdType5G: settings.Band5G.Type, RSSI2G: int8(settings.Band2G.RSSI), RSSI5G: int8(settings.Band5G.RSSI), Difference: uint8(settings.Difference)}
+		return finish(selection.Select(neighbors, func(n mobility.Candidate) bool {
 			return m.pseudoAssociationLocked(n, mac)
-		})
+		}))
 	}
-	return (mobility.Selection{CurrentRSSI: currentRSSI, CurrentRate: currentRate, ThresholdType2G: settings.Band2G.Type, ThresholdType5G: settings.Band5G.Type}).Select(neighbors)
+	return finish((mobility.Selection{Observe: observer, CurrentRSSI: currentRSSI, CurrentRate: currentRate, ThresholdType2G: settings.Band2G.Type, ThresholdType5G: settings.Band5G.Type}).Select(neighbors))
 }
 
 // V4 pseudo-association checks the strict radio count before the service
@@ -87,6 +92,7 @@ func (m *Manager) pseudoAssociationLocked(n mobility.Candidate, mac [6]byte) boo
 	limit := m.radioCapacityLimitLocked(n.AP, n.Radio)
 	count, _ := m.clients.RadioCount(n.AP, n.Radio)
 	if limit <= 0 || count >= limit || !m.admitStationLocked(n.AP, n.Radio, n.WLAN) {
+		m.event("roaming.pseudo_association", "ap_id", n.AP, "radio", n.Radio, "client", eventMAC(mac), "allowed", false, "reason", "capacity_or_service_unavailable", "radio_clients", count, "radio_limit", limit)
 		return false
 	}
 	role := roamingRole(m.known[n.AP])

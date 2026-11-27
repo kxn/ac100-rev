@@ -89,6 +89,7 @@ func (m *Manager) applyReporting(ctx context.Context, ap cweng.APStatus, cfg Con
 	m.mu.Unlock()
 }
 func (m *Manager) reconcileRadio(ctx context.Context, ap cweng.APStatus, r RadioSetting, revision uint64) {
+	ctx = m.itemContext(ctx, fmt.Sprintf("radio:%d", r.Radio))
 	key := ap.ID + "/radio:" + strconv.Itoa(int(r.Radio))
 	version := configurationKey(r, ap.ConnectedAt)
 	m.mu.Lock()

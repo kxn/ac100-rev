@@ -33,8 +33,10 @@ func (m *Manager) queueRoaming(ap string, connection time.Time, r capwap.PrivRoa
 	defer m.mu.Unlock()
 	source, ok := m.known[ap]
 	if !ok || !source.Online || source.ConnectedAt != connection {
+		m.event("roaming.trigger_ignored", "ap_id", ap, "session", connection, "reason", "stale_or_offline_session")
 		return
 	}
+	m.event("roaming.trigger", "ap_id", ap, "session", connection, "radio", r.Radio, "channel_load", r.ChannelLoad, "noise_floor", r.NoiseFloor, "stations", len(r.Stations))
 	for i, stats := range source.RadioStatistics {
 		if stats.Radio == r.Radio {
 			source.RadioStatistics[i].ChannelLoad = r.ChannelLoad
@@ -52,6 +54,7 @@ func (m *Manager) queueRoaming(ap string, connection time.Time, r capwap.PrivRoa
 		}
 		m.roamSequence++
 		job := &roamJob{ID: m.roamSequence, Connection: connection, Received: now, Result: result}
+		m.event("roaming.result_created", "job_id", job.ID, "source_ap", ap, "session", connection, "result", result)
 		for _, mac := range result.APs {
 			id := net.HardwareAddr(mac[:]).String()
 			if target, ok := m.known[id]; ok && target.Online && target.HasCapability(25) {
@@ -194,6 +197,7 @@ func (m *Manager) candidateLocked(mac [6]byte, ap cweng.APStatus, radio, wlan ui
 	stats, ok := radioStats(ap, radio)
 	band := radioBand(ap, radio)
 	if !ok || !ap.Online || band < 0 || radioDisabled(m.config, ap.ID, radio) || m.roamingRadioReset[radioSlot{ap.ID, radio}] {
+		m.event("roaming.neighbor_ignored", "ap_id", ap.ID, "radio", radio, "client", eventMAC(mac), "reason", "missing_statistics_offline_or_radio_unavailable", "statistics_present", ok, "online", ap.Online, "band", band)
 		return mobility.Candidate{}, false
 	}
 	n := mobility.Candidate{AP: ap.ID, Radio: radio, WLAN: wlan, BSSID: mobility.MAC(bssid), Channel: stats.Channel, Band: band, RSSI: rssi, Rate: -1, Load: stats.ChannelLoad}
@@ -202,6 +206,7 @@ func (m *Manager) candidateLocked(mac [6]byte, ap cweng.APStatus, radio, wlan ui
 		role := roamingRole(ap)
 		n.RSSI = int8(max(-95, int(rssi)-10))
 		if role > 4 && role != 6 && role != 8 {
+			m.event("roaming.rate_unavailable", "ap_id", ap.ID, "client", eventMAC(mac), "role", role, "reason", "unsupported_ap_role")
 			// The estimator returns -1. The current BSS retains that value;
 			// only the caller's neighbor-insertion branch skips it.
 			return n, true
@@ -220,6 +225,9 @@ func (m *Manager) candidateLocked(mac [6]byte, ap cweng.APStatus, radio, wlan ui
 		}
 		policy := roamingPolicy(m.config)
 		n.Rate = policy.CandidateRate(rssi, caps.PHYFor(policy, band), m.radioPHYLocked(ap, stats, band), band, mesh, backhaul)
+		if m.eventsEnabled() {
+			m.event("roaming.rate_estimate", "ap_id", ap.ID, "radio", radio, "client", eventMAC(mac), "raw_rssi", rssi, "adjusted_rssi", n.RSSI, "client_phy", caps.PHYFor(policy, band), "ap_phy", m.radioPHYLocked(ap, stats, band), "mesh", mesh, "backhaul_rate", backhaul, "estimated_rate", n.Rate, "policy", mobilityPolicyVersion(m.config))
+		}
 	}
 	return n, true
 }
@@ -277,16 +285,23 @@ func (m *Manager) calculateRoamingLocked(ap cweng.APStatus, report capwap.PrivRo
 	for _, sta := range ordered {
 		c, found := clients[sta.MAC]
 		if !found || c.State == "disconnected" || c.APID != ap.ID || c.RadioID != report.Radio || c.WLANID != uint32(sta.WLAN) {
+			m.event("roaming.station_ignored", "ap_id", ap.ID, "client", eventMAC(sta.MAC), "radio", report.Radio, "wlan", sta.WLAN, "reason", "station_location_not_current")
 			continue
 		}
+		m.event("roaming.station_report", "ap_id", ap.ID, "client", eventMAC(sta.MAC), "radio", report.Radio, "wlan", sta.WLAN, "rssi", sta.RSSI, "neighbors", sta.Neighbors)
 		var neighbors []mobility.Candidate
 		currentRSSI, currentRate := sta.RSSI, 0
 		if len(sta.Neighbors) > 0 {
 			signals, valid := neighborSignals(sta.Neighbors)
+			if !valid {
+				m.event("roaming.neighbors_ignored", "ap_id", ap.ID, "client", eventMAC(sta.MAC), "reason", "invalid_or_mixed_signal_encoding")
+			}
 			if valid {
+				m.event("roaming.candidate_path", "ap_id", ap.ID, "client", eventMAC(sta.MAC), "path", "reported_bssid_neighbors")
 				for i, b := range sta.Neighbors {
 					target, radio, wlan, ok := m.findBSSIDLocked(b.BSSID)
 					if !ok {
+						m.event("roaming.neighbor_ignored", "ap_id", ap.ID, "client", eventMAC(sta.MAC), "bssid", eventMAC(b.BSSID), "reason", "bssid_not_known")
 						continue
 					}
 					n, ok := m.candidateLocked(sta.MAC, target, radio, wlan, b.BSSID, int8(signals[i]), true)
@@ -306,6 +321,7 @@ func (m *Manager) calculateRoamingLocked(ap cweng.APStatus, report capwap.PrivRo
 				}
 			}
 		} else {
+			m.event("roaming.candidate_path", "ap_id", ap.ID, "client", eventMAC(sta.MAC), "path", "cached_station_rssi", "maximum_age", mobility.NeighborAge(int(reportingControl(m.config, ap.ID).E)).String())
 			for _, r := range m.stationStatistics.Neighbors(mobility.MAC(sta.MAC), now, mobility.NeighborAge(int(reportingControl(m.config, ap.ID).E))) {
 				target, ok := m.known[r.AP]
 				if !ok || (r.AP == ap.ID && r.Radio == report.Radio) {
@@ -389,8 +405,11 @@ func (m *Manager) calculateRoamingLocked(ap cweng.APStatus, report capwap.PrivRo
 // for the source AP whose inbound handler still owns its session lock.
 func (m *Manager) submitRoamingLocked(source string, job *roamJob) {
 	for _, target := range job.Targets {
-		ticket, err := m.engine.QueueAP(context.Background(), target, 7, []capwap.Element{privateSetting(0x59, job.Result.AssembleValue())})
+		ctx := m.commandContext(context.Background(), target, m.config.Version, "roaming_result")
+		m.event("roaming.result_dispatch", "job_id", job.ID, "source_ap", source, "target_ap", target.ID, "stations", len(job.Result.Stations), "aps", len(job.Result.APs))
+		ticket, err := m.engine.QueueAP(ctx, target, 7, []capwap.Element{privateSetting(0x59, job.Result.AssembleValue())})
 		if err != nil {
+			m.event("roaming.dispatch_failed", "job_id", job.ID, "target_ap", target.ID, "error", err.Error())
 			m.status[target.ID+"/roaming-result"] = ApplyStatus{AP: target.ID, Service: "roaming-result", State: "failed", Error: err.Error(), At: time.Now()}
 			continue
 		}

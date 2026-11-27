@@ -114,17 +114,11 @@ func validateServiceCapability(s Service, ap cweng.APStatus, radio uint8) error 
 	if o.VLANPool != 0 && !supportsPool(ap) {
 		return fmt.Errorf("AP 不支持 VLAN 池")
 	}
-	if x := o.Multicast; x != nil {
-		if x.ConfigureGlobal && !ap.HasCapability(43) {
-			return fmt.Errorf("AP 不支持全局组播配置")
-		}
-		if (x.Snooping || x.Query) && !ap.HasCapability(43) {
-			return fmt.Errorf("AP 不支持按无线服务配置组播")
-		}
-		if x.ConfigureGlobal && x.ToUnicast && (!ap.HasCapability(99) || ap.SubCapabilities[99]&1 == 0) {
-			return fmt.Errorf("AP 不支持组播转单播")
-		}
-	}
+	// IGMP is an independent firmware callback, gated by capability43 at
+	// recipient selection (6dba0c/6dbbe8/6d9ef8). Unsupported IGMP must not
+	// veto the ordinary WLAN creation. wirelessExtraElements gates its own
+	// multicast elements and capability99 subfeatures independently.
+
 	if o.MLO && s.Security == "open" {
 		return fmt.Errorf("MLO 无线服务需要加密安全方式")
 	}
@@ -136,6 +130,20 @@ func validateServiceCapability(s Service, ap cweng.APStatus, radio uint8) error 
 	}
 	return nil
 }
+func serviceCapabilityNote(s Service, ap cweng.APStatus) string {
+	x := serviceOptions(s).Multicast
+	if x == nil {
+		return ""
+	}
+	if !ap.HasCapability(43) && (x.ConfigureGlobal || x.Snooping || x.Query) {
+		return "AP 未上报组播配置能力；组播参数不适用，无线服务照常下发"
+	}
+	if x.ConfigureGlobal && x.ToUnicast && (!ap.HasCapability(99) || ap.SubCapabilities[99]&1 == 0) {
+		return "AP 未上报组播转单播能力；该扩展不适用，其余配置照常下发"
+	}
+	return ""
+}
+
 func serviceSecurity(s Service) (byte, []byte) {
 	o := serviceOptions(s)
 	mode := byte(0)

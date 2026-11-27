@@ -18,6 +18,7 @@ func (m *Manager) observeBalanceProbe(ap string, connection time.Time, mac [6]by
 		return
 	}
 	m.balance.Probe(mobility.MAC(mac), ap, time.Now())
+	m.event("balance.discovery", "ap_id", ap, "session", connection, "client", eventMAC(mac), "rule_id", rule.ID)
 }
 
 // mu held. The vendor's discovery/count algorithm lives outside the Web layer.
@@ -41,5 +42,6 @@ func (m *Manager) balanceAdmission(ap string, mac [6]byte, now time.Time) bool {
 			aps[c.APID] = v
 		}
 	}
+	m.event("balance.inputs", "ap_id", ap, "client", eventMAC(mac), "rule", rule, "counts", aps, "policy", mobilityPolicyVersion(m.config))
 	return m.balance.Admit(mobility.MAC(mac), ap, mobility.BalanceRule{Clients: uint32(rule.Clients), Difference: uint32(rule.Difference), MaxFailures: uint32(rule.MaxFailures)}, aps, now)
 }

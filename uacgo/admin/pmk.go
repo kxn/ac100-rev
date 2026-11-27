@@ -18,6 +18,7 @@ func (m *Manager) observePMKTransition(ev cweng.ClientTransition) {
 		return
 	}
 	m.pmkTransitions[ev.MAC] = ev.Sequence
+	m.event("client.transition", "client", eventMAC(ev.MAC), "transition", ev.Kind, "ap_id", ev.AP, "service_id", ev.ServiceID, "at", ev.At, "sequence", ev.Sequence)
 	if ev.Kind == "disconnected" {
 		m.pmks.Disconnect(mobility.MAC(ev.MAC), ev.At)
 		m.stationStatistics.Disconnect(mobility.MAC(ev.MAC), ev.At)
@@ -46,6 +47,7 @@ func (m *Manager) handlePMK(ap string, connection time.Time, special bool, reque
 	}
 	mac := mobility.MAC(request.MAC)
 	now := time.Now()
+	m.event("pmk.request", "ap_id", ap, "session", connection, "client", eventMAC(mac), "operation", request.Operation, "special", special, "radio", request.Radio, "wlan", request.WLAN, "service_id", service)
 	if request.Operation == 0 {
 		if service == "" {
 			return nil
@@ -54,6 +56,7 @@ func (m *Manager) handlePMK(ap string, connection time.Time, special bool, reque
 		return nil
 	}
 	key, result := m.pmks.Lookup(mac, service, now)
+	m.event("pmk.lookup", "ap_id", ap, "client", eventMAC(mac), "service_id", service, "result", result, "special", special)
 	request.Operation, request.Result = 2, result
 	if result == 0 {
 		request.PMKR0, request.PMKR0Name = key.Key, key.Name
@@ -71,6 +74,7 @@ func (m *Manager) queueStationRelease(station cweng.ClientEvent) {
 	if !ok || !ap.Online || station.RadioID == 0 || station.Seen.Before(ap.ConnectedAt) || (!station.Connection.IsZero() && !station.Connection.Equal(ap.ConnectedAt)) {
 		return
 	}
+	m.event("pmk.release", "ap_id", station.APID, "client", eventMAC(station.MAC), "radio", station.RadioID, "session", ap.ConnectedAt)
 	value := (capwap.DeleteStation{RadioID: station.RadioID, MAC: station.MAC[:]}).AssembleValue()
 	ticket, err := m.engine.QueueAP(context.Background(), ap, 25, []capwap.Element{{Type: 0x12, Value: value}})
 	finish := func(err error) {

@@ -118,6 +118,7 @@ func (m *Manager) observeStationStatistics(ap string, connection time.Time, r ca
 	if !knownStation {
 		return
 	}
+	m.event("client.statistics", "ap_id", ap, "session", connection, "client", eventMAC(r.MAC), "statistics", r)
 	m.stationStatistics.Observe(mobility.MAC(r.MAC), radioBand(known, r.Radio), r.SupportWord, int8(r.Bandwidth))
 	m.stationStatistics.ObserveActivity(mobility.MAC(r.MAC), r.UpstreamKbps, r.DownstreamKbps)
 
@@ -129,6 +130,7 @@ func (m *Manager) observeAPStatistics(ap string, connection time.Time, stats cap
 	if !ok || !known.Online || known.ConnectedAt != connection {
 		return
 	}
+	m.event("ap.radio_statistics", "ap_id", ap, "session", connection, "radios", stats.Radios, "vaps", stats.VAPs)
 	known.VAPStatistics = cweng.MergeVAPStatistics(known.VAPStatistics, stats.VAPs, known.Radios)
 	locations := []capwap.BSSIDLocation{}
 	validVAPs := []capwap.APVAPStatistics{}
@@ -175,6 +177,7 @@ func (m *Manager) observeRSSIStatistics(ap string, connection time.Time, stats c
 	if !ok || !known.Online || known.ConnectedAt != connection {
 		return
 	}
+	m.event("client.rssi_statistics", "ap_id", ap, "session", connection, "statistics", stats)
 	for i, r := range known.RadioStatistics {
 		if r.Radio > 0 && r.Radio <= 8 {
 			known.RadioStatistics[i].ChannelLoad = stats.ChannelLoad[r.Radio-1]

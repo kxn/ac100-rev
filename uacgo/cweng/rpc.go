@@ -31,7 +31,10 @@ func (e *Engine) RegisterRPCHandlers() {
 		return true
 	})
 }
-func (e *Engine) RequestJSON(ctx context.Context, id string, body json.RawMessage) (json.RawMessage, error) {
+func (e *Engine) RequestJSON(ctx context.Context, id string, body json.RawMessage) (response json.RawMessage, resultErr error) {
+	defer func() {
+		e.Events.Context(ctx, "native_model.completed", "ap_id", id, "request_bytes", len(body), "response_bytes", len(response), "error", errorText(resultErr))
+	}()
 	if !json.Valid(body) || len(body) > 4096 {
 		return nil, fmt.Errorf("invalid AP JSON request")
 	}
@@ -52,6 +55,7 @@ func (e *Engine) RequestJSON(ctx context.Context, id string, body json.RawMessag
 		s.rpcSeq++
 	}
 	seq := s.rpcSeq
+	e.Events.Context(ctx, "native_model.requested", "ap_id", id, "session", s.Created, "transaction", seq, "request_bytes", len(body))
 	ch := make(chan []byte, 1)
 	s.rpc[seq] = ch
 	s.mu.Unlock()

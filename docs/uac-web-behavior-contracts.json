@@ -467,7 +467,7 @@
       "id": "vlan-multicast",
       "feature": "wlan",
       "origin": "firmware",
-      "behavior": "无线 VLAN 池、组播列表的参数、能力分支、移除报文。",
+      "behavior": "无线 VLAN 池、组播列表的参数、能力分支、移除报文；IGMP 独立按能力选择接收 AP，不阻断基础 WLAN。",
       "sources": [
         {
           "kind": "lua",
@@ -482,6 +482,34 @@
           "entry": "check_igmp_ip_list",
           "path": "usr/lib/lua/luci/controller/admin/apmng_wserv.lua",
           "sha256": "e5a5d8996de7a786b1bf80363249675beb1f7ce7c4bf5625b0c9ffd2111b9331"
+        },
+        {
+          "kind": "uac",
+          "name": "_uac_wserv_packet_send_callback",
+          "address": "0x006dbd74",
+          "size": 11016,
+          "sha256": "c774ded44de2962fbf13f86773b20a1abec641d0acf83543ffffeef3e2da5fbf"
+        },
+        {
+          "kind": "uac",
+          "name": "_uac_wserv_igmp_snooping_switch_to_ap",
+          "address": "0x006dba0c",
+          "size": 476,
+          "sha256": "0d6ee5aafbfcf3969d1e2b157968e04a3a5de1756a12d89fd38af0b71dc4b548"
+        },
+        {
+          "kind": "uac",
+          "name": "_uac_wserv_igmp_query_switch_to_ap",
+          "address": "0x006dbbe8",
+          "size": 396,
+          "sha256": "2e4171e839d6f955dfccb8bab0215f23f0136b6409415f3815f803fb72c20af4"
+        },
+        {
+          "kind": "uac",
+          "name": "_uac_wserv_igmp_snooping_parameter_to_ap",
+          "address": "0x006d9ef8",
+          "size": 1212,
+          "sha256": "6deb7fc2a0c47c472c8f4f0c3a3fca1151b2417068593d5529a7958006777cfb"
         }
       ],
       "implementation": [
@@ -492,6 +520,14 @@
         {
           "path": "uacgo/admin/multicast_groups.go",
           "symbol": "validateMulticastGroups"
+        },
+        {
+          "path": "uacgo/admin/service_advanced.go",
+          "symbol": "validateServiceCapability"
+        },
+        {
+          "path": "uacgo/admin/service_advanced.go",
+          "symbol": "wirelessExtraElements"
         }
       ],
       "tests": [
@@ -506,6 +542,10 @@
         {
           "path": "uacgo/admin/multicast_groups_test.go",
           "name": "TestMulticastListWireAndRemovalThroughUDP"
+        },
+        {
+          "path": "uacgo/admin/reconcile_integration_test.go",
+          "name": "TestUnsupportedIGMPDoesNotBlockWirelessService"
         }
       ]
     },

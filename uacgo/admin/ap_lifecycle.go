@@ -10,6 +10,9 @@ import (
 func (m *Manager) observeAPState(ap cweng.APStatus) {
 	m.mu.Lock()
 	old, exists := m.known[ap.ID]
+	if !exists || old.Online != ap.Online || old.State != ap.State || !old.ConnectedAt.Equal(ap.ConnectedAt) {
+		m.event("ap.lifecycle", "ap_id", ap.ID, "session", ap.ConnectedAt, "online", ap.Online, "state", ap.State, "previous_state", old.State, "model", ap.Model, "hardware", ap.HardwareVersion, "ip", ap.LocalIP, "remote", ap.Address, "entry_id", ap.EntryID, "capabilities", ap.GeneralCapabilities, "sub_capabilities", ap.SubCapabilities, "radios", ap.Capabilities)
+	}
 	if exists && old.ConnectedAt.After(ap.ConnectedAt) {
 		m.mu.Unlock()
 		return

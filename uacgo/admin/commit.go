@@ -69,13 +69,14 @@ func (m *Manager) commitAP(ctx context.Context, ap cweng.APStatus, cfg Config) {
 				m.settledVersions = map[string]uint64{}
 			}
 			m.settledVersions[ap.ID] = cfg.Version
+			m.event("configuration.settled", "ap_id", ap.ID, "session", ap.ConnectedAt, "config_version", cfg.Version, "meaning", "commit_ack_and_settlement_timer_elapsed; requesting fresh telemetry")
 			m.mu.Unlock()
 			_ = m.reportAction(ctx, ap.ID, "off", "stop_report")
 			_ = m.requestTelemetry(ctx, ap.ID)
 		}
 		return
 	}
-	err := m.checkpoint(ctx, ap.ID, snapshot)
+	err := m.checkpoint(m.itemContext(ctx, "configuration-commit"), ap.ID, snapshot)
 	state := ApplyStatus{AP: ap.ID, Service: "configuration-commit", State: "acknowledged", At: time.Now()}
 	if err != nil {
 		state.State = "failed"

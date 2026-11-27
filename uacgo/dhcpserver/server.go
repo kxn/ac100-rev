@@ -12,26 +12,32 @@ import (
 	"path/filepath"
 	"sync"
 	"time"
+	"uacgo/internal/eventlog"
 )
 
 type Config struct {
-	Interface    string   `json:"interface"`
-	Server       string   `json:"server"`
-	Start        string   `json:"start"`
-	End          string   `json:"end"`
-	Netmask      string   `json:"netmask"`
-	Gateway      string   `json:"gateway,omitempty"`
-	DNS          []string `json:"dns,omitempty"`
-	AC           []string `json:"ac"`
-	LeaseSeconds uint32   `json:"lease_seconds"`
-	LeaseFile    string   `json:"lease_file,omitempty"`
+	Reservations map[string]string `json:"reservations,omitempty"`
+	Interface    string            `json:"interface"`
+	Server       string            `json:"server"`
+	Start        string            `json:"start"`
+	End          string            `json:"end"`
+	Netmask      string            `json:"netmask"`
+	Gateway      string            `json:"gateway,omitempty"`
+	DNS          []string          `json:"dns,omitempty"`
+	AC           []string          `json:"ac"`
+	LeaseSeconds uint32            `json:"lease_seconds"`
+	LeaseFile    string            `json:"lease_file,omitempty"`
 }
 type Lease struct {
+	MAC     string    `json:"mac,omitempty"`
 	IP      string    `json:"ip"`
 	Expires time.Time `json:"expires"`
 	Bound   bool      `json:"bound"`
 }
 type Server struct {
+	Events     *eventlog.Log
+	reserved   map[string]uint32
+	owners     map[uint32]string
 	mu         sync.Mutex
 	cfg        Config
 	leases     map[string]Lease
@@ -88,6 +94,27 @@ func New(c Config) (*Server, error) {
 		}
 	}
 	s := &Server{cfg: c, leases: map[string]Lease{}, now: time.Now, start: lo, end: hi, network: network, mask: mask}
+	s.reserved = map[string]uint32{}
+	s.owners = map[uint32]string{}
+	for raw, address := range c.Reservations {
+		mac, err := net.ParseMAC(raw)
+		if err != nil || len(mac) != 6 || mac[0]&1 != 0 || bytes.Equal(mac, make([]byte, 6)) {
+			return nil, fmt.Errorf("invalid DHCP reservation MAC")
+		}
+		ip, err := ipnum(address)
+		if err != nil || !s.usable(ip) {
+			return nil, fmt.Errorf("reservation is outside usable AP pool")
+		}
+		key := hex.EncodeToString(mac)
+		if _, ok := s.reserved[key]; ok {
+			return nil, fmt.Errorf("duplicate DHCP reservation MAC")
+		}
+		if _, ok := s.owners[ip]; ok {
+			return nil, fmt.Errorf("duplicate DHCP reservation IP")
+		}
+		s.reserved[key], s.owners[ip] = ip, key
+	}
+
 	if c.LeaseFile != "" {
 		b, err := os.ReadFile(c.LeaseFile)
 		if err == nil {
@@ -148,12 +175,21 @@ func (s *Server) usable(ip uint32) bool {
 	}
 	return true
 }
-func (s *Server) free(ip uint32, key string) bool {
+func (s *Server) free(ip uint32, key, mac string) bool {
+	if owner, ok := s.owners[ip]; ok && owner != mac {
+		return false
+	}
+	if fixed, ok := s.reserved[mac]; ok && fixed != ip {
+		return false
+	}
 	if !s.usable(ip) {
 		return false
 	}
 	for k, l := range s.leases {
 		if k != key && l.IP == numip(ip) && l.Expires.After(s.now()) {
+			if fixed, ok := s.reserved[mac]; ok && fixed == ip && l.MAC == mac {
+				continue
+			}
 			return false
 		}
 	}
@@ -210,6 +246,8 @@ func (s *Server) Handle(b []byte) ([]byte, error) {
 	if typ != 1 && typ != 3 && typ != 4 && typ != 7 && typ != 8 {
 		return nil, nil
 	}
+	mac := hex.EncodeToString(b[28:34])
+	s.Events.Event("dhcp.ap_request", "mac", net.HardwareAddr(b[28:34]).String(), "message_type", typ, "transaction", binary.BigEndian.Uint32(b[4:8]), "ciaddr", net.IP(b[12:16]).String(), "selected_server", net.IP(opts[54]).String(), "mesh_detect", meshDetect)
 	server := net.ParseIP(s.cfg.Server).To4()
 	if v := opts[54]; v != nil && (len(v) != 4 || !bytes.Equal(v, server)) {
 		return nil, nil
@@ -254,41 +292,45 @@ func (s *Server) Handle(b []byte) ([]byte, error) {
 	} else {
 		if typ == 1 {
 			response = 2
-			if l, ok := s.leases[key]; ok {
+			if fixed, ok := s.reserved[mac]; ok {
+				address = fixed
+			} else if l, ok := s.leases[key]; ok {
 				address, _ = ipnum(l.IP)
 			}
-			if address == 0 && s.free(requested, key) {
+			if address == 0 && s.free(requested, key, mac) {
 				address = requested
 			}
-			if !s.free(address, key) {
+			if !s.free(address, key, mac) {
 				address = 0
 			}
 			if address == 0 {
 				for n := s.start; n <= s.end; n++ {
-					if s.free(n, key) {
+					if s.free(n, key, mac) {
 						address = n
 						break
 					}
 				}
 			}
 		} else {
-			if !s.free(requested, key) {
+			if !s.free(requested, key, mac) {
 				return nil, nil
 			}
 			address = requested
 		}
 		if address == 0 {
+			s.Events.Event("dhcp.no_available_address", "mac", net.HardwareAddr(b[28:34]).String(), "requested", numip(requested), "reserved", numip(s.reserved[mac]))
 			return nil, nil
 		}
 		expiry := now.Add(time.Duration(s.cfg.LeaseSeconds) * time.Second)
 		if typ == 1 {
 			expiry = now.Add(time.Minute)
 		}
-		s.leases[key] = Lease{IP: numip(address), Expires: expiry, Bound: typ == 3}
+		s.leases[key] = Lease{MAC: mac, IP: numip(address), Expires: expiry, Bound: typ == 3}
 		if err := s.persist(); err != nil {
 			return nil, err
 		}
 	}
+	s.Events.Event("dhcp.ap_reply", "mac", net.HardwareAddr(b[28:34]).String(), "message_type", response, "address", numip(address), "ac", s.cfg.AC, "lease_seconds", s.cfg.LeaseSeconds)
 	out := make([]byte, 240)
 	out[0] = 2
 	out[1] = 1

@@ -9,6 +9,7 @@ type MAC [6]byte
 // Balance follows balance_db_dis_sta_check @0x004f6f54. RSSI is an AP-side
 // discovery filter (private 0x3e), not a second controller admission predicate.
 type Balance struct {
+	Observe   func(MAC, BalanceDecision)
 	stations  map[MAC]*discovery
 	nextSweep time.Time
 }
@@ -112,21 +113,36 @@ func (b *Balance) Expire(now time.Time) {
 func (b *Balance) Admit(mac MAC, ap string, rule BalanceRule, aps map[string]APCount, now time.Time) bool {
 	b.Tick(now)
 	d := b.stations[mac]
+	var before uint32
+	if d != nil {
+		before = d.failures
+	}
+	finish := func(allowed bool, reason, target string) bool {
+		if b.Observe != nil {
+			event := BalanceDecision{Allowed: allowed, Reason: reason, Source: ap, Target: target, FailuresBefore: before}
+			if d != nil {
+				event.FailuresAfter = d.failures
+				event.LastReject = d.lastReject
+			}
+			b.Observe(mac, event)
+		}
+		return allowed
+	}
 	if d == nil {
-		return true
+		return finish(true, "no_discovery_record", "")
 	}
 	if now.Before(d.lastReject) || now.Sub(d.lastReject) >= time.Minute {
 		d.failures = 0
 	}
 	if d.failures+1 > rule.MaxFailures {
-		return true
+		return finish(true, "rejection_limit_exceeded", "")
 	}
 	source, exists := aps[ap]
 	if !exists {
-		return false
+		return finish(false, "source_missing", "")
 	}
 	if source.Clients < rule.Clients {
-		return true
+		return finish(true, "below_client_threshold", "")
 	}
 	for _, p := range d.probes {
 		target, ok := aps[p.ap]
@@ -136,8 +152,8 @@ func (b *Balance) Admit(mac MAC, ap string, rule BalanceRule, aps map[string]APC
 		if target.Clients < source.Clients && source.Clients-target.Clients >= rule.Difference {
 			d.failures++
 			d.lastReject = now
-			return false
+			return finish(false, "less_loaded_discovered_ap", p.ap)
 		}
 	}
-	return true
+	return finish(true, "no_eligible_less_loaded_ap", "")
 }

@@ -14,27 +14,31 @@ func (m *Manager) checkAssociation(ap string, radio, wlan uint8, mac [6]byte, rs
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	unavailable, balanceRejected := admissionResultCodes(m.config)
+	finish := func(code uint32, reason string) uint32 {
+		m.event("client.admission", "ap_id", ap, "session", m.known[ap].ConnectedAt, "radio", radio, "wlan", wlan, "client", eventMAC(mac), "rssi", rssi, "mlo", mlo, "policy", mobilityPolicyVersion(m.config), "config_version", m.config.Version, "result_code", code, "reason", reason)
+		return code
+	}
 	if mlo != nil && len(mlo.Links) > 0 {
 		radio = mlo.Links[0].Radio
 		wlan = mlo.Links[0].WLAN
 	}
 	if !m.admitStationLocked(ap, radio, wlan) {
-		return unavailable
+		return finish(unavailable, "service_radio_or_binding_unavailable")
 	}
 	if mac == [6]byte{} || mac[0]&1 != 0 {
-		return 0x25
+		return finish(0x25, "invalid_station_mac")
 	}
 	if mlo != nil {
 		for _, link := range mlo.Links {
 			if !m.admitStationLocked(ap, link.Radio, link.WLAN) {
-				return unavailable
+				return finish(unavailable, "service_radio_or_binding_unavailable")
 			}
 		}
 	}
 	now := time.Now()
 	service := m.serviceForSlotLocked(ap, radio, wlan)
 	if service == nil {
-		return unavailable
+		return finish(unavailable, "service_radio_or_binding_unavailable")
 	}
 	rejected := false
 	if mlo != nil {
@@ -52,22 +56,22 @@ func (m *Manager) checkAssociation(ap string, radio, wlan uint8, mac [6]byte, rs
 		rejected = true
 	}
 	if rejected {
-		return balanceRejected
+		return finish(balanceRejected, "balance_rejected")
 	}
 	// MLO peer records enforce per-radio capacity. The MLD container is
 	// not an extra radio client (wsta_db_sta_assoc @758cf8, flags1/0).
 	if mlo != nil {
 		for _, link := range mlo.Links {
 			if link.MAC != mlo.MAC && !m.radioCapacityLocked(ap, link.Radio, link.MAC) {
-				return 0x11
+				return finish(0x11, "radio_capacity_reached")
 			}
 		}
-		return 0
+		return finish(0, "allowed")
 	}
 	if !m.radioCapacityLocked(ap, radio, mac) {
-		return 0x11
+		return finish(0x11, "radio_capacity_reached")
 	}
-	return 0
+	return finish(0, "allowed")
 }
 func (m *Manager) radioCapacityLocked(ap string, radio uint8, mac [6]byte) bool {
 	limit := m.radioCapacityLimitLocked(ap, radio)
@@ -125,5 +129,7 @@ func (m *Manager) admitStationLocked(ap string, radio, wlan uint8) bool {
 func (m *Manager) observeAssociation(ap string, radio, wlan uint8, mac [6]byte) bool {
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	return m.admitStationLocked(ap, radio, wlan) && m.radioCapacityLocked(ap, radio, mac)
+	allowed := m.admitStationLocked(ap, radio, wlan) && m.radioCapacityLocked(ap, radio, mac)
+	m.event("client.inventory_admission", "ap_id", ap, "client", eventMAC(mac), "radio", radio, "wlan", wlan, "allowed", allowed, "balance_evaluated", false)
+	return allowed
 }

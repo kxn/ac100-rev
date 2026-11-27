@@ -238,6 +238,7 @@ func (m *Manager) observeRRMReport(ap string, connection time.Time, report capwa
 			if q, ok := run.requests[i]; ok {
 				q.received = true
 			}
+			m.event("rrm.measurement_report", "job_id", id, "policy", job.Rule.strategyVersion(), "ap_id", ap, "session", connection, "radio", report.A, "round", run.round, "neighbors", report.Neighs)
 			run.ingest(i, report.Neighs, run.round > 1)
 			run.projectV4Mesh(i, report.Neighs, m.config, m.known)
 			m.wakeRRMLocked()
@@ -259,7 +260,10 @@ func (m *Manager) dispatchRRMCommandsLocked(job *RRMJob, run *rrmRun) {
 			if p, err := capwap.ParsePrivNdpPara(element.Value[10:]); err == nil {
 				run.levels[i] = firmware.LevelForPower(p.U8e, uint8(n.Cap.MaxPower), uint8(n.Cap.MinPower))
 			}
-			ticket, err := m.engine.QueueAP(context.Background(), n.AP, 7, []capwap.Element{element})
+			ctx := m.commandContext(context.Background(), n.AP, job.BaseVersion, "rrm_measurement")
+			ctx = m.itemContext(ctx, job.ID)
+			m.event("rrm.measurement_requested", "job_id", job.ID, "policy", job.Rule.strategyVersion(), "ap_id", n.AP.ID, "radio", n.Cap.RadioID, "round", run.round, "channel", q.channel)
+			ticket, err := m.engine.QueueAP(ctx, n.AP, 7, []capwap.Element{element})
 			if err != nil {
 				delete(run.requests, i) // original count increases only on successful queueing
 				m.status[n.AP.ID+"/rrm-measurement"] = ApplyStatus{AP: n.AP.ID, Service: "rrm-measurement", State: "failed", Error: err.Error(), At: time.Now()}

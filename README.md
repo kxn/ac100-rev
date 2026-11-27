@@ -67,6 +67,14 @@ AP capabilities, wire constraints and firmware roaming/RRM policies remain
 separate from these budgets.
 
 
+## Field logs and handover
+
+See [the field log and troubleshooting guide](docs/field-observability.md) for
+command correlation, V4/V6 roaming decisions, actual dispatch evidence,
+known failure patterns, read-only queries and the persistent observer.
+Real network logs, captures, identities and backup data remain private;
+the guide uses anonymized cases and synthetic addresses.
+
 ## Original AC backup migration
 
 `go -C uacgo run ./cmd/acconvert` converts an original encrypted AC export

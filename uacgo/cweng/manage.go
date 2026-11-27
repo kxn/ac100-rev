@@ -9,6 +9,7 @@ import (
 	"sort"
 	"time"
 	"uacgo/capwap"
+	"uacgo/internal/eventlog"
 )
 
 type APStatus struct {
@@ -161,7 +162,7 @@ func (e *Engine) Request(ctx context.Context, id string, kind uint32, elements [
 	if s == nil {
 		return CommandResult{}, errors.New("AP is offline")
 	}
-	return e.requestSession(ctx, s, kind, elements)
+	return e.requestSession(eventlog.With(ctx, "request_ap", id), s, kind, elements)
 }
 
 func (e *Engine) requestOnSession(ctx context.Context, s *Session, p *capwap.ParsedPacket, elements []capwap.Element) (CommandResult, error) {
@@ -228,6 +229,7 @@ func (e *Engine) executeOnSession(ctx context.Context, s *Session, p *capwap.Par
 	defer func() { s.mu.Lock(); delete(s.pending, seq); s.mu.Unlock() }()
 	packet := p.Assemble()
 	for i := 0; i < 3; i++ {
+		e.Events.Context(ctx, "command.transmit", "sequence", seq, "attempt", i+1, "bytes", len(packet))
 		s.mu.Lock()
 		err := e.sendSession(s, packet)
 		s.mu.Unlock()
@@ -238,6 +240,7 @@ func (e *Engine) executeOnSession(ctx context.Context, s *Session, p *capwap.Par
 		select {
 		case result := <-pending.done:
 			timer.Stop()
+			e.Events.Context(ctx, "command.response", "sequence", seq, "response_type", result.Type, "result_code", result.Result)
 			s.mu.Lock()
 			dead := s.dead
 			s.mu.Unlock()
@@ -258,20 +261,21 @@ func (e *Engine) executeOnSession(ctx context.Context, s *Session, p *capwap.Par
 			timer.Stop()
 			return CommandResult{}, errors.New("AP transport closed")
 		case <-timer.C:
+			e.Events.Context(ctx, "command.retry_timeout", "sequence", seq, "attempt", i+1)
 		}
 	}
 	return CommandResult{}, errors.New("AP acknowledgement timeout")
 }
-func (s *Session) acknowledge(req *capwap.ParsedPacket) {
+func (s *Session) acknowledge(req *capwap.ParsedPacket) (bool, string) {
 	p := s.pending[req.Control.SeqNum]
 	if p == nil || p.expected != req.Control.MsgType {
-		return
+		return false, "no_pending_or_wrong_type"
 	}
 	result := CommandResult{Status: "acknowledged", Type: req.Control.MsgType, Sequence: req.Control.SeqNum}
 	for _, el := range req.Elements {
 		if el.Type == 0x21 {
 			if len(el.Value) != 4 || result.Result != nil {
-				return
+				return false, "malformed_result_code"
 			}
 			v := binary.BigEndian.Uint32(el.Value)
 			result.Result = &v
@@ -280,11 +284,13 @@ func (s *Session) acknowledge(req *capwap.ParsedPacket) {
 	// Both configuration response families used by the AC require exactly one
 	// Result Code. Empty/malformed replies must never turn a write into success.
 	if (req.Control.MsgType == 8 || req.Control.MsgType == capwap.MsgIe2) && result.Result == nil {
-		return
+		return false, "missing_result_code"
 	}
 	select {
 	case p.done <- result:
+		return true, "matched"
 	default:
+		return false, "duplicate_response"
 	}
 }
 

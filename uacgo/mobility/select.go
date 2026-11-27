@@ -13,6 +13,7 @@ type Candidate struct {
 }
 
 type Selection struct {
+	Observe                          SelectionObserver
 	CurrentRSSI                      int8
 	CurrentRate                      int
 	ThresholdType2G, ThresholdType5G int
@@ -94,24 +95,41 @@ func (s Selection) Select(neighbors []Candidate) []Candidate {
 	selected := []Candidate{}
 	current := s.CurrentRate & 0xffff
 	lastBand := 0
-	for _, n := range rows {
+	for rank, n := range rows {
 		lastBand = n.Band
 		maxLoad := MaxLoad2G
 		if n.Band == 1 {
 			maxLoad = MaxLoad5G
 		}
 		if n.RSSI < s.threshold(n.Band) || int(n.Load) > maxLoad || n.Rate == -1 || n.Rate < current+current/5 || n.Rate <= current+19 {
+			if s.Observe != nil {
+				reason := "rate_gain_absolute"
+				switch {
+				case n.RSSI < s.threshold(n.Band):
+					reason = "rssi_threshold"
+				case int(n.Load) > maxLoad:
+					reason = "channel_load"
+				case n.Rate == -1:
+					reason = "unknown_rate"
+				case n.Rate < current+current/5:
+					reason = "rate_gain_twenty_percent"
+				}
+				traceSelection(s.Observe, "rejected", reason, n, rank)
+			}
 			continue
 		}
 		if len(selected) >= MaxCandidates {
+			traceSelection(s.Observe, "limited", "four_candidate_limit", n, rank)
 			break
 		}
 		selected = append(selected, n)
+		traceSelection(s.Observe, "selected", "rate_load_rssi_pass", n, rank)
 	}
 	// 0x004e5cd4 reads the last radio entry's band. This is intentionally not
 	// "corrected" to the first candidate's band; that would differ from V6.
 	if len(selected) == 0 && s.CurrentRSSI < -85 && len(rows) > 0 && rows[0].RSSI > s.threshold(lastBand) {
 		selected = append(selected, rows[0])
+		traceSelection(s.Observe, "selected", "weak_rssi_fallback_uses_last_band", rows[0], 0)
 	}
 	return selected
 }

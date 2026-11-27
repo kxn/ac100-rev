@@ -41,6 +41,7 @@ func (m *Manager) requestTelemetry(ctx context.Context, id string) error {
 }
 
 func (m *Manager) reportAction(ctx context.Context, id, enable, action string) error {
+	ctx = m.itemContext(ctx, "telemetry:"+action)
 	body := []byte(fmt.Sprintf(`{"method":"do","nms_report":{"nms_report_action":{"type":"all","enable":"%s","action":"%s"}}}`, enable, action))
 	value := binary.BigEndian.AppendUint32(nil, 1)
 	value = binary.BigEndian.AppendUint32(value, uint32(len(body)))

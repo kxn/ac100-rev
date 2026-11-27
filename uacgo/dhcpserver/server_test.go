@@ -156,3 +156,43 @@ func TestLeaseExpiryAndPoolExhaustion(t *testing.T) {
 		t.Fatal("unexpected lease")
 	}
 }
+
+func TestReservationsSurviveClientIDChangesAndExcludeOrdinaryClients(t *testing.T) {
+	cfg := testServer(t).cfg
+	cfg.Reservations = map[string]string{"02:00:00:00:00:01": "192.0.2.52", "02:00:00:00:00:02": "192.0.2.51"}
+	s, err := New(cfg)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, item := range []struct {
+		mac byte
+		ip  byte
+	}{{2, 51}, {3, 50}, {1, 52}} {
+		offer, err := s.Handle(request(1, "TP-LINK", item.mac))
+		if err != nil || offer == nil || offer[19] != item.ip {
+			t.Fatalf("reservation %d: %v %v", item.mac, offer, err)
+		}
+	}
+	if reply, _ := s.Handle(request(1, "MSFT 5.0", 1)); reply != nil {
+		t.Fatal("reservation bypassed AP-only filter")
+	}
+	if reply, _ := s.Handle(request(3, "TP-LINK", 1, 50, 4, 192, 0, 2, 50)); reply != nil {
+		t.Fatal("fixed AP accepted another address")
+	}
+	for _, id := range []byte{5, 6} {
+		ack, err := s.Handle(request(3, "TP-LINK", 1, 50, 4, 192, 0, 2, 52, 61, 1, id))
+		if err != nil || ack == nil || ack[19] != 52 {
+			t.Fatal("MAC reservation changed with client identifier", err)
+		}
+	}
+	s, err = New(cfg)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if offer, _ := s.Handle(request(1, "TP-LINK", 1)); offer == nil || offer[19] != 52 {
+		t.Fatal("reservation lost across restart")
+	}
+	if offer, _ := s.Handle(request(1, "TP-LINK", 4)); offer != nil {
+		t.Fatal("dynamic AP stole a reserved address")
+	}
+}

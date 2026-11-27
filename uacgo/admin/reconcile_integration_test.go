@@ -455,3 +455,39 @@ func TestBasicRadioReenableRecreatesVAP(t *testing.T) {
 		t.Fatal("ON restored radio without recreating WLAN")
 	}
 }
+
+// V6 6dba0c/6dbbe8 select IGMP recipients by capability43 independently
+// of the WLAN queue (6dbd74). Missing optional IGMP cannot veto WLANs.
+func TestUnsupportedIGMPDoesNotBlockWirelessService(t *testing.T) {
+	m, e := testController(t)
+	f, ap := newDeferredAP(t, e)
+	ap.GeneralCapabilities = nil
+	s := Service{ID: "office", SSID: "Office", Security: "open", Enabled: true, Radios: []uint8{1, 2}}
+	o := serviceOptions(s)
+	o.Multicast = &MulticastOptions{ConfigureGlobal: true, GlobalSnooping: true, Snooping: true, Query: true, ToUnicast: true, Rate2G: 1, Rate5G: 6, QueryInterval: 60, MaxResponse: 10}
+	s.Options = &o
+	cfg := Config{Services: []Service{s}}
+	m.config = cfg
+	ctx, cancel := context.WithTimeout(cweng.PinAP(context.Background(), ap), 5*time.Second)
+	defer cancel()
+	m.reconcileAP(ctx, ap, cfg)
+	st := m.status[ap.ID+"/office"]
+	if st.State != "acknowledged" || st.Reason == "" {
+		t.Fatal("optional IGMP blocked WLAN or was hidden", st)
+	}
+	f.mu.Lock()
+	defer f.mu.Unlock()
+	if f.active[[2]byte{1, 1}] != "Office" || f.active[[2]byte{2, 1}] != "Office" {
+		t.Fatal("WLAN not committed on both radios", f.active)
+	}
+	for _, p := range f.packets {
+		for _, el := range p.Elements {
+			if el.Type == 0x25 && len(el.Value) >= 10 {
+				kind := binary.BigEndian.Uint16(el.Value[6:])
+				if kind >= 0x70 && kind <= 0x74 || kind == 0xc9 {
+					t.Fatalf("unsupported IGMP emitted: %x", kind)
+				}
+			}
+		}
+	}
+}

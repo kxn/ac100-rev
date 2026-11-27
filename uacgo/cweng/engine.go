@@ -13,6 +13,7 @@ import (
 
 	"uacgo/capwap"
 	"uacgo/controllercfg"
+	"uacgo/internal/eventlog"
 	"uacgo/internal/legacydtls"
 )
 
@@ -20,6 +21,8 @@ import (
 // one UDP socket pair (v4+v6 combined in Go), a session table, per-message
 // handler chains registered by the subsystems, and the session FSM.
 type Engine struct {
+	Events         *eventlog.Log
+	commandID      atomic.Uint64
 	outboundMu     sync.Mutex
 	outbound       map[*Session]*commandQueue
 	apdb           *APDB
@@ -291,6 +294,7 @@ func (e *Engine) handleDatagram(raw []byte, addr *net.UDPAddr) {
 			_ = e.sendRaw(addr, append([]byte{1, 0, 0, 0}, b...))
 		}
 		if err != nil {
+			e.Events.Event("transport.dtls_error", "remote", addr.String(), "error", err.Error())
 			log.Printf("DTLS %s: %v", addr, err)
 			return
 		}
@@ -337,6 +341,9 @@ func (e *Engine) handlePlainDatagram(raw []byte, addr *net.UDPAddr) {
 		return
 	}
 	msgType := req.Control.MsgType
+	if e.Events.Enabled() && msgType != 13 && msgType != 14 {
+		e.Events.Event("capwap.received", "remote", addr.String(), "message_type", msgType, "sequence", req.Control.SeqNum, "elements", elementSummary(req.Elements))
+	}
 	if debugEngine || e.Debug {
 		log.Printf("[ENG] recv msg=%d seq=%d from %s", msgType, req.Control.SeqNum, addr)
 	}
@@ -410,6 +417,7 @@ func (e *Engine) handlePlainDatagram(raw []byte, addr *net.UDPAddr) {
 		}
 		s.apEntry = ap
 		if !e.registerSession(s) {
+			e.Events.Event("ap.session_rejected", "ap_id", id, "remote", addr.String(), "reason", "session_capacity")
 			s.mu.Lock()
 			s.teardown()
 			s.mu.Unlock()
@@ -437,6 +445,12 @@ func (e *Engine) handleSessionPacket(s *Session, req *capwap.ParsedPacket, raw [
 	if debugEngine || e.Debug {
 		log.Printf("[ENG] session pkt msg=%d seq=%d state=%s", req.Control.MsgType, req.Control.SeqNum, StateNames[s.State])
 	}
+	before := s.State
+	defer func() {
+		if before != s.State {
+			e.Events.Event("ap.fsm", "ap_id", sessionID(s), "session", s.Created, "previous", StateNames[before], "state", StateNames[s.State], "message_type", req.Control.MsgType)
+		}
+	}()
 	s.LastSeen = time.Now()
 
 	msgType := req.Control.MsgType
@@ -444,10 +458,12 @@ func (e *Engine) handleSessionPacket(s *Session, req *capwap.ParsedPacket, raw [
 
 	// --- ac_msg_pretreat: illegal-sequence drop ---
 	if isRequestMsg(msgType) && !s.VerifySeqWindow(seq) {
+		e.Events.Event("capwap.ignored", "ap_id", sessionID(s), "sequence", seq, "message_type", msgType, "reason", "sequence_window")
 		return
 	}
 	// --- FSM gate (event 1, arg = msg type) ---
 	if err := s.gate(msgType); err != nil {
+		e.Events.Event("capwap.ignored", "ap_id", sessionID(s), "message_type", msgType, "state", StateNames[s.State], "reason", "fsm_gate", "error", err.Error())
 		return
 	}
 	// Gate passed: this packet replaces the pending response retransmission
@@ -458,6 +474,7 @@ func (e *Engine) handleSessionPacket(s *Session, req *capwap.ParsedPacket, raw [
 	if isRequestMsg(msgType) {
 		// duplicate request with a stored response → re-send it
 		if s.DuplicateReq(seq) {
+			e.Events.Event("capwap.duplicate", "ap_id", sessionID(s), "message_type", msgType, "sequence", seq)
 			rsp := s.LastRspBuf
 			if len(rsp) >= 12 && binary.BigEndian.Uint32(rsp[8:12]) == msgType+1 {
 				e.sendSession(s, rsp)
@@ -488,6 +505,7 @@ func (e *Engine) handleSessionPacket(s *Session, req *capwap.ParsedPacket, raw [
 			log.Printf("[ENG] sending rsp len=%d elements=%d", len(out), len(rsp.Elements))
 		}
 		if err := e.sendSession(s, out); err != nil {
+			e.Events.Event("capwap.response_failed", "ap_id", sessionID(s), "request_type", msgType, "sequence", seq, "error", err.Error())
 			if debugEngine || e.Debug {
 				log.Printf("[ENG] send err: %v", err)
 			}
@@ -499,7 +517,8 @@ func (e *Engine) handleSessionPacket(s *Session, req *capwap.ParsedPacket, raw [
 	}
 
 	// RESPONSE message (even type): dispatch to handlers, then FSM result.
-	s.acknowledge(req)
+	accepted, reason := s.acknowledge(req)
+	e.Events.Event("command.acknowledgement", "ap_id", sessionID(s), "session", s.Created, "message_type", msgType, "sequence", seq, "accepted", accepted, "reason", reason)
 	ctx := &Ctx{Session: s}
 	ok := e.reg.handleMsg(ctx, msgType, req, nil)
 	_ = s.recvResult(0, ok)
@@ -509,6 +528,7 @@ func (e *Engine) handleSessionPacket(s *Session, req *capwap.ParsedPacket, raw [
 // build a Discovery Response (msg 2) via the registered msg-1 handlers and
 // send it; no session state involved.
 func (e *Engine) handleDiscovery(raw []byte, addr *net.UDPAddr) {
+	e.Events.Event("ap.discovery", "remote", addr.String(), "control_ip", net.IP(e.ControlIP[:]).String(), "interface", e.BoundInterface())
 	req, err := capwap.ParsePacket(raw)
 	if err != nil {
 		return

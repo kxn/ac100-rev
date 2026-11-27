@@ -3,6 +3,7 @@ package mobility
 // V4Selection is the active _roaming_nbr_select@4871bc, reached through
 // packet_create@487610. The same-named helper is uncalled in the V6 image.
 type V4Selection struct {
+	Observe                          SelectionObserver
 	CurrentRSSI                      int8
 	CurrentBand, ActualMode          int
 	ThresholdType2G, ThresholdType5G int
@@ -10,7 +11,8 @@ type V4Selection struct {
 	Difference                       uint8
 }
 
-func (s V4Selection) filtered(n Candidate) bool {
+func (s V4Selection) filtered(n Candidate) bool { return s.filterReason(n) != "" }
+func (s V4Selection) filterReason(n Candidate) string {
 	if s.ActualMode == 2 {
 		typ, threshold, load := s.ThresholdType2G, int8(-75), MaxLoad2G
 		if n.Band == 1 {
@@ -22,19 +24,28 @@ func (s V4Selection) filtered(n Candidate) bool {
 				threshold = s.RSSI5G
 			}
 		}
-		if n.RSSI <= threshold || int(n.Load) > load {
-			return true
+		if n.RSSI <= threshold {
+			return "rssi_threshold"
+		}
+		if int(n.Load) > load {
+			return "channel_load"
 		}
 	}
 	adjusted := n.RSSI
 	if s.CurrentBand == 0 && n.Band == 1 {
-		return adjusted < s.CurrentRSSI
+		if adjusted < s.CurrentRSSI {
+			return "directional_rssi_delta"
+		}
+		return ""
 	}
 	adjusted = int8(int(n.RSSI) - int(s.Difference))
 	if s.CurrentBand == 1 && n.Band == 0 {
 		adjusted = int8(int(adjusted) - 5) // DAT7314f0, not the BSTM -10 margin.
 	}
-	return adjusted < s.CurrentRSSI
+	if adjusted < s.CurrentRSSI {
+		return "directional_rssi_delta"
+	}
+	return ""
 }
 
 func (s V4Selection) compare(a, b Candidate) int {
@@ -107,12 +118,20 @@ func (s V4Selection) Select(neighbors []Candidate, admissible func(Candidate) bo
 		} else {
 			firmwareQuickSort(indices, 0, len(indices)-1, compare)
 		}
-		for _, index := range indices {
+		for rank, index := range indices {
 			if len(selected) >= MaxCandidates || excluded[index] {
+				reason := "four_candidate_limit"
+				if excluded[index] {
+					reason = s.filterReason(rows[index])
+				}
+				traceSelection(s.Observe, "stopped", reason, rows[index], rank)
 				break
 			}
 			if admissible(rows[index]) {
 				selected = append(selected, rows[index])
+				traceSelection(s.Observe, "selected", "pseudo_association_allowed", rows[index], rank)
+			} else {
+				traceSelection(s.Observe, "rejected", "pseudo_association_denied", rows[index], rank)
 			}
 		}
 	}

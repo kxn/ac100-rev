@@ -193,7 +193,7 @@ function renderServices() {
         <td>${esc(securityNames[s.security] || s.security)}<small>${[options?.isolate ? "终端隔离" : "", options?.mlo ? "MLO" : ""].filter(Boolean).join(" · ")}</small></td>
         <td>${esc(scope)}<small>${esc(serviceBands(s))}</small></td>
         <td class="num">${options?.vlan_pool ? "VLAN 池 " + options.vlan_pool : options?.vlan ? "VLAN " + options.vlan : "不打标签"}</td>
-        <td>${s.deleting ? statePill("applying") : statePill(state?.state)}${state?.error ? `<small>${esc(state.error)}</small>` : ""}</td>
+        <td>${s.deleting ? statePill("applying") : statePill(state?.state)}${state?.error || state?.reason ? `<small>${esc(state.error || state.reason)}</small>` : ""}</td>
         <td>
           <div class="actions">
             <button type="button" class="text-button" data-edit="${esc(s.id)}" ${s.deleting ? "disabled" : ""}>配置</button>
@@ -284,7 +284,7 @@ function renderRadios() {
             <td class="num">${stats?.channel ?? observed?.channel ?? native?.channel ?? "—"} / ${bandwidth ? esc(bandwidth) + " MHz" : "—"}</td>
             <td class="num">${power != null ? esc(power) + " dBm" : "—"}</td>
             <td>${stats?.channel_load_percent != null ? meterBar(stats.channel_load_percent, "auto") : '<span class="muted">—</span>'}${stats?.noise_floor_dbm != null ? `<small class="num">底噪 ${esc(stats.noise_floor_dbm)} dBm</small>` : ""}</td>
-            <td>${state ? statePill(state.state) : '<span class="pill">等待同步</span>'}${state?.error ? `<small>${esc(state.error)}</small>` : ""}</td>
+            <td>${state ? statePill(state.state) : '<span class="pill">等待同步</span>'}${state?.error || state?.reason ? `<small>${esc(state.error || state.reason)}</small>` : ""}</td>
             <td><button type="button" class="text-button" data-radio="${c.radio_id}" data-radio-ap="${esc(ap.id)}">配置</button></td>
           </tr>`;
         }),

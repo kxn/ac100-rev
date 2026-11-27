@@ -9,7 +9,11 @@ import (
 // radio_or_wserv_cfg_set_check in V6 apmng_rrm.lua protects the RF/WLAN
 // database for the entire business operation. All configuration writers go
 // through this boundary, including imports and inherited group profiles.
-func (m *Manager) persistConfigLocked(next Config, source managementWrite) error {
+func (m *Manager) persistConfigLocked(next Config, source managementWrite) (err error) {
+	priorVersion := m.config.Version
+	defer func() {
+		m.event("configuration.persist", "source", source, "previous_version", priorVersion, "requested_version", next.Version, "stored_version", m.config.Version, "interface", next.Interface, "services", len(next.Services), "radios", len(next.Radios), "policy", mobilityPolicyVersion(next), "configured_mode", configuredMobilityMode(next), "actual_mode", actualMobilityMode(next), "error", eventError(err))
+	}()
 	if err := validateConfig(next); err != nil {
 		return err
 	}

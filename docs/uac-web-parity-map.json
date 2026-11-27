@@ -837,7 +837,11 @@
     "uacgo/jcs/wservice.go": "Legacy UAC/JCS/SQLite research compatibility; no claim of standalone Web feature parity",
     "uacgo/jcs/wservice_rd.go": "Legacy UAC/JCS/SQLite research compatibility; no claim of standalone Web feature parity",
     "uacgo/store/schemas.go": "Legacy UAC/JCS/SQLite research compatibility; no claim of standalone Web feature parity",
-    "uacgo/store/store.go": "Legacy UAC/JCS/SQLite research compatibility; no claim of standalone Web feature parity"
+    "uacgo/store/store.go": "Legacy UAC/JCS/SQLite research compatibility; no claim of standalone Web feature parity",
+    "uacgo/admin/events.go": "Controller observation of actual state transitions and management writes; no new firmware policy",
+    "uacgo/cweng/events.go": "Secret-free transport element metadata; observation only",
+    "uacgo/mobility/diagnostics.go": "Optional observers of existing selector and balance traversal; no independent selection policy",
+    "uacgo/internal/eventlog/log.go": "Bounded asynchronous standalone diagnostic output and trace rotation"
   },
   "limits": [
     "原硬件Flash容量/profile无需逐值复刻；用户已明确采用可编辑的Go程序资源预算。固件中已确认的AP约束、算法常量和时序继续保留。",
