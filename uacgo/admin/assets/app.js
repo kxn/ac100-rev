@@ -1235,7 +1235,13 @@ window.addEventListener("hashchange", () => {
 });
 initializeNavigation();
 showTab(location.hash.slice(1) || "overview");
-setInterval(refresh, 4000);
+// Background tabs must not keep serializing and downloading the whole network.
+setInterval(() => {
+  if (!document.hidden) void refresh();
+}, 4000);
+document.addEventListener("visibilitychange", () => {
+  if (!document.hidden) void refresh();
+});
 
 document.addEventListener("click", async (e) => {
   if (!e.target.closest("[data-radio-reset-defaults]")) return;

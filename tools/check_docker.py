@@ -74,6 +74,8 @@ def main():
                 cid = name + '-' + str(index)
                 port = 18090 + index
                 command = ['run', '-d', '--name', cid, '--platform', args.platform, '--network', name, '--ip', address, '--cap-drop', 'ALL', '--security-opt', 'no-new-privileges:true', '--read-only', '--tmpfs', '/tmp', '-v', name + ':/data', '-v', name + '-certs:/certs:ro', '-e', 'AC_INTERFACE=eth0', '-e', 'AC_HTTP_PORT=' + str(port)]
+                if arch == 'amd64':
+                    command += ['--memory', '128m', '--memory-swap', '128m']
                 if flavor == 'dhcp':
                     command += ['--cap-add', 'NET_BIND_SERVICE', '--cap-add', 'NET_RAW', '-v', str(dhcp) + ':/etc/go-ac/ap-dhcp.json:ro']
                 command += [image]
@@ -122,6 +124,43 @@ def main():
                     assert any(socket.inet_aton(address) in v for v in control_addresses), 'Advertised stale sample control IP'
                 if index:
                     assert api('controller/resources')['settings']['max_ap_sessions'] == 1025, 'Profile switch lost saved config'
+                container = json.loads(docker('inspect', cid))[0]
+                assert 'GOMEMLIMIT=64MiB' in container['Config']['Env'], 'Missing Go runtime memory budget'
+                if arch == 'amd64':
+                    assert container['HostConfig']['Memory'] == 128 << 20, 'Native memory smoke has no hard limit'
+                if arch == 'amd64' and index == 0:
+                    # A sparse, synthetic modern image exercises the real upload
+                    # path under a hard memory cap without involving any AP.
+                    size = 32 << 20
+                    header = bytearray(4096)
+                    header[4:24] = bytes.fromhex('55aa4c5e831f534ba1f8f7c918df8fbf7da1aa55')
+                    header[0x404:0x418] = bytes.fromhex('55aa9dd1a8c88331c969fbbfbcf0d43270c7aa55')
+                    custom = bytes.fromhex('a5a5a5a58f72632a040f86009206bb51d2b7636a')
+                    header[0x204:0x218] = header[0x604:0x618] = custom
+                    struct.pack_into('>H', header, 0x21e, 1)
+                    header[0x220:0x226] = b'tpHead'
+                    struct.pack_into('>II', header, 0x22c, 0x400, size - 0x400)
+                    struct.pack_into('>H', header, 0xa0, 1)
+                    header[0xb0:0xc0] = bytes([0x42]) * 16
+                    header[0x4b0:0x4c0] = bytes([0x73]) * 16
+                    header[0x4c0:0x4c7] = b'TL-TEST'
+                    version = b'1.2.3 Build 20250317 Rel.43192'
+                    header[0x618:0x618 + len(version)] = version
+                    image_path = tmp / 'memory-fixture.bin'
+                    with image_path.open('wb') as f:
+                        f.write(header)
+                        f.truncate(size)
+                    opener = urllib.request.build_opener(urllib.request.ProxyHandler({}))
+                    with image_path.open('rb') as f:
+                        request = urllib.request.Request(url + 'upgrades/images', data=f, method='POST', headers={'Content-Type': 'application/octet-stream', 'Content-Length': str(size)})
+                        with opener.open(request, timeout=60) as response:
+                            image = json.load(response)
+                    assert image['size'] == size, 'Streaming upload truncated the image'
+                    status = docker('exec', cid, 'cat', '/proc/1/status')
+                    fields = dict(line.split(':', 1) for line in status.splitlines() if ':' in line)
+                    report['firmware_upload'] = {'size_mib': 32, 'container_limit_mib': 128, 'process_peak_rss_mib': round(int(fields['VmHWM'].split()[0]) / 1024, 2)}
+                    with opener.open(urllib.request.Request(url + 'upgrades/images/' + image['id'], method='DELETE'), timeout=10) as response:
+                        assert response.status == 200
                 api('controller/resources', {'max_ap_sessions': 1025})
                 docker('restart', cid)
                 assert api('controller/resources', wait=True)['settings']['max_ap_sessions'] == 1025, 'Restart lost saved config'

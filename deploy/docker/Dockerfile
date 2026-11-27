@@ -18,7 +18,8 @@ LABEL org.opencontainers.image.title="Go AC" \
 COPY --from=build /out/acd /usr/local/bin/acd
 COPY --chmod=0755 deploy/docker/entrypoint.sh /usr/local/bin/go-ac-entrypoint
 COPY uacgo/data/identity.json uacgo/data/apdb.json /usr/share/go-ac/defaults/
-ENV AC_DATA_DIR=/data \
+ENV GOMEMLIMIT=64MiB \
+    AC_DATA_DIR=/data \
     AC_INTERFACE=eth0 \
     AC_CONTROL_PORT=5246 \
     AC_HTTP_HOST=0.0.0.0 \

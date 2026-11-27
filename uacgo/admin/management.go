@@ -1,7 +1,6 @@
 package admin
 
 import (
-	"encoding/json"
 	"fmt"
 	"strings"
 	"uacgo/cweng"
@@ -80,20 +79,66 @@ func standaloneAPDefaults() APOptions {
 }
 
 func mergeOptions(base, override APOptions) APOptions {
-	// JSON overlays only explicitly set options. Nested schedules/accounts and
-	// complete port/LAG lists are atomic replacements, not partial surprises.
-	a, _ := json.Marshal(base)
-	b, _ := json.Marshal(override)
-	var merged, overlay map[string]json.RawMessage
-	_ = json.Unmarshal(a, &merged)
-	_ = json.Unmarshal(b, &overlay)
-	for k, v := range overlay {
-		merged[k] = v
+	// Only present options override; nested values are atomic replacements.
+	out := base
+	if override.RFMode != nil {
+		out.RFMode = override.RFMode
 	}
-	a, _ = json.Marshal(merged)
-	var out APOptions
-	_ = json.Unmarshal(a, &out)
-	return out
+	if override.USB != nil {
+		out.USB = override.USB
+	}
+	if override.Mesh != nil {
+		out.Mesh = override.Mesh
+	}
+	if override.EchoSeconds != nil {
+		out.EchoSeconds = override.EchoSeconds
+	}
+	if override.EchoMisses != nil {
+		out.EchoMisses = override.EchoMisses
+	}
+	if override.ClientKeepAlive != nil {
+		out.ClientKeepAlive = override.ClientKeepAlive
+	}
+	if override.ClientIdle != nil {
+		out.ClientIdle = override.ClientIdle
+	}
+	if override.OfflineSelfManage != nil {
+		out.OfflineSelfManage = override.OfflineSelfManage
+	}
+	if override.LED != nil {
+		out.LED = override.LED
+	}
+	if override.LEDWiFiSync != nil {
+		out.LEDWiFiSync = override.LEDWiFiSync
+	}
+	if override.LEDSchedule != nil {
+		out.LEDSchedule = override.LEDSchedule
+	}
+	if override.RebootSchedule != nil {
+		out.RebootSchedule = override.RebootSchedule
+	}
+	if override.Trunk != nil {
+		out.Trunk = override.Trunk
+	}
+	if override.FitFatButton != nil {
+		out.FitFatButton = override.FitFatButton
+	}
+	if override.RegionCode != nil {
+		out.RegionCode = override.RegionCode
+	}
+	if override.Account != nil {
+		out.Account = override.Account
+	}
+	if override.LAG != nil {
+		out.LAG = override.LAG
+	}
+	if len(override.Radios) > 0 {
+		out.Radios = override.Radios
+	}
+	if len(override.Ports) > 0 {
+		out.Ports = override.Ports
+	}
+	return cloneOptions(out)
 }
 func effectiveAPOptions(cfg Config, ap cweng.APStatus) (APOptions, error) {
 	defaults := mergeOptions(standaloneAPDefaults(), cfg.APDefaults)

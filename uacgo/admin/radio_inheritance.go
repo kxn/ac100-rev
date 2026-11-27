@@ -1,7 +1,6 @@
 package admin
 
 import (
-	"encoding/json"
 	"math"
 	"sort"
 	"uacgo/cweng"
@@ -23,24 +22,31 @@ func mergeRadio(base, over RadioSetting) RadioSetting {
 		}
 		over.Advanced = &a
 	}
-	a, _ := json.Marshal(base)
-	b, _ := json.Marshal(over)
-	var x, y map[string]json.RawMessage
-	_ = json.Unmarshal(a, &x)
-	_ = json.Unmarshal(b, &y)
-	for k, v := range y {
-		x[k] = v
+	out := base
+	// AP/radio identifiers were unconditional fields in the JSON overlay.
+	out.AP, out.Radio = over.AP, over.Radio
+	if over.Enabled != nil {
+		out.Enabled = over.Enabled
+	}
+	if over.Channel != nil {
+		out.Channel = over.Channel
+	}
+	if over.Power != nil {
+		out.Power = over.Power
+	}
+	if over.PowerLevel != nil {
+		out.PowerLevel = over.PowerLevel
+	}
+	if over.Advanced != nil {
+		out.Advanced = over.Advanced
 	}
 	if over.Power != nil && over.PowerLevel == nil {
-		delete(x, "power_level")
+		out.PowerLevel = nil
 	}
 	if over.PowerLevel != nil && over.Power == nil {
-		delete(x, "power_dbm")
+		out.Power = nil
 	}
-	a, _ = json.Marshal(x)
-	var out RadioSetting
-	_ = json.Unmarshal(a, &out)
-	return out
+	return cloneRadio(out)
 }
 func inheritedRadioSettings(cfg Config, ap string) []RadioSetting {
 	options := cfg.APDefaults

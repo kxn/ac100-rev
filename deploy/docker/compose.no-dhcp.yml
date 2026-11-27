@@ -16,6 +16,7 @@ services:
     restart: unless-stopped
     stop_grace_period: 15s
     environment:
+      GOMEMLIMIT: ${AC_GO_MEMORY_LIMIT:-64MiB}
       AC_DHCP_ENABLED: "0"
       AC_INTERFACE: ${AC_INTERFACE:?Set AC_INTERFACE to the AP-facing host interface}
       AC_HTTP_HOST: ${AC_HTTP_HOST:-127.0.0.1}

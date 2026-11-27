@@ -41,10 +41,12 @@ with sync_playwright() as p:
    conf['config']['vlan_pools']=[{'id':1,'name':'Guests','vlans':'100-110'}]
   group_service=copy.deepcopy(conf['config']['services'][0]);group_service.update(id='fixture-group-service',ssid='Group-only service',aps=[],groups=['floor'],bindings=[]);conf['config']['services'].append(group_service)
   spare=copy.deepcopy(profile[0]);spare.update(id='02:00:00:00:00:aa',mac='02:00:00:00:00:aa',name='Fixture spare',online=True,state='RUN');offline=copy.deepcopy(spare);offline.update(id='02:00:00:00:00:ab',mac='02:00:00:00:00:ab',name='Fixture offline',online=False,state='OFFLINE');profile.extend([spare,offline])
+  reads=[]
   page=browser.new_page(viewport={'width':1440,'height':960});page.on('pageerror',lambda e:errors.append(str(e)));page.on('dialog',lambda d:d.accept())
   def route(r):
    path=r.request.url.split('/api/')[1]
    if r.request.method!='GET':writes.append({'path':path,'body':r.request.post_data_json});r.fulfill(json={'updated':1,'skipped':0,'errors':[]} if path=='aps/names/import' else {'status':'saved'});return
+   reads.append(path)
    if path.startswith('clients/')and'/history?'in path:
     signal_queries.append(path);r.fulfill(json={'samples':[{'at':'2026-11-26T12:00:00Z','ap_id':profile[0]['id'],'radio_id':1,'wlan_id':1,'ssid':'GoAC-Lab','rssi_dbm':-60},{'at':'2026-11-26T12:00:30Z','ap_id':profile[0]['id'],'radio_id':1,'wlan_id':1,'ssid':'GoAC-Lab','rssi_dbm':-48}]});return
    value=resources if path=='controller/resources' else profile if path=='aps' else conf if path=='config' else clients if path=='clients' else [r for r in conf['config']['radios']if r['ap_id']==profile[0]['id']]if path.endswith('/effective-radios')else rf_defaults if path.startswith('radios/defaults') else rates if path=='rates' else mobility if path=='mobility' else edca if path=='edca' else rrm if path=='rrm' else upgrades if path=='upgrades' else {'config':conf['config'].get('mesh'),'jobs':{}} if path=='mesh' else {'configured_mode':2,'actual_mode':2,'mode_writable':False,'unsupported_aps':[]} if path=='mobility/status' else storm if path=='storm/defaults' else {'ap_counts':[{'at':'2026-11-26T12:00:00Z','online':1,'offline':2,'total':3},{'at':'2026-11-26T12:01:00Z','online':2,'offline':1,'total':3}],'radios':[{'at':'2026-11-26T12:00:00Z','ap_id':profile[0]['id'],'radio_id':1,'clients':1,'channel':6,'power_dbm':15,'metrics':{'channelUsage':20}},{'at':'2026-11-26T12:01:00Z','ap_id':profile[0]['id'],'radio_id':1,'clients':2,'channel':6,'power_dbm':15,'metrics':{'channelUsage':30}}],'events':[]} if path.startswith('history?') else []
@@ -133,6 +135,7 @@ with sync_playwright() as p:
   page.locator('#ap-names-import').set_input_files({'name':'ap-names.csv','mimeType':'text/csv','buffer':name_csv.encode()});page.wait_for_timeout(100);assert writes[-1]['path']=='aps/names/import' and writes[-1]['body']=={'csv':name_csv}
   restore={'format':'go-ac-configuration','schema':1,'config':{'services':[]}}
   visit('backup');page.locator('#management-import').set_input_files({'name':'go-ac-ui-test.json','mimeType':'application/json','buffer':json.dumps(restore).encode()});page.wait_for_timeout(100);assert writes[-1]['path']=='restore' and writes[-1]['body']==restore
+  visit('radios');page.wait_for_function('!refreshing');page.evaluate('Object.defineProperty(document, "hidden", {configurable:true,value:true})');before_reads=len(reads);page.wait_for_timeout(4200);assert len(reads)==before_reads, 'Background page kept polling';page.evaluate('delete document.hidden; document.dispatchEvent(new Event("visibilitychange"))');page.wait_for_timeout(250);assert len(reads)>before_reads, 'Visible page did not refresh'
   visit('radios');page.evaluate('window.scrollTo(0,0)');page.screenshot(path=str(OUT/('all-capabilities-desktop.png'if full else 'real-capabilities-desktop.png')),full_page=True)
   page.set_viewport_size({'width':390,'height':844});page.screenshot(path=str(OUT/('all-capabilities-mobile.png'if full else 'real-capabilities-mobile.png')),full_page=True);page.close()
  browser.close()

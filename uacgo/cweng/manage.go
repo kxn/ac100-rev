@@ -80,6 +80,18 @@ func (e *Engine) sessionList() []*Session {
 	}
 	return out
 }
+
+// OnlineAPs reads only liveness, without cloning telemetry and capabilities.
+func (e *Engine) OnlineAPs() map[string]bool {
+	out := make(map[string]bool)
+	for _, s := range e.sessionList() {
+		s.mu.Lock()
+		out[sessionID(s)] = s.State == StateRun && !s.dead
+		s.mu.Unlock()
+	}
+	return out
+}
+
 func (e *Engine) APs() []APStatus {
 	out := []APStatus{}
 	for _, s := range e.sessionList() {
@@ -301,10 +313,7 @@ func (s *Session) statusLocked() APStatus {
 		_ = json.Unmarshal(b, &copy)
 		v.RRMReports = append(v.RRMReports, copy)
 	}
-	if s.telemetry != nil {
-		b, _ := json.Marshal(s.telemetry)
-		_ = json.Unmarshal(b, &v.Telemetry)
-	}
+	v.Telemetry = cloneTelemetry(s.telemetry)
 	for _, r := range s.radioStatus {
 		v.RadioStatus = append(v.RadioStatus, r)
 	}

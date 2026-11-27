@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net"
 	"net/http"
+	"slices"
 	"strconv"
 	"time"
 	"uacgo/cweng"
@@ -46,6 +47,7 @@ func (m *Manager) captureClientSignalsLocked(clients []cweng.ClientEvent, aps []
 			continue
 		}
 		m.history.Clients = append(m.history.Clients, r)
+		m.noteHistoryExpiry(r.At, time.Hour)
 		m.historyClientSamples[key] = r.At
 		changed = true
 	}
@@ -76,15 +78,15 @@ func (m *Manager) clientSignalHistoryHTTP(w http.ResponseWriter, r *http.Request
 	}
 	since := time.Now().Add(-time.Duration(duration) * time.Second)
 	rows := []ClientSignalSample{}
+	macText, ap := mac.String(), q.Get("ap")
 	m.mu.Lock()
-	for _, s := range m.history.Clients {
-		if s.MAC == mac.String() && !s.At.Before(since) && (q.Get("ap") == "" || s.AP == q.Get("ap")) {
+	for i := len(m.history.Clients) - 1; i >= 0 && len(rows) < limit; i-- {
+		s := m.history.Clients[i]
+		if s.MAC == macText && !s.At.Before(since) && (ap == "" || s.AP == ap) {
 			rows = append(rows, s)
 		}
 	}
 	m.mu.Unlock()
-	if len(rows) > limit {
-		rows = rows[len(rows)-limit:]
-	}
+	slices.Reverse(rows)
 	jsonReply(w, 200, map[string]any{"samples": rows, "retention_seconds": 3600, "duration": duration})
 }

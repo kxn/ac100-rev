@@ -10,6 +10,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"io/fs"
 	"net"
 	"net/http"
@@ -97,6 +98,7 @@ type Manager struct {
 	history              WirelessHistory
 	historySamples       map[string]time.Time
 	historyClientSamples map[string]time.Time
+	historyExpiry        time.Time
 	historySaved         time.Time
 	historyDirty         bool
 	clientHistoryCursor  uint64
@@ -279,10 +281,12 @@ func New(engine *cweng.Engine, clients *cweng.ClientTable, dataDir string) (*Man
 	return m, nil
 }
 func atomicJSON(path string, v any) error {
-	b, err := json.MarshalIndent(v, "", "  ")
-	if err != nil {
-		return err
-	}
+	return atomicWrite(path, func(w io.Writer) error { return json.NewEncoder(w).Encode(v) })
+}
+
+// The callback can stream large state while keeping the same fsync/rename
+// transaction used by small configuration documents.
+func atomicWrite(path string, write func(io.Writer) error) error {
 	f, err := os.CreateTemp(filepath.Dir(path), ".controller-")
 	if err != nil {
 		return err
@@ -292,7 +296,7 @@ func atomicJSON(path string, v any) error {
 	if err = f.Chmod(0600); err != nil {
 		return err
 	}
-	if _, err = f.Write(b); err != nil {
+	if err = write(f); err != nil {
 		return err
 	}
 	if err = f.Sync(); err != nil {
@@ -381,7 +385,7 @@ func (m *Manager) Run(ctx context.Context) {
 		m.mu.Lock()
 		defer m.mu.Unlock()
 		if m.historyDirty {
-			if atomicJSON(m.historyPath(), m.history) == nil {
+			if m.saveHistoryLocked() == nil {
 				m.historyDirty = false
 			}
 		}
@@ -853,10 +857,7 @@ func (m *Manager) HandlerWithOptions(options HTTPOptions) http.Handler {
 	})
 	mux.HandleFunc("GET /api/clients", func(w http.ResponseWriter, r *http.Request) {
 		rows := []map[string]any{}
-		online := map[string]bool{}
-		for _, ap := range m.APs() {
-			online[ap.ID] = ap.Online
-		}
+		online := m.engine.OnlineAPs()
 		for _, ev := range m.clients.Display() {
 			mac := net.HardwareAddr(ev.MAC[:]).String()
 			m.mu.Lock()

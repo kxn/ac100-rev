@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"crypto/md5"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -159,7 +160,26 @@ func (m *Manager) queueUpgrades(image string, aps []string, when time.Time) ([]U
 	return jobs, nil
 }
 func (m *Manager) importImage(b []byte) (firmware.Image, error) {
-	im, err := firmware.Inspect(b)
+	return m.importImageReader(bytes.NewReader(b))
+}
+
+func (m *Manager) importImageReader(reader io.Reader) (firmware.Image, error) {
+	var im firmware.Image
+	dir := filepath.Dir(m.imagePath("upload"))
+	if err := os.MkdirAll(dir, 0700); err != nil {
+		return im, err
+	}
+	f, err := os.CreateTemp(dir, ".upload-")
+	if err != nil {
+		return im, err
+	}
+	defer os.Remove(f.Name())
+	defer f.Close()
+	n, err := io.Copy(f, io.LimitReader(reader, firmware.MaxSize+1))
+	if err != nil {
+		return im, err
+	}
+	im, err = firmware.InspectReader(f, int(n))
 	if err != nil {
 		return im, err
 	}
@@ -168,7 +188,7 @@ func (m *Manager) importImage(b []byte) (firmware.Image, error) {
 	if old, ok := m.upgrades.Images[im.ID]; ok {
 		return old, nil
 	}
-	total := len(b)
+	total := im.Size
 	for _, row := range m.upgrades.Images {
 		total += row.Size
 	}
@@ -176,20 +196,8 @@ func (m *Manager) importImage(b []byte) (firmware.Image, error) {
 	if len(m.upgrades.Images) >= resources.MaxFirmwareImages || int64(total) > int64(resources.FirmwareStorageMiB)<<20 {
 		return im, fmt.Errorf("固件库超过程序配置容量，请先删除旧镜像或调整容量")
 	}
-	if err = os.MkdirAll(filepath.Dir(m.imagePath(im.ID)), 0700); err != nil {
-		return im, err
-	}
-	f, err := os.CreateTemp(filepath.Dir(m.imagePath(im.ID)), ".upload-")
-	if err != nil {
-		return im, err
-	}
-	defer os.Remove(f.Name())
-	if _, err = f.Write(b); err == nil {
-		err = f.Sync()
-	}
-	closeErr := f.Close()
-	if err == nil {
-		err = closeErr
+	if err = f.Sync(); err == nil {
+		err = f.Close()
 	}
 	if err == nil {
 		err = os.Rename(f.Name(), m.imagePath(im.ID))
@@ -338,16 +346,23 @@ func (m *Manager) upgradeStep(ctx context.Context, ap cweng.APStatus, cfg Config
 func (m *Manager) transferImage(ctx context.Context, ap cweng.APStatus, j UpgradeJob, im firmware.Image) error {
 	ctx, cancel := context.WithTimeout(cweng.PinAP(ctx, ap), 15*time.Minute)
 	defer cancel()
-	b, err := os.ReadFile(m.imagePath(im.ID))
+	f, err := os.Open(m.imagePath(im.ID))
 	if err != nil {
 		return err
 	}
-	actual, err := firmware.Inspect(b)
+	defer f.Close()
+	stat, err := f.Stat()
+	if err != nil {
+		return err
+	}
+	actual, err := firmware.InspectReader(f, int(stat.Size()))
 	if err != nil || actual.ID != im.ID {
 		return fmt.Errorf("固件文件完整性校验失败")
 	}
-	hash := md5.Sum(b)
-	rt := &upgradeRuntime{Job: j.ID, Identifier: im.Identifier(), Connection: ap.ConnectedAt, Info: capwap.ImageInformation{FileInfo: uint32(len(b)), Info: hash}, Initiated: make(chan struct{}), Actions: make(chan capwap.PrivSubFirmwareAction, 8)}
+	digest, _ := hex.DecodeString(actual.MD5) // InspectReader produces a full MD5 digest.
+	hash := [md5.Size]byte(digest)
+	size := actual.Size
+	rt := &upgradeRuntime{Job: j.ID, Identifier: im.Identifier(), Connection: ap.ConnectedAt, Info: capwap.ImageInformation{FileInfo: uint32(size), Info: hash}, Initiated: make(chan struct{}), Actions: make(chan capwap.PrivSubFirmwareAction, 8)}
 	m.mu.Lock()
 	m.upgradeActive[ap.ID] = rt
 	m.mu.Unlock()
@@ -356,9 +371,9 @@ func (m *Manager) transferImage(ctx context.Context, ap cweng.APStatus, j Upgrad
 		_, err := m.engine.Request(ctx, ap.ID, kind, els)
 		return err
 	}
-	large := len(b) > 16<<20
+	large := size > 16<<20
 	if large {
-		if err = request(7, privateSetting(0xaf, (capwap.PrivLargeFirmwareInfo{Type: 1, TotalSize: uint32(len(b)), SubImages: uint32((len(b) + (16 << 20) - 1) / (16 << 20)), MD5: hash}).AssembleValue())); err != nil {
+		if err = request(7, privateSetting(0xaf, (capwap.PrivLargeFirmwareInfo{Type: 1, TotalSize: uint32(size), SubImages: uint32((size + (16 << 20) - 1) / (16 << 20)), MD5: hash}).AssembleValue())); err != nil {
 			return err
 		}
 	}
@@ -377,13 +392,18 @@ func (m *Manager) transferImage(ctx context.Context, ap cweng.APStatus, j Upgrad
 	if err = m.updateUpgrade(j.ID, "transferring", "", 0); err != nil {
 		return err
 	}
-	for start, index := 0, uint8(0); start < len(b); index++ {
-		end := len(b)
+	buffer := make([]byte, 1024)
+	for start, index := 0, uint8(0); start < size; index++ {
+		end := size
 		if large && end > start+16<<20 {
 			end = start + (16 << 20)
 		}
 		if large {
-			subhash := md5.Sum(b[start:end])
+			h := md5.New()
+			if _, err = io.CopyN(h, io.NewSectionReader(f, int64(start), int64(end-start)), int64(end-start)); err != nil {
+				return err
+			}
+			subhash := [md5.Size]byte(h.Sum(nil))
 			m.mu.Lock()
 			rt.Expected = index
 			rt.Await = ""
@@ -396,10 +416,14 @@ func (m *Manager) transferImage(ctx context.Context, ap cweng.APStatus, j Upgrad
 		for off := start; off < end; {
 			next := min(off+1024, end)
 			typ := uint8(1)
-			if !large && next == len(b) {
+			if !large && next == size {
 				typ = 2
 			}
-			els := []capwap.Element{{Type: 0x18, Value: (capwap.ImageData{Type: typ, Data: b[off:next]}).AssembleValue()}}
+			chunk := buffer[:next-off]
+			if _, err = f.ReadAt(chunk, int64(off)); err != nil {
+				return err
+			}
+			els := []capwap.Element{{Type: 0x18, Value: (capwap.ImageData{Type: typ, Data: chunk}).AssembleValue()}}
 			if typ == 2 {
 				els = append(els, capwap.Element{Type: 0x1a, Value: rt.Info.AssembleValue()})
 			}
@@ -408,7 +432,7 @@ func (m *Manager) transferImage(ctx context.Context, ap cweng.APStatus, j Upgrad
 			}
 			off = next
 			j.Bytes = off
-			if off == len(b) || off%(64<<10) == 0 {
+			if off == size || off%(64<<10) == 0 {
 				if err = m.updateUpgrade(j.ID, "transferring", "", off); err != nil {
 					return err
 				}
@@ -427,7 +451,7 @@ func (m *Manager) transferImage(ctx context.Context, ap cweng.APStatus, j Upgrad
 		}
 		start = end
 	}
-	if err = m.updateUpgrade(j.ID, "verifying", "", len(b)); err != nil {
+	if err = m.updateUpgrade(j.ID, "verifying", "", size); err != nil {
 		return err
 	}
 	if large {
@@ -445,7 +469,7 @@ func (m *Manager) transferImage(ctx context.Context, ap cweng.APStatus, j Upgrad
 		return nil // Flash permission was returned in response to the AP's final MD5 result.
 	}
 	// Record reboot intent durably before the irreversible reset request.
-	if err = m.updateUpgrade(j.ID, "waiting_reconnect", "", len(b)); err != nil {
+	if err = m.updateUpgrade(j.ID, "waiting_reconnect", "", size); err != nil {
 		return err
 	}
 	return request(17, capwap.Element{Type: 0x19, Value: rt.Identifier}, privateSetting(0x23, []byte{0, 0, 0, 1}))
@@ -523,12 +547,7 @@ func (m *Manager) upgradeRoutes(mux *http.ServeMux) {
 	})
 	mux.HandleFunc("POST /api/upgrades/images", func(w http.ResponseWriter, r *http.Request) {
 		r.Body = http.MaxBytesReader(w, r.Body, firmware.MaxSize)
-		b, err := io.ReadAll(r.Body)
-		if err != nil {
-			jsonReply(w, 400, map[string]string{"error": err.Error()})
-			return
-		}
-		im, err := m.importImage(b)
+		im, err := m.importImageReader(r.Body)
 		if err != nil {
 			jsonReply(w, 400, map[string]string{"error": err.Error()})
 			return

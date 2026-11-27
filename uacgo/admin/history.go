@@ -1,13 +1,16 @@
 package admin
 
 import (
+	"bufio"
 	"encoding/json"
 	"fmt"
+	"io"
 	"math"
 	"net"
 	"net/http"
 	"os"
 	"path/filepath"
+	"slices"
 	"strconv"
 	"time"
 	"uacgo/cweng"
@@ -43,6 +46,67 @@ type APCountSample struct {
 func (m *Manager) historyPath() string {
 	return filepath.Join(filepath.Dir(m.path), "wireless-history.json")
 }
+
+// History dominates persistent state at capacity. Encode one immutable sample
+// at a time so a periodic save does not allocate another copy of the full log.
+func historyArray[T any](w *bufio.Writer, rows []T) error {
+	if rows == nil {
+		_, err := w.WriteString("null")
+		return err
+	}
+	if _, err := w.WriteString("["); err != nil {
+		return err
+	}
+	enc := json.NewEncoder(w)
+	for i := range rows {
+		if i > 0 {
+			if err := w.WriteByte(','); err != nil {
+				return err
+			}
+		}
+		if err := enc.Encode(&rows[i]); err != nil {
+			return err
+		}
+	}
+	return w.WriteByte(']')
+}
+func writeHistory(w io.Writer, h WirelessHistory) error {
+	out := bufio.NewWriterSize(w, 32<<10)
+	if _, err := out.WriteString(`{"ap_counts":`); err != nil {
+		return err
+	}
+	if err := historyArray(out, h.APCounts); err != nil {
+		return err
+	}
+	if _, err := out.WriteString(`,"radios":`); err != nil {
+		return err
+	}
+	if err := historyArray(out, h.Radios); err != nil {
+		return err
+	}
+	if _, err := out.WriteString(`,"events":`); err != nil {
+		return err
+	}
+	if err := historyArray(out, h.Events); err != nil {
+		return err
+	}
+	if len(h.Clients) > 0 {
+		if _, err := out.WriteString(`,"clients":`); err != nil {
+			return err
+		}
+		if err := historyArray(out, h.Clients); err != nil {
+			return err
+		}
+	}
+	if _, err := out.WriteString("}\n"); err != nil {
+		return err
+	}
+	return out.Flush()
+}
+func (m *Manager) saveHistoryLocked() error {
+	return atomicWrite(m.historyPath(), func(w io.Writer) error { return writeHistory(w, m.history) })
+}
+
 func (m *Manager) loadHistory() error {
 	b, err := os.ReadFile(m.historyPath())
 	if os.IsNotExist(err) {
@@ -74,52 +138,80 @@ func (m *Manager) loadHistory() error {
 	}
 	return nil
 }
+
+// Samples can arrive out of timestamp order. Keep their insertion order and
+// compute the next actual expiry rather than rescanning every controller tick.
+func retainHistory[T any](rows []T, now time.Time, retention time.Duration, limit int, at func(T) time.Time) ([]T, time.Time) {
+	kept := rows[:0]
+	for _, row := range rows {
+		if now.Sub(at(row)) < retention {
+			kept = append(kept, row)
+		}
+	}
+	if len(kept) > limit {
+		copy(kept, kept[len(kept)-limit:])
+		kept = kept[:limit]
+	}
+	// Expired strings/maps must not remain reachable through slice capacity.
+	clear(rows[len(kept):])
+	var expiry time.Time
+	for _, row := range kept {
+		next := at(row).Add(retention)
+		if expiry.IsZero() || next.Before(expiry) {
+			expiry = next
+		}
+	}
+	if cap(kept) > 2*max(len(kept), 1024) {
+		kept = slices.Clone(kept)
+	}
+	return kept, expiry
+}
+func (m *Manager) noteHistoryExpiry(at time.Time, retention time.Duration) {
+	expiry := at.Add(retention)
+	if m.historyExpiry.IsZero() || expiry.Before(m.historyExpiry) {
+		m.historyExpiry = expiry
+	}
+}
 func (m *Manager) pruneHistory(now time.Time) { // mu held, except construction.
-	radios := m.history.Radios[:0]
-	for _, r := range m.history.Radios {
-		if now.Sub(r.At) < 24*time.Hour {
-			radios = append(radios, r)
+	m.historyExpiry = time.Time{}
+	pruned := false
+	track := func(old, current int, expiry time.Time) {
+		pruned = pruned || old != current
+		if !expiry.IsZero() && (m.historyExpiry.IsZero() || expiry.Before(m.historyExpiry)) {
+			m.historyExpiry = expiry
 		}
 	}
-	m.history.Radios = radios
-	events := m.history.Events[:0]
-	for _, e := range m.history.Events {
-		if now.Sub(e.At) < 7*24*time.Hour {
-			events = append(events, e)
-		}
-	}
+	old := len(m.history.Radios)
+	rows, expiry := retainHistory(m.history.Radios, now, 24*time.Hour, 20000, func(r RadioSample) time.Time { return r.At })
+	m.history.Radios = rows
+	track(old, len(rows), expiry)
+	old = len(m.history.Events)
+	events, expiry := retainHistory(m.history.Events, now, 7*24*time.Hour, 10000, func(e StationTransition) time.Time { return e.At })
 	m.history.Events = events
-	clients := m.history.Clients[:0]
-	for _, c := range m.history.Clients {
-		if now.Sub(c.At) < time.Hour {
-			clients = append(clients, c)
-		}
-	}
+	track(old, len(events), expiry)
+	old = len(m.history.Clients)
+	clients, expiry := retainHistory(m.history.Clients, now, time.Hour, 100000, func(c ClientSignalSample) time.Time { return c.At })
 	m.history.Clients = clients
-	counts := m.history.APCounts[:0]
-	for _, c := range m.history.APCounts {
-		if now.Sub(c.At) < 24*time.Hour {
-			counts = append(counts, c)
-		}
-	}
+	track(old, len(clients), expiry)
+	old = len(m.history.APCounts)
+	counts, expiry := retainHistory(m.history.APCounts, now, 24*time.Hour, 10000, func(c APCountSample) time.Time { return c.At })
 	m.history.APCounts = counts
-	if len(counts) > 10000 {
-		m.history.APCounts = append([]APCountSample{}, counts[len(counts)-10000:]...)
-	}
-	if len(m.history.Clients) > 100000 {
-		m.history.Clients = append([]ClientSignalSample{}, m.history.Clients[len(m.history.Clients)-100000:]...)
-	}
+	track(old, len(counts), expiry)
 	for key, at := range m.historyClientSamples {
 		if now.Sub(at) >= time.Hour {
 			delete(m.historyClientSamples, key)
+		} else {
+			m.noteHistoryExpiry(at, time.Hour)
 		}
 	}
-	if len(m.history.Radios) > 20000 {
-		m.history.Radios = append([]RadioSample{}, m.history.Radios[len(m.history.Radios)-20000:]...)
+	for key, at := range m.historySamples {
+		if now.Sub(at) >= 24*time.Hour {
+			delete(m.historySamples, key)
+		} else {
+			m.noteHistoryExpiry(at, 24*time.Hour)
+		}
 	}
-	if len(m.history.Events) > 10000 {
-		m.history.Events = append([]StationTransition{}, m.history.Events[len(m.history.Events)-10000:]...)
-	}
+	m.historyDirty = m.historyDirty || pruned
 }
 func latestMetric(raw json.RawMessage) (float64, bool) {
 	var v any
@@ -154,6 +246,7 @@ func (m *Manager) captureHistory(aps []cweng.APStatus, now time.Time) {
 	}
 	m.mu.Lock()
 	defer m.mu.Unlock()
+	initializeExpiry := m.historyExpiry.IsZero()
 	changed := false
 	changed = m.captureClientSignalsLocked(clients, aps, now)
 	retired := map[string]bool{}
@@ -178,10 +271,12 @@ func (m *Manager) captureHistory(aps []cweng.APStatus, now time.Time) {
 	}
 	if now.Sub(last.At) >= time.Minute || counts.Online != last.Online || counts.Offline != last.Offline || counts.Total != last.Total {
 		m.history.APCounts = append(m.history.APCounts, counts)
+		m.noteHistoryExpiry(counts.At, 24*time.Hour)
 		changed = true
 	}
 	for _, e := range events {
 		m.history.Events = append(m.history.Events, StationTransition{ClientTransition: e, MACString: net.HardwareAddr(e.MAC[:]).String()})
+		m.noteHistoryExpiry(e.At, 7*24*time.Hour)
 		m.clientHistoryCursor = e.Sequence
 		changed = true
 	}
@@ -226,6 +321,7 @@ func (m *Manager) captureHistory(aps []cweng.APStatus, now time.Time) {
 				}
 			}
 			m.history.Radios = append(m.history.Radios, sample)
+			m.noteHistoryExpiry(sample.At, 24*time.Hour)
 			m.historySamples[key] = observed
 			changed = true
 		}
@@ -233,9 +329,11 @@ func (m *Manager) captureHistory(aps []cweng.APStatus, now time.Time) {
 	if changed {
 		m.historyDirty = true
 	}
-	m.pruneHistory(now)
+	if initializeExpiry || !now.Before(m.historyExpiry) || len(m.history.Radios) > 20000 || len(m.history.Events) > 10000 || len(m.history.Clients) > 100000 || len(m.history.APCounts) > 10000 {
+		m.pruneHistory(now)
+	}
 	if m.historyDirty && now.Sub(m.historySaved) > 30*time.Second {
-		if atomicJSON(m.historyPath(), m.history) == nil {
+		if m.saveHistoryLocked() == nil {
 			m.historySaved = now
 			m.historyDirty = false
 		}
@@ -271,36 +369,33 @@ func (m *Manager) historyRoutes(mux *http.ServeMux) {
 				return
 			}
 		}
-		out := WirelessHistory{Radios: []RadioSample{}, Events: []StationTransition{}}
+		ap, mac := q.Get("ap"), normalizeMAC(q.Get("mac"))
+		out := WirelessHistory{APCounts: []APCountSample{}, Radios: []RadioSample{}, Events: []StationTransition{}}
 		m.mu.Lock()
-		defer m.mu.Unlock()
-		out.APCounts = []APCountSample{}
-		for _, row := range m.history.APCounts {
+		for i := len(m.history.APCounts) - 1; i >= 0 && len(out.APCounts) < limit; i-- {
+			row := m.history.APCounts[i]
 			if !row.At.Before(since) {
 				out.APCounts = append(out.APCounts, row)
 			}
 		}
-		for _, row := range m.history.Radios {
-			if row.At.Before(since) || q.Get("ap") != "" && row.AP != q.Get("ap") || radio != "" && strconv.Itoa(int(row.Radio)) != radio {
+		for i := len(m.history.Radios) - 1; i >= 0 && len(out.Radios) < limit; i-- {
+			row := m.history.Radios[i]
+			if row.At.Before(since) || ap != "" && row.AP != ap || radio != "" && strconv.Itoa(int(row.Radio)) != radio {
 				continue
 			}
 			out.Radios = append(out.Radios, row)
 		}
-		for _, e := range m.history.Events {
-			if e.At.Before(since) || q.Get("ap") != "" && e.AP != q.Get("ap") || q.Get("mac") != "" && normalizeMAC(q.Get("mac")) != e.MACString {
+		for i := len(m.history.Events) - 1; i >= 0 && len(out.Events) < limit; i-- {
+			e := m.history.Events[i]
+			if e.At.Before(since) || ap != "" && e.AP != ap || mac != "" && mac != e.MACString {
 				continue
 			}
 			out.Events = append(out.Events, e)
 		}
-		if len(out.Radios) > limit {
-			out.Radios = out.Radios[len(out.Radios)-limit:]
-		}
-		if len(out.Events) > limit {
-			out.Events = out.Events[len(out.Events)-limit:]
-		}
-		if len(out.APCounts) > limit {
-			out.APCounts = out.APCounts[len(out.APCounts)-limit:]
-		}
+		m.mu.Unlock()
+		slices.Reverse(out.APCounts)
+		slices.Reverse(out.Radios)
+		slices.Reverse(out.Events)
 		jsonReply(w, 200, out)
 	})
 }

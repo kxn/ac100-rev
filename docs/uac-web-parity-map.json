@@ -507,14 +507,19 @@
         "uacgo/admin/model_result.go",
         "uacgo/admin/policy_state.go",
         "uacgo/admin/server.go",
-        "uacgo/cmd/acd/main.go"
+        "uacgo/cmd/acd/main.go",
+        "uacgo/admin/config_copy.go",
+        "uacgo/cweng/status_copy.go"
       ],
       "regressions": [
         "tools/check_admin_ui.py",
         "uacgo/admin/config_store_test.go",
         "uacgo/admin/server_test.go",
         "uacgo/cmd/acd/main_test.go",
-        "tools/check_docker.py"
+        "tools/check_docker.py",
+        "uacgo/admin/resource_copy_test.go",
+        "uacgo/admin/history_resource_test.go",
+        "uacgo/cweng/status_copy_test.go"
       ],
       "basis": "Go 程序架构对应；持久化、脱敏、导入校验和原Web RRM修改门禁。HTTP/JSON外观重新设计，不声称和原UI像素/API路径一致。 正式启动不再注册旧 SQLite WLAN/RF 或 JCS；AP 身份编号单独持久化。",
       "evidence_contracts": [

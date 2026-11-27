@@ -9,6 +9,7 @@ import (
 	"encoding/binary"
 	"encoding/hex"
 	"fmt"
+	"io"
 	"regexp"
 	"strconv"
 	"strings"
@@ -50,24 +51,39 @@ func cstring(b []byte) string {
 	}
 	return strings.TrimSpace(string(b))
 }
-func Inspect(b []byte) (Image, error) {
+func Inspect(b []byte) (Image, error) { return InspectReader(bytes.NewReader(b), len(b)) }
+
+// InspectReader hashes the payload in a fixed-size buffer and reads only
+// metadata partitions. AP images need not reside in the Go heap.
+func InspectReader(r io.ReaderAt, size int) (Image, error) {
 	var im Image
-	if len(b) < 0x400 || len(b) > MaxSize {
+	if size < 0x400 || size > MaxSize {
 		return im, fmt.Errorf("固件大小必须为 1 KiB–32 MiB")
 	}
-	sha := sha256.Sum256(b)
-	sum := md5.Sum(b)
-	im = Image{ID: hex.EncodeToString(sha[:]), Size: len(b), MD5: hex.EncodeToString(sum[:])}
-	var err error
-	if bytes.Equal(b[4:24], upgradeMagic) {
-		err = im.modern(b)
+	sha, sum := sha256.New(), md5.New()
+	if _, err := io.CopyN(io.MultiWriter(sha, sum), io.NewSectionReader(r, 0, int64(size)), int64(size)); err != nil {
+		return im, err
+	}
+	im = Image{ID: hex.EncodeToString(sha.Sum(nil)), Size: size, MD5: hex.EncodeToString(sum.Sum(nil))}
+	header, err := readImagePart(r, 0, 0x400)
+	if err != nil {
+		return Image{}, err
+	}
+	if bytes.Equal(header[4:24], upgradeMagic) {
+		err = im.modern(r, header)
 	} else {
-		err = im.legacy(b)
+		err = im.legacy(r)
 	}
 	if err != nil {
 		return Image{}, err
 	}
 	return im, nil
+}
+
+func readImagePart(r io.ReaderAt, off, size int) ([]byte, error) {
+	b := make([]byte, size)
+	_, err := r.ReadAt(b, int64(off))
+	return b, err
 }
 
 var versionRE = regexp.MustCompile(`^(\d+)\.(\d+)\.(\d+)\s+Build\s+(\d{8})\s+Rel\.(\d+)[a-zA-Z]*$`)
@@ -96,7 +112,7 @@ func versionWire(s string) ([]byte, error) {
 	}
 	return be.AppendUint32(out, uint32(n)), nil
 }
-func (im *Image) modern(b []byte) error {
+func (im *Image) modern(r io.ReaderAt, b []byte) error {
 	// libfirmware dkmgt_firmwareInfo_check @0x810. Bound every partition/count,
 	// including those the C implementation copied without checking.
 	if !bytes.Equal(b[0x204:0x218], customMagic) {
@@ -114,7 +130,7 @@ func (im *Image) modern(b []byte) error {
 		row := b[0x220+i*20 : 0x234+i*20]
 		name := cstring(row[:12])
 		off, n := uint64(be.Uint32(row[12:])), uint64(be.Uint32(row[16:]))
-		if name == "" || names[name] || n == 0 || off < 0x400 || off+n > uint64(len(b)) {
+		if name == "" || names[name] || n == 0 || off < 0x400 || off+n > uint64(im.Size) {
 			return fmt.Errorf("固件分区越界或重复")
 		}
 		names[name] = true
@@ -131,7 +147,14 @@ func (im *Image) modern(b []byte) error {
 			head = int(off)
 		}
 	}
-	if head < 0 || !bytes.Equal(b[head+4:head+24], tpMagic) || !bytes.Equal(b[head+0x204:head+0x218], customMagic) {
+	if head < 0 {
+		return fmt.Errorf("缺少有效的设备固件头")
+	}
+	device, err := readImagePart(r, head, 0x600)
+	if err != nil {
+		return err
+	}
+	if !bytes.Equal(device[4:24], tpMagic) || !bytes.Equal(device[0x204:0x218], customMagic) {
 		return fmt.Errorf("缺少有效的设备固件头")
 	}
 	hw, bl := int(be.Uint16(b[0xa0:])), int(be.Uint16(b[0xa2:]))
@@ -140,9 +163,9 @@ func (im *Image) modern(b []byte) error {
 	}
 	im.Format = "tp-container"
 	im.Brand = be.Uint16(b[0x1a:])
-	im.Model = cstring(b[head+0xc0 : head+0x100])
-	im.Version = cstring(b[head+0x218 : head+0x24c])
-	im.FirmwareID = hex.EncodeToString(b[head+0xb0 : head+0xc0])
+	im.Model = cstring(device[0xc0:0x100])
+	im.Version = cstring(device[0x218:0x24c])
+	im.FirmwareID = hex.EncodeToString(device[0xb0:0xc0])
 	if im.Model == "" || im.FirmwareID == strings.Repeat("0", 32) {
 		return fmt.Errorf("固件型号或版本标识为空")
 	}
@@ -160,7 +183,6 @@ func (im *Image) modern(b []byte) error {
 			im.Blocked = append(im.Blocked, id)
 		}
 	}
-	var err error
 	im.WireVersion, err = versionWire(im.Version)
 	return err
 }
@@ -168,28 +190,34 @@ func (im *Image) modern(b []byte) error {
 var partitionRE = regexp.MustCompile(`fwup-ptn\s+(\S+)\s+base\s+(?:0x)?([0-9a-fA-F]+)\s+size\s+(?:0x)?([0-9a-fA-F]+)`)
 var supportRE = regexp.MustCompile(`([^\r\n:]+):\s*(\d+)\.(\d+)`)
 
-func (im *Image) legacy(b []byte) error {
-	if len(b) < 0x1814 {
+func (im *Image) legacy(r io.ReaderAt) error {
+	if im.Size < 0x1814 {
 		return fmt.Errorf("未知固件格式")
 	}
+	b, err := readImagePart(r, 0, 0x1814)
+	if err != nil {
+		return err
+	}
 	size := int(be.Uint32(b))
-	if size != len(b) && size+128 != len(b) {
+	if size != im.Size && size+128 != im.Size {
 		return fmt.Errorf("固件头声明的大小不符")
 	}
 	hash := md5.New()
 	hash.Write(legacySalt)
-	hash.Write(b[20:size])
+	if _, err := io.CopyN(hash, io.NewSectionReader(r, 20, int64(size-20)), int64(size-20)); err != nil {
+		return err
+	}
 	if !bytes.Equal(hash.Sum(nil), b[4:20]) {
 		return fmt.Errorf("固件内嵌 MD5 校验失败")
 	}
-	parts := map[string][]byte{}
 	type extent struct{ start, end uint64 }
+	parts := map[string]extent{}
 	var extents []extent
 	for _, m := range partitionRE.FindAllStringSubmatch(cstring(b[0x1014:0x1814]), -1) {
 		off, _ := strconv.ParseUint(m[2], 16, 32)
 		n, _ := strconv.ParseUint(m[3], 16, 32)
 		off += 0x101c
-		if off < 0x1814 || off+n > uint64(size) || n == 0 || parts[m[1]] != nil {
+		if off < 0x1814 || off+n > uint64(size) || n == 0 || parts[m[1]].end != 0 {
 			return fmt.Errorf("固件分区越界或重复")
 		}
 		for _, e := range extents {
@@ -198,11 +226,15 @@ func (im *Image) legacy(b []byte) error {
 			}
 		}
 		extents = append(extents, extent{off, off + n})
-		parts[m[1]] = b[off : off+n]
+		parts[m[1]] = extent{off, off + n}
 	}
-	sup, ok := parts["support-list"]
+	support, ok := parts["support-list"]
 	if !ok {
 		return fmt.Errorf("缺少硬件支持列表")
+	}
+	sup, err := readImagePart(r, int(support.start), int(support.end-support.start))
+	if err != nil {
+		return err
 	}
 	s := cstring(sup)
 	pos := strings.Index(s, "SupportList:")
@@ -219,15 +251,18 @@ func (im *Image) legacy(b []byte) error {
 	if len(im.Support) < 1 || len(im.Support) > 10 {
 		return fmt.Errorf("硬件支持列表数量无效")
 	}
-	v := parts["soft-version"]
-	if len(v) < 12 {
+	version := parts["soft-version"]
+	if version.end-version.start < 12 {
 		return fmt.Errorf("缺少软件版本")
+	}
+	v, err := readImagePart(r, int(version.start), 12)
+	if err != nil {
+		return err
 	}
 	date := fmt.Sprintf("%08x", be.Uint32(v[4:]))
 	im.Version = fmt.Sprintf("%d.%d.%d Build %s Rel.%d", v[1], v[2], v[3], date, be.Uint32(v[8:]))
 	im.Format = "safeloader"
 	im.Model = im.Support[0].Model
-	var err error
 	im.WireVersion, err = versionWire(im.Version)
 	return err
 }
