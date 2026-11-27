@@ -1663,7 +1663,7 @@
       "id": "v6-mode-and-reporting",
       "feature": "roaming",
       "origin": "firmware",
-      "behavior": "V6 Web 不允许修改网络模式、升级迁移固定模式 2；统计使能和长间隔按原上限。",
+      "behavior": "V6 Web 不允许修改网络模式、升级迁移固定模式 2；统计使能和长间隔按原上限。 Go显式V4模式扩展另列合同；未标记的旧原型值仍按V6迁移规则处理。",
       "sources": [
         {
           "kind": "uac",
@@ -3152,6 +3152,2275 @@
         {
           "path": "uacgo/admin/native_radio_test.go",
           "name": "TestNativeModelResponsesRequireExplicitSuccess"
+        }
+      ]
+    },
+    {
+      "id": "vendor-backup-offline-migration",
+      "feature": "controller-core",
+      "origin": "standalone-go",
+      "behavior": "离线读取des_crypt的DES-ECB/PKCS7/MD5封装及cfgSave嵌套备份，验证外层与数据库摘要；只转换应用表，认证DB中的userNameTable保留，Linux/RADIUS/Portal/蓝牙排除。通用配置用型号模板保留并按能力投影，物理RF/绑定保持AP归属；非空未知应用表拒绝丢失转换。旧模式变更必须显式选择，不把V4高性能mode1说成V6兼容mode2。 V4固定高性能1保留并标注1.4.3参考来源；0明确拒绝，策略版本不静默混同。",
+      "sources": [
+        {
+          "kind": "file",
+          "path": "usr/sbin/des_crypt",
+          "sha256": "ad361931466e283bc38d31805666107d6dbcf4624ba524a9130878bcbf9e5d1a"
+        },
+        {
+          "kind": "file",
+          "path": "usr/lib/lua/luci/controller/admin/firmware_backuprestore.lua",
+          "sha256": "38ca402f3bc8b1e8bb600337970b6b34691ceec0c15cb6a8b50a534deefba9dc"
+        },
+        {
+          "kind": "file",
+          "path": "usr/lib/lua/luci/controller/admin/host_management.lua",
+          "sha256": "402adb3202783435ba8c11264baafdd5de2a2474ede524d47c50c45b4d3e33da"
+        },
+        {
+          "kind": "file",
+          "path": "usr/lib/lua/luci/controller/admin/apmng_set.lua",
+          "sha256": "032d8ae4a6c7667ac6a3e9427050ffae9ebd761d19dde4d2276ce69b8476a88b"
+        },
+        {
+          "kind": "file",
+          "path": "lib/functions/config.sh",
+          "sha256": "44d2b00c7f2d05d385597330621d72a2cc23c7282933265514d4f98a02435f18"
+        }
+      ],
+      "implementation": [
+        {
+          "path": "uacgo/vendorbackup/archive.go",
+          "symbol": "Read"
+        },
+        {
+          "path": "uacgo/vendorbackup/archive.go",
+          "symbol": "Decode"
+        },
+        {
+          "path": "uacgo/vendorbackup/uci.go",
+          "symbol": "ParseUCI"
+        },
+        {
+          "path": "uacgo/admin/vendor_import.go",
+          "symbol": "ConvertVendorBackup"
+        },
+        {
+          "path": "uacgo/admin/vendor_import.go",
+          "symbol": "compileVendorTemplates"
+        },
+        {
+          "path": "uacgo/admin/vendor_import.go",
+          "symbol": "inventory"
+        },
+        {
+          "path": "uacgo/admin/vendor_import_policy.go",
+          "symbol": "convertVendorGlobals"
+        }
+      ],
+      "tests": [
+        {
+          "path": "uacgo/vendorbackup/archive_test.go",
+          "name": "TestDecodeOriginalDESUtilityFixture"
+        },
+        {
+          "path": "uacgo/vendorbackup/archive_test.go",
+          "name": "TestUCIListsQuotesAndEmptyStrings"
+        },
+        {
+          "path": "uacgo/admin/vendor_import_test.go",
+          "name": "TestVendorConversionKeepsBindingsNamesAndWireUnits"
+        },
+        {
+          "path": "uacgo/admin/vendor_import_test.go",
+          "name": "TestVendorConversionNeverSilentlyChangesLegacyMode"
+        }
+      ]
+    },
+    {
+      "id": "complete-model-database-and-negotiation-cache",
+      "feature": "radio",
+      "origin": "firmware",
+      "behavior": "完整加载固件的ap_list与multi_ap_list共84型号/102硬件版本；协商ap_item_list按model ID、fwid的零基ap_index和硬件版本选择，不合并同型号AX/BE能力。JSON和private51共享最终模式/带宽/信道推导；当前AP报告优先，保留NSS、WPA3、互斥信道、80+80与专用射频标记。",
+      "sources": [
+        {
+          "kind": "file",
+          "path": "etc/apdb.bin",
+          "sha256": "a8a7169b01c023a6d5b18e5ed9c00930712a8eba83615a66a901bd695cb8aaa2"
+        },
+        {
+          "kind": "file",
+          "path": "usr/lib/lua/luci/torchlight/uac/apdb.lua",
+          "sha256": "06767c393fbdcbabefbc69c300774c80a7154457bc93633faa37c14a323ae777"
+        }
+      ],
+      "implementation": [
+        {
+          "path": "uacgo/cweng/store.go",
+          "symbol": "LoadAPDB"
+        },
+        {
+          "path": "uacgo/cweng/model_database.go",
+          "symbol": "Models"
+        },
+        {
+          "path": "uacgo/cweng/model_database.go",
+          "symbol": "negotiatedModel"
+        },
+        {
+          "path": "uacgo/cweng/model_database.go",
+          "symbol": "resolveModel"
+        },
+        {
+          "path": "uacgo/cweng/model_database.go",
+          "symbol": "completeRadioCapability"
+        },
+        {
+          "path": "uacgo/cweng/capabilities.go",
+          "symbol": "ResolveCapabilities"
+        }
+      ],
+      "tests": [
+        {
+          "path": "uacgo/cweng/model_database_test.go",
+          "name": "TestEntireFirmwareLibraryIncludesMultiAPModels"
+        },
+        {
+          "path": "uacgo/cweng/model_database_test.go",
+          "name": "TestNegotiatedModelSelectionUsesFirmwareAndHardwareIdentity"
+        }
+      ]
+    },
+    {
+      "id": "v4-fixed-high-performance-coordinator",
+      "feature": "roaming",
+      "origin": "firmware",
+      "behavior": "显式来源标记的V4固定高性能模式1：加入/手工/上报传播与ACS完成分开；ACS双频AP用overall-best5，加入用low5优先；报表求和、拒绝分支、6秒缺省容器等待、cap72/cap25独立。V4来源的候选/估速/PMK分支另见跨版本合同；未标记的V6基线策略不改写；自动模式的进入/回退另列合同；不声称是1.4.4完整控制器。",
+      "sources": [
+        {
+          "kind": "v4-uac",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "get_acs_timeout",
+          "address": "0x00483000",
+          "size": 20,
+          "sha256": "bb266bc51fc9f3a2cd0221353bbceca3f0bc2bba38e6ffb0f42c4dcbf5032d08"
+        },
+        {
+          "kind": "v4-uac",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "rdmngr_db_get_band_by_channel",
+          "address": "0x0061e4c0",
+          "size": 64,
+          "sha256": "789a19a16a23ec179012eb96ef97a8b3b80dcee8b8dbe90da22d6adc6fe239cb"
+        },
+        {
+          "kind": "v4-uac",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "update_high_per_ap_chn_info",
+          "address": "0x00482dfc",
+          "size": 516,
+          "sha256": "516c4fa0af491492a6c6486cc64fbdabec16a4dfc49358f7a5f93e0736d8ca1f"
+        },
+        {
+          "kind": "v4-uac",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "check_cur_wireless_network_mode",
+          "address": "0x00486994",
+          "size": 276,
+          "sha256": "a1162680c78b8e73c18e1f3b406e8fec6acd318f1a312f68e461741faedeb378"
+        },
+        {
+          "kind": "v4-uac",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "wireless_network_mode_change_handle",
+          "address": "0x00484624",
+          "size": 476,
+          "sha256": "664da5a2142253218557befef0dd147b654a6e1fde129eaff86a00e48d1e2d67"
+        },
+        {
+          "kind": "v4-uac",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "wsta_intelligent_roam_manual_change_wireless_network_mode",
+          "address": "0x00489c08",
+          "size": 456,
+          "sha256": "243ab146052b976ff21cd874267b68cd2892a515bd10ebf42554786b2ac958a0"
+        },
+        {
+          "kind": "v4-uac",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "_wsta_intelligent_roam_ctl_pkt_send_cb",
+          "address": "0x00489930",
+          "size": 436,
+          "sha256": "b4322c2ea1367e77d957607d031bc0c791411b8ab80db93e0cd7dc5e07a68940"
+        },
+        {
+          "kind": "v4-uac",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "_wsta_intelligent_roam_set_wireless_network_mode_send",
+          "address": "0x004839a0",
+          "size": 676,
+          "sha256": "2c64e632fa3687b501a6df489a4566d50a9379a3c2d91d504ebc820bd67cb0d8"
+        },
+        {
+          "kind": "v4-uac",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "_wstat_roam_update_wireless_network_mode_to_ap",
+          "address": "0x00483c44",
+          "size": 368,
+          "sha256": "920540009fc2bc112d941f9bff41b5591c4dee0778c6931c97fe7ff40b87d69b"
+        },
+        {
+          "kind": "v4-uac",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "_wsta_intelligent_roam_ctl_packet_create",
+          "address": "0x00489464",
+          "size": 612,
+          "sha256": "87b82d1043fab76e0a2141228ceb2e24dfb8e86372dad2e2e4aeab050dab3f60"
+        },
+        {
+          "kind": "v4-uac",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "_wsta_intelligent_roam_set_rd_info",
+          "address": "0x00484800",
+          "size": 936,
+          "sha256": "4eafd3f4f91e32ec76ab7397ba2a087cc8eb659e9e6c42421ef3f4480c82fe5c"
+        },
+        {
+          "kind": "v4-uac",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "_wsta_intelligent_roam_set_rd_cfg",
+          "address": "0x00484ba8",
+          "size": 88,
+          "sha256": "ac95c388a9037075698acd51af998ac963569704f3186fcb0c203c39506f764f"
+        },
+        {
+          "kind": "v4-uac",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "_wsta_roam_rd_chnl_changed_by_subdev",
+          "address": "0x00485e48",
+          "size": 376,
+          "sha256": "9e2c816a2c05e1ce326b8fdabcbd587e381783613027e1f5967963305e485909"
+        },
+        {
+          "kind": "v4-uac",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "_wsta_roam_rd_chnl_modify_by_manual",
+          "address": "0x00489b60",
+          "size": 160,
+          "sha256": "cdb7b80b7292ef2f9fa4a701bf364c7378abc62b22cc3625b0539ad1ece9da14"
+        },
+        {
+          "kind": "v4-uac",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "_wsta_intelligent_roam_callback_wtp_leave",
+          "address": "0x00485294",
+          "size": 656,
+          "sha256": "1ce447e31ee023f81a26f6d554516ce59573e9823d14eb8d2e9fc440a82f490d"
+        },
+        {
+          "kind": "v4-uac",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "_wsta_intelligent_roam_do_acs",
+          "address": "0x00486710",
+          "size": 644,
+          "sha256": "7ef750eee3f1d505d846995738e0e89e6ac955dd73b376bffd55eba24a45f6ea"
+        },
+        {
+          "kind": "v4-uac",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "_wstat_roam_check_support_acs",
+          "address": "0x00483db4",
+          "size": 348,
+          "sha256": "b3add0f47c84d1e92b111b777cf3afcf82d445b9bb8bca64956449e9fe536c79"
+        },
+        {
+          "kind": "v4-uac",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "_wstat_roam_start_acs_to_ap",
+          "address": "0x00484424",
+          "size": 392,
+          "sha256": "81cdbedc57960fa3198d702bd26a7b339abb4557653f017f310f9a0b01013389"
+        },
+        {
+          "kind": "v4-uac",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "_wsta_intelligent_roam_start_acs_send",
+          "address": "0x00483f7c",
+          "size": 1192,
+          "sha256": "948d47ed4d0b296889ecb05002833563e24abd8c11adde137a497b89ac9d1a8c"
+        },
+        {
+          "kind": "v4-uac",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "_wsta_roam_pkt_chnl_scan_report",
+          "address": "0x00489024",
+          "size": 860,
+          "sha256": "0d1196531ae871104bd33ffdf03e153a85d0b29fba99818f374c9492a0529ac1"
+        },
+        {
+          "kind": "v4-uac",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "wsta_roam_chnl_handle",
+          "address": "0x00486aa8",
+          "size": 716,
+          "sha256": "20c049bf972f7ed2bf1e02ecfed07b7818575fccfa459f36d6a863de793f5cb4"
+        },
+        {
+          "kind": "v4-uac",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "wsta_roam_chnl_handle_thread",
+          "address": "0x004857a8",
+          "size": 1696,
+          "sha256": "84109718b32d377e1daf474c3c565a418eb9c4ad5ecaa40f0b7ac718733e33a7"
+        },
+        {
+          "kind": "v4-uac",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "_wsta_roam_collect_chnl_set_to_ap",
+          "address": "0x00485524",
+          "size": 644,
+          "sha256": "7c8b5c00da3f2006e348fc432e4b7ca324fa92762fbb1ff6786b7164dd2f8128"
+        },
+        {
+          "kind": "v4-uac",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "_uac_rdmngr_rd_chnl_bw_set",
+          "address": "0x006301e8",
+          "size": 976,
+          "sha256": "5c962ca4e748fd26fd529e1b93c0ead20dd4a085973d7fdcbbaff67ca7f7bbcb"
+        },
+        {
+          "kind": "v4-uac",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "_wsta_roam_pkt_wtp_event_listener",
+          "address": "0x00489380",
+          "size": 228,
+          "sha256": "9451960d2383e2c6b936ae92069c8365b5d7ee58c8739be4a7d84ad7cbecfb4b"
+        },
+        {
+          "kind": "v4-uac",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "wsta_roam_pkt_init",
+          "address": "0x00489f2c",
+          "size": 820,
+          "sha256": "c87b6d6f6eb51a5d98b5b0814d758dabb2e8770e6f880bb80dd43ed428d6bfb3"
+        },
+        {
+          "kind": "v4-uac",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "_wsta_roam_read_config",
+          "address": "0x00480fe8",
+          "size": 2128,
+          "sha256": "70a5f6d5e8d2ad2d4c626fd67fea95967fa5197cb4f4370fd82210a8b27f2c1e"
+        },
+        {
+          "kind": "v4-uac",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "chnl_rrm_start",
+          "address": "0x004ad1d8",
+          "size": 624,
+          "sha256": "15d9aed0667b11f19adbacccffc50b3ad5c6a211a24430984b8df51395f3ed6e"
+        },
+        {
+          "kind": "v4-uac",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "rrm_acs_timeout",
+          "address": "0x004aa7a0",
+          "size": 256,
+          "sha256": "3d7b2e4849df6e6abc72000621f1700702409d5d8ac72c44786e00e51b615797"
+        },
+        {
+          "kind": "v4-uac",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "rdmngr_callback_proc",
+          "address": "0x00613634",
+          "size": 396,
+          "sha256": "96e48d3eb49219533863d996ca8f66d5a7c7046d04a3e9af8e050a1d3d3500c2"
+        },
+        {
+          "kind": "v4-file",
+          "path": "etc/apdb.bin",
+          "sha256": "a8a7169b01c023a6d5b18e5ed9c00930712a8eba83615a66a901bd695cb8aaa2"
+        },
+        {
+          "kind": "v4-file",
+          "path": "lib/functions/config.sh",
+          "sha256": "f2cbbdd39b4a8495c5d6722c8031949fd89f0de34b2db021ba869eb8bbd09c13"
+        },
+        {
+          "kind": "v4-file",
+          "path": "usr/lib/lua/luci/controller/admin/apmng_roam.lua",
+          "sha256": "7c614bccf3d3e1b31f18acbc72c8aa6f43c649908a2cb6d75955c4cdb19e24bc"
+        },
+        {
+          "kind": "v4-file",
+          "path": "usr/lib/lua/luci/view/userrpm/apmng_roaming_wireless_mode.htm",
+          "sha256": "aaee4f9ff6920edf6c353415043df13c198aca4b51c89f46fa9b109951208297"
+        }
+      ],
+      "implementation": [
+        {
+          "path": "uacgo/mobility/high_performance.go",
+          "symbol": "V4ChannelBand"
+        },
+        {
+          "path": "uacgo/mobility/high_performance.go",
+          "symbol": "V4CommonChannel"
+        },
+        {
+          "path": "uacgo/mobility/high_performance.go",
+          "symbol": "V4ACSChannel"
+        },
+        {
+          "path": "uacgo/mobility/high_performance.go",
+          "symbol": "V4SelectCommonChannels"
+        },
+        {
+          "path": "uacgo/mobility/high_performance.go",
+          "symbol": "Update"
+        },
+        {
+          "path": "uacgo/admin/high_performance.go",
+          "symbol": "prepareHighPerformanceLocked"
+        },
+        {
+          "path": "uacgo/admin/high_performance.go",
+          "symbol": "withHighPerformanceSelectionLocked"
+        },
+        {
+          "path": "uacgo/admin/high_performance.go",
+          "symbol": "seedHighPerformanceRadioLocked"
+        },
+        {
+          "path": "uacgo/admin/high_performance.go",
+          "symbol": "startHighPerformanceACSLocked"
+        },
+        {
+          "path": "uacgo/admin/high_performance.go",
+          "symbol": "observeHighPerformanceScan"
+        },
+        {
+          "path": "uacgo/admin/high_performance.go",
+          "symbol": "finishHighPerformanceACSLocked"
+        },
+        {
+          "path": "uacgo/admin/high_performance.go",
+          "symbol": "highPerformanceModeReadyLocked"
+        },
+        {
+          "path": "uacgo/admin/high_performance_rrm.go",
+          "symbol": "startHighPerformanceRRMJobLocked"
+        },
+        {
+          "path": "uacgo/admin/high_performance_rrm.go",
+          "symbol": "finishHighPerformanceRRMJobLocked"
+        },
+        {
+          "path": "uacgo/admin/rrm_jobs.go",
+          "symbol": "startRRMMeasurementLocked"
+        }
+      ],
+      "tests": [
+        {
+          "path": "uacgo/mobility/high_performance_test.go",
+          "name": "TestV4HighPerformanceACSUsesAggregateAndSeparateDownlinks"
+        },
+        {
+          "path": "uacgo/mobility/high_performance_test.go",
+          "name": "TestV4HighPerformanceRejectBranchAndNoSamplesKeepVendorDefaults"
+        },
+        {
+          "path": "uacgo/mobility/high_performance_test.go",
+          "name": "TestV4HighPerformanceChannelSeedAndManualBandFilter"
+        },
+        {
+          "path": "uacgo/admin/high_performance_test.go",
+          "name": "TestV4HighPerformanceDifferentEntriesAndInheritedBandwidth"
+        },
+        {
+          "path": "uacgo/admin/high_performance_test.go",
+          "name": "TestV4HighPerformanceModeWireOrderingAndIndependentCapabilities"
+        },
+        {
+          "path": "uacgo/admin/high_performance_test.go",
+          "name": "TestV4HighPerformanceManualEntryRestoreAndReportEpochs"
+        },
+        {
+          "path": "uacgo/admin/high_performance_test.go",
+          "name": "TestV4HighPerformanceRRMChannelEntryUsesGlobalACS"
+        },
+        {
+          "path": "uacgo/cweng/high_performance_report_test.go",
+          "name": "TestV4ChannelScanListenerConsumesFirstEventElement"
+        },
+        {
+          "path": "uacgo/admin/high_performance_test.go",
+          "name": "TestV4HighPerformanceRejectsTPCAndKeepsACSWaitLimit"
+        },
+        {
+          "path": "uacgo/admin/high_performance_test.go",
+          "name": "TestV4HighPerformanceConfigurationSurvivesStartup"
+        },
+        {
+          "path": "uacgo/admin/high_performance_test.go",
+          "name": "TestV4HighPerformanceManualAndRRMScansWaitForModeWrites"
+        }
+      ]
+    },
+    {
+      "id": "v4-acs-empty-opposite-band-output",
+      "feature": "roaming",
+      "origin": "firmware-bug-fix",
+      "behavior": "V4普通BSS分支无相反5GHz频段候选时不复用overall-best临时变量；有候选时保留原最小BSS/负载排序，拒绝分支保留原默认另一频段行为。",
+      "firmware_defect": "4857a8在搜索相反频段前保留上次best5临时值；无匹配时可给两个频段同一信道。",
+      "intentional_change": "将相反频段候选初始化为空，缺失时使用源码分支明确写出的36/149回退，避免旧临时值泄漏。",
+      "authorization": "用户要求保持调度策略，不复制原固件的明显候选复用bug。",
+      "sources": [
+        {
+          "kind": "v4-uac",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "wsta_roam_chnl_handle_thread",
+          "address": "0x004857a8",
+          "size": 1696,
+          "sha256": "84109718b32d377e1daf474c3c565a418eb9c4ad5ecaa40f0b7ac718733e33a7"
+        }
+      ],
+      "implementation": [
+        {
+          "path": "uacgo/mobility/high_performance.go",
+          "symbol": "V4SelectCommonChannels"
+        }
+      ],
+      "tests": [
+        {
+          "path": "uacgo/mobility/high_performance_test.go",
+          "name": "TestV4HighPerformanceRejectBranchAndNoSamplesKeepVendorDefaults"
+        }
+      ]
+    },
+    {
+      "id": "v4-automatic-mode-entries-and-redistribution",
+      "feature": "roaming",
+      "origin": "firmware",
+      "behavior": "V4显式来源的自动0分离配置/实际模式；默认门限取源码profile读取失败值5AP/30STA。启动不提升已回退2；手工改选0重查数量；新RUN AP超过门限只回退；STA关联超过门限才回退并按AP关联数及含idle的原始统计数双门禁重分配。回退9d→57→RF；每个低负载AP按原uClibc srand(time)/rand乘10的uint32查表只改channel，0保留。无离线/周期升档、无均匀分配新算法；RRM中途回退保留后续功率阶段、不重跑SCA。",
+      "sources": [
+        {
+          "kind": "v4-uac",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "check_cur_wireless_network_mode",
+          "address": "0x00486994",
+          "size": 276,
+          "sha256": "a1162680c78b8e73c18e1f3b406e8fec6acd318f1a312f68e461741faedeb378"
+        },
+        {
+          "kind": "v4-uac",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "wireless_network_mode_change_handle",
+          "address": "0x00484624",
+          "size": 476,
+          "sha256": "664da5a2142253218557befef0dd147b654a6e1fde129eaff86a00e48d1e2d67"
+        },
+        {
+          "kind": "v4-uac",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "wsta_intelligent_roam_manual_change_wireless_network_mode",
+          "address": "0x00489c08",
+          "size": 456,
+          "sha256": "243ab146052b976ff21cd874267b68cd2892a515bd10ebf42554786b2ac958a0"
+        },
+        {
+          "kind": "v4-uac",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "_wsta_intelligent_roam_ctl_pkt_send_cb",
+          "address": "0x00489930",
+          "size": 436,
+          "sha256": "b4322c2ea1367e77d957607d031bc0c791411b8ab80db93e0cd7dc5e07a68940"
+        },
+        {
+          "kind": "v4-uac",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "_wsta_intelligent_roam_sta_stats",
+          "address": "0x00484d2c",
+          "size": 676,
+          "sha256": "39de13960f4e5de88e6288f89d5a3640e7529ad0cc3a49db066a09cb07ceba77"
+        },
+        {
+          "kind": "v4-uac",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "_wsta_intelligent_roam_sta_change_ap_info",
+          "address": "0x00484c00",
+          "size": 300,
+          "sha256": "b92e601d393e2b63ec053508640d5f87316789c5bd56f70884eb16b5264ae023"
+        },
+        {
+          "kind": "v4-uac",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "_wsta_intelligent_roam_set_rd_info_by_sta",
+          "address": "0x00484fd0",
+          "size": 708,
+          "sha256": "b5fa202210d1254c82627a5631b5879e4a31d57c42aae05fe10f9f048c2d75cd"
+        },
+        {
+          "kind": "v4-uac",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "_wsta_intelligent_roam_check_sta_is_active",
+          "address": "0x00486468",
+          "size": 224,
+          "sha256": "d8d386dc0af86fbe08a9343c370e01200b854b8f949bcf5ed2f04edb5679ae11"
+        },
+        {
+          "kind": "v4-uac",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "wsta_roam_pkt_init",
+          "address": "0x00489f2c",
+          "size": 820,
+          "sha256": "c87b6d6f6eb51a5d98b5b0814d758dabb2e8770e6f880bb80dd43ed428d6bfb3"
+        },
+        {
+          "kind": "v4-uac",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "_wsta_roam_read_config",
+          "address": "0x00480fe8",
+          "size": 2128,
+          "sha256": "70a5f6d5e8d2ad2d4c626fd67fea95967fa5197cb4f4370fd82210a8b27f2c1e"
+        },
+        {
+          "kind": "v4-uac",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "_multi_link_status_switch",
+          "address": "0x006632bc",
+          "size": 404,
+          "sha256": "45bb8992ed4e5ee9ab147b0be7af8400e70b5f9e539eaf29f265116fd4a5d1e4"
+        },
+        {
+          "kind": "v4-uac",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "apmngr_db_active_ap_inc",
+          "address": "0x005390c0",
+          "size": 524,
+          "sha256": "5554af1c3c366377e6e7d0d59c468e115ea296321f78e50a2f3a4d3e5f244ce2"
+        },
+        {
+          "kind": "v4-uac",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "wsta_db_sta_assoc",
+          "address": "0x0063c5e0",
+          "size": 6004,
+          "sha256": "9724566538c1123ffd733c4c558b8262c1b1662c1771382b22837d4c81afef03"
+        },
+        {
+          "kind": "v4-uac",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "_uac_wstation_do_event",
+          "address": "0x00636b58",
+          "size": 340,
+          "sha256": "a0936ef8b9e642e337b43047b0c598c63a5851737b997fd88f892f22223f6b2e"
+        },
+        {
+          "kind": "v4-uac",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "stats_db_sta_for_each_range_for_specify_ap",
+          "address": "0x0066d640",
+          "size": 232,
+          "sha256": "8f6f2d869d3a70e122a571ea3b57f38eb0f6eee6366904dcceb664771218a974"
+        },
+        {
+          "kind": "v4-uac",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "stats_db_sta_update_cnt_target",
+          "address": "0x0066d0d8",
+          "size": 1016,
+          "sha256": "6fe0afc9cd3c607cfd4b5a5256c1e21e574bf8e4eeb720d712e3e2a62995dd89"
+        },
+        {
+          "kind": "v4-uac",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "stats_db_sta_update",
+          "address": "0x0066c750",
+          "size": 800,
+          "sha256": "6a40a8dca3b7d53f357fc51f28d6cef216965f414c2e0a8e381e22da2c5a807b"
+        },
+        {
+          "kind": "v4-uac",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "stats_db_sta_start_del_timer_by_mac",
+          "address": "0x0066d4d0",
+          "size": 164,
+          "sha256": "8c96950232bf531cffc7ebed25af00877f0b4b91e857d4c6bf2804f57e0a1f4e"
+        },
+        {
+          "kind": "v4-uac",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "_stats_sta_idle_timer_handle",
+          "address": "0x006689c4",
+          "size": 252,
+          "sha256": "25394d4e31b6a00c74faed6ba1c58380b00ac4c556c1647bce18405783618c49"
+        },
+        {
+          "kind": "v4-uac",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "_stats_sta_copy_to_list",
+          "address": "0x00668b38",
+          "size": 144,
+          "sha256": "490b544c9950533f8d2331be072df1e47a4cfa6e9518fd5d38a84ad1b95b5aa6"
+        },
+        {
+          "kind": "v4-uac",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "_stats_sta_assoc_cb",
+          "address": "0x00672eac",
+          "size": 152,
+          "sha256": "d78462ef3e80c1abc0309278d80126d008adaf54bb72449f0cf608295353f083"
+        },
+        {
+          "kind": "v4-uac",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "_stats_sta_deassoc_cb",
+          "address": "0x00672f44",
+          "size": 96,
+          "sha256": "c34eacbadc4fd35bc76f0b5c7fa5870de1511eef8fd7db9ac81ddac29931c1a9"
+        },
+        {
+          "kind": "v4-uac",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "uac_stats_init",
+          "address": "0x00673228",
+          "size": 1072,
+          "sha256": "66fd8afa76d9dbe5888c51273a22b47cfd12b6913348ed889df83055b398eba8"
+        },
+        {
+          "kind": "v4-uac",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "_uac_rdmngr_rd_chnl_set",
+          "address": "0x0062fb28",
+          "size": 908,
+          "sha256": "5dc3230adef85ee68a7637c0d138b3fc1b4a44e7ed2d599a6b9f0e98340c5933"
+        },
+        {
+          "kind": "v4-uac",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "chnl_rrm_start",
+          "address": "0x004ad1d8",
+          "size": 624,
+          "sha256": "15d9aed0667b11f19adbacccffc50b3ad5c6a211a24430984b8df51395f3ed6e"
+        },
+        {
+          "kind": "v4-uac",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "rrm_acs_timeout",
+          "address": "0x004aa7a0",
+          "size": 256,
+          "sha256": "3d7b2e4849df6e6abc72000621f1700702409d5d8ac72c44786e00e51b615797"
+        },
+        {
+          "kind": "v4-uac",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "compatibility_channel_lookup",
+          "address": "0x00697378",
+          "size": 12,
+          "sha256": "0eb615e57c1cac58f421446eaa1aa343e5b772584571214167087f87462b87bc"
+        },
+        {
+          "kind": "v4-uac",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "idle_station_seconds",
+          "address": "0x00758ce4",
+          "size": 4,
+          "sha256": "cb5f66339aa4e2aa800cd484ff17db92095295998454996900292631fe153e2a"
+        },
+        {
+          "kind": "v4-library",
+          "path": "lib/libuClibc-0.9.33.2.so",
+          "binary_sha256": "2017c1f29c966c2ccfc3f1b9bba58d447f53d760f8b9d2f36bc23fc73bbd2fe3",
+          "name": "rand",
+          "address": "0x00048920",
+          "size": 24,
+          "sha256": "ed5dd740a2fc580923bed5574688feede3ba687844ba2118a9795c2a599c8c1c"
+        },
+        {
+          "kind": "v4-library",
+          "path": "lib/libuClibc-0.9.33.2.so",
+          "binary_sha256": "2017c1f29c966c2ccfc3f1b9bba58d447f53d760f8b9d2f36bc23fc73bbd2fe3",
+          "name": "srand",
+          "address": "0x00048940",
+          "size": 140,
+          "sha256": "c21ed7d083300df2343e7df75a89da9ea747b1280141fee02ac52323ddffe86a"
+        },
+        {
+          "kind": "v4-library",
+          "path": "lib/libuClibc-0.9.33.2.so",
+          "binary_sha256": "2017c1f29c966c2ccfc3f1b9bba58d447f53d760f8b9d2f36bc23fc73bbd2fe3",
+          "name": "random",
+          "address": "0x00048b20",
+          "size": 132,
+          "sha256": "07da97a7991368722da9640803d456c9dde07b9596ed48cfef87510d0edbe13b"
+        },
+        {
+          "kind": "v4-library",
+          "path": "lib/libuClibc-0.9.33.2.so",
+          "binary_sha256": "2017c1f29c966c2ccfc3f1b9bba58d447f53d760f8b9d2f36bc23fc73bbd2fe3",
+          "name": "random_r",
+          "address": "0x00048bb0",
+          "size": 132,
+          "sha256": "195075a089746def5409ad617c5a1936010788cff0e68e9777c73d2c08195387"
+        },
+        {
+          "kind": "v4-library",
+          "path": "lib/libuClibc-0.9.33.2.so",
+          "binary_sha256": "2017c1f29c966c2ccfc3f1b9bba58d447f53d760f8b9d2f36bc23fc73bbd2fe3",
+          "name": "srandom_r",
+          "address": "0x00048c34",
+          "size": 268,
+          "sha256": "ad85c7f449d434941e2748e151f8daf229b396a7e5e0d97e7d5a83d9eb212d19"
+        },
+        {
+          "kind": "v4-library",
+          "path": "lib/libuClibc-0.9.33.2.so",
+          "binary_sha256": "2017c1f29c966c2ccfc3f1b9bba58d447f53d760f8b9d2f36bc23fc73bbd2fe3",
+          "name": "random_global_state",
+          "address": "0x000672e8",
+          "size": 20,
+          "sha256": "5848d5296a8a708ced1253e91e5a997ec1cc71d180415d9675100be23e9727e5"
+        },
+        {
+          "kind": "v4-uac",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "apmngr_db_active_ap_num_get",
+          "address": "0x0053903c",
+          "size": 12,
+          "sha256": "3e70462a74f21cb6ea8dbdb4b5555b8d380a2ce44a4b114998370c1402b1bdef"
+        },
+        {
+          "kind": "v4-uac",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "wsta_db_get_total_num",
+          "address": "0x006390c8",
+          "size": 72,
+          "sha256": "31364fd7f4c3aef8d68d380bba517b0ff9b932a6b65c269d8e4657f2e345fb62"
+        },
+        {
+          "kind": "v4-uac",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "wsta_db_get_ap_sta_num",
+          "address": "0x00639110",
+          "size": 336,
+          "sha256": "d6dbb847660771308b3e5564a9e2d9af05e4b439bf7e3f40395eaf9e855633c3"
+        },
+        {
+          "kind": "v4-uac",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "get_high_per_ap_cnt",
+          "address": "0x00482dc0",
+          "size": 12,
+          "sha256": "3a39b5de98f8e5971464d5d82ff8a8e4ad42a61f919c3c952e34d1b5929737f7"
+        },
+        {
+          "kind": "v4-uac",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "get_high_per_sta_cnt",
+          "address": "0x00482dcc",
+          "size": 12,
+          "sha256": "a7ae807bb8b3fdd3b6c2255b8bea2f8deac993cdf78a8eb116a179f5fa4d1a91"
+        },
+        {
+          "kind": "v4-uac",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "apmngr_db_foreach_proc",
+          "address": "0x005382e4",
+          "size": 424,
+          "sha256": "286310638002ba3922380311e4cc43b6aa09872ec537e1e449d5929a85a29383"
+        }
+      ],
+      "implementation": [
+        {
+          "path": "uacgo/mobility/automatic.go",
+          "symbol": "V4DefaultAutomaticLimits"
+        },
+        {
+          "path": "uacgo/mobility/automatic.go",
+          "symbol": "V4CheckMode"
+        },
+        {
+          "path": "uacgo/mobility/automatic.go",
+          "symbol": "V4ModeAfterJoin"
+        },
+        {
+          "path": "uacgo/mobility/automatic.go",
+          "symbol": "V4ModeAfterAssociation"
+        },
+        {
+          "path": "uacgo/mobility/automatic.go",
+          "symbol": "V4RedistributionChannels"
+        },
+        {
+          "path": "uacgo/mobility/station_db.go",
+          "symbol": "AssociateAt"
+        },
+        {
+          "path": "uacgo/mobility/station_db.go",
+          "symbol": "ObserveActivity"
+        },
+        {
+          "path": "uacgo/mobility/station_db.go",
+          "symbol": "ActiveStationsOnAP"
+        },
+        {
+          "path": "uacgo/admin/automatic_mode.go",
+          "symbol": "prepareV4ModeSelectionLocked"
+        },
+        {
+          "path": "uacgo/admin/automatic_mode.go",
+          "symbol": "initializeAutomaticMode"
+        },
+        {
+          "path": "uacgo/admin/automatic_mode.go",
+          "symbol": "automaticAPJoinedLocked"
+        },
+        {
+          "path": "uacgo/admin/automatic_mode.go",
+          "symbol": "automaticStationAssociatedLocked"
+        },
+        {
+          "path": "uacgo/admin/automatic_mode.go",
+          "symbol": "changeAutomaticModeLocked"
+        },
+        {
+          "path": "uacgo/admin/automatic_mode.go",
+          "symbol": "redistributeCompatibilityChannelsLocked"
+        },
+        {
+          "path": "uacgo/admin/automatic_mode.go",
+          "symbol": "modeBlockRequiredLocked"
+        },
+        {
+          "path": "uacgo/admin/automatic_mode.go",
+          "symbol": "modeBeforeRadio"
+        },
+        {
+          "path": "uacgo/admin/high_performance.go",
+          "symbol": "configuredMobilityMode"
+        },
+        {
+          "path": "uacgo/admin/high_performance.go",
+          "symbol": "actualMobilityMode"
+        },
+        {
+          "path": "uacgo/admin/config_store.go",
+          "symbol": "persistConfigLocked"
+        },
+        {
+          "path": "uacgo/admin/rrm_jobs.go",
+          "symbol": "tickRRM"
+        },
+        {
+          "path": "uacgo/admin/vendor_import_policy.go",
+          "symbol": "convertVendorGlobals"
+        }
+      ],
+      "tests": [
+        {
+          "path": "uacgo/mobility/automatic_test.go",
+          "name": "TestV4AutomaticModeBoundariesAndStickyCompatibility"
+        },
+        {
+          "path": "uacgo/mobility/automatic_test.go",
+          "name": "TestV4AutomaticChannelRandomMatchesPinnedLibc"
+        },
+        {
+          "path": "uacgo/mobility/automatic_test.go",
+          "name": "TestV4AutomaticActivityIncludesIdleAndUnknownStatistics"
+        },
+        {
+          "path": "uacgo/admin/automatic_mode_test.go",
+          "name": "TestV4AutomaticAPCountDemotionDoesNotRedistributeOrPromoteOnLeave"
+        },
+        {
+          "path": "uacgo/admin/automatic_mode_test.go",
+          "name": "TestV4AutomaticStationEntryRespectsCountsIdleStatisticsAndBandwidth"
+        },
+        {
+          "path": "uacgo/admin/automatic_mode_test.go",
+          "name": "TestV4AutomaticAssociationTriggerPersistsActualModeAndRestart"
+        },
+        {
+          "path": "uacgo/admin/automatic_mode_test.go",
+          "name": "TestV4AutomaticCompatibleJoinAndTransitionUseDifferentModeBlocks"
+        },
+        {
+          "path": "uacgo/admin/automatic_mode_test.go",
+          "name": "TestV4AutomaticDemotionDuringACSDoesNotRestartChannelOptimization"
+        },
+        {
+          "path": "uacgo/admin/vendor_import_test.go",
+          "name": "TestVendorConversionNeverSilentlyChangesLegacyMode"
+        },
+        {
+          "path": "uacgo/admin/automatic_mode_test.go",
+          "name": "TestV4AutomaticAPCountUsesRoleInsteadOfRawProductType"
+        }
+      ]
+    },
+    {
+      "id": "cross-version-station-policy",
+      "feature": "roaming",
+      "origin": "firmware",
+      "behavior": "V4来源统一选择旧分频段候选、严格RSSI/方向差值、伪关联容量/绑定/均衡及空结果省略；不因自动回退2而切到V6。估速按版本选择-95/-85基准、缺失PHY默认与BE模式映射，编译速率表逐字节相同才共享。V4 balance回调更新57策略2↔1并重发，V6保持2；普通关联错误码25/25与26/27分开。PMK操作/服务隔离/寿命/失败释放共用已对照分支，V4 NULL输出缺陷另列有意修复。 V4均衡按DB MAC记录计数，V6排除MLO peer；不能把V6逻辑客户端计数套到V4。",
+      "sources": [
+        {
+          "kind": "comparison-uac",
+          "version": "v4",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "FUN_0040a270",
+          "address": "0x0040a270",
+          "size": 80,
+          "sha256": "e59591ec29d60161bb1de7c5225c0b0075cb07be1e3c1608c4d6b668303821ae"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v4",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "FUN_00486664",
+          "address": "0x00486664",
+          "size": 100,
+          "sha256": "07c100e452b140ea5aab360daea1edbc83151a8f939a9e5b6a6c482c584db09e"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v4",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "_nbr_filter",
+          "address": "0x004861a4",
+          "size": 296,
+          "sha256": "fef855706b16df919f708e63d4b93db33c81d242ac2f57b74d3d0c1692c1d197"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v4",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "_quick_sort_impl",
+          "address": "0x00483800",
+          "size": 384,
+          "sha256": "e7669f7d1f11dc27051fa22279ddfc8a5b5bdf293efc2aadc6912e2fef2b2922"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v4",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "_roaming_nbr_packet_create",
+          "address": "0x00487610",
+          "size": 3692,
+          "sha256": "e301b48105508bba48400256b467e2921e0e605157bdddf6427fce96b35f4f7c"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v4",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "_roaming_nbr_select",
+          "address": "0x004871bc",
+          "size": 1108,
+          "sha256": "e42f9fc8cae9c66cb64f8116756dee5df98813d005ca454152fe4669debc3dba"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v4",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "_rssi_sort_fun",
+          "address": "0x004862cc",
+          "size": 412,
+          "sha256": "2b175adeb90772a611ecafda9c59810030fbfb41768ff7e7325bbf9e6817ee99"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v4",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "_sta_caps_calculate",
+          "address": "0x0048a928",
+          "size": 520,
+          "sha256": "79565c7d52ec40fea5f03df28297bc74656ed1f278eb976b3f73a76eaf845c48"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v4",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "_steer_candidate_caps_calculate",
+          "address": "0x0048a7a0",
+          "size": 392,
+          "sha256": "2898479cab0824e1a5b3330a5176ac193535f398d09235c7cca26294790367dc"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v4",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "_uac_wsta_do_check",
+          "address": "0x00634250",
+          "size": 564,
+          "sha256": "6c1e51996e18bce7531ba0324f989d65c33c0f88dd4bd6e13962ecf4c8480795"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v4",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "_uac_wsta_pkt_associcate",
+          "address": "0x006347c4",
+          "size": 1468,
+          "sha256": "7aaa7ed6acc8c2346984d498844ca0d1108978a8f78a2beeb617dd213e242214"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v4",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "_uac_wsta_pkt_associcate_new",
+          "address": "0x00634d80",
+          "size": 3280,
+          "sha256": "4357ed5ffa5da5ad37077c03c478f8df8abd380bf315a6917a148fa86d4222a3"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v4",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "_wlan_caps_calculate",
+          "address": "0x0048ab30",
+          "size": 668,
+          "sha256": "5ecaa0d5776ac5809211d1bae74694f12eb4aa0aacb9139997213e6036c17687"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v4",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "_wsta_free_entry_new",
+          "address": "0x0063b91c",
+          "size": 408,
+          "sha256": "c5e1609308f5724dc763752aeb22f45560ba205289a50c7e64ef0734f4504286"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v4",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "_wsta_roam_pkt_pmk_request",
+          "address": "0x00486d74",
+          "size": 1096,
+          "sha256": "5898c5f982bf9388d5072b45bd96d06cf53d4307f9f5e6179339c79b3d11b630"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v4",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "_wsta_roam_pkt_roaming_trigger_request",
+          "address": "0x0048847c",
+          "size": 2936,
+          "sha256": "b7ec4af7cc056f55b15d2337e7f5cc090c5a27382bd7e39336f7d8b87a57aca6"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v4",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "_wsta_roam_pkt_wtp_event_listener",
+          "address": "0x00489380",
+          "size": 228,
+          "sha256": "9451960d2383e2c6b936ae92069c8365b5d7ee58c8739be4a7d84ad7cbecfb4b"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v4",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "_wsta_roam_pmk_idle_timer_handle",
+          "address": "0x00480eec",
+          "size": 252,
+          "sha256": "7cd7c6a67dd46c63fb6b3fcfd5a84f1b0b88a9b96c635e15a5cb288662490b21"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v4",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "balance_jcs_callback_balance_set",
+          "address": "0x004583dc",
+          "size": 2264,
+          "sha256": "5d6a60bc527f80eee2a1367ec096b043b2d8496df861cd7a62741665a1d44634"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v4",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "balance_roam_strategy_get",
+          "address": "0x00457f90",
+          "size": 156,
+          "sha256": "1a33c17d559c9030210a061db56da039a89bdefb27e7adc687ecaa2a6b524d52"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v4",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "balance_wsta_callback_balance_sta_check",
+          "address": "0x0045a1c4",
+          "size": 912,
+          "sha256": "2563c87944049c89fac4727238c5d06ca94a0f6f6418c047223b855a46dd4141"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v4",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "estimate_rate_from_snr",
+          "address": "0x0048ae10",
+          "size": 980,
+          "sha256": "7187179c6cff8fe198ab3618cd8e33100daaab482423f92ddaca6db7e9144ff8"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v4",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "stats_db_sta_get_nbr_set",
+          "address": "0x0066ddac",
+          "size": 896,
+          "sha256": "aa1fc418058b662d1dfe1a824d8e6bab853433d30f1821ce81f808c7a3594f62"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v4",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "stats_db_sta_update",
+          "address": "0x0066c750",
+          "size": 800,
+          "sha256": "6a40a8dca3b7d53f357fc51f28d6cef216965f414c2e0a8e381e22da2c5a807b"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v4",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "uac_wsta_pseudo_associate_check",
+          "address": "0x0063450c",
+          "size": 696,
+          "sha256": "baa6cf38e6768e629c0b3ca0d239b98fec21398ca185a34438ab858179609753"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v4",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "uac_wstation_assoc",
+          "address": "0x00632704",
+          "size": 296,
+          "sha256": "acd4f3e4f0be3ee80ba52cc9a298ca12f2367fc44613ab80fa1c9869a7dc00e1"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v4",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "uac_wstation_free_sta_by_mac",
+          "address": "0x00632e80",
+          "size": 24,
+          "sha256": "db437520c9ac956cbd8a51b8247f4da90c34b5994c15e8e1d0005d9de43a8865"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v4",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "wss_steer_candidate_rate_estimate",
+          "address": "0x0048b644",
+          "size": 1088,
+          "sha256": "30f822aca859de86ab445eeb61b962ae8628c4e554a5631139b5a5ddeea2b10b"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v4",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "wsta_roam_db_pmk_add",
+          "address": "0x00481fe4",
+          "size": 528,
+          "sha256": "616c052aa004dc297d386878ff199f46bad0159698d7dce5c86ac090ac375e36"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v4",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "wsta_roam_db_pmk_expiretime_set",
+          "address": "0x004822a0",
+          "size": 160,
+          "sha256": "a2fd3380129caa0fea5376ed83a903c1c8c95e4e73a541fc95e484efd69e1592"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v4",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "wsta_roam_db_pmk_get_by_mac",
+          "address": "0x00481f2c",
+          "size": 184,
+          "sha256": "8501d8040e1b3716f9fd9ce793c9a9f17d8b1ec8c90f34e891e58fb656579012"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v4",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "wsta_roam_db_pmk_start_del_timer",
+          "address": "0x004821f4",
+          "size": 172,
+          "sha256": "18f9dbeb93a5c77147d4ce80b0baf37d5514e9f80dcf242c1c3f5576cedbfd77"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v4",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "wsta_roam_db_roam_strategy_register",
+          "address": "0x00482c64",
+          "size": 160,
+          "sha256": "aab4f10d88d93f2675c2acd67f76b50452d994f0f86a7c7ad5ae6dd25fd0f40b"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v4",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "wsta_roam_db_roam_strategy_update",
+          "address": "0x00482d04",
+          "size": 188,
+          "sha256": "11ea6c5e72df6ee4e83eb0235c67eb2b7f3c73e5dd4fbf2cd6369c2dbf667612"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v4",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "wsta_roam_sta_assoc_callback",
+          "address": "0x0047f130",
+          "size": 224,
+          "sha256": "1168fe892f7951e481c288f38fa6042016286abc2d8a7055b8ef2168ddcec853"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v4",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "wsta_roam_start_delete_timer",
+          "address": "0x004805f8",
+          "size": 96,
+          "sha256": "69c105879270587154594b95d656c8e28898470cc90b937e25b849ffbf6b6e6d"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v6",
+          "binary_sha256": "b12d1584fcafda2a71aa9038b41b7e1c5b893b350f3e6edf5105e445d024a912",
+          "name": "_nbr_filter",
+          "address": "0x004e3af8",
+          "size": 268,
+          "sha256": "20cb8589bfa56595a408be2d1463efdcf972dd759098b8f605fae1045194a058"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v6",
+          "binary_sha256": "b12d1584fcafda2a71aa9038b41b7e1c5b893b350f3e6edf5105e445d024a912",
+          "name": "_quick_sort_impl",
+          "address": "0x004e09d0",
+          "size": 384,
+          "sha256": "4735b98afb41c0fbfa5e6971de399e03f8ae341d60514ed87b334a1542ddb5b4"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v6",
+          "binary_sha256": "b12d1584fcafda2a71aa9038b41b7e1c5b893b350f3e6edf5105e445d024a912",
+          "name": "_roaming_nbr_select",
+          "address": "0x004e4b3c",
+          "size": 1216,
+          "sha256": "2f0e46aab3497665b542694541be400c5bdbe80a88a4cd8e4d4162f3c51856ed"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v6",
+          "binary_sha256": "b12d1584fcafda2a71aa9038b41b7e1c5b893b350f3e6edf5105e445d024a912",
+          "name": "_rssi_sort_fun",
+          "address": "0x004e3c04",
+          "size": 392,
+          "sha256": "485f1aa31fd34c9856ffae06cb2b90f068092a4bd014b7ed001e0f2d8f563b09"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v6",
+          "binary_sha256": "b12d1584fcafda2a71aa9038b41b7e1c5b893b350f3e6edf5105e445d024a912",
+          "name": "_sta_caps_calculate",
+          "address": "0x004ea640",
+          "size": 524,
+          "sha256": "b356da2a662732f336c41fc66b5131d62c83dc551ddac5c02f77b37c30d5b72d"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v6",
+          "binary_sha256": "b12d1584fcafda2a71aa9038b41b7e1c5b893b350f3e6edf5105e445d024a912",
+          "name": "_stats_sta_support_cal",
+          "address": "0x0040f314",
+          "size": 100,
+          "sha256": "448e20cd2ea5f3d2a26ca9b057ca24524cb597ee8b71a7046675980ce9e1cb1f"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v6",
+          "binary_sha256": "b12d1584fcafda2a71aa9038b41b7e1c5b893b350f3e6edf5105e445d024a912",
+          "name": "_steer_candidate_caps_calculate",
+          "address": "0x004ea4c0",
+          "size": 384,
+          "sha256": "69e228e5158bba9d243a2e4607689049ce8fa8cca5e759f7fe2f293b4e3c84a0"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v6",
+          "binary_sha256": "b12d1584fcafda2a71aa9038b41b7e1c5b893b350f3e6edf5105e445d024a912",
+          "name": "_uac_wsta_do_check",
+          "address": "0x00744b70",
+          "size": 584,
+          "sha256": "7e5ac83f4620d5e2f17180bcc76cb5a7d95095b0a9a2bd30b7773da2cec8b75a"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v6",
+          "binary_sha256": "b12d1584fcafda2a71aa9038b41b7e1c5b893b350f3e6edf5105e445d024a912",
+          "name": "_uac_wsta_pkt_associcate",
+          "address": "0x00749290",
+          "size": 1584,
+          "sha256": "c4a18330b62eba960d915a07cb96ee3d017570d24c0bfbe9e61206ba693bb4fb"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v6",
+          "binary_sha256": "b12d1584fcafda2a71aa9038b41b7e1c5b893b350f3e6edf5105e445d024a912",
+          "name": "_uac_wsta_pkt_associcate_new",
+          "address": "0x007498c0",
+          "size": 2656,
+          "sha256": "f6da25d75ecf2a7e821143808189ef8230ed099490a3c00eb5a07428df54db01"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v6",
+          "binary_sha256": "b12d1584fcafda2a71aa9038b41b7e1c5b893b350f3e6edf5105e445d024a912",
+          "name": "_wlan_caps_calculate",
+          "address": "0x004ea84c",
+          "size": 700,
+          "sha256": "d5c52f2c1b161912d2b1c7dcf2a2e6e846145b36ea380fe54ad0260b693bd331"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v6",
+          "binary_sha256": "b12d1584fcafda2a71aa9038b41b7e1c5b893b350f3e6edf5105e445d024a912",
+          "name": "_wsta_free_entry_new",
+          "address": "0x0075492c",
+          "size": 368,
+          "sha256": "99dfa1c2ad343b209bb25cddbe66deae475a685bf5289e05cfa8fa71814cc0a4"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v6",
+          "binary_sha256": "b12d1584fcafda2a71aa9038b41b7e1c5b893b350f3e6edf5105e445d024a912",
+          "name": "_wsta_roam_pkt_pmk_request",
+          "address": "0x004e46c0",
+          "size": 1108,
+          "sha256": "0810a8aa59c78227d5f3b00d185c90d94fc2cfac8a26fd71ab7864014181ecd9"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v6",
+          "binary_sha256": "b12d1584fcafda2a71aa9038b41b7e1c5b893b350f3e6edf5105e445d024a912",
+          "name": "_wsta_roam_pkt_roaming_by_rssi_low",
+          "address": "0x004e6564",
+          "size": 7900,
+          "sha256": "8b87ea2465fed7e2b0ade702c3da2d48452d8f342c4cec3f6b8e1de3c1e04cb4"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v6",
+          "binary_sha256": "b12d1584fcafda2a71aa9038b41b7e1c5b893b350f3e6edf5105e445d024a912",
+          "name": "_wsta_roam_pkt_roaming_trigger_request",
+          "address": "0x004e8440",
+          "size": 444,
+          "sha256": "72640c2d48710f41c4c7014db8c91d2b1e3e09ef280e8cc288dacf22258759be"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v6",
+          "binary_sha256": "b12d1584fcafda2a71aa9038b41b7e1c5b893b350f3e6edf5105e445d024a912",
+          "name": "_wsta_roam_pkt_wtp_event_listener",
+          "address": "0x004e89ac",
+          "size": 232,
+          "sha256": "b34f18a84c646a049f4dafe233686e9353e21a1b5e33b38b11858197c2e55a1e"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v6",
+          "binary_sha256": "b12d1584fcafda2a71aa9038b41b7e1c5b893b350f3e6edf5105e445d024a912",
+          "name": "_wsta_roam_pmk_idle_timer_handle",
+          "address": "0x004dda7c",
+          "size": 236,
+          "sha256": "ad0a96a72e3d5b150e9f9606d1fc42e48359d35c8d6edf303935ba1bd7777f8f"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v6",
+          "binary_sha256": "b12d1584fcafda2a71aa9038b41b7e1c5b893b350f3e6edf5105e445d024a912",
+          "name": "balance_wsta_callback_balance_sta_check",
+          "address": "0x004f0dfc",
+          "size": 884,
+          "sha256": "23837834ba4c4bc5b507633ae03a961e81baa581a8c73af8a1e98e9d76c31eff"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v6",
+          "binary_sha256": "b12d1584fcafda2a71aa9038b41b7e1c5b893b350f3e6edf5105e445d024a912",
+          "name": "estimate_rate_from_snr",
+          "address": "0x004eab48",
+          "size": 936,
+          "sha256": "12f9276fdd6476ef0dad9ba31c12a5339a3582e60e1b5feb8c59de6be19c3cef"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v6",
+          "binary_sha256": "b12d1584fcafda2a71aa9038b41b7e1c5b893b350f3e6edf5105e445d024a912",
+          "name": "roam_nbr_select",
+          "address": "0x004e5638",
+          "size": 2836,
+          "sha256": "06b456dd3a66424ac0f4822e045c956261183dc1cd86e249bff680edcbf0bc6a"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v6",
+          "binary_sha256": "b12d1584fcafda2a71aa9038b41b7e1c5b893b350f3e6edf5105e445d024a912",
+          "name": "stats_db_sta_get_nbr_set",
+          "address": "0x007aef88",
+          "size": 904,
+          "sha256": "7be9f88906c5b7ffb797afd9776ced429ee9b9a443419d2ffcce721405d91b0d"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v6",
+          "binary_sha256": "b12d1584fcafda2a71aa9038b41b7e1c5b893b350f3e6edf5105e445d024a912",
+          "name": "stats_db_sta_update",
+          "address": "0x007ad90c",
+          "size": 724,
+          "sha256": "6f3d702cc890f0679f60f53f008c5862810e05b34cd6e39fecbe039afa574a9f"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v6",
+          "binary_sha256": "b12d1584fcafda2a71aa9038b41b7e1c5b893b350f3e6edf5105e445d024a912",
+          "name": "uac_wsta_pseudo_associate_check",
+          "address": "0x00745738",
+          "size": 708,
+          "sha256": "4e43bfb9108321b0552787284804d8281ab58d0fbaa609c522b435c6d86bfee4"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v6",
+          "binary_sha256": "b12d1584fcafda2a71aa9038b41b7e1c5b893b350f3e6edf5105e445d024a912",
+          "name": "uac_wstation_assoc",
+          "address": "0x007666b4",
+          "size": 392,
+          "sha256": "97a7ac92de1361d642e34be8d38fd48d7b8f37a780966c6c0180d4604cd89327"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v6",
+          "binary_sha256": "b12d1584fcafda2a71aa9038b41b7e1c5b893b350f3e6edf5105e445d024a912",
+          "name": "uac_wstation_free_sta_by_mac",
+          "address": "0x00766fdc",
+          "size": 24,
+          "sha256": "c5b7d3d87bdd55eb707684a53a455ebadcc2b46adf7a763c0779fb1ba741e13e"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v6",
+          "binary_sha256": "b12d1584fcafda2a71aa9038b41b7e1c5b893b350f3e6edf5105e445d024a912",
+          "name": "wss_steer_candidate_rate_estimate",
+          "address": "0x004eb314",
+          "size": 1036,
+          "sha256": "9e7cc21aac7aab32da010bd4edc6e0deb5c770abc7d9e49cc1cacc9288b4475b"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v6",
+          "binary_sha256": "b12d1584fcafda2a71aa9038b41b7e1c5b893b350f3e6edf5105e445d024a912",
+          "name": "wsta_roam_db_pmk_add",
+          "address": "0x004df034",
+          "size": 528,
+          "sha256": "ea7b6437f4ab88bfdfaa924c2f371262de7ecbf6a9ec6219b52b8fc288e959fb"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v6",
+          "binary_sha256": "b12d1584fcafda2a71aa9038b41b7e1c5b893b350f3e6edf5105e445d024a912",
+          "name": "wsta_roam_db_pmk_expiretime_set",
+          "address": "0x004df2fc",
+          "size": 164,
+          "sha256": "38fd655bb2cfd07163da81f3783c0ed978f7d5a2a460c3120145ea019884732d"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v6",
+          "binary_sha256": "b12d1584fcafda2a71aa9038b41b7e1c5b893b350f3e6edf5105e445d024a912",
+          "name": "wsta_roam_db_pmk_get_by_mac",
+          "address": "0x004def74",
+          "size": 192,
+          "sha256": "d77ef917ce6ea0dd8d546ff0fdd1ada3190673d34e8faf06e860ce5c8c1247a9"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v6",
+          "binary_sha256": "b12d1584fcafda2a71aa9038b41b7e1c5b893b350f3e6edf5105e445d024a912",
+          "name": "wsta_roam_db_pmk_start_del_timer",
+          "address": "0x004df244",
+          "size": 184,
+          "sha256": "7f22a16c0e23083b3c4c3ead1b211b271a28053ceb44b1423e0f68423b3fccec"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v6",
+          "binary_sha256": "b12d1584fcafda2a71aa9038b41b7e1c5b893b350f3e6edf5105e445d024a912",
+          "name": "wsta_roam_db_roam_strategy_register",
+          "address": "0x004dfe34",
+          "size": 164,
+          "sha256": "9caae14c774f8fad0f89686639a248a821e6f42abec220c324fe560a33eefe2a"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v6",
+          "binary_sha256": "b12d1584fcafda2a71aa9038b41b7e1c5b893b350f3e6edf5105e445d024a912",
+          "name": "wsta_roam_db_roam_strategy_update",
+          "address": "0x004dfed8",
+          "size": 200,
+          "sha256": "e15f894df16f2a9b829ce2416145259fa6d171fa329e55993294c98e8f2fab1d"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v6",
+          "binary_sha256": "b12d1584fcafda2a71aa9038b41b7e1c5b893b350f3e6edf5105e445d024a912",
+          "name": "wsta_roam_sta_assoc_callback",
+          "address": "0x004d746c",
+          "size": 212,
+          "sha256": "b42200929045dbdf9dc8f7c4b750308aa997902b010414c196c64186bf3a7cb2"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v6",
+          "binary_sha256": "b12d1584fcafda2a71aa9038b41b7e1c5b893b350f3e6edf5105e445d024a912",
+          "name": "wsta_roam_start_delete_timer",
+          "address": "0x004d740c",
+          "size": 96,
+          "sha256": "e3622c4856e107659c2b4721822f56fc3c1bbe19aa04ee7bca9f901e94744afb"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v4",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "_uac_wstation_do_event",
+          "address": "0x00636b58",
+          "size": 340,
+          "sha256": "a0936ef8b9e642e337b43047b0c598c63a5851737b997fd88f892f22223f6b2e"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v4",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "balance_db_sta_add",
+          "address": "0x0045d0d8",
+          "size": 360,
+          "sha256": "b90aec0dbb4d661407967b4b470de2fc9400715bb39df069f175c138358e8bf8"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v4",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "balance_db_sta_delete",
+          "address": "0x0045d240",
+          "size": 364,
+          "sha256": "d3e41a80ff4a46427a04b8daed1124be9384fc47c6cca6636ded25a4dc2f9d76"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v4",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "balance_wsta_callback_balance_sta_add",
+          "address": "0x00457d58",
+          "size": 284,
+          "sha256": "c5eefeb5354af83f09d92f57714ec926d862d53bb84fee81f02394fea4336965"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v4",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "balance_wsta_callback_balance_sta_del",
+          "address": "0x00457e74",
+          "size": 284,
+          "sha256": "bc84383a6e9648139869d6ac72b3fe24ba5896241cbf6d617dc548fa355cefaa"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v4",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "wsta_db_sta_assoc",
+          "address": "0x0063c5e0",
+          "size": 6004,
+          "sha256": "9724566538c1123ffd733c4c558b8262c1b1662c1771382b22837d4c81afef03"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v6",
+          "binary_sha256": "b12d1584fcafda2a71aa9038b41b7e1c5b893b350f3e6edf5105e445d024a912",
+          "name": "_uac_wstation_do_event",
+          "address": "0x0074bc2c",
+          "size": 348,
+          "sha256": "d1ca779eaaa5f9f9e27426c16ecc5712372ea24b84bb1197868df00a41bba718"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v6",
+          "binary_sha256": "b12d1584fcafda2a71aa9038b41b7e1c5b893b350f3e6edf5105e445d024a912",
+          "name": "balance_db_sta_add",
+          "address": "0x004f6864",
+          "size": 344,
+          "sha256": "46260b40c1b20c3656f8c508f91d74a2d2cdbae83a20488eee3fc66abdfe08cb"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v6",
+          "binary_sha256": "b12d1584fcafda2a71aa9038b41b7e1c5b893b350f3e6edf5105e445d024a912",
+          "name": "balance_db_sta_delete",
+          "address": "0x004f69bc",
+          "size": 348,
+          "sha256": "c7905cc1ab558f5b4da8f0e61cff6e025448ca6a94c378a7e7d8f8cea34fff4e"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v6",
+          "binary_sha256": "b12d1584fcafda2a71aa9038b41b7e1c5b893b350f3e6edf5105e445d024a912",
+          "name": "balance_wsta_callback_balance_sta_add",
+          "address": "0x004ed3e4",
+          "size": 316,
+          "sha256": "2c71784462bc242136e81d23cc8138b84c2a4488ed822a2f6ddcd1e8bea69d44"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v6",
+          "binary_sha256": "b12d1584fcafda2a71aa9038b41b7e1c5b893b350f3e6edf5105e445d024a912",
+          "name": "balance_wsta_callback_balance_sta_del",
+          "address": "0x004ed520",
+          "size": 316,
+          "sha256": "ab64889e90db6fd882ed7b3e061e9055ab3f6d70e1e86e709d43cf91dd81b5da"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v6",
+          "binary_sha256": "b12d1584fcafda2a71aa9038b41b7e1c5b893b350f3e6edf5105e445d024a912",
+          "name": "wsta_db_sta_assoc",
+          "address": "0x00758cf8",
+          "size": 7296,
+          "sha256": "91762280eb7a144af17815e33ac390fdd07e9a29b127a82b469af0b438d26d29"
+        }
+      ],
+      "implementation": [
+        {
+          "path": "uacgo/mobility/policy.go",
+          "symbol": "DefaultStationPHY"
+        },
+        {
+          "path": "uacgo/mobility/policy.go",
+          "symbol": "StationPHY"
+        },
+        {
+          "path": "uacgo/mobility/policy.go",
+          "symbol": "RadioMode"
+        },
+        {
+          "path": "uacgo/mobility/policy.go",
+          "symbol": "CandidateRate"
+        },
+        {
+          "path": "uacgo/mobility/policy.go",
+          "symbol": "PHYFor"
+        },
+        {
+          "path": "uacgo/mobility/legacy_select.go",
+          "symbol": "Select"
+        },
+        {
+          "path": "uacgo/mobility/legacy_select.go",
+          "symbol": "filtered"
+        },
+        {
+          "path": "uacgo/mobility/legacy_select.go",
+          "symbol": "compare"
+        },
+        {
+          "path": "uacgo/admin/roaming_policy.go",
+          "symbol": "roamingPolicy"
+        },
+        {
+          "path": "uacgo/admin/roaming_policy.go",
+          "symbol": "roamingParametersFor"
+        },
+        {
+          "path": "uacgo/admin/roaming_policy.go",
+          "symbol": "admissionResultCodes"
+        },
+        {
+          "path": "uacgo/admin/roaming_policy.go",
+          "symbol": "selectRoamingLocked"
+        },
+        {
+          "path": "uacgo/admin/roaming_policy.go",
+          "symbol": "pseudoAssociationLocked"
+        },
+        {
+          "path": "uacgo/admin/roam_decision.go",
+          "symbol": "candidateLocked"
+        },
+        {
+          "path": "uacgo/admin/roam_decision.go",
+          "symbol": "radioPHYLocked"
+        },
+        {
+          "path": "uacgo/admin/roam_decision.go",
+          "symbol": "calculateRoamingLocked"
+        },
+        {
+          "path": "uacgo/admin/pmk.go",
+          "symbol": "handlePMK"
+        },
+        {
+          "path": "uacgo/admin/pmk.go",
+          "symbol": "observePMKTransition"
+        },
+        {
+          "path": "uacgo/admin/admission.go",
+          "symbol": "checkAssociation"
+        },
+        {
+          "path": "uacgo/admin/admission.go",
+          "symbol": "radioCapacityLimitLocked"
+        },
+        {
+          "path": "uacgo/admin/balance_decision.go",
+          "symbol": "balanceAdmission"
+        }
+      ],
+      "tests": [
+        {
+          "path": "uacgo/mobility/policy_test.go",
+          "name": "TestFirmwarePoliciesUseDifferentPHYDefaultsAndSignalBases"
+        },
+        {
+          "path": "uacgo/mobility/policy_test.go",
+          "name": "TestV4SelectionStrictThresholdsDirectionalDeltaAndMode"
+        },
+        {
+          "path": "uacgo/mobility/policy_test.go",
+          "name": "TestV4SelectionBandPriorityUnknownRatesAndPseudoAssociation"
+        },
+        {
+          "path": "uacgo/admin/roaming_policy_test.go",
+          "name": "TestV4BalanceStrategyCallbackChangesAndResendsRoamingParameters"
+        },
+        {
+          "path": "uacgo/admin/roaming_policy_test.go",
+          "name": "TestV4PolicyKeepsLegacySelectionAfterAutomaticDemotion"
+        },
+        {
+          "path": "uacgo/admin/roaming_policy_test.go",
+          "name": "TestV4PseudoAssociationEnforcesCapacityWithoutMovingStation"
+        },
+        {
+          "path": "uacgo/admin/roaming_policy_test.go",
+          "name": "TestV4PseudoAssociationRunsSharedBalanceRejectionCounter"
+        },
+        {
+          "path": "uacgo/admin/roaming_policy_test.go",
+          "name": "TestV4BSTMRetainsTriggerRSSIInsteadOfV6MeasuredCurrentBaseline"
+        },
+        {
+          "path": "uacgo/admin/roaming_policy_test.go",
+          "name": "TestAssociationResultCodesFollowFirmwarePolicyFamily"
+        },
+        {
+          "path": "uacgo/admin/roaming_branch_audit_test.go",
+          "name": "TestPMKWireOperationsCapabilityAndFailureResults"
+        },
+        {
+          "path": "uacgo/mobility/pmk_test.go",
+          "name": "TestPMKLookupStatusesAndDisconnectTimerFollowFirmware"
+        },
+        {
+          "path": "uacgo/cweng/roaming_branches_test.go",
+          "name": "TestV6PMKPrecedesRoamingTriggerAndUsesFirstElement"
+        },
+        {
+          "path": "uacgo/admin/vendor_import_test.go",
+          "name": "TestVendorConversionNeverSilentlyChangesLegacyMode"
+        },
+        {
+          "path": "uacgo/admin/roaming_policy_test.go",
+          "name": "TestV4AndV6BalanceUseTheirOwnMLOCountingSemantics"
+        }
+      ]
+    },
+    {
+      "id": "v4-pmk-special-association-null-output",
+      "feature": "roaming",
+      "origin": "firmware-bug-fix",
+      "behavior": "V4 PMK operation3成功时继续有效关联同步，保持旧RSSI/无额外均衡检查；不复制原NULL输出导致的同步失败。密钥成功/失败和普通operation1策略不改写。",
+      "firmware_defect": "V4 caller4871ac的delay slot4871b0将第9参数写NULL；callee632740加载该参数并在632754直接拒绝，调用者忽略返回值后仍返回PMK成功。V6同分支4e4a14/4e4a24提供有效输出地址。",
+      "intentional_change": "Go的V4族也执行有效的AssociatePMK同步，采用V6已修正的输出处理语义，不把关联失败伪装成原策略。",
+      "authorization": "用户要求调度策略一致，而非复制明显bug，并要求根治所发现的问题；确定缺陷与保留策略分别记录。",
+      "sources": [
+        {
+          "kind": "comparison-uac",
+          "version": "v4",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "_wsta_roam_pkt_pmk_request",
+          "address": "0x00486d74",
+          "size": 1096,
+          "sha256": "5898c5f982bf9388d5072b45bd96d06cf53d4307f9f5e6179339c79b3d11b630"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v4",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "uac_wstation_assoc",
+          "address": "0x00632704",
+          "size": 296,
+          "sha256": "acd4f3e4f0be3ee80ba52cc9a298ca12f2367fc44613ab80fa1c9869a7dc00e1"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v6",
+          "binary_sha256": "b12d1584fcafda2a71aa9038b41b7e1c5b893b350f3e6edf5105e445d024a912",
+          "name": "_wsta_roam_pkt_pmk_request",
+          "address": "0x004e46c0",
+          "size": 1108,
+          "sha256": "0810a8aa59c78227d5f3b00d185c90d94fc2cfac8a26fd71ab7864014181ecd9"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v6",
+          "binary_sha256": "b12d1584fcafda2a71aa9038b41b7e1c5b893b350f3e6edf5105e445d024a912",
+          "name": "uac_wstation_assoc",
+          "address": "0x007666b4",
+          "size": 392,
+          "sha256": "97a7ac92de1361d642e34be8d38fd48d7b8f37a780966c6c0180d4604cd89327"
+        }
+      ],
+      "implementation": [
+        {
+          "path": "uacgo/cweng/client_history.go",
+          "symbol": "AssociatePMK"
+        },
+        {
+          "path": "uacgo/cweng/wsta.go",
+          "symbol": "RegisterWstaHandlers"
+        }
+      ],
+      "tests": [
+        {
+          "path": "uacgo/admin/roaming_branch_audit_test.go",
+          "name": "TestPMKWireOperationsCapabilityAndFailureResults"
+        }
+      ]
+    },
+    {
+      "id": "v4-independent-rrm-policy",
+      "feature": "rrm",
+      "origin": "firmware",
+      "behavior": "按每条规则选择V4 DCA/TPC；有向全样本累计、先六个出邻居、严格改善/原排序、三射频分组和固定同频干扰；分开信道/功率收集90秒及半数门禁，TPC三个入邻居、持久排他界限、两轮及清表新邻居；254保留PHY/BW、功率单独保留信道/带宽。原高性能模式拒绝TPC，不再错误接上V6阶段。",
+      "sources": [
+        {
+          "kind": "comparison-uac",
+          "version": "v4",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "_apdb_pkt_parse_radio",
+          "address": "0x0060e514",
+          "size": 1872,
+          "sha256": "4fc389ecc31903f8703cd040ae252b4cda3c2270e425699bfa1dd0225537a58e"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v4",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "_rrm_ctl_packet_create",
+          "address": "0x004aae64",
+          "size": 520,
+          "sha256": "1a01a14fc22f63cbbae8129bb4ecec33714508afa70c5f6aad03d3f8b5ba1f2c"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v4",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "_rrm_jcs_manual_rrm_set",
+          "address": "0x004ad8e4",
+          "size": 496,
+          "sha256": "f2ebbfff35923d4ab3bffb36624557a5792dea6ae660d6662193004e142198bf"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v4",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "_rrm_pkt_rssi_request",
+          "address": "0x004adad4",
+          "size": 2460,
+          "sha256": "960f072cf290e0f07aac96722ee1e0ecb3ec9df86353aa9ce33c76f4da259bf1"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v4",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "_rrm_task",
+          "address": "0x004aef30",
+          "size": 2140,
+          "sha256": "9e06953cc0b994b94f54efa68132f6a6edc1904d5535a6342b8d3202f58d84ad"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v4",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "chnl_rrm_start",
+          "address": "0x004ad1d8",
+          "size": 624,
+          "sha256": "15d9aed0667b11f19adbacccffc50b3ad5c6a211a24430984b8df51395f3ed6e"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v4",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "dfs",
+          "address": "0x004b0180",
+          "size": 1656,
+          "sha256": "cc5c85a4bcf512051af6653e11d10bc1e1e353b1501c951e717a058e2544595f"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v4",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "pwr_rrm_start",
+          "address": "0x004ad448",
+          "size": 556,
+          "sha256": "d52d55daa00e73fddedaa38e06e6353ccc78d298c19a721459efd003249d7522"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v4",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "rrm_add_co_chnl_itf",
+          "address": "0x004b2be4",
+          "size": 764,
+          "sha256": "83f8053f3c65bda3405dc2a0b213edacf3ea0e42b3df8f03a2ccff56da170310"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v4",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "rrm_adjust_cur_pwr_for_collect",
+          "address": "0x004ab348",
+          "size": 188,
+          "sha256": "02f9c82b943e8b7b22a8d3c99339f587845e2b9e63de24a15792e16710c3aedf"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v4",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "rrm_ap_para_neighbor_add",
+          "address": "0x004b21b8",
+          "size": 1300,
+          "sha256": "debd91aeabf025e6fcee3010af69e1c6874b301cd5affbe36ca17782db556319"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v4",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "rrm_ap_pwr_para_neighbor_add",
+          "address": "0x004b26cc",
+          "size": 852,
+          "sha256": "c2c16fec49ef08dd874cd32c4a1a51a207249f19f9fe488cc0caa7eccce11fac"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v4",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "rrm_channel_set_to_all_ap",
+          "address": "0x004aba4c",
+          "size": 1048,
+          "sha256": "04fa512330c6fa3c871436b46d6092d3fa0ec10477c2f6be72d21ca13920d1db"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v4",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "rrm_get_apdb_pwr",
+          "address": "0x004ac8e4",
+          "size": 164,
+          "sha256": "1b399d97434f13bbb1aa3a46eebc05b2dff23e26d2be384128476a8e297bd7c3"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v4",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "rrm_pwr_set_to_all_ap",
+          "address": "0x004abe64",
+          "size": 716,
+          "sha256": "5aaebe80d2d41971fc224dd418599de715b5d21f02427764860d233a12a8a920"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v4",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "rrm_set_to_all_ap",
+          "address": "0x004ac130",
+          "size": 1728,
+          "sha256": "0eca1883f664352e8b063f9fb4c1c8715376bd729a86abb9c98cff904595ac8e"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v4",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "rrm_transfer_level_to_power",
+          "address": "0x004ab23c",
+          "size": 196,
+          "sha256": "f41c09886d8757b269f3401a90c79a11bb9be3f2b48c9c46de3faca4a1bf1027"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v4",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "rrm_transfer_pwr_to_level",
+          "address": "0x004ab198",
+          "size": 164,
+          "sha256": "2235bd11c75f5c3683c921ede078e3af35ffe413f2d0b4b061861b3689abb4f8"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v4",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "run_DCA",
+          "address": "0x004b07f8",
+          "size": 624,
+          "sha256": "f1f781c705e51ab8916f9fb991ffaedaa79fe777688d8d94141b94c9f83f2d1c"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v4",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "run_TPC",
+          "address": "0x004b1750",
+          "size": 692,
+          "sha256": "6878a1a74f3f9a1755f06754cbe241f1e6a61792f6ed1a2f58d64b93e7700864"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v4",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "name": "uac_rrm_init",
+          "address": "0x004af92c",
+          "size": 1928,
+          "sha256": "bd6550b005d6f6f3e3430f24109789536aaf372c51cf431f735209d43a0b7943"
+        }
+      ],
+      "implementation": [
+        {
+          "path": "uacgo/rrm/v4.go",
+          "symbol": "Select"
+        },
+        {
+          "path": "uacgo/rrm/v4.go",
+          "symbol": "Step"
+        },
+        {
+          "path": "uacgo/admin/rrm_v4.go",
+          "symbol": "newRRMRunForRule"
+        },
+        {
+          "path": "uacgo/admin/rrm_v4.go",
+          "symbol": "finishV4Pass"
+        },
+        {
+          "path": "uacgo/admin/rrm_v4.go",
+          "symbol": "measurementElement"
+        },
+        {
+          "path": "uacgo/admin/rrm_v4.go",
+          "symbol": "projectV4Mesh"
+        },
+        {
+          "path": "uacgo/cweng/capabilities.go",
+          "symbol": "effectiveRadioPower"
+        }
+      ],
+      "tests": [
+        {
+          "path": "uacgo/rrm/v4_test.go",
+          "name": "TestV4DCAAccumulatesEverySampleAndKeepsDirectedFirstSix"
+        },
+        {
+          "path": "uacgo/rrm/v4_test.go",
+          "name": "TestV4DCAUsesSignedRootCostStrictImprovementAndExternalPenalty"
+        },
+        {
+          "path": "uacgo/rrm/v4_test.go",
+          "name": "TestV4TPCQuantizedBoundsTopThreeAndPersistentRounds"
+        },
+        {
+          "path": "uacgo/rrm/v4_test.go",
+          "name": "TestV4TPCReplacesByRSSIAndUpdatesEqualEntries"
+        },
+        {
+          "path": "uacgo/admin/rrm_v4_test.go",
+          "name": "TestV4RRMSeparateCollectionsWireAndPowerOnlyPreservesChannelBandwidth"
+        },
+        {
+          "path": "uacgo/admin/rrm_v4_test.go",
+          "name": "TestV4RRMTimeoutMajorityAndIsolatedRadiosPreserveConfiguration"
+        },
+        {
+          "path": "uacgo/admin/rrm_v4_test.go",
+          "name": "TestV4RRMThreeRadioGroupsAndSecondPowerRoundDiscoverNewNeighbors"
+        },
+        {
+          "path": "uacgo/admin/rrm_v4_test.go",
+          "name": "TestV4RRMMeshProjectionUsesParentFiveGHzAndSingleSampleGate"
+        },
+        {
+          "path": "uacgo/admin/high_performance_test.go",
+          "name": "TestV4HighPerformanceRejectsTPCAndKeepsACSWaitLimit"
+        },
+        {
+          "path": "uacgo/cweng/capabilities_test.go",
+          "name": "TestPhysicalPowerSubtypesAndCapability38ShareOneUnitView"
+        },
+        {
+          "path": "uacgo/admin/rrm_v4_test.go",
+          "name": "TestV4RRMConditionalSecondPowerCollectionAndFailurePreservesChannelPlan"
+        }
+      ]
+    },
+    {
+      "id": "component-policy-selection",
+      "feature": "rrm",
+      "origin": "standalone-go",
+      "behavior": "漫游/客户端策略与每条RRM规则各自选择V4/V6，API、Web、恢复及重启保留；旧未标记行为不变；同一算法内部不混用版本；高性能态拒绝V6 RRM以免违背共同信道约束。",
+      "sources": [],
+      "implementation": [
+        {
+          "path": "uacgo/admin/roaming_policy.go",
+          "symbol": "roamingPolicy"
+        },
+        {
+          "path": "uacgo/admin/rrm.go",
+          "symbol": "usesV4"
+        },
+        {
+          "path": "uacgo/admin/rrm_jobs.go",
+          "symbol": "startRRM"
+        }
+      ],
+      "tests": [
+        {
+          "path": "uacgo/admin/rrm_v4_test.go",
+          "name": "TestRoamingAndRRMVersionsAreIndependentAndPersistAcrossRestart"
+        },
+        {
+          "path": "uacgo/admin/rrm_v4_test.go",
+          "name": "TestRoamingVersionSelectionKeepsLegacyConfigAndRejectsInvalidCombinations"
+        },
+        {
+          "path": "uacgo/admin/rrm_v4_test.go",
+          "name": "TestRRMFreezesItsOwnVersionAndBlocksConflictingRoamingSwitch"
+        },
+        {
+          "path": "uacgo/admin/rrm_v4_test.go",
+          "name": "TestHighPerformanceNetworkRejectsIncompatibleRRMVersionsAndPowerOnly"
         }
       ]
     }

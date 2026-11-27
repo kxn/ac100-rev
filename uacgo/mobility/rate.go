@@ -5,20 +5,13 @@ package mobility
 type PHY struct{ Bandwidth, NSS, Mode, MCS uint8 }
 
 func DefaultStationPHY(band int) PHY {
-	if band == 1 {
-		return PHY{3, 2, 4, 9}
-	}
-	return PHY{1, 1, 4, 7}
+	return V6Policy.DefaultStationPHY(band)
 }
 
 // Capabilities are accumulated component-wise in _stats_sta_support_cal. A
 // station's greatest reported width is kept separately for each frequency.
 func StationPHY(word uint32, bandwidth int8, band int) PHY {
-	nss, mode, mcs := uint8(word&15), uint8((word>>4)&15), uint8(word>>8)
-	if nss < 1 || nss > 16 || mode > 4 || mcs > 13 {
-		return DefaultStationPHY(band)
-	}
-	return PHY{ObservedBandwidth(int(bandwidth), band), nss, mode, mcs}
+	return V6Policy.StationPHY(word, bandwidth, band)
 }
 
 // ObservedBandwidth is shared by _sta_caps_calculate @4ea640 and
@@ -90,15 +83,5 @@ func EstimateRate(snr uint8, phy PHY, band int) int {
 // conversion and the separate -10dB neighbor margin happen before selection;
 // rate estimation uses the unadjusted RSSI, normalized with a fixed -85dBm.
 func CandidateRate(rssi int8, station, radio PHY, band int, mesh bool, backhaulMbps int) int {
-	if rssi < -84 {
-		return 0
-	}
-	rate := EstimateRate(uint8(int(rssi)+85), CandidatePHY(station, radio), band)
-	if !mesh {
-		return rate
-	}
-	if backhaulMbps <= 0 || rate == 0 {
-		return 0
-	}
-	return int(int32(rate) * int32(backhaulMbps) / (int32(rate) + int32(backhaulMbps)))
+	return V6Policy.CandidateRate(rssi, station, radio, band, mesh, backhaulMbps)
 }

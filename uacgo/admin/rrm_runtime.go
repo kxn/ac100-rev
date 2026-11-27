@@ -20,6 +20,7 @@ type rrmMeasurement struct {
 	sent, received bool
 }
 type rrmRun struct {
+	v4               *v4RRMRun
 	nodes            []rrmNode
 	edges            [][]rrmEdge
 	channels, levels []uint8
@@ -49,6 +50,10 @@ func newRRMRun(nodes []rrmNode) *rrmRun {
 	return r
 }
 func (r *rrmRun) beginPass(rule RRMRule, now time.Time) {
+	if r.v4 != nil {
+		r.beginV4Pass(rule, now)
+		return
+	}
 	r.requests = map[int]*rrmMeasurement{}
 	r.receivedCount = 0
 	for i, n := range r.nodes {
@@ -107,6 +112,9 @@ func (r *rrmRun) collected(now time.Time) bool {
 	if !r.deadline.IsZero() && !now.Before(r.deadline) {
 		return true
 	}
+	if r.v4 != nil {
+		return r.receivedCount == len(r.nodes) && len(r.nodes) > 0
+	}
 	// The firmware's early semaphore release comes from a received report;
 	// an empty send set has no report callback and waits for the timer.
 	if len(r.requests) == 0 {
@@ -124,6 +132,10 @@ func (r *rrmRun) collected(now time.Time) bool {
 // initial collection can add neighbors; the second can only smooth existing
 // neighbors and keeps their initial baseline RSSI for the library input.
 func (r *rrmRun) ingest(index int, neighbors []capwap.RrmNeigh, second bool) {
+	if r.v4 != nil {
+		r.ingestV4(index, neighbors)
+		return
+	}
 	for _, heard := range neighbors {
 		if len(heard.Samples) == 0 {
 			continue
@@ -361,6 +373,14 @@ func (r *rrmRun) changes(rule RRMRule, cfg Config) ([]RRMChange, error) {
 	selected := map[string]map[uint8]bool{}
 	for _, i := range applyOrder {
 		n := r.nodes[i]
+		channelApply, powerApply := rule.Channel, rule.Power
+		if r.v4 != nil {
+			channelApply = r.v4.channelOK[i] && !r.v4.channelAborted
+			powerApply = r.v4.powerOK[i] && !r.v4.powerAborted
+			if !channelApply && !powerApply {
+				continue
+			}
+		}
 		if selected[n.AP.ID] == nil {
 			selected[n.AP.ID] = map[uint8]bool{}
 		}
@@ -369,25 +389,34 @@ func (r *rrmRun) changes(rule RRMRule, cfg Config) ([]RRMChange, error) {
 		setting, _ := linkageRadioState(next, n.AP, n.Cap.RadioID)
 		previousBandwidth := linkageBandwidth(setting, n.Cap)
 		ch := linkageChannel(setting, n.AP)
-		if rule.Channel {
+		if channelApply {
 			ch = int(r.channels[i])
 		}
-		setting.Channel = &ch
+		if r.v4 == nil || channelApply {
+			setting.Channel = &ch
+		}
 		a := defaultRadioAdvanced(n.Cap)
 		if setting.Advanced != nil {
 			a = *setting.Advanced
 		}
 		// rrm_ops_apply_all_result always sets bw_apply=1, even when
 		// chnl_apply=0. The chosen rule bandwidth still applies in TPC-only jobs.
-		a.Bandwidth = rrmBandwidth(n.Cap, n.Band.Bandwidth, int(r.channels[i]))
+		if r.v4 == nil || channelApply {
+			a.Bandwidth = rrmBandwidth(n.Cap, n.Band.Bandwidth, int(r.channels[i]))
+		}
 		setting.Advanced = &a
-		setting = normalizeLinkageRadio(setting, n.Cap, next, n.AP)
-		a, ch = rrmRadioMode(*setting.Advanced, n.Cap, linkageChannel(setting, n.AP), previousBandwidth)
-		setting.Advanced = &a
-		setting.Channel = &ch
-		if rule.Power {
+		if r.v4 == nil || channelApply {
+			setting = normalizeLinkageRadio(setting, n.Cap, next, n.AP)
+			a, ch = rrmRadioMode(*setting.Advanced, n.Cap, linkageChannel(setting, n.AP), previousBandwidth)
+			setting.Advanced = &a
+			setting.Channel = &ch
+		}
+		if powerApply {
 			level := int(r.levels[i])
 			power := int(firmware.PowerForLevel(r.levels[i], uint8(n.Cap.MaxPower), uint8(n.Cap.MinPower)))
+			if r.v4 != nil {
+				power = r.v4.powers[i].Current
+			}
 			setting.Power = &power
 			setting.PowerLevel = &level
 		}

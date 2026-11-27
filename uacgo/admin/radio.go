@@ -16,6 +16,7 @@ type RadioSetting struct {
 	Radio      uint8          `json:"radio_id"`
 	Enabled    *bool          `json:"enabled,omitempty"`
 	Channel    *int           `json:"channel,omitempty"`
+	Bandwidth  *int           `json:"bandwidth,omitempty"`
 	Power      *int           `json:"power_dbm,omitempty"`
 	PowerLevel *int           `json:"power_level,omitempty"`
 	Advanced   *RadioAdvanced `json:"advanced,omitempty"`
@@ -224,7 +225,7 @@ func (m *Manager) saveRadioHTTP(w http.ResponseWriter, req *http.Request) {
 	manualChannel := r.Channel != nil
 	manualAdvanced := r.Advanced != nil
 	requestedAdvanced := r.Advanced
-	manualLinkage := manualChannel || r.Advanced != nil || r.Enabled != nil
+	manualLinkage := manualChannel || r.Advanced != nil || r.Enabled != nil || r.Bandwidth != nil
 	var capability *cweng.RadioCapability
 	var selectedAP cweng.APStatus
 	for _, ap := range m.APs() {
@@ -255,7 +256,7 @@ func (m *Manager) saveRadioHTTP(w http.ResponseWriter, req *http.Request) {
 		jsonReply(w, 400, map[string]string{"error": fmt.Sprintf("设备上报的功率范围为 %d–%d dBm", capability.MinPower, capability.MaxPower)})
 		return
 	}
-	if r.Channel == nil && r.Power == nil && r.Enabled == nil && r.Advanced == nil {
+	if r.Channel == nil && r.Power == nil && r.Enabled == nil && r.Advanced == nil && r.Bandwidth == nil {
 		jsonReply(w, 400, map[string]string{"error": "没有需要修改的设置"})
 		return
 	}
@@ -281,6 +282,9 @@ func (m *Manager) saveRadioHTTP(w http.ResponseWriter, req *http.Request) {
 			}
 			if r.Advanced == nil {
 				r.Advanced = old.Advanced
+				if r.Bandwidth == nil {
+					r.Bandwidth = old.Bandwidth
+				}
 			}
 			break
 		}

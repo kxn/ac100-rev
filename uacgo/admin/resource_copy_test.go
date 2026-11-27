@@ -119,6 +119,15 @@ func TestRadioOverlayPreservesOptionalAdvancedFields(t *testing.T) {
 			ref.Advanced = &a
 		}
 		want := jsonOverlayReference(base, ref)
+		if over.Advanced != nil && over.Bandwidth == nil {
+			want.Bandwidth = nil
+		}
+		if want.Bandwidth != nil && want.Advanced != nil {
+			a := *want.Advanced
+			a.Bandwidth = *want.Bandwidth
+			want.Advanced = &a
+			want.Bandwidth = nil
+		}
 		if over.Power != nil && over.PowerLevel == nil {
 			want.PowerLevel = nil
 		}

@@ -1,0 +1,1423 @@
+{
+  "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+  "functions": [
+    {
+      "name": "_apdb_pkt_parse_radio",
+      "address": "0x0060e514",
+      "size": 1872,
+      "sha256": "4fc389ecc31903f8703cd040ae252b4cda3c2270e425699bfa1dd0225537a58e"
+    },
+    {
+      "name": "_autorrm_config_set",
+      "address": "0x004a8c84",
+      "size": 620,
+      "sha256": "c037e39c685bb3ffda60f1f2c63dcf2bb5c196cf4dc41f65fdf85e01e363d239"
+    },
+    {
+      "name": "_autorrm_systime_callback",
+      "address": "0x004aa5d8",
+      "size": 316,
+      "sha256": "0844af8bc3d284bcb6c8e283610ffc9a7a8b9638b194e6ad79e63b8f2753368c"
+    },
+    {
+      "name": "_autorrm_tmo_caculate",
+      "address": "0x004a8b5c",
+      "size": 296,
+      "sha256": "5bf2eedf3b3aa5972e5dc21786bfe4cc84f2ab45f436b95b028af5f9380ddc11"
+    },
+    {
+      "name": "_autorrm_tmo_handle",
+      "address": "0x004ad674",
+      "size": 624,
+      "sha256": "511265434e0631d15511446b922e4bb2dd982a7abb4932f9c56fbfe6b90b7a45"
+    },
+    {
+      "name": "_rrm_apmngr_reboot_check",
+      "address": "0x004a8ef0",
+      "size": 104,
+      "sha256": "50fe27f88e1006b4b28f67d5f38d5be263e92df27cbbe7f8fe6e1638378d7ee8"
+    },
+    {
+      "name": "_rrm_ctl_packet_create",
+      "address": "0x004aae64",
+      "size": 520,
+      "sha256": "1a01a14fc22f63cbbae8129bb4ecec33714508afa70c5f6aad03d3f8b5ba1f2c"
+    },
+    {
+      "name": "_rrm_ctl_packet_send",
+      "address": "0x004ab06c",
+      "size": 300,
+      "sha256": "247224722a999fcd46bdf0378e84b541e8eb29f3e7b26a1aacb8f740ed39a754"
+    },
+    {
+      "name": "_rrm_freq_enable_set",
+      "address": "0x004a9520",
+      "size": 136,
+      "sha256": "72aebcac56565bd752dd6da6c20f10f47ccc3bc61d70d8137c40b66bb4482bea"
+    },
+    {
+      "name": "_rrm_group_id_set",
+      "address": "0x004a8960",
+      "size": 508,
+      "sha256": "b7573ae378a2477fb04dcaa3a3f5ce11a840848047254fde3a854dc7f8b253a4"
+    },
+    {
+      "name": "_rrm_jcs_manual_rrm_set",
+      "address": "0x004ad8e4",
+      "size": 496,
+      "sha256": "f2ebbfff35923d4ab3bffb36624557a5792dea6ae660d6662193004e142198bf"
+    },
+    {
+      "name": "_rrm_jcs_rrm_para_set",
+      "address": "0x004a95a8",
+      "size": 4144,
+      "sha256": "3b690763f9024c5cd4dde157dc63c356b28ad08381f82025895be7c47a071da2"
+    },
+    {
+      "name": "_rrm_jcs_rrm_state_get",
+      "address": "0x004aa714",
+      "size": 140,
+      "sha256": "ad9e56830dd0929dcca427b363089d6a01743bd49b4179b6fed2c32a5d410429"
+    },
+    {
+      "name": "_rrm_pkt_rssi_request",
+      "address": "0x004adad4",
+      "size": 2460,
+      "sha256": "960f072cf290e0f07aac96722ee1e0ecb3ec9df86353aa9ce33c76f4da259bf1"
+    },
+    {
+      "name": "_rrm_pkt_wtp_event_listener",
+      "address": "0x004ae470",
+      "size": 108,
+      "sha256": "90e9a2d1eb1615d560075ceab7d90be38357e1955d2cbb8bde0d1a52dc381dd2"
+    },
+    {
+      "name": "_rrm_task",
+      "address": "0x004aef30",
+      "size": 2140,
+      "sha256": "9e06953cc0b994b94f54efa68132f6a6edc1904d5535a6342b8d3202f58d84ad"
+    },
+    {
+      "name": "chnl_rrm_start",
+      "address": "0x004ad1d8",
+      "size": 624,
+      "sha256": "15d9aed0667b11f19adbacccffc50b3ad5c6a211a24430984b8df51395f3ed6e"
+    },
+    {
+      "name": "dfs",
+      "address": "0x004b0180",
+      "size": 1656,
+      "sha256": "cc5c85a4bcf512051af6653e11d10bc1e1e353b1501c951e717a058e2544595f"
+    },
+    {
+      "name": "pwr_rrm_start",
+      "address": "0x004ad448",
+      "size": 556,
+      "sha256": "d52d55daa00e73fddedaa38e06e6353ccc78d298c19a721459efd003249d7522"
+    },
+    {
+      "name": "rrm_acs_timeout",
+      "address": "0x004aa7a0",
+      "size": 256,
+      "sha256": "3d7b2e4849df6e6abc72000621f1700702409d5d8ac72c44786e00e51b615797"
+    },
+    {
+      "name": "rrm_add_co_chnl_itf",
+      "address": "0x004b2be4",
+      "size": 764,
+      "sha256": "83f8053f3c65bda3405dc2a0b213edacf3ea0e42b3df8f03a2ccff56da170310"
+    },
+    {
+      "name": "rrm_adjust_cur_pwr",
+      "address": "0x004ab300",
+      "size": 72,
+      "sha256": "99a0927d3b9c157bf05d73e10a991f3605124612a248138c4ce96890d0fedb34"
+    },
+    {
+      "name": "rrm_adjust_cur_pwr_for_collect",
+      "address": "0x004ab348",
+      "size": 188,
+      "sha256": "02f9c82b943e8b7b22a8d3c99339f587845e2b9e63de24a15792e16710c3aedf"
+    },
+    {
+      "name": "rrm_ap_collect_info_set",
+      "address": "0x004ae5bc",
+      "size": 80,
+      "sha256": "3d4c6b586963e5ec61f91e46842dff70dd6645ac7e950d6180b375152618f39e"
+    },
+    {
+      "name": "rrm_ap_is_rrm_set",
+      "address": "0x004aac44",
+      "size": 468,
+      "sha256": "005f33f52f4e4d571e6fa31c6f79d1e02ee5c6c324cc89a23bacaa3bc2b51dfe"
+    },
+    {
+      "name": "rrm_ap_para_create",
+      "address": "0x004b3130",
+      "size": 472,
+      "sha256": "e03ca6c00e37ec1a4b066d9fb16c6fa98cadd16cd738fa52df032b7ca4fa8359"
+    },
+    {
+      "name": "rrm_ap_para_destroy",
+      "address": "0x004b2fa8",
+      "size": 392,
+      "sha256": "30597324907be2b6755012a6df97e446434ef5be85880c02c12b2d1ebaccb135"
+    },
+    {
+      "name": "rrm_ap_para_dump",
+      "address": "0x004aa8a0",
+      "size": 696,
+      "sha256": "83fd2e255ce77667f9a9bc39e22270f21525889c5f928c8ffd29f59376e5fc5c"
+    },
+    {
+      "name": "rrm_ap_para_exceed_neighbor_delete",
+      "address": "0x004b2a20",
+      "size": 452,
+      "sha256": "58113cb7bb9b21d35e3d4f068a8c5634fbf84ad790c175b3f30d67545fc840b7"
+    },
+    {
+      "name": "rrm_ap_para_is_collect_finished",
+      "address": "0x004b2ee0",
+      "size": 100,
+      "sha256": "c4224e735fbb0ede9181da950b9a52c2eb1bd3bf9a5374331da598ea7a3fff22"
+    },
+    {
+      "name": "rrm_ap_para_neighbor_add",
+      "address": "0x004b21b8",
+      "size": 1300,
+      "sha256": "debd91aeabf025e6fcee3010af69e1c6874b301cd5affbe36ca17782db556319"
+    },
+    {
+      "name": "rrm_ap_para_neighbor_radio_map_get",
+      "address": "0x004b1e58",
+      "size": 348,
+      "sha256": "b8d598860e33288149deb5a3d79df03da454cd55f246c0c13a561ecffa73a7a7"
+    },
+    {
+      "name": "rrm_ap_para_neighbor_radio_map_set",
+      "address": "0x004b1c44",
+      "size": 532,
+      "sha256": "fceed7b7310dc5f98c86d169c0082f96f549c3d246684152910121061d2220c9"
+    },
+    {
+      "name": "rrm_ap_pwr_para_create",
+      "address": "0x004b3458",
+      "size": 444,
+      "sha256": "1910306dc4e07548620ab7bea0abe6ff6594dda851b4d589fc394bfd09f5caee"
+    },
+    {
+      "name": "rrm_ap_pwr_para_destroy",
+      "address": "0x004b3308",
+      "size": 336,
+      "sha256": "54a02195fbfd036553ab626e07a6209ac081c5ec50c9b9daf47ea21d3275a56c"
+    },
+    {
+      "name": "rrm_ap_pwr_para_is_collect_finished",
+      "address": "0x004b2f44",
+      "size": 100,
+      "sha256": "9f113062b367b9e590fc1d131ee904484732a522369a0e1bc8fb6609919ba9ab"
+    },
+    {
+      "name": "rrm_ap_pwr_para_neighbor_add",
+      "address": "0x004b26cc",
+      "size": 852,
+      "sha256": "c2c16fec49ef08dd874cd32c4a1a51a207249f19f9fe488cc0caa7eccce11fac"
+    },
+    {
+      "name": "rrm_ap_pwr_para_neighbor_radio_map_set",
+      "address": "0x004b1fb4",
+      "size": 516,
+      "sha256": "8419ee72c9ef306931ebe6358cae13b788d18c6af4d302fa85659c2bd2fa48c5"
+    },
+    {
+      "name": "rrm_ap_pwr_para_reset",
+      "address": "0x004b3614",
+      "size": 292,
+      "sha256": "9b5a38c24fbc8193fbdca8654d104655583abef56892745e4e54cb6aa315caee"
+    },
+    {
+      "name": "rrm_callback_proc",
+      "address": "0x004aab58",
+      "size": 236,
+      "sha256": "2e3b8072666d7d7772e0eb982f323984c45f67d877dae5df3c7274e8e423520a"
+    },
+    {
+      "name": "rrm_callback_register",
+      "address": "0x004b00b4",
+      "size": 168,
+      "sha256": "fa766b80ca39a5f024f0af7a036b4f64f1a3a19b60d8c7cdee067f8d9dc8ccf7"
+    },
+    {
+      "name": "rrm_channel_set_to_all_ap",
+      "address": "0x004aba4c",
+      "size": 1048,
+      "sha256": "04fa512330c6fa3c871436b46d6092d3fa0ec10477c2f6be72d21ca13920d1db"
+    },
+    {
+      "name": "rrm_collect_active_ap",
+      "address": "0x004a8fa0",
+      "size": 1408,
+      "sha256": "ca3d270482f8a4614cc946e4ec03ab9d1f2b5606de0d4ed83776663adb7b7196"
+    },
+    {
+      "name": "rrm_collect_active_sub_ap",
+      "address": "0x004ac810",
+      "size": 212,
+      "sha256": "7fe01ea504453cd3e0a168418cae57ce13995f0e8fd4fe5e467e523ae7b30225"
+    },
+    {
+      "name": "rrm_db_init",
+      "address": "0x004b1bac",
+      "size": 116,
+      "sha256": "b101a6d9f371c7266435c13379b2be106899741a2ee4769eadf51004f6df5566"
+    },
+    {
+      "name": "rrm_db_print_nbr_info",
+      "address": "0x004b1c3c",
+      "size": 8,
+      "sha256": "78aa5094d5ec7291c79f799c009d04f06c2f20187988e3dcc8d35ee5efdbb378"
+    },
+    {
+      "name": "rrm_db_state_get",
+      "address": "0x004b1c30",
+      "size": 12,
+      "sha256": "99db421ae0a2c7fded40775434731849a7ec45443024f7fa3b44135688227d23"
+    },
+    {
+      "name": "rrm_db_state_set",
+      "address": "0x004b1c20",
+      "size": 16,
+      "sha256": "7fbc896b5dae27b91ab14b1b482742772fbe3dcfff992324a6b5db68f03b3b78"
+    },
+    {
+      "name": "rrm_db_uninit",
+      "address": "0x004b1b70",
+      "size": 60,
+      "sha256": "b0a9e213c38ab5776ce95ec6563b414b2f331e0de37de257f10e79b970a592cc"
+    },
+    {
+      "name": "rrm_debug_help",
+      "address": "0x004af78c",
+      "size": 268,
+      "sha256": "145ab13a88dfa73c67f83a4e8623ee9a023fa0730b1ec7f5bcd08ec772f551ea"
+    },
+    {
+      "name": "rrm_destroy_ap_para_all",
+      "address": "0x004ad0e4",
+      "size": 84,
+      "sha256": "9aa2e7e9ca864c8056c07c3f65e18a7a73cdb6a7da21412f0c7c4e941b2e5516"
+    },
+    {
+      "name": "rrm_destroy_ap_pwr_para_all",
+      "address": "0x004ad138",
+      "size": 84,
+      "sha256": "db4590aa410fa4ac0cb508a9052484d93276eb923077916a1b12137664717a72"
+    },
+    {
+      "name": "rrm_get_apdb_pwr",
+      "address": "0x004ac8e4",
+      "size": 164,
+      "sha256": "1b399d97434f13bbb1aa3a46eebc05b2dff23e26d2be384128476a8e297bd7c3"
+    },
+    {
+      "name": "rrm_global_config_dump",
+      "address": "0x004ae60c",
+      "size": 1044,
+      "sha256": "0ffb0494df3e6fe09e0b04aab77560d355a1fd1319b8dbfb026562892d79fcf6"
+    },
+    {
+      "name": "rrm_group_id_set",
+      "address": "0x004ae4e8",
+      "size": 104,
+      "sha256": "7e9be882b124194237f5e85b2fda624a032d10b1e3a48846c5f5da4198a9d38d"
+    },
+    {
+      "name": "rrm_group_id_unset",
+      "address": "0x004ae550",
+      "size": 108,
+      "sha256": "80a449a44b13bc1308467d2a177d435115dc9ef5bc289b79cd3e5d6ae5576676"
+    },
+    {
+      "name": "rrm_help_reg",
+      "address": "0x004af898",
+      "size": 20,
+      "sha256": "3f4b0ced0ccb8b8ec46f91e1e2f1ad7fd7c5502d051a2a868ab0b75a6df482bb"
+    },
+    {
+      "name": "rrm_info_dump",
+      "address": "0x004aea20",
+      "size": 1296,
+      "sha256": "3e96b6654ed7d888b8aa648a9dc9d0f2605b58401d2db63b8a770cf04668a36f"
+    },
+    {
+      "name": "rrm_pkt_chnl_ctl_update_to_all_ap",
+      "address": "0x004ab404",
+      "size": 944,
+      "sha256": "92b77e80577cb8afc4c1ff4429a2703b8bddc44b52e2b6250b273fe4a377e79d"
+    },
+    {
+      "name": "rrm_pkt_dump",
+      "address": "0x004aae18",
+      "size": 40,
+      "sha256": "3c604b3fec038ae955fbff72437ff54687fac23481a6591975ffd8005ea187c6"
+    },
+    {
+      "name": "rrm_pkt_pwr_ctl_update_to_all_ap",
+      "address": "0x004ab7b4",
+      "size": 664,
+      "sha256": "abcca7084c2322bef9699ba6eb398f7e9846ec4c2b0a77fc4e71ee51305e02f5"
+    },
+    {
+      "name": "rrm_pwr_collect_active_ap",
+      "address": "0x004ac988",
+      "size": 1672,
+      "sha256": "947f69f2ac908b404e1cadfc668e8a65eda9987ed80f2e6157235d6a3be56606"
+    },
+    {
+      "name": "rrm_pwr_collect_active_sub_ap",
+      "address": "0x004ad010",
+      "size": 212,
+      "sha256": "35371918765beb583abc137436c6890176fbf7eefddd2733d9d3965f05d0f73f"
+    },
+    {
+      "name": "rrm_pwr_set_to_all_ap",
+      "address": "0x004abe64",
+      "size": 716,
+      "sha256": "5aaebe80d2d41971fc224dd418599de715b5d21f02427764860d233a12a8a920"
+    },
+    {
+      "name": "rrm_reset_ap_pwr_para_all",
+      "address": "0x004ad18c",
+      "size": 76,
+      "sha256": "e03cd236c3e9b4e042ce102af870a184621a5e737690dd19dca4a8a95d63001e"
+    },
+    {
+      "name": "rrm_rssi_threshold_set",
+      "address": "0x004ae4dc",
+      "size": 12,
+      "sha256": "6a02d99a68e3c2b129832dd66c6f31c45410fbf3de192757081a193ef80f2d97"
+    },
+    {
+      "name": "rrm_rssi_transfer_itf",
+      "address": "0x004aae40",
+      "size": 36,
+      "sha256": "82ba1fd3e5fd858fe4dbc0127f6dc710f943a55ef4be4cefcbf45f20f0111521"
+    },
+    {
+      "name": "rrm_set_to_all_ap",
+      "address": "0x004ac130",
+      "size": 1728,
+      "sha256": "0eca1883f664352e8b063f9fb4c1c8715376bd729a86abb9c98cff904595ac8e"
+    },
+    {
+      "name": "rrm_timeout",
+      "address": "0x004a8f58",
+      "size": 72,
+      "sha256": "94678dcb072edbe1eecb6f6e3c5a22cc58d3b7c12b73313220b28204eac3a92f"
+    },
+    {
+      "name": "rrm_transfer_level_to_power",
+      "address": "0x004ab23c",
+      "size": 196,
+      "sha256": "f41c09886d8757b269f3401a90c79a11bb9be3f2b48c9c46de3faca4a1bf1027"
+    },
+    {
+      "name": "rrm_transfer_pwr_to_level",
+      "address": "0x004ab198",
+      "size": 164,
+      "sha256": "2235bd11c75f5c3683c921ede078e3af35ffe413f2d0b4b061861b3689abb4f8"
+    },
+    {
+      "name": "run_DCA",
+      "address": "0x004b07f8",
+      "size": 624,
+      "sha256": "f1f781c705e51ab8916f9fb991ffaedaa79fe777688d8d94141b94c9f83f2d1c"
+    },
+    {
+      "name": "run_TPC",
+      "address": "0x004b1750",
+      "size": 692,
+      "sha256": "6878a1a74f3f9a1755f06754cbe241f1e6a61792f6ed1a2f58d64b93e7700864"
+    },
+    {
+      "name": "run_smooth_TPC",
+      "address": "0x004b1a04",
+      "size": 352,
+      "sha256": "c0c190b8659f00a7ed3626f400e56df9ea065ec7092b7f2034fbb5851dfb89b8"
+    },
+    {
+      "name": "uac_rdmngr_chnl_pwr_modify_by_rdid",
+      "address": "0x0062f37c",
+      "size": 1964,
+      "sha256": "cefae1749c47e99b53d1603c4a7efe1f662509e9c5a769e3d0db93d537fd7dd4"
+    },
+    {
+      "name": "uac_rrm_init",
+      "address": "0x004af92c",
+      "size": 1928,
+      "sha256": "bd6550b005d6f6f3e3430f24109789536aaf372c51cf431f735209d43a0b7943"
+    },
+    {
+      "name": "uac_rrm_sync_init",
+      "address": "0x004b0160",
+      "size": 8,
+      "sha256": "648cbc77d024f6d08bc8ff4e3bdf1cebf2a933937ee1cebef4690d015808bd9c"
+    },
+    {
+      "name": "uac_rrm_sync_rd_entry",
+      "address": "0x004b0170",
+      "size": 8,
+      "sha256": "648cbc77d024f6d08bc8ff4e3bdf1cebf2a933937ee1cebef4690d015808bd9c"
+    },
+    {
+      "name": "uac_rrm_sync_uninit",
+      "address": "0x004b0168",
+      "size": 8,
+      "sha256": "78aa5094d5ec7291c79f799c009d04f06c2f20187988e3dcc8d35ee5efdbb378"
+    },
+    {
+      "name": "uac_rrm_uninit",
+      "address": "0x004af8ac",
+      "size": 128,
+      "sha256": "2349c6cd2cefa9751baa005f1fd05f65d5437cd17b5e3d9b9fe62b8a4525f4eb"
+    }
+  ],
+  "direct_callers": [
+    {
+      "caller": "main",
+      "target": "uac_rrm_uninit",
+      "site": "0x0040a4fc",
+      "instruction": "0x0c12be2b"
+    },
+    {
+      "caller": "main",
+      "target": "uac_rrm_init",
+      "site": "0x0040ade0",
+      "instruction": "0x0c12be4b"
+    },
+    {
+      "caller": "cloud_mngt_init",
+      "target": "rrm_callback_register",
+      "site": "0x0049d14c",
+      "instruction": "0x0c12c02d"
+    },
+    {
+      "caller": "_autorrm_config_set",
+      "target": "_autorrm_tmo_caculate",
+      "site": "0x004a8dd4",
+      "instruction": "0x0c12a2d7"
+    },
+    {
+      "caller": "_rrm_apmngr_reboot_check",
+      "target": "rrm_db_state_get",
+      "site": "0x004a8efc",
+      "instruction": "0x0c12c70c"
+    },
+    {
+      "caller": "rrm_timeout",
+      "target": "rrm_db_state_get",
+      "site": "0x004a8f60",
+      "instruction": "0x0c12c70c"
+    },
+    {
+      "caller": "rrm_timeout",
+      "target": "rrm_db_state_set",
+      "site": "0x004a8f74",
+      "instruction": "0x0c12c708"
+    },
+    {
+      "caller": "_rrm_jcs_rrm_para_set",
+      "target": "rrm_db_state_get",
+      "site": "0x004a9618",
+      "instruction": "0x0c12c70c"
+    },
+    {
+      "caller": "_rrm_jcs_rrm_para_set",
+      "target": "_rrm_group_id_set",
+      "site": "0x004a9700",
+      "instruction": "0x0c12a258"
+    },
+    {
+      "caller": "_rrm_jcs_rrm_para_set",
+      "target": "_rrm_freq_enable_set",
+      "site": "0x004a9750",
+      "instruction": "0x0c12a548"
+    },
+    {
+      "caller": "_rrm_jcs_rrm_para_set",
+      "target": "_autorrm_config_set",
+      "site": "0x004aa168",
+      "instruction": "0x0c12a321"
+    },
+    {
+      "caller": "_autorrm_systime_callback",
+      "target": "_autorrm_tmo_caculate",
+      "site": "0x004aa644",
+      "instruction": "0x0c12a2d7"
+    },
+    {
+      "caller": "_rrm_jcs_rrm_state_get",
+      "target": "rrm_db_state_get",
+      "site": "0x004aa730",
+      "instruction": "0x0c12c70c"
+    },
+    {
+      "caller": "rrm_acs_timeout",
+      "target": "rrm_db_state_set",
+      "site": "0x004aa7bc",
+      "instruction": "0x0c12c708"
+    },
+    {
+      "caller": "rrm_acs_timeout",
+      "target": "rrm_db_state_set",
+      "site": "0x004aa86c",
+      "instruction": "0x0c12c708"
+    },
+    {
+      "caller": "rrm_acs_timeout",
+      "target": "rrm_db_state_set",
+      "site": "0x004aa890",
+      "instruction": "0x0c12c708"
+    },
+    {
+      "caller": "_rrm_ctl_packet_create",
+      "target": "rrm_pkt_dump",
+      "site": "0x004aafc8",
+      "instruction": "0x0c12ab86"
+    },
+    {
+      "caller": "_rrm_ctl_packet_send",
+      "target": "_rrm_ctl_packet_create",
+      "site": "0x004ab0d4",
+      "instruction": "0x0c12ab99"
+    },
+    {
+      "caller": "rrm_adjust_cur_pwr",
+      "target": "rrm_transfer_pwr_to_level",
+      "site": "0x004ab320",
+      "instruction": "0x0c12ac66"
+    },
+    {
+      "caller": "rrm_adjust_cur_pwr",
+      "target": "rrm_transfer_level_to_power",
+      "site": "0x004ab340",
+      "instruction": "0x0812ac8f"
+    },
+    {
+      "caller": "rrm_adjust_cur_pwr_for_collect",
+      "target": "rrm_transfer_pwr_to_level",
+      "site": "0x004ab37c",
+      "instruction": "0x0c12ac66"
+    },
+    {
+      "caller": "rrm_adjust_cur_pwr_for_collect",
+      "target": "rrm_transfer_level_to_power",
+      "site": "0x004ab390",
+      "instruction": "0x0c12ac8f"
+    },
+    {
+      "caller": "rrm_adjust_cur_pwr_for_collect",
+      "target": "rrm_transfer_level_to_power",
+      "site": "0x004ab3fc",
+      "instruction": "0x0812ac8f"
+    },
+    {
+      "caller": "rrm_pkt_chnl_ctl_update_to_all_ap",
+      "target": "_rrm_ctl_packet_send",
+      "site": "0x004ab688",
+      "instruction": "0x0c12ac1b"
+    },
+    {
+      "caller": "rrm_pkt_pwr_ctl_update_to_all_ap",
+      "target": "rrm_transfer_pwr_to_level",
+      "site": "0x004ab944",
+      "instruction": "0x0c12ac66"
+    },
+    {
+      "caller": "rrm_pkt_pwr_ctl_update_to_all_ap",
+      "target": "_rrm_ctl_packet_send",
+      "site": "0x004aba1c",
+      "instruction": "0x0c12ac1b"
+    },
+    {
+      "caller": "rrm_channel_set_to_all_ap",
+      "target": "rrm_ap_is_rrm_set",
+      "site": "0x004abc4c",
+      "instruction": "0x0c12ab11"
+    },
+    {
+      "caller": "rrm_channel_set_to_all_ap",
+      "target": "uac_rdmngr_chnl_pwr_modify_by_rdid",
+      "site": "0x004abc70",
+      "instruction": "0x0c18bcdf"
+    },
+    {
+      "caller": "rrm_channel_set_to_all_ap",
+      "target": "rrm_ap_is_rrm_set",
+      "site": "0x004abc90",
+      "instruction": "0x0c12ab11"
+    },
+    {
+      "caller": "rrm_channel_set_to_all_ap",
+      "target": "uac_rrm_sync_rd_entry",
+      "site": "0x004abe14",
+      "instruction": "0x0c12c05c"
+    },
+    {
+      "caller": "rrm_pwr_set_to_all_ap",
+      "target": "rrm_transfer_pwr_to_level",
+      "site": "0x004abefc",
+      "instruction": "0x0c12ac66"
+    },
+    {
+      "caller": "rrm_pwr_set_to_all_ap",
+      "target": "rrm_ap_is_rrm_set",
+      "site": "0x004abf74",
+      "instruction": "0x0c12ab11"
+    },
+    {
+      "caller": "rrm_pwr_set_to_all_ap",
+      "target": "uac_rdmngr_chnl_pwr_modify_by_rdid",
+      "site": "0x004abf94",
+      "instruction": "0x0c18bcdf"
+    },
+    {
+      "caller": "rrm_pwr_set_to_all_ap",
+      "target": "rrm_ap_is_rrm_set",
+      "site": "0x004abfa4",
+      "instruction": "0x0c12ab11"
+    },
+    {
+      "caller": "rrm_pwr_set_to_all_ap",
+      "target": "uac_rrm_sync_rd_entry",
+      "site": "0x004ac0c8",
+      "instruction": "0x0c12c05c"
+    },
+    {
+      "caller": "rrm_set_to_all_ap",
+      "target": "rrm_channel_set_to_all_ap",
+      "site": "0x004ac1d8",
+      "instruction": "0x0c12ae93"
+    },
+    {
+      "caller": "rrm_set_to_all_ap",
+      "target": "rrm_pwr_set_to_all_ap",
+      "site": "0x004ac210",
+      "instruction": "0x0c12af99"
+    },
+    {
+      "caller": "rrm_set_to_all_ap",
+      "target": "rrm_transfer_pwr_to_level",
+      "site": "0x004ac4b4",
+      "instruction": "0x0c12ac66"
+    },
+    {
+      "caller": "rrm_set_to_all_ap",
+      "target": "rrm_ap_is_rrm_set",
+      "site": "0x004ac518",
+      "instruction": "0x0c12ab11"
+    },
+    {
+      "caller": "rrm_set_to_all_ap",
+      "target": "uac_rdmngr_chnl_pwr_modify_by_rdid",
+      "site": "0x004ac53c",
+      "instruction": "0x0c18bcdf"
+    },
+    {
+      "caller": "rrm_set_to_all_ap",
+      "target": "rrm_ap_is_rrm_set",
+      "site": "0x004ac54c",
+      "instruction": "0x0c12ab11"
+    },
+    {
+      "caller": "rrm_set_to_all_ap",
+      "target": "uac_rrm_sync_rd_entry",
+      "site": "0x004ac7a4",
+      "instruction": "0x0c12c05c"
+    },
+    {
+      "caller": "rrm_collect_active_sub_ap",
+      "target": "rrm_collect_active_ap",
+      "site": "0x004ac89c",
+      "instruction": "0x0c12a3e8"
+    },
+    {
+      "caller": "rrm_pwr_collect_active_ap",
+      "target": "rrm_get_apdb_pwr",
+      "site": "0x004acd7c",
+      "instruction": "0x0c12b239"
+    },
+    {
+      "caller": "rrm_pwr_collect_active_ap",
+      "target": "rrm_adjust_cur_pwr_for_collect",
+      "site": "0x004acdc0",
+      "instruction": "0x0c12acd2"
+    },
+    {
+      "caller": "rrm_pwr_collect_active_ap",
+      "target": "rrm_adjust_cur_pwr_for_collect",
+      "site": "0x004ace18",
+      "instruction": "0x0c12acd2"
+    },
+    {
+      "caller": "rrm_pwr_collect_active_sub_ap",
+      "target": "rrm_pwr_collect_active_ap",
+      "site": "0x004ad09c",
+      "instruction": "0x0c12b262"
+    },
+    {
+      "caller": "rrm_destroy_ap_para_all",
+      "target": "rrm_ap_para_destroy",
+      "site": "0x004ad10c",
+      "instruction": "0x0c12cbea"
+    },
+    {
+      "caller": "rrm_destroy_ap_pwr_para_all",
+      "target": "rrm_ap_pwr_para_destroy",
+      "site": "0x004ad160",
+      "instruction": "0x0c12ccc2"
+    },
+    {
+      "caller": "rrm_reset_ap_pwr_para_all",
+      "target": "rrm_ap_pwr_para_reset",
+      "site": "0x004ad1b4",
+      "instruction": "0x0c12cd85"
+    },
+    {
+      "caller": "chnl_rrm_start",
+      "target": "rrm_db_state_get",
+      "site": "0x004ad1f0",
+      "instruction": "0x0c12c70c"
+    },
+    {
+      "caller": "chnl_rrm_start",
+      "target": "rrm_db_state_set",
+      "site": "0x004ad2dc",
+      "instruction": "0x0c12c708"
+    },
+    {
+      "caller": "chnl_rrm_start",
+      "target": "rrm_db_state_set",
+      "site": "0x004ad318",
+      "instruction": "0x0c12c708"
+    },
+    {
+      "caller": "chnl_rrm_start",
+      "target": "rrm_destroy_ap_para_all",
+      "site": "0x004ad330",
+      "instruction": "0x0c12b439"
+    },
+    {
+      "caller": "chnl_rrm_start",
+      "target": "rrm_ap_para_create",
+      "site": "0x004ad33c",
+      "instruction": "0x0c12cc4c"
+    },
+    {
+      "caller": "chnl_rrm_start",
+      "target": "rrm_db_state_set",
+      "site": "0x004ad3a0",
+      "instruction": "0x0c12c708"
+    },
+    {
+      "caller": "chnl_rrm_start",
+      "target": "rrm_destroy_ap_para_all",
+      "site": "0x004ad3a8",
+      "instruction": "0x0c12b439"
+    },
+    {
+      "caller": "chnl_rrm_start",
+      "target": "rrm_pkt_chnl_ctl_update_to_all_ap",
+      "site": "0x004ad3bc",
+      "instruction": "0x0c12ad01"
+    },
+    {
+      "caller": "chnl_rrm_start",
+      "target": "rrm_db_state_set",
+      "site": "0x004ad424",
+      "instruction": "0x0c12c708"
+    },
+    {
+      "caller": "chnl_rrm_start",
+      "target": "rrm_db_state_set",
+      "site": "0x004ad438",
+      "instruction": "0x0c12c708"
+    },
+    {
+      "caller": "pwr_rrm_start",
+      "target": "rrm_db_state_get",
+      "site": "0x004ad464",
+      "instruction": "0x0c12c70c"
+    },
+    {
+      "caller": "pwr_rrm_start",
+      "target": "rrm_db_state_set",
+      "site": "0x004ad554",
+      "instruction": "0x0c12c708"
+    },
+    {
+      "caller": "pwr_rrm_start",
+      "target": "rrm_destroy_ap_pwr_para_all",
+      "site": "0x004ad574",
+      "instruction": "0x0c12b44e"
+    },
+    {
+      "caller": "pwr_rrm_start",
+      "target": "rrm_ap_pwr_para_create",
+      "site": "0x004ad580",
+      "instruction": "0x0c12cd16"
+    },
+    {
+      "caller": "pwr_rrm_start",
+      "target": "rrm_db_state_set",
+      "site": "0x004ad5e4",
+      "instruction": "0x0c12c708"
+    },
+    {
+      "caller": "pwr_rrm_start",
+      "target": "rrm_destroy_ap_pwr_para_all",
+      "site": "0x004ad5ec",
+      "instruction": "0x0c12b44e"
+    },
+    {
+      "caller": "pwr_rrm_start",
+      "target": "rrm_pkt_pwr_ctl_update_to_all_ap",
+      "site": "0x004ad5fc",
+      "instruction": "0x0c12aded"
+    },
+    {
+      "caller": "pwr_rrm_start",
+      "target": "rrm_db_state_set",
+      "site": "0x004ad664",
+      "instruction": "0x0c12c708"
+    },
+    {
+      "caller": "_autorrm_tmo_handle",
+      "target": "rrm_db_state_get",
+      "site": "0x004ad694",
+      "instruction": "0x0c12c70c"
+    },
+    {
+      "caller": "_autorrm_tmo_handle",
+      "target": "_autorrm_tmo_caculate",
+      "site": "0x004ad6e0",
+      "instruction": "0x0c12a2d7"
+    },
+    {
+      "caller": "_autorrm_tmo_handle",
+      "target": "pwr_rrm_start",
+      "site": "0x004ad858",
+      "instruction": "0x0c12b512"
+    },
+    {
+      "caller": "_autorrm_tmo_handle",
+      "target": "rrm_callback_proc",
+      "site": "0x004ad884",
+      "instruction": "0x0c12aad6"
+    },
+    {
+      "caller": "_autorrm_tmo_handle",
+      "target": "chnl_rrm_start",
+      "site": "0x004ad8b4",
+      "instruction": "0x0c12b476"
+    },
+    {
+      "caller": "_autorrm_tmo_handle",
+      "target": "rrm_callback_proc",
+      "site": "0x004ad8d0",
+      "instruction": "0x0c12aad6"
+    },
+    {
+      "caller": "_rrm_jcs_manual_rrm_set",
+      "target": "rrm_db_state_get",
+      "site": "0x004ad904",
+      "instruction": "0x0c12c70c"
+    },
+    {
+      "caller": "_rrm_jcs_manual_rrm_set",
+      "target": "pwr_rrm_start",
+      "site": "0x004ad9cc",
+      "instruction": "0x0c12b512"
+    },
+    {
+      "caller": "_rrm_jcs_manual_rrm_set",
+      "target": "rrm_callback_proc",
+      "site": "0x004ad9e8",
+      "instruction": "0x0c12aad6"
+    },
+    {
+      "caller": "_rrm_jcs_manual_rrm_set",
+      "target": "chnl_rrm_start",
+      "site": "0x004ada38",
+      "instruction": "0x0c12b476"
+    },
+    {
+      "caller": "_rrm_jcs_manual_rrm_set",
+      "target": "rrm_callback_proc",
+      "site": "0x004ada54",
+      "instruction": "0x0c12aad6"
+    },
+    {
+      "caller": "_rrm_pkt_rssi_request",
+      "target": "rrm_pkt_dump",
+      "site": "0x004adb70",
+      "instruction": "0x0c12ab86"
+    },
+    {
+      "caller": "_rrm_pkt_rssi_request",
+      "target": "rrm_db_state_get",
+      "site": "0x004adb8c",
+      "instruction": "0x0c12c70c"
+    },
+    {
+      "caller": "_rrm_pkt_rssi_request",
+      "target": "rrm_ap_pwr_para_neighbor_add",
+      "site": "0x004ade78",
+      "instruction": "0x0c12c9b3"
+    },
+    {
+      "caller": "_rrm_pkt_rssi_request",
+      "target": "rrm_ap_para_neighbor_radio_map_get",
+      "site": "0x004adef4",
+      "instruction": "0x0c12c796"
+    },
+    {
+      "caller": "_rrm_pkt_rssi_request",
+      "target": "rrm_ap_para_neighbor_add",
+      "site": "0x004ae020",
+      "instruction": "0x0c12c86e"
+    },
+    {
+      "caller": "_rrm_pkt_rssi_request",
+      "target": "rrm_ap_pwr_para_neighbor_radio_map_set",
+      "site": "0x004ae080",
+      "instruction": "0x0c12c7ed"
+    },
+    {
+      "caller": "_rrm_pkt_rssi_request",
+      "target": "rrm_ap_pwr_para_is_collect_finished",
+      "site": "0x004ae088",
+      "instruction": "0x0c12cbd1"
+    },
+    {
+      "caller": "_rrm_pkt_rssi_request",
+      "target": "rrm_ap_pwr_para_is_collect_finished",
+      "site": "0x004ae0b0",
+      "instruction": "0x0c12cbd1"
+    },
+    {
+      "caller": "_rrm_pkt_rssi_request",
+      "target": "rrm_db_state_set",
+      "site": "0x004ae0d0",
+      "instruction": "0x0c12c708"
+    },
+    {
+      "caller": "_rrm_pkt_rssi_request",
+      "target": "rrm_ap_para_neighbor_radio_map_set",
+      "site": "0x004ae200",
+      "instruction": "0x0c12c711"
+    },
+    {
+      "caller": "_rrm_pkt_rssi_request",
+      "target": "rrm_ap_para_is_collect_finished",
+      "site": "0x004ae238",
+      "instruction": "0x0c12cbb8"
+    },
+    {
+      "caller": "_rrm_pkt_rssi_request",
+      "target": "rrm_ap_para_is_collect_finished",
+      "site": "0x004ae274",
+      "instruction": "0x0c12cbb8"
+    },
+    {
+      "caller": "_rrm_pkt_rssi_request",
+      "target": "rrm_ap_para_neighbor_radio_map_get",
+      "site": "0x004ae2a8",
+      "instruction": "0x0c12c796"
+    },
+    {
+      "caller": "_rrm_pkt_rssi_request",
+      "target": "rrm_ap_para_neighbor_radio_map_set",
+      "site": "0x004ae2c0",
+      "instruction": "0x0c12c711"
+    },
+    {
+      "caller": "_rrm_pkt_rssi_request",
+      "target": "rrm_db_state_set",
+      "site": "0x004ae2d8",
+      "instruction": "0x0c12c708"
+    },
+    {
+      "caller": "_rrm_pkt_rssi_request",
+      "target": "rrm_ap_para_exceed_neighbor_delete",
+      "site": "0x004ae2e8",
+      "instruction": "0x0c12ca88"
+    },
+    {
+      "caller": "_rrm_pkt_rssi_request",
+      "target": "rrm_ap_para_neighbor_radio_map_get",
+      "site": "0x004ae364",
+      "instruction": "0x0c12c796"
+    },
+    {
+      "caller": "_rrm_pkt_rssi_request",
+      "target": "rrm_ap_para_neighbor_radio_map_get",
+      "site": "0x004ae3cc",
+      "instruction": "0x0c12c796"
+    },
+    {
+      "caller": "_rrm_pkt_rssi_request",
+      "target": "rrm_ap_para_neighbor_add",
+      "site": "0x004ae404",
+      "instruction": "0x0c12c86e"
+    },
+    {
+      "caller": "_rrm_pkt_wtp_event_listener",
+      "target": "_rrm_pkt_rssi_request",
+      "site": "0x004ae4bc",
+      "instruction": "0x0812b6b5"
+    },
+    {
+      "caller": "rrm_info_dump",
+      "target": "rrm_db_state_get",
+      "site": "0x004aea60",
+      "instruction": "0x0c12c70c"
+    },
+    {
+      "caller": "_rrm_task",
+      "target": "rrm_db_state_get",
+      "site": "0x004aef74",
+      "instruction": "0x0c12c70c"
+    },
+    {
+      "caller": "_rrm_task",
+      "target": "rrm_destroy_ap_para_all",
+      "site": "0x004aefb4",
+      "instruction": "0x0c12b439"
+    },
+    {
+      "caller": "_rrm_task",
+      "target": "rrm_destroy_ap_pwr_para_all",
+      "site": "0x004aefbc",
+      "instruction": "0x0c12b44e"
+    },
+    {
+      "caller": "_rrm_task",
+      "target": "rrm_db_state_set",
+      "site": "0x004aefdc",
+      "instruction": "0x0c12c708"
+    },
+    {
+      "caller": "_rrm_task",
+      "target": "rrm_callback_proc",
+      "site": "0x004aefe4",
+      "instruction": "0x0c12aad6"
+    },
+    {
+      "caller": "_rrm_task",
+      "target": "rrm_db_state_set",
+      "site": "0x004af01c",
+      "instruction": "0x0c12c708"
+    },
+    {
+      "caller": "_rrm_task",
+      "target": "run_DCA",
+      "site": "0x004af088",
+      "instruction": "0x0c12c1fe"
+    },
+    {
+      "caller": "_rrm_task",
+      "target": "pwr_rrm_start",
+      "site": "0x004af1c4",
+      "instruction": "0x0c12b512"
+    },
+    {
+      "caller": "_rrm_task",
+      "target": "rrm_db_state_set",
+      "site": "0x004af230",
+      "instruction": "0x0c12c708"
+    },
+    {
+      "caller": "_rrm_task",
+      "target": "run_TPC",
+      "site": "0x004af2a8",
+      "instruction": "0x0c12c5d4"
+    },
+    {
+      "caller": "_rrm_task",
+      "target": "rrm_set_to_all_ap",
+      "site": "0x004af3d8",
+      "instruction": "0x0c12b04c"
+    },
+    {
+      "caller": "_rrm_task",
+      "target": "rrm_set_to_all_ap",
+      "site": "0x004af448",
+      "instruction": "0x0c12b04c"
+    },
+    {
+      "caller": "_rrm_task",
+      "target": "run_DCA",
+      "site": "0x004af4b0",
+      "instruction": "0x0c12c1fe"
+    },
+    {
+      "caller": "_rrm_task",
+      "target": "rrm_ap_para_dump",
+      "site": "0x004af4d0",
+      "instruction": "0x0c12aa28"
+    },
+    {
+      "caller": "_rrm_task",
+      "target": "rrm_info_dump",
+      "site": "0x004af534",
+      "instruction": "0x0c12ba88"
+    },
+    {
+      "caller": "_rrm_task",
+      "target": "run_smooth_TPC",
+      "site": "0x004af588",
+      "instruction": "0x0c12c681"
+    },
+    {
+      "caller": "_rrm_task",
+      "target": "rrm_info_dump",
+      "site": "0x004af5b4",
+      "instruction": "0x0c12ba88"
+    },
+    {
+      "caller": "_rrm_task",
+      "target": "rrm_channel_set_to_all_ap",
+      "site": "0x004af5c4",
+      "instruction": "0x0c12ae93"
+    },
+    {
+      "caller": "_rrm_task",
+      "target": "rrm_add_co_chnl_itf",
+      "site": "0x004af5f0",
+      "instruction": "0x0c12caf9"
+    },
+    {
+      "caller": "_rrm_task",
+      "target": "rrm_ap_para_dump",
+      "site": "0x004af620",
+      "instruction": "0x0c12aa28"
+    },
+    {
+      "caller": "_rrm_task",
+      "target": "rrm_reset_ap_pwr_para_all",
+      "site": "0x004af744",
+      "instruction": "0x0c12b463"
+    },
+    {
+      "caller": "_rrm_task",
+      "target": "pwr_rrm_start",
+      "site": "0x004af74c",
+      "instruction": "0x0c12b512"
+    },
+    {
+      "caller": "uac_rrm_uninit",
+      "target": "rrm_db_uninit",
+      "site": "0x004af8cc",
+      "instruction": "0x0c12c6dc"
+    },
+    {
+      "caller": "uac_rrm_uninit",
+      "target": "uac_rrm_sync_uninit",
+      "site": "0x004af8fc",
+      "instruction": "0x0c12c05a"
+    },
+    {
+      "caller": "uac_rrm_init",
+      "target": "rrm_db_init",
+      "site": "0x004af990",
+      "instruction": "0x0c12c6eb"
+    },
+    {
+      "caller": "uac_rrm_init",
+      "target": "uac_rrm_uninit",
+      "site": "0x004afa18",
+      "instruction": "0x0c12be2b"
+    },
+    {
+      "caller": "uac_rrm_init",
+      "target": "_rrm_group_id_set",
+      "site": "0x004afe50",
+      "instruction": "0x0c12a258"
+    },
+    {
+      "caller": "uac_rrm_init",
+      "target": "_rrm_freq_enable_set",
+      "site": "0x004afe58",
+      "instruction": "0x0c12a548"
+    },
+    {
+      "caller": "uac_rrm_init",
+      "target": "_rrm_group_id_set",
+      "site": "0x004afe60",
+      "instruction": "0x0c12a258"
+    },
+    {
+      "caller": "uac_rrm_init",
+      "target": "_rrm_freq_enable_set",
+      "site": "0x004afe68",
+      "instruction": "0x0c12a548"
+    },
+    {
+      "caller": "uac_rrm_init",
+      "target": "_autorrm_config_set",
+      "site": "0x004afe78",
+      "instruction": "0x0c12a321"
+    },
+    {
+      "caller": "uac_rrm_init",
+      "target": "uac_rrm_sync_init",
+      "site": "0x004aff84",
+      "instruction": "0x0c12c058"
+    },
+    {
+      "caller": "uac_rrm_init",
+      "target": "rrm_db_state_set",
+      "site": "0x004aff94",
+      "instruction": "0x0c12c708"
+    },
+    {
+      "caller": "uac_rrm_init",
+      "target": "rrm_help_reg",
+      "site": "0x004affc0",
+      "instruction": "0x0c12be26"
+    },
+    {
+      "caller": "dfs",
+      "target": "dfs",
+      "site": "0x004b037c",
+      "instruction": "0x0c12c060"
+    },
+    {
+      "caller": "run_DCA",
+      "target": "dfs",
+      "site": "0x004b09b8",
+      "instruction": "0x0c12c060"
+    },
+    {
+      "caller": "try_run_DCA",
+      "target": "run_DCA",
+      "site": "0x004b0f24",
+      "instruction": "0x0c12c1fe"
+    },
+    {
+      "caller": "try_run_DCA_new",
+      "target": "run_DCA",
+      "site": "0x004b159c",
+      "instruction": "0x0c12c1fe"
+    },
+    {
+      "caller": "rrm_db_init",
+      "target": "rrm_db_uninit",
+      "site": "0x004b1bf4",
+      "instruction": "0x0c12c6dc"
+    },
+    {
+      "caller": "rrm_ap_para_create",
+      "target": "rrm_ap_para_destroy",
+      "site": "0x004b32f8",
+      "instruction": "0x0c12cbea"
+    },
+    {
+      "caller": "rrm_ap_pwr_para_create",
+      "target": "rrm_ap_pwr_para_destroy",
+      "site": "0x004b3604",
+      "instruction": "0x0c12ccc2"
+    },
+    {
+      "caller": "_apdb_pkt_parse_radio",
+      "target": "_apdb_pkt_parse_radio",
+      "site": "0x0060e8b4",
+      "instruction": "0x0c183945"
+    },
+    {
+      "caller": "_apdb_pkt_manage",
+      "target": "_apdb_pkt_parse_radio",
+      "site": "0x00610090",
+      "instruction": "0x0c183945"
+    }
+  ],
+  "registrations": [
+    {
+      "root": "uac_rrm_init",
+      "site": "0x004afe90",
+      "target": "_rrm_pkt_wtp_event_listener",
+      "address": "0x004ae470",
+      "instruction": "0x24c6e470"
+    },
+    {
+      "root": "uac_rrm_init",
+      "site": "0x004afeb0",
+      "target": "_rrm_jcs_rrm_state_get",
+      "address": "0x004aa714",
+      "instruction": "0x24c6a714"
+    },
+    {
+      "root": "uac_rrm_init",
+      "site": "0x004afecc",
+      "target": "_rrm_jcs_rrm_para_set",
+      "address": "0x004a95a8",
+      "instruction": "0x24c695a8"
+    },
+    {
+      "root": "uac_rrm_init",
+      "site": "0x004afee8",
+      "target": "_rrm_jcs_manual_rrm_set",
+      "address": "0x004ad8e4",
+      "instruction": "0x24c6d8e4"
+    },
+    {
+      "root": "uac_rrm_init",
+      "site": "0x004aff30",
+      "target": "_rrm_apmngr_reboot_check",
+      "address": "0x004a8ef0",
+      "instruction": "0xafa20034"
+    },
+    {
+      "root": "uac_rrm_init",
+      "site": "0x004aff78",
+      "target": "_autorrm_systime_callback",
+      "address": "0x004aa5d8",
+      "instruction": "0xafa20128"
+    },
+    {
+      "root": "uac_rrm_init",
+      "site": "0x004affb4",
+      "target": "_rrm_task",
+      "address": "0x004aef30",
+      "instruction": "0x24c6ef30"
+    }
+  ],
+  "data": [
+    {
+      "name": "power_and_ndp_defaults",
+      "address": "0x007318d8",
+      "size": 68,
+      "hex": "00000003000000030000001effffffff00000008000000010000001e00000002bfbf0000000000010000005a000000000000ab000001003c00060000ffffffffffffffff",
+      "sha256": "4770936624da1ce18c1d3be656c52804b813b7d8b123b9e2d12e066e232c0ff9"
+    },
+    {
+      "name": "quantization_divisor_double9",
+      "address": "0x006a1600",
+      "size": 8,
+      "hex": "4022000000000000",
+      "sha256": "1add06c940546b755202e6ffdd270d8d505c0cb48d26a258abf4bdef662a9b1c"
+    }
+  ],
+  "files": [
+    {
+      "path": "usr/lib/lua/luci/controller/admin/apmng_rrm.lua",
+      "sha256": "ea2637965a3ba4ee299a763cb22ee3f54a6287923ac6b30538b38fd86b76d4f9"
+    },
+    {
+      "path": "usr/lib/lua/luci/view/userrpm/apmng_rrm.htm",
+      "sha256": "0cd80a2e47543b60dc18f69f6c764ec5a1521ffcda403bb679def80b1cab1c8e"
+    }
+  ],
+  "scope": "Product Web/JCS/scheduled RRM; debug CLI, logs, fixed hardware capacities and system-time management are not application policies. Internal smoothTPC flag defaults0 and is not a Web/JCS setting."
+}

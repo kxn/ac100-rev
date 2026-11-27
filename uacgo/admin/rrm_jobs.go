@@ -15,22 +15,30 @@ import (
 )
 
 type RRMJob struct {
-	Round            int                  `json:"round"`
-	Pass             int                  `json:"pass"`
-	CollectUntil     time.Time            `json:"collect_until"`
-	ID               string               `json:"id"`
-	Rule             RRMRule              `json:"rule"`
-	State            string               `json:"state"`
-	Error            string               `json:"error,omitempty"`
-	Started          time.Time            `json:"started"`
-	Updated          time.Time            `json:"updated"`
-	BaseSignature    string               `json:"base_signature,omitempty"`
-	AppliedSignature string               `json:"applied_signature,omitempty"`
-	BaseVersion      uint64               `json:"base_version"`
-	AppliedVersion   uint64               `json:"applied_version,omitempty"`
-	Targets          map[string]time.Time `json:"targets"`
-	Scans            map[string]time.Time `json:"scans"`
-	Changes          []RRMChange          `json:"changes"`
+	Phase                   string               `json:"phase,omitempty"`
+	PowerSkipped            bool                 `json:"power_skipped,omitempty"`
+	ChannelCollectionFailed bool                 `json:"channel_collection_failed,omitempty"`
+	PowerCollectionFailed   bool                 `json:"power_collection_failed,omitempty"`
+	CommonChannelCancelled  bool                 `json:"common_channel_cancelled,omitempty"`
+	CommonChannelPhase      bool                 `json:"common_channel_phase,omitempty"`
+	CommonChannel           bool                 `json:"common_channel,omitempty"`
+	ACSWaitAttempts         int                  `json:"acs_wait_attempts,omitempty"`
+	Round                   int                  `json:"round"`
+	Pass                    int                  `json:"pass"`
+	CollectUntil            time.Time            `json:"collect_until"`
+	ID                      string               `json:"id"`
+	Rule                    RRMRule              `json:"rule"`
+	State                   string               `json:"state"`
+	Error                   string               `json:"error,omitempty"`
+	Started                 time.Time            `json:"started"`
+	Updated                 time.Time            `json:"updated"`
+	BaseSignature           string               `json:"base_signature,omitempty"`
+	AppliedSignature        string               `json:"applied_signature,omitempty"`
+	BaseVersion             uint64               `json:"base_version"`
+	AppliedVersion          uint64               `json:"applied_version,omitempty"`
+	Targets                 map[string]time.Time `json:"targets"`
+	Scans                   map[string]time.Time `json:"scans"`
+	Changes                 []RRMChange          `json:"changes"`
 }
 
 func (m *Manager) rrmPath() string    { return filepath.Join(filepath.Dir(m.path), "rrm-jobs.json") }
@@ -88,6 +96,9 @@ func (m *Manager) startRRM(rule RRMRule, id string) (RRMJob, error) { // Manager
 	if old, ok := m.rrmJobs[id]; id != "" && ok {
 		return old, nil
 	}
+	if !rule.Channel && !rule.Power {
+		return RRMJob{}, fmt.Errorf("请至少选择信道或功率优化")
+	}
 	for _, j := range m.rrmJobs {
 		if j.State == "collecting" || j.State == "applying" {
 			return RRMJob{}, fmt.Errorf("已有无线优化任务正在运行")
@@ -97,6 +108,22 @@ func (m *Manager) startRRM(rule RRMRule, id string) (RRMJob, error) { // Manager
 		id = newManagementID("rrm")
 	}
 	j := RRMJob{ID: id, Rule: rule, State: "collecting", Started: time.Now(), Updated: time.Now(), BaseVersion: m.config.Version, BaseSignature: wirelessConfigKey(m.config), Targets: map[string]time.Time{}, Scans: map[string]time.Time{}}
+	if actualMobilityMode(m.config) == 1 && !rule.usesV4() {
+		return RRMJob{}, fmt.Errorf("V6射频优化仅适用于兼容网络模式；高性能网络请使用V4共同信道优化")
+	}
+	if actualMobilityMode(m.config) == 1 && !rule.Channel && rule.Power {
+		return RRMJob{}, fmt.Errorf("V4高性能模式不支持功率优化")
+	}
+	if actualMobilityMode(m.config) == 1 && rule.Channel {
+		return m.startHighPerformanceRRMJobLocked(j)
+	}
+	return m.startRRMMeasurementLocked(j, false)
+}
+
+func (m *Manager) startRRMMeasurementLocked(j RRMJob, afterCommonChannel bool) (RRMJob, error) {
+	rule, id := j.Rule, j.ID
+	j.BaseVersion, j.BaseSignature = m.config.Version, wirelessConfigKey(m.config)
+	j.Targets = map[string]time.Time{}
 	for _, ap := range m.known {
 		if !ap.Online || !rule.matches(ap.ID, m.config) {
 			continue
@@ -112,7 +139,7 @@ func (m *Manager) startRRM(rule RRMRule, id string) (RRMJob, error) { // Manager
 		for i := range active.Services {
 			active.Services[i].Enabled = active.Services[i].Enabled && serviceOptions(active.Services[i]).Schedule.active(time.Now())
 		}
-		if m.settled[ap.ID] != configurationKey(effectiveRadioConfig(active, ap), ap.ConnectedAt) {
+		if !afterCommonChannel && m.settled[ap.ID] != configurationKey(effectiveRadioConfig(active, ap), ap.ConnectedAt) {
 			return RRMJob{}, fmt.Errorf("AP %s 配置尚未同步完成", ap.ID)
 		}
 		selected := 0
@@ -143,13 +170,19 @@ func (m *Manager) startRRM(rule RRMRule, id string) (RRMJob, error) { // Manager
 	for _, n := range nodes {
 		j.Targets[n.AP.ID] = n.AP.ConnectedAt
 	}
-	run := newRRMRun(nodes)
+	run, err := newRRMRunForRule(nodes, rule)
+	if err != nil {
+		return RRMJob{}, err
+	}
 	run.beginPass(rule, time.Now())
 	if m.rrmRuns == nil {
 		m.rrmRuns = map[string]*rrmRun{}
 	}
 	m.rrmRuns[id] = run
 	j.Round = run.round
+	if run.v4 != nil {
+		j.Phase = run.v4.phase
+	}
 	j.Pass = run.pass
 	j.CollectUntil = run.deadline
 	m.rrmJobs[id] = j
@@ -206,6 +239,7 @@ func (m *Manager) observeRRMReport(ap string, connection time.Time, report capwa
 				q.received = true
 			}
 			run.ingest(i, report.Neighs, run.round > 1)
+			run.projectV4Mesh(i, report.Neighs, m.config, m.known)
 			m.wakeRRMLocked()
 		}
 	}
@@ -221,7 +255,7 @@ func (m *Manager) dispatchRRMCommandsLocked(job *RRMJob, run *rrmRun) {
 			if !ok || q.sent || n.BandID != band {
 				continue
 			}
-			element := ndpElement(m.ndpMAC, n, q.channel, run.levels[i])
+			element := run.measurementElement(m.ndpMAC, i, q.channel)
 			if p, err := capwap.ParsePrivNdpPara(element.Value[10:]); err == nil {
 				run.levels[i] = firmware.LevelForPower(p.U8e, uint8(n.Cap.MaxPower), uint8(n.Cap.MinPower))
 			}
@@ -256,7 +290,7 @@ func (m *Manager) rrmStep(ctx context.Context, ap cweng.APStatus) bool {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	for _, job := range m.rrmJobs {
-		if job.State == "collecting" {
+		if job.State == "collecting" && !job.CommonChannelPhase {
 			if connection, ok := job.Targets[ap.ID]; ok && connection.Equal(ap.ConnectedAt) {
 				return true
 			}
@@ -311,6 +345,51 @@ func (m *Manager) tickRRM(now time.Time) { // Called after AP snapshots refresh.
 		}
 		switch j.State {
 		case "collecting":
+			if j.CommonChannelPhase {
+				if j.CollectUntil.IsZero() {
+					if actualMobilityMode(m.config) != 1 {
+						j.CollectUntil = j.Started.Add(highPerformanceTimeout(m.config.Mobility) + 5*time.Second)
+						changed = true
+					} else {
+						if m.highPerformance.State == "failed" {
+							fail(m.highPerformance.Error)
+						}
+						break
+					}
+				}
+				if now.Before(j.CollectUntil) {
+					break
+				}
+				if m.highPerformance.State == "collecting" && j.ACSWaitAttempts < 10 {
+					j.ACSWaitAttempts++
+					j.CollectUntil = now.Add(highPerformanceTimeout(m.config.Mobility) + 5*time.Second)
+					changed = true
+					break
+				}
+				cancelled := actualMobilityMode(m.config) != 1
+				j.CommonChannelCancelled = cancelled
+				j.CommonChannelPhase = false
+				if j.Rule.Power && actualMobilityMode(m.config) == 2 {
+					j.Rule.Channel = false
+					continued, err := m.startRRMMeasurementLocked(j, true)
+					if err != nil {
+						fail(err.Error())
+					} else {
+						j = continued
+						changed = true
+					}
+					break
+				}
+				j.PowerSkipped = j.Rule.Power
+				if cancelled {
+					j.State = "completed"
+					j.Changes = nil
+				} else {
+					j = m.finishHighPerformanceRRMJobLocked(j)
+				}
+				changed = true
+				break
+			}
 			if j.BaseSignature != wirelessConfigKey(m.config) {
 				fail("测量期间配置已更改，取消本轮优化")
 				break
@@ -332,32 +411,27 @@ func (m *Manager) tickRRM(now time.Time) { // Called after AP snapshots refresh.
 			if j.State == "failed" || !run.collected(now) {
 				break
 			}
-			if run.pass == 0 && run.multi5G {
-				run.pass = 1
-				run.beginPass(j.Rule, now)
-				j.Pass = run.pass
-				j.CollectUntil = run.deadline
-				j.Scans = map[string]time.Time{}
-				m.dispatchRRMCommandsLocked(&j, run)
-				changed = true
-				break
-			}
-			powerChanged, err := run.calculate(j.Rule, run.round == 1)
+			collectAgain, err := run.finishPass(j.Rule)
 			if err != nil {
 				fail(err.Error())
 				break
 			}
-			if j.Rule.Power && powerChanged && run.round == 1 {
-				run.round = 2
-				run.pass = 0
+			if collectAgain {
 				run.beginPass(j.Rule, now)
 				j.Round = run.round
+				if run.v4 != nil {
+					j.Phase = run.v4.phase
+				}
 				j.Pass = run.pass
 				j.CollectUntil = run.deadline
 				j.Scans = map[string]time.Time{}
 				m.dispatchRRMCommandsLocked(&j, run)
 				changed = true
 				break
+			}
+			if run.v4 != nil {
+				j.ChannelCollectionFailed = run.v4.channelAborted
+				j.PowerCollectionFailed = run.v4.powerAborted
 			}
 			plan, err := run.changes(j.Rule, m.config)
 			if err != nil {
@@ -517,6 +591,11 @@ func (m *Manager) runRRM(ctx context.Context) {
 	for {
 		m.mu.Lock()
 		deadline := time.Now().Add(24 * time.Hour)
+		for _, job := range m.rrmJobs {
+			if job.State == "collecting" && job.CommonChannelPhase && !job.CollectUntil.IsZero() && job.CollectUntil.Before(deadline) {
+				deadline = job.CollectUntil
+			}
+		}
 		for id, run := range m.rrmRuns {
 			if m.rrmJobs[id].State == "collecting" && !run.deadline.IsZero() && run.deadline.Before(deadline) {
 				deadline = run.deadline

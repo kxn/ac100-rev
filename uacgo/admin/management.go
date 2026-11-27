@@ -199,7 +199,7 @@ func validateAPOptions(o APOptions) error {
 			return fmt.Errorf("继承射频编号无效或重复，模板中不能指定 AP")
 		}
 		seenRadios[r.Radio] = true
-		if r.Channel != nil && (*r.Channel < 0 || *r.Channel > 233) || r.Power != nil && (*r.Power < 0 || *r.Power > 100) || r.PowerLevel != nil && (*r.PowerLevel < 1 || *r.PowerLevel > 10) {
+		if r.Channel != nil && (*r.Channel < 0 || *r.Channel > 233) || r.Bandwidth != nil && (*r.Bandwidth < 0 || *r.Bandwidth > 7) || r.Power != nil && (*r.Power < 0 || *r.Power > 100) || r.PowerLevel != nil && (*r.PowerLevel < 1 || *r.PowerLevel > 10) {
 			return fmt.Errorf("模板射频信道/功率无效")
 		}
 	}

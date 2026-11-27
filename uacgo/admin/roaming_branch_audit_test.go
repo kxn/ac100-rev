@@ -411,93 +411,100 @@ func TestBandNavigationModelFailuresCannotMasqueradeAsLegacySuccess(t *testing.T
 }
 
 func TestPMKWireOperationsCapabilityAndFailureResults(t *testing.T) {
-	for _, special := range []bool{false, true} {
-		t.Run(map[bool]string{false: "without66", true: "with66"}[special], func(t *testing.T) {
-			m, e := testController(t)
-			e.RegisterWstaHandlers(m.clients)
-			fake, ap := newDeferredAP(t, e, func(p *capwap.ParsedPacket) {
-				out := p.Elements[:0]
-				for _, el := range p.Elements {
-					if el.Type != 0x32 {
-						out = append(out, el)
-					}
-				}
-				v := make([]byte, 12)
-				if special {
-					v[11] = 4
-				}
-				p.Elements = append(out, capwap.Element{Type: 0x32, Value: v})
-			})
-			m.known[ap.ID] = ap
-			p := defaultMobility()
-			s := Service{ID: "office", SSID: "Office", Security: "open", Enabled: true, Radios: []uint8{1}}
-			m.config = Config{Mobility: &p, Services: []Service{s}}
-			if _, err := m.allocate(ap.ID, s.ID, 1, 8); err != nil {
-				t.Fatal(err)
-			}
-			mac := [6]byte{2, 3, 4, 5, 6, 7}
-			seq := uint8(40)
-			request := func(v capwap.PrivStaPMKReq) *capwap.PrivStaPMKReq {
-				t.Helper()
-				seq++
-				p, _ := capwap.NewParsedPacket(9)
-				p.Control.SeqNum = seq
-				p.Elements = []capwap.Element{privateSetting(0x49, v.AssembleValue())}
-				if _, err := fake.conn.Write(p.Assemble()); err != nil {
-					t.Fatal(err)
-				}
-				select {
-				case response := <-fake.responses:
-					for _, el := range response.Elements {
-						if el.Type == 0x25 && len(el.Value) >= 10 && binary.BigEndian.Uint16(el.Value[6:]) == 0x49 {
-							v, err := capwap.ParsePrivStaPMKReq(el.Value[10:])
-							if err != nil {
-								t.Fatal(err)
+	for _, family := range []string{"v4", "v6"} {
+		t.Run(family, func(t *testing.T) {
+			for _, special := range []bool{false, true} {
+				t.Run(map[bool]string{false: "without66", true: "with66"}[special], func(t *testing.T) {
+					m, e := testController(t)
+					e.RegisterWstaHandlers(m.clients)
+					fake, ap := newDeferredAP(t, e, func(p *capwap.ParsedPacket) {
+						out := p.Elements[:0]
+						for _, el := range p.Elements {
+							if el.Type != 0x32 {
+								out = append(out, el)
 							}
-							return v
+						}
+						v := make([]byte, 12)
+						if special {
+							v[11] = 4
+						}
+						p.Elements = append(out, capwap.Element{Type: 0x32, Value: v})
+					})
+					m.known[ap.ID] = ap
+					p := defaultMobility()
+					if family == "v4" {
+						p.ModeSource = v4ModeSource
+					}
+					s := Service{ID: "office", SSID: "Office", Security: "open", Enabled: true, Radios: []uint8{1}}
+					m.config = Config{Mobility: &p, Services: []Service{s}}
+					if _, err := m.allocate(ap.ID, s.ID, 1, 8); err != nil {
+						t.Fatal(err)
+					}
+					mac := [6]byte{2, 3, 4, 5, 6, 7}
+					seq := uint8(40)
+					request := func(v capwap.PrivStaPMKReq) *capwap.PrivStaPMKReq {
+						t.Helper()
+						seq++
+						p, _ := capwap.NewParsedPacket(9)
+						p.Control.SeqNum = seq
+						p.Elements = []capwap.Element{privateSetting(0x49, v.AssembleValue())}
+						if _, err := fake.conn.Write(p.Assemble()); err != nil {
+							t.Fatal(err)
+						}
+						select {
+						case response := <-fake.responses:
+							for _, el := range response.Elements {
+								if el.Type == 0x25 && len(el.Value) >= 10 && binary.BigEndian.Uint16(el.Value[6:]) == 0x49 {
+									v, err := capwap.ParsePrivStaPMKReq(el.Value[10:])
+									if err != nil {
+										t.Fatal(err)
+									}
+									return v
+								}
+							}
+							return nil
+						case <-time.After(time.Second):
+							t.Fatal("no PMK event ACK")
+							return nil
 						}
 					}
-					return nil
-				case <-time.After(time.Second):
-					t.Fatal("no PMK event ACK")
-					return nil
-				}
-			}
-			v := capwap.PrivStaPMKReq{Operation: 0, Radio: 1, WLAN: 1, MAC: mac}
-			v.PMKR0[0], v.PMKR0Name[0] = 42, 43
-			if got := request(v); got != nil {
-				t.Fatal("inform produced lookup response")
-			}
-			v.Operation = 1
-			v.PMKR0 = [32]byte{}
-			v.PMKR0Name = [16]byte{}
-			if got := request(v); got == nil || got.Operation != 2 || got.Result != 0 || got.PMKR0[0] != 42 || got.PMKR0Name[0] != 43 {
-				t.Fatal("ordinary lookup", got)
-			}
-			rssi := int8(-55)
-			m.clients.StationEvent(cweng.ClientEvent{MAC: mac, APID: "old-ap", RadioID: 2, WLANID: 1, RSSI: &rssi, Kind: "associate", Seen: time.Now()})
-			checks := 0
-			e.CheckAssociation = func(string, uint8, uint8, [6]byte, *int8, *capwap.AssociationMLO) uint32 { checks++; return 0x27 }
-			v.Operation = 3
-			got := request(v)
-			if (got != nil) != special || checks != 0 {
-				t.Fatal("operation3 capability or extra admission policy", got, checks)
-			}
-			client := m.clients.All()[0]
-			if special && (client.APID != ap.ID || client.RSSI == nil || *client.RSSI != -55) {
-				t.Fatal("special lookup lost association/RSSI", client)
-			}
-			if !special && client.APID != "old-ap" {
-				t.Fatal("unsupported operation3 moved station")
-			}
-			v.Operation = 1
-			v.WLAN = 2
-			if got := request(v); got == nil || got.Result != 2 || got.PMKR0 != [32]byte{} || got.PMKR0Name != [16]byte{} {
-				t.Fatal("existing PMK with missing service must return2", got)
-			}
-			v.MAC[5]++
-			if got := request(v); got == nil || got.Result != 1 {
-				t.Fatal("missing PMK must precede missing-service result2", got)
+					v := capwap.PrivStaPMKReq{Operation: 0, Radio: 1, WLAN: 1, MAC: mac}
+					v.PMKR0[0], v.PMKR0Name[0] = 42, 43
+					if got := request(v); got != nil {
+						t.Fatal("inform produced lookup response")
+					}
+					v.Operation = 1
+					v.PMKR0 = [32]byte{}
+					v.PMKR0Name = [16]byte{}
+					if got := request(v); got == nil || got.Operation != 2 || got.Result != 0 || got.PMKR0[0] != 42 || got.PMKR0Name[0] != 43 {
+						t.Fatal("ordinary lookup", got)
+					}
+					rssi := int8(-55)
+					m.clients.StationEvent(cweng.ClientEvent{MAC: mac, APID: "old-ap", RadioID: 2, WLANID: 1, RSSI: &rssi, Kind: "associate", Seen: time.Now()})
+					checks := 0
+					e.CheckAssociation = func(string, uint8, uint8, [6]byte, *int8, *capwap.AssociationMLO) uint32 { checks++; return 0x27 }
+					v.Operation = 3
+					got := request(v)
+					if (got != nil) != special || checks != 0 {
+						t.Fatal("operation3 capability or extra admission policy", got, checks)
+					}
+					client := m.clients.All()[0]
+					if special && (client.APID != ap.ID || client.RSSI == nil || *client.RSSI != -55) {
+						t.Fatal("special lookup lost association/RSSI", client)
+					}
+					if !special && client.APID != "old-ap" {
+						t.Fatal("unsupported operation3 moved station")
+					}
+					v.Operation = 1
+					v.WLAN = 2
+					if got := request(v); got == nil || got.Result != 2 || got.PMKR0 != [32]byte{} || got.PMKR0Name != [16]byte{} {
+						t.Fatal("existing PMK with missing service must return2", got)
+					}
+					v.MAC[5]++
+					if got := request(v); got == nil || got.Result != 1 {
+						t.Fatal("missing PMK must precede missing-service result2", got)
+					}
+				})
 			}
 		})
 	}

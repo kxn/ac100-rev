@@ -127,11 +127,17 @@ func radioModeBandwidth(mode, bandwidth int) bool {
 	return true
 }
 func validateAdvanced(r RadioSetting, ap cweng.APStatus, c cweng.RadioCapability) error {
+	if r.Bandwidth != nil && !hasInt(c.Bandwidths, *r.Bandwidth) {
+		return fmt.Errorf("带宽超出 AP 能力")
+	}
 	if r.Channel != nil && *r.Channel != 0 && !hasInt(c.Channels, *r.Channel) {
 		return fmt.Errorf("AP 未声明支持此信道")
 	}
 	a := r.Advanced
 	if a == nil {
+		if r.Bandwidth != nil {
+			return fmt.Errorf("带宽配置需要完整的射频能力与配置")
+		}
 		return nil
 	}
 	if !hasInt(c.Modes, a.Mode) || !hasInt(c.Bandwidths, a.Bandwidth) {

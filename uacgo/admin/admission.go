@@ -13,12 +13,13 @@ func (m *Manager) admitClient(ap string, radio, wlan uint8, mac [6]byte, rssi *i
 func (m *Manager) checkAssociation(ap string, radio, wlan uint8, mac [6]byte, rssi *int8, mlo *capwap.AssociationMLO) uint32 {
 	m.mu.Lock()
 	defer m.mu.Unlock()
+	unavailable, balanceRejected := admissionResultCodes(m.config)
 	if mlo != nil && len(mlo.Links) > 0 {
 		radio = mlo.Links[0].Radio
 		wlan = mlo.Links[0].WLAN
 	}
 	if !m.admitStationLocked(ap, radio, wlan) {
-		return 0x26
+		return unavailable
 	}
 	if mac == [6]byte{} || mac[0]&1 != 0 {
 		return 0x25
@@ -26,14 +27,14 @@ func (m *Manager) checkAssociation(ap string, radio, wlan uint8, mac [6]byte, rs
 	if mlo != nil {
 		for _, link := range mlo.Links {
 			if !m.admitStationLocked(ap, link.Radio, link.WLAN) {
-				return 0x26
+				return unavailable
 			}
 		}
 	}
 	now := time.Now()
 	service := m.serviceForSlotLocked(ap, radio, wlan)
 	if service == nil {
-		return 0x26
+		return unavailable
 	}
 	rejected := false
 	if mlo != nil {
@@ -51,7 +52,7 @@ func (m *Manager) checkAssociation(ap string, radio, wlan uint8, mac [6]byte, rs
 		rejected = true
 	}
 	if rejected {
-		return 0x27
+		return balanceRejected
 	}
 	// MLO peer records enforce per-radio capacity. The MLD container is
 	// not an extra radio client (wsta_db_sta_assoc @758cf8, flags1/0).
@@ -69,6 +70,15 @@ func (m *Manager) checkAssociation(ap string, radio, wlan uint8, mac [6]byte, rs
 	return 0
 }
 func (m *Manager) radioCapacityLocked(ap string, radio uint8, mac [6]byte) bool {
+	limit := m.radioCapacityLimitLocked(ap, radio)
+	if m.clients == nil || limit <= 0 {
+		return true
+	}
+	count, associated := m.clients.RadioCount(ap, radio)
+	return associated[mac] || count < limit
+}
+
+func (m *Manager) radioCapacityLimitLocked(ap string, radio uint8) int {
 	known := m.known[ap]
 	limit := 0
 	for _, c := range known.Capabilities {
@@ -81,11 +91,7 @@ func (m *Manager) radioCapacityLocked(ap string, radio uint8, mac [6]byte) bool 
 			limit = r.Advanced.MaxClients
 		}
 	}
-	if m.clients == nil || limit <= 0 {
-		return true
-	}
-	count, associated := m.clients.RadioCount(ap, radio)
-	return associated[mac] || count < limit
+	return limit
 }
 
 // Association authorization follows the configured logical service and its

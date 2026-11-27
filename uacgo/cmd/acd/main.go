@@ -194,8 +194,8 @@ func main() {
 			}
 		}()
 	}
-	log.Printf("acd (uac-go) listening on :%d, max_sessions=%d, ac=%s, apdb=%s (%d models)",
-		*port, e.MaxAPSessions(), id.ACName, apdb.Version, len(apdb.APList))
+	log.Printf("acd (uac-go) listening on :%d, max_sessions=%d, ac=%s, apdb=%s (%d static, %d negotiated models)",
+		*port, e.MaxAPSessions(), id.ACName, apdb.Version, len(apdb.Models()), len(apdb.Negotiated))
 	if err := e.Run(); err != nil && ctx.Err() == nil {
 		log.Fatalf("engine: %v", err)
 	}

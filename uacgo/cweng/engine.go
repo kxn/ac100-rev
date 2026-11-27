@@ -69,12 +69,14 @@ type Engine struct {
 	OnStationStatistics func(ap string, connection time.Time, stats capwap.StaStatisticsRecord)
 	// Current global control, read at priority80 before consuming reports.
 	// Nil uses the firmware defaults: station/AP on, RSSI off.
-	StatisticsControl func() capwap.PrivStatisticsControl
-	OnRSSIStatistics  func(ap string, connection time.Time, stats capwap.PrivRssiStatistics)
-	OnAPStatistics    func(ap string, connection time.Time, stats capwap.PrivApStatistics)
-	OnBSSIDLocations  func(ap string, connection time.Time, rows []capwap.BSSIDLocation)
-	OnRRMReport       func(ap string, connection time.Time, report capwap.PrivRrmNeighsList)
-	OnStationPMK      func(ap string, connection time.Time, special bool, request capwap.PrivStaPMKReq) *capwap.PrivStaPMKReq
+	StatisticsControl  func() capwap.PrivStatisticsControl
+	OnRSSIStatistics   func(ap string, connection time.Time, stats capwap.PrivRssiStatistics)
+	OnAPStatistics     func(ap string, connection time.Time, stats capwap.PrivApStatistics)
+	OnBSSIDLocations   func(ap string, connection time.Time, rows []capwap.BSSIDLocation)
+	OnRRMReport        func(ap string, connection time.Time, report capwap.PrivRrmNeighsList)
+	OnChannelScan      func(ap string, connection time.Time, rows []capwap.ChannelScanSample)
+	OnRadioObservation func(ap string, connection time.Time, row RadioStatus)
+	OnStationPMK       func(ap string, connection time.Time, special bool, request capwap.PrivStaPMKReq) *capwap.PrivStaPMKReq
 }
 
 // LocalPort returns the bound UDP port (test/diagnostic helper).

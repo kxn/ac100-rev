@@ -26,6 +26,9 @@ type RadioCapability struct {
 	MinPower         int                   `json:"min_power_dbm"`
 	MaxPower         int                   `json:"max_power_dbm"`
 	DefaultPower     int                   `json:"default_power_dbm"`
+	RealMaxPower     int                   `json:"real_max_power_dbm,omitempty"`
+	RealMinPower     int                   `json:"real_min_power_dbm,omitempty"`
+	RealDefaultPower int                   `json:"real_default_power_dbm,omitempty"`
 	SupportAC        bool                  `json:"support_11ac"`
 	SupportAX        bool                  `json:"support_11ax"`
 	SupportBE        bool                  `json:"support_11be"`
@@ -156,7 +159,7 @@ func parseAPCapabilities(b []byte, depth int) (APCapabilities, error) {
 			err := parseByteTLVs(v[4:], int(v[1]), func(t byte, value []byte) error {
 				r.Raw[strconv.Itoa(int(t))] = hex.EncodeToString(value)
 				switch t {
-				case 1, 2, 3, 4, 5:
+				case 1, 2, 3, 4, 5, 11, 12, 13:
 					if len(value) != 2 {
 						return fmt.Errorf("apdb: invalid numeric capability")
 					}
@@ -172,6 +175,12 @@ func parseAPCapabilities(b []byte, depth int) (APCapabilities, error) {
 						r.MinPower = n
 					case 5:
 						r.DefaultPower = n
+					case 11:
+						r.RealMaxPower = n
+					case 12:
+						r.RealMinPower = n
+					case 13:
+						r.RealDefaultPower = n
 					}
 				case 6:
 					if len(value) == 1 {
@@ -244,57 +253,31 @@ func parseAPCapabilities(b []byte, depth int) (APCapabilities, error) {
 			if err != nil {
 				return err
 			}
-			r.Bandwidths = []int{0, 1, 2}
-			r.Modes = []int{1, 2, 3, 5, 6}
-			if v[0] == 1 {
-				r.Modes = []int{0, 4, 7}
-			}
-			if r.SupportAC {
-				r.Modes = append(r.Modes, 8, 9)
-				r.Bandwidths = append(r.Bandwidths, 3)
-			}
-			if r.SupportAX {
-				if v[0] == 0 {
-					r.Modes = append(r.Modes, 10)
-				} else {
-					r.Modes = append(r.Modes, 11)
-				}
-			}
-			if r.SupportBE {
-				if v[0] == 0 {
-					r.Modes = append(r.Modes, 12)
-				} else {
-					r.Modes = append(r.Modes, 13)
-				}
-			}
-			if r.Support160 {
-				r.Bandwidths = append(r.Bandwidths, 5)
-			}
-			if r.Support240 {
-				r.Bandwidths = append(r.Bandwidths, 6)
-			}
-			if r.Support80P80 {
-				r.Bandwidths = append(r.Bandwidths, 4)
-			}
-			if r.MutexChannels != "" {
-				for _, ch := range strings.Split(r.MutexChannels, ",") {
-					n, e := strconv.Atoi(ch)
-					if e == nil && n > 0 && n <= 233 {
-						r.Channels = append(r.Channels, n)
-					}
-				}
-			} else if v[0] == 0 {
-				for n := 1; n <= 13; n++ {
-					r.Channels = append(r.Channels, n)
-				}
-			} else {
-				r.Channels = []int{36, 40, 44, 48, 149, 153, 157, 161, 165}
-			}
+			completeRadioCapability(&r)
 			out.Radios = append(out.Radios, r)
 		}
 		return nil
 	})
 	return out, err
+}
+
+// APDB radio subtypes11/12/13 are physical power values, used when the
+// AP declares capability38. rrm_get_apdb_pwr@4ac8e4 falls back per field
+// when a physical bound is zero. Normalize the shared capability view so
+// the editor, validation, level conversion and RRM use the same units.
+func effectiveRadioPower(c RadioCapability, physical bool) RadioCapability {
+	if physical {
+		if c.RealMaxPower != 0 {
+			c.MaxPower = c.RealMaxPower
+		}
+		if c.RealMinPower != 0 {
+			c.MinPower = c.RealMinPower
+		}
+		if c.RealDefaultPower != 0 {
+			c.DefaultPower = c.RealDefaultPower
+		}
+	}
+	return c
 }
 
 func (e *Engine) UseAPDB(db *APDB) { e.apdb = db }
@@ -303,53 +286,19 @@ func (e *Engine) UseAPDB(db *APDB) { e.apdb = db }
 // exact model ID and hardware revision in the firmware DB; never borrow a
 // different hardware revision's capabilities.
 func (db *APDB) ResolveCapabilities(ap *APEntry) {
-	for _, model := range db.APList {
-		if model.ID != uint64(ap.ModelID) {
-			continue
+	if len(ap.Capabilities) > 0 {
+		return
+	}
+	if model, ok := db.negotiatedModel(ap.ModelID, ap.FirmwareID); ok {
+		if model.HardwareID != "" && ap.HardwareID != "" && !strings.EqualFold(model.HardwareID, ap.HardwareID) {
+			return
 		}
-		if ap.Model == "" {
-			ap.Model = model.APName
-		}
-		for _, hw := range model.Models {
-			if hw.HWVer != ap.HardwareVersion {
-				continue
-			}
-			for _, band := range []string{"2.4G", "5.0G"} {
-				v, ok := hw.Radios[band]
-				if !ok && band == "5.0G" {
-					// Older user-supplied DB exports also used "5G".
-					v, ok = hw.Radios["5G"]
-				}
-				if !ok {
-					continue
-				}
-				r := RadioCapability{Source: "firmware-apdb", RadioID: uint8(len(ap.Capabilities) + 1), Band: "2.4 GHz", MaxSSID: v.MaxSSID, MaxClients: v.MaxStations, MinPower: v.MinTxPower, MaxPower: v.MaxTxPower, DefaultPower: v.DftTxPower, Features: map[string]bool{}, Raw: map[string]string{}, Modes: []int{1, 2, 3, 5, 6}, Bandwidths: []int{0, 1, 2}}
-				switch x := v.Support11Ac.(type) {
-				case bool:
-					r.SupportAC = x
-				case float64:
-					r.SupportAC = x != 0
-				case string:
-					r.SupportAC = x == "1" || x == "true"
-				}
-				if r.DefaultPower == 0 {
-					r.DefaultPower = r.MaxPower
-				}
-				if band == "5.0G" {
-					r.Band = "5 GHz"
-					r.Modes = []int{0, 4, 7}
-					r.Channels = []int{36, 40, 44, 48, 149, 153, 157, 161, 165}
-				} else {
-					for n := 1; n <= 13; n++ {
-						r.Channels = append(r.Channels, n)
-					}
-				}
-				if r.SupportAC {
-					r.Modes = append(r.Modes, 8, 9)
-					r.Bandwidths = append(r.Bandwidths, 3)
-				}
-				ap.Capabilities = append(ap.Capabilities, r)
-			}
+		db.resolveModel(ap, model, "negotiated-apdb")
+		return
+	}
+	for _, model := range db.Models() {
+		if model.ID == uint64(ap.ModelID) {
+			db.resolveModel(ap, model, "firmware-apdb")
 			return
 		}
 	}

@@ -34,10 +34,7 @@ func (s *StationCapabilities) Observe(band int, word uint32, width int8) {
 	s.Ready[band] = true
 }
 func (s StationCapabilities) PHY(band int) PHY {
-	if band < 0 || band > 1 || !s.Ready[band] {
-		return DefaultStationPHY(band)
-	}
-	return StationPHY(s.Word[band], s.Width[band], band)
+	return s.PHYFor(V6Policy, band)
 }
 
 type RSSINeighbor struct {

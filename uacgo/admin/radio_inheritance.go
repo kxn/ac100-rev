@@ -31,6 +31,9 @@ func mergeRadio(base, over RadioSetting) RadioSetting {
 	if over.Channel != nil {
 		out.Channel = over.Channel
 	}
+	if over.Bandwidth != nil {
+		out.Bandwidth = over.Bandwidth
+	}
 	if over.Power != nil {
 		out.Power = over.Power
 	}
@@ -39,6 +42,19 @@ func mergeRadio(base, over RadioSetting) RadioSetting {
 	}
 	if over.Advanced != nil {
 		out.Advanced = over.Advanced
+		if over.Bandwidth == nil {
+			// A complete user RF profile supersedes an older scalar bandwidth
+			// override, just as an explicit power value supersedes a level.
+			out.Bandwidth = nil
+		}
+	}
+	if out.Bandwidth != nil && out.Advanced != nil {
+		a := *out.Advanced
+		a.Bandwidth = *out.Bandwidth
+		out.Advanced = &a
+		// The scalar is an inheritance input. Once materialized it must not
+		// shadow later RRST/RRM edits to the resulting complete profile.
+		out.Bandwidth = nil
 	}
 	if over.Power != nil && over.PowerLevel == nil {
 		out.PowerLevel = nil

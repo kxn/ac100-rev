@@ -19,6 +19,15 @@ func (m *Manager) observeAPState(ap cweng.APStatus) {
 	}
 	m.known[ap.ID] = ap
 	if ap.Online && (!exists || !old.Online || old.ConnectedAt != ap.ConnectedAt) {
+		m.automaticAPJoinedLocked(ap)
+	}
+	if ap.Online {
+		m.seedHighPerformanceLocked(ap)
+		if !exists || !old.Online || old.ConnectedAt != ap.ConnectedAt {
+			m.commitHighPerformanceChannelsLocked(m.highPerformance.Channels, 0)
+		}
+	}
+	if ap.Online && (!exists || !old.Online || old.ConnectedAt != ap.ConnectedAt) {
 		next := m.config
 		groupChanged := m.groupAPJoined(&next, ap)
 		next, edcaChanged := m.compileEDCARules(next)

@@ -13,10 +13,22 @@ func (m *Manager) persistConfigLocked(next Config, source managementWrite) error
 	if err := validateConfig(next); err != nil {
 		return err
 	}
+	next = m.prepareV4ModeSelectionLocked(next, source)
+	priorKey := wirelessConfigKey(m.config)
+	wirelessChanged := wirelessConfigKey(next) != priorKey
+	channels := m.highPerformance.Channels
+	// Client labels, AP names and program budgets must not expand every
+	// AP's RF inheritance just to discover that no radio input changed.
+	if wirelessChanged || source == managementRestore {
+		next, channels = m.prepareHighPerformanceLocked(next, source)
+		if err := validateConfig(next); err != nil {
+			return err
+		}
+		wirelessChanged = wirelessConfigKey(next) != priorKey
+	}
 	if err := m.validateResourceUsage(next); err != nil {
 		return err
 	}
-	wirelessChanged := wirelessConfigKey(next) != wirelessConfigKey(m.config)
 	if source != managementRRM && source != managementAPEvent && wirelessChanged {
 		for _, job := range m.rrmJobs {
 			switch job.State {
@@ -32,7 +44,24 @@ func (m *Manager) persistConfigLocked(next Config, source managementWrite) error
 	if wirelessChanged {
 		m.resetRoamingRadiosLocked(m.config, next)
 	}
+	previousMode := actualMobilityMode(m.config)
+	v4Transition := usesV4Modes(m.config) || usesV4Modes(next)
 	m.config = next
+	m.highPerformance.Channels = channels
+	if previousMode != actualMobilityMode(next) || source == managementRestore {
+		m.highPerformance.ModeTargets = nil
+		if previousMode != actualMobilityMode(next) && v4Transition {
+			m.highPerformance.ModeTargets = map[string]time.Time{}
+			for id, ap := range m.known {
+				if ap.Online {
+					m.highPerformance.ModeTargets[id] = ap.ConnectedAt
+				}
+			}
+		}
+		m.highPerformance.resetCollection()
+		m.highPerformance.State = ""
+		m.highPerformance.PendingScan = actualMobilityMode(next) == 1 && source != managementRestore
+	}
 	if resourcesChanged {
 		m.applyControllerResources()
 	}
@@ -69,6 +98,8 @@ func wirelessConfigKey(cfg Config) string {
 		templates = append(templates, group{t.ID, rf(t.Options)})
 	}
 	return configurationKey(struct {
+		Policy            string
+		Mode              int
 		Services          []Service
 		Radios            []RadioSetting
 		Defaults          rfOptions
@@ -76,7 +107,7 @@ func wirelessConfigKey(cfg Config) string {
 		Groups, Templates []group
 		EDCARules         []EDCARule
 		EDCAState         map[string]EDCABindingState
-	}{cfg.Services, cfg.Radios, rf(cfg.APDefaults), profiles, groups, templates, cfg.EDCARules, cfg.EDCAState}, time.Time{})
+	}{mobilityPolicyVersion(cfg), actualMobilityMode(cfg), cfg.Services, cfg.Radios, rf(cfg.APDefaults), profiles, groups, templates, cfg.EDCARules, cfg.EDCAState}, time.Time{})
 }
 
 // Web RF writes are forbidden during RRM, but incoming AP lifecycle facts

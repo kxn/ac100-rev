@@ -23,7 +23,8 @@ func (m *Manager) observePMKTransition(ev cweng.ClientTransition) {
 		m.stationStatistics.Disconnect(mobility.MAC(ev.MAC), ev.At)
 	} else {
 		m.pmks.Associate(mobility.MAC(ev.MAC), ev.ServiceID)
-		m.stationStatistics.Associate(mobility.MAC(ev.MAC), ev.At)
+		m.automaticStationAssociatedLocked(ev.AP, ev.At)
+		m.stationStatistics.AssociateAt(mobility.MAC(ev.MAC), ev.AP, ev.At)
 	}
 }
 

@@ -30,7 +30,7 @@ GOOS=windows GOARCH=amd64 go build -o acd.exe ./cmd/acd
 
 | 文件 | 来源 | 证据 |
 |---|---|---|
-| `data/apdb.json` | `/etc/apdb.bin` 解密（DES-ECB，key `478da50bf9e3d2cf`@0x71ced0）| `accrypt_des_decrypt@0x666c94 → tpcom_des_min_do(...,&DAT_0071ced0,0)`，载荷 MD5 自校验通过，81 个 AP 型号 |
+| `data/apdb.json` | `/etc/apdb.bin` 解密（DES-ECB，key `478da50bf9e3d2cf`@0x71ced0）| `accrypt_des_decrypt@0x666c94 → tpcom_des_min_do(...,&DAT_0071ced0,0)`，载荷 MD5 自校验通过；当前库为81个普通+3个多AP型号，102个硬件版本，见[完整型号库与备份转换](../docs/vendor-backup-import.md) |
 | `data/identity.json` | AC 身份（名称/版本/固件串/厂商 ID 0x12345678）| 值取自固件 .data 样例报文 `cw_dis_rsp@0x74f254`、`cw_join_rsp@0x74efe8` |
 | `data/profile.ini` | UCI `profile` 配置（**固件镜像不含**，在设备 flash 配置分区）| `cw_ac_profile_init@0x58dca4` 任一项读失败 → 整链 init 跳过 → 进程退出（硬依赖）。节/键 = 二进制内全部 `uac_profile_get_*` 调用点；数值为重建占位，待真机 `uci show profile` 校准 |
 | `testdata/*.bin` | uac .data 段 10 个厂商自带整包样例（`g_cw_*` 符号）| 全部解析→重组字节级一致 |

@@ -385,6 +385,7 @@ function openDialog(kind, title, caption, body) {
   $("#dialog-caption").textContent = caption;
   $("#dialog-body").innerHTML = body;
   if (!$("#editor").open) $("#editor").showModal();
+  $("#dialog-body").scrollTop = 0;
 }
 function tabs(items) {
   return `<div class="editor-tabs">${items.map(([id, label], i) => `<button type="button" data-editor-tab="${id}" class="${i ? "" : "active"}">${label}</button>`).join("")}</div>`;

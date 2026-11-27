@@ -62,11 +62,16 @@ type RoamRule struct {
 	Settings RoamSettings `json:"settings"`
 }
 type MobilityConfig struct {
-	Silence     *RoamSilence  `json:"silence,omitempty"`
-	Balance     []BalanceRule `json:"balance"`
-	Roaming     []RoamRule    `json:"roaming"`
-	Default     RoamSettings  `json:"default_roaming"`
-	NetworkMode int           `json:"network_mode"`
+	CurrentMode            int                         `json:"current_network_mode,omitempty"`
+	AutomaticLimits        *mobility.V4AutomaticLimits `json:"automatic_limits,omitempty"`
+	ModeSource             string                      `json:"mode_source,omitempty"`
+	HighPerformanceSilence *RoamSilence                `json:"high_performance_silence,omitempty"`
+	ACSTimeout             uint8                       `json:"acs_timeout,omitempty"`
+	Silence                *RoamSilence                `json:"silence,omitempty"`
+	Balance                []BalanceRule               `json:"balance"`
+	Roaming                []RoamRule                  `json:"roaming"`
+	Default                RoamSettings                `json:"default_roaming"`
+	NetworkMode            int                         `json:"network_mode"`
 }
 
 // Original mode2 reads default_roam_cnt/default_silence_time from UCI.
@@ -77,6 +82,12 @@ type RoamSilence struct {
 }
 
 func effectiveRoamSilence(p *MobilityConfig) RoamSilence {
+	if p != nil && actualMobilityMode(Config{Mobility: p}) == 1 {
+		if p.HighPerformanceSilence != nil {
+			return *p.HighPerformanceSilence
+		}
+		return RoamSilence{Count: 3, Seconds: 30}
+	}
 	if p != nil && p.Silence != nil {
 		return *p.Silence
 	}
@@ -92,11 +103,15 @@ func defaultRoamSettings() RoamSettings {
 }
 
 func defaultMobility() MobilityConfig {
-	return MobilityConfig{NetworkMode: 2, Default: defaultRoamSettings(), Balance: []BalanceRule{}, Roaming: []RoamRule{}}
+	return MobilityConfig{ModeSource: v6ModeSource, NetworkMode: 2, Default: defaultRoamSettings(), Balance: []BalanceRule{}, Roaming: []RoamRule{}}
 }
 func (p MobilityConfig) validate(cfg Config) error {
-	if len(p.Balance) > controllercfg.Effective(cfg.Resources).MaxPolicyRules || len(p.Roaming) > controllercfg.Effective(cfg.Resources).MaxPolicyRules || p.NetworkMode != 2 {
-		return fmt.Errorf("均衡/漫游规则超过程序容量，或网络模式不是原固件兼容模式（2）")
+	validMode := p.NetworkMode == 2 && (p.ModeSource == "" || p.ModeSource == v6ModeSource) || p.ModeSource == v4ModeSource && p.NetworkMode >= 0 && p.NetworkMode <= 2 && p.CurrentMode >= 0 && p.CurrentMode <= 2
+	if l := p.AutomaticLimits; l != nil && (l.APs < 1 || l.APs > 2147483647 || l.Stations < 0 || l.Stations > 2147483647) {
+		return fmt.Errorf("自动模式门限无效：AP门限至少1，客户端门限不得为负")
+	}
+	if len(p.Balance) > controllercfg.Effective(cfg.Resources).MaxPolicyRules || len(p.Roaming) > controllercfg.Effective(cfg.Resources).MaxPolicyRules || !validMode {
+		return fmt.Errorf("均衡/漫游规则超过程序容量，或策略版本/网络模式无效：V6仅支持兼容模式，V4支持自动、高性能、兼容模式")
 	}
 	groups := map[string]bool{}
 	for _, g := range cfg.Groups {
@@ -233,7 +248,7 @@ func (m *Manager) applyPolicy(ctx context.Context, ap cweng.APStatus, kind strin
 	m.status[key] = st
 	m.mu.Unlock()
 }
-func (m *Manager) applyMobility(ctx context.Context, ap cweng.APStatus, cfg Config) {
+func (m *Manager) applyMobility(ctx context.Context, ap cweng.APStatus, cfg Config) bool {
 	r := balanceFor(cfg.Mobility, ap.ID, cfg)
 	enabled := r != nil && r.Enabled
 	mask := binary.BigEndian.AppendUint32(nil, 1)
@@ -243,31 +258,56 @@ func (m *Manager) applyMobility(ctx context.Context, ap cweng.APStatus, cfg Conf
 		els = append(els, privateSetting(0x3e, binary.BigEndian.AppendUint32(nil, uint32(int32(r.RSSI)))))
 	}
 	m.applyPolicy(ctx, ap, "balance", r, els)
-	if ap.HasCapability(25) {
-		mode := m.effectiveMobilityMode(cfg)
-		s := roamingFor(cfg.Mobility, ap.ID, cfg)
-		m.applyPolicy(ctx, ap, "roaming", struct {
-			Settings RoamSettings
-			Mode     int
-		}{s, mode}, []capwap.Element{privateSetting(0x57, s.wire(mode))})
-	}
-	// 4e1620 filters capability72 independently of the capability25 filter
-	// used by 4e9534/4e8e80 for private57. Neither capability implies the other.
-	if ap.HasCapability(72) {
-		mode := m.effectiveMobilityMode(cfg)
+	mode := m.effectiveMobilityMode(cfg)
+	applyMode := func() bool {
+		m.mu.Lock()
+		required := m.modeBlockRequiredLocked(ap, cfg)
+		m.mu.Unlock()
+		if !required {
+			return true
+		}
 		silence := effectiveRoamSilence(cfg.Mobility)
 		m.applyPolicy(ctx, ap, "roaming-mode", struct {
 			Mode    int
 			Silence RoamSilence
 		}{mode, silence}, []capwap.Element{privateSetting(0x9d, capwap.PrivSilenceParams{A: silence.Count, B: silence.Seconds}.AssembleValue())})
+		m.mu.Lock()
+		failed := m.status[ap.ID+"/roaming-mode"].State == "failed"
+		m.mu.Unlock()
+		return !failed
 	}
+	// V4 transition/join sends capability72 silence before capability25
+	// parameters. The two capability checks remain independent.
+	m.mu.Lock()
+	epoch, participant := m.highPerformance.ModeTargets[ap.ID]
+	m.mu.Unlock()
+	v4Order := usesV4Modes(cfg) || participant && epoch == ap.ConnectedAt
+	if v4Order && !applyMode() {
+		return false
+	}
+	if ap.HasCapability(25) {
+		parameters := roamingParametersFor(ap.ID, cfg)
+		m.applyPolicy(ctx, ap, "roaming", parameters, []capwap.Element{privateSetting(0x57, parameters.wire())})
+	}
+	if v4Order && ap.HasCapability(25) {
+		m.mu.Lock()
+		failed := m.status[ap.ID+"/roaming"].State == "failed"
+		m.mu.Unlock()
+		if failed {
+			return false
+		}
+	}
+	if !v4Order {
+		return applyMode()
+	}
+	return true
 }
 
 // V6 Web wireless_network_mode_set returns EFORBID; cfgsync.d/36_roam_cfg_sync.sh
 // explicitly migrates both configured/actual modes to2. The automatic/high
 // performance helpers in UAC are retained binary code, not exposed V6 policy.
-func (m *Manager) effectiveMobilityMode(_ Config) int       { return 2 }
-func (m *Manager) effectiveMobilityModeLocked(_ Config) int { return 2 }
+func (m *Manager) effectiveMobilityMode(cfg Config) int       { return actualMobilityMode(cfg) }
+func (m *Manager) effectiveMobilityModeLocked(cfg Config) int { return actualMobilityMode(cfg) }
 func (m *Manager) mobilityRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("GET /api/mobility/status", func(w http.ResponseWriter, r *http.Request) {
 		m.mu.Lock()
@@ -279,7 +319,8 @@ func (m *Manager) mobilityRoutes(mux *http.ServeMux) {
 			}
 		}
 		sort.Strings(unsupported)
-		jsonReply(w, 200, map[string]any{"configured_mode": 2, "actual_mode": 2, "mode_writable": false, "unsupported_aps": unsupported})
+		mode := actualMobilityMode(m.config)
+		jsonReply(w, 200, map[string]any{"policy_version": mobilityPolicyVersion(m.config), "policy_reference": mobilityPolicyReference(m.config), "independent_rrm_versions": []string{"v4", "v6"}, "configured_mode": configuredMobilityMode(m.config), "actual_mode": mode, "mode_writable": usesV4Modes(m.config), "unsupported_aps": unsupported, "high_performance": m.highPerformance})
 	})
 
 	mux.HandleFunc("GET /api/mobility/events", func(w http.ResponseWriter, r *http.Request) {

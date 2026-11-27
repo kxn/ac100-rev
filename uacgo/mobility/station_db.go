@@ -12,8 +12,10 @@ type StationDB struct {
 	nextSweep time.Time
 }
 type stationFacts struct {
-	Capabilities StationCapabilities
-	DeleteAt     time.Time
+	Capabilities         StationCapabilities
+	DeleteAt             time.Time
+	AP                   string
+	Upstream, Downstream uint32
 }
 
 func (s *StationDB) Start(now time.Time) {
@@ -41,9 +43,32 @@ func (s *StationDB) Associate(mac MAC, now time.Time) {
 		s.entries = map[MAC]*stationFacts{}
 	}
 	if s.entries[mac] == nil {
-		s.entries[mac] = &stationFacts{}
+		s.entries[mac] = &stationFacts{Upstream: ^uint32(0), Downstream: ^uint32(0)}
 	}
 	s.entries[mac].DeleteAt = time.Time{}
+}
+
+// V4 update_cnt_target relocates an existing statistics row without
+// clearing rates. Idle rows remain in the same905-second/60-second sweep
+// lifecycle as the PHY facts; unknown-rate sentinels count as active.
+func (s *StationDB) AssociateAt(mac MAC, ap string, now time.Time) {
+	s.Associate(mac, now)
+	s.entries[mac].AP = ap
+}
+func (s *StationDB) ObserveActivity(mac MAC, upstream, downstream uint32) {
+	if e := s.entries[mac]; e != nil {
+		e.Upstream, e.Downstream = upstream, downstream
+	}
+}
+func (s *StationDB) ActiveStationsOnAP(ap string, now time.Time) int {
+	s.Tick(now)
+	n := 0
+	for _, e := range s.entries {
+		if e.AP == ap && (e.Upstream > 1 || e.Downstream > 1) {
+			n++
+		}
+	}
+	return n
 }
 func (s *StationDB) Disconnect(mac MAC, now time.Time) {
 	s.Tick(now)

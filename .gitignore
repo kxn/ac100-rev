@@ -19,3 +19,19 @@ ghidraProj/
 /deploy/docker/.env
 /deploy/docker/ap-dhcp.json
 /deploy/docker/certs/
+
+# Private runtime state and original-AC conversion outputs, wherever exported
+controller.json
+known-aps.json
+go-ac-configuration.json
+apdb-nego.json
+conversion-report.json
+
+# Keep new firmware drops, configuration exports and packet captures local
+/TL-*.bin
+/config-*.bin
+*.pcap
+*.pcapng
+.env
+.env.*
+!.env.example

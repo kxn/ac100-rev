@@ -83,6 +83,9 @@ func validateConfig(cfg Config) error {
 			return fmt.Errorf("射频绑定无效或重复")
 		}
 		radios[key] = true
+		if r.Bandwidth != nil && (*r.Bandwidth < 0 || *r.Bandwidth > 7) {
+			return fmt.Errorf("带宽无效")
+		}
 		if r.Channel != nil && (*r.Channel < 0 || *r.Channel > 233) || r.Power != nil && (*r.Power < 0 || *r.Power > 100) || r.PowerLevel != nil && (*r.PowerLevel < 1 || *r.PowerLevel > 10) {
 			return fmt.Errorf("信道/功率无效")
 		}

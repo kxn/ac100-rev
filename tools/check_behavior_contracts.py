@@ -79,6 +79,21 @@ def main():
             elif src['kind'] == 'file':
                 if args.verify_firmware:
                     assert hashlib.sha256((ROOT / '.local/ac100/rootfs' / src['path']).read_bytes()).hexdigest() == src['sha256'], src
+            elif src['kind'] == 'v4-file':
+                if args.verify_firmware:
+                    assert hashlib.sha256((ROOT / '.local/ac100/v4-review/rootfs' / src['path']).read_bytes()).hexdigest() == src['sha256'], src
+            elif src['kind'] in ('v4-uac', 'v4-library', 'comparison-uac'):
+                if args.verify_firmware:
+                    key = src['kind'] + ':' + src.get('path', '') + ':' + src.get('version', '')
+                    if key not in binaries:
+                        if src['kind'] == 'comparison-uac':
+                            assert src['version'] in ('v4', 'v6'), src
+                            path = ROOT / ('firmware' if src['version'] == 'v4' else '.local/ac100/rootfs') / 'usr/sbin/uac'
+                        else:
+                            path = ROOT / 'firmware/usr/sbin/uac' if src['kind'] == 'v4-uac' else ROOT / '.local/ac100/v4-review/rootfs' / src['path']
+                        binaries[key] = ELF32BE(path, src['binary_sha256'])
+                    elf = binaries[key]
+                    assert hashlib.sha256(elf.read(int(src['address'],16),src['size'])).hexdigest() == src['sha256'],src
             elif src['kind'] in ('uac', 'rrm', 'dhcpd'):
                 if args.verify_firmware:
                     path = 'usr/sbin/uac' if src['kind'] == 'uac' else src['path']
@@ -116,7 +131,16 @@ def main():
             raise RuntimeError(f'Contract execution failed: missing pass {sorted(expected - passed)}, failure events {failures}; stderr={run.stderr[-2000:]}')
     from check_roaming_entries import verify_entries
     entry_report = verify_entries(args.verify_firmware)
-    report = dict(firmware=manifest['firmware'], contracts=len(contracts), features=len(expected_features), pinned_uac_functions_classified=len(firmware['uac_functions']), implementation_symbols=len(symbol_count), source_references=len(source_count), named_tests=sum(map(len, selected.values())), verified_firmware=args.verify_firmware, executed_tests=len({(p,n) for p,n in passed if n in selected[p]}), intentional_firmware_bug_fixes=[c['id'] for c in contracts if c['origin'] == 'firmware-bug-fix'], roaming_entries=entry_report, meaning='Named branch contracts only; no original runtime oracle or exhaustive equivalence claim.')
+    if args.verify_firmware:
+        subprocess.run(['go', 'run', '../tools/audit_model_library.go'], cwd=ROOT / 'uacgo', check=True)
+        from audit_cross_version_mobility import verify as verify_cross_versions
+        cross_versions = verify_cross_versions(json.loads((ROOT / 'docs/cross-version-mobility-evidence.json').read_text()))
+        from audit_v4_rrm import extract as extract_v4_rrm
+        v4_rrm = json.loads((ROOT / 'docs/v4-rrm-evidence.json').read_text())
+        assert extract_v4_rrm(v4_rrm['registrations']) == v4_rrm, 'V4 RRM source changed'
+    else:
+        cross_versions = None
+    report = dict(firmware=manifest['firmware'], contracts=len(contracts), features=len(expected_features), pinned_uac_functions_classified=len(firmware['uac_functions']), implementation_symbols=len(symbol_count), source_references=len(source_count), named_tests=sum(map(len, selected.values())), verified_firmware=args.verify_firmware, executed_tests=len({(p,n) for p,n in passed if n in selected[p]}), intentional_firmware_bug_fixes=[c['id'] for c in contracts if c['origin'] == 'firmware-bug-fix'], roaming_entries=entry_report, cross_version_entries=cross_versions, meaning='Named branch contracts only; no original runtime oracle or exhaustive equivalence claim.')
     if args.report:
         args.report.write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n')
     print(json.dumps(report, ensure_ascii=False))

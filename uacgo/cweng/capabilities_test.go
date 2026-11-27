@@ -1,10 +1,50 @@
 package cweng
 
 import (
+	"encoding/binary"
 	"os"
 	"testing"
 	"uacgo/capwap"
 )
+
+func TestPhysicalPowerSubtypesAndCapability38ShareOneUnitView(t *testing.T) {
+	for _, physical := range []bool{false, true} {
+		radio := []byte{0, 7, 0, 0}
+		for _, v := range []struct {
+			kind  byte
+			value uint16
+		}{{1, 8}, {2, 64}, {3, 30}, {4, 3}, {11, 24}, {12, 5}, {13, 20}} {
+			radio = append(radio, v.kind, 2, byte(v.value>>8), byte(v.value))
+		}
+		body := make([]byte, 16)
+		body[15] = 1
+		body = append(body, 7, byte(len(radio)))
+		body = append(body, radio...)
+		p, _ := capwap.NewParsedPacket(3)
+		general := make([]byte, 8)
+		if physical {
+			binary.BigEndian.PutUint32(general[4:], 1<<6)
+		}
+		p.Elements = []capwap.Element{{Type: 0x32, Value: general}, {Type: 0x25, Value: capwap.VendorEnvelopeValue(0, 0, []capwap.PrivElementValue{{Type: 0x51, Value: body}})}}
+		ap, err := ParseAPEntry(p)
+		if err != nil || len(ap.Capabilities) != 1 {
+			t.Fatal(ap, err)
+		}
+		c := ap.Capabilities[0]
+		if physical {
+			if c.MaxPower != 24 || c.MinPower != 5 || c.DefaultPower != 20 {
+				t.Fatal(c)
+			}
+		} else if c.MaxPower != 30 || c.MinPower != 3 {
+			t.Fatal(c)
+		}
+		c.RealMinPower = 0
+		c.MinPower = 3
+		if effectiveRadioPower(c, true).MinPower != 3 {
+			t.Fatal("zero physical bound must fall back independently")
+		}
+	}
+}
 
 func TestRealV6APCapabilities(t *testing.T) {
 	b, err := os.ReadFile("../testdata/v6-apdb-tl7ap5100.bin")

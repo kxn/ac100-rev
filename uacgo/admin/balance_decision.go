@@ -32,8 +32,10 @@ func (m *Manager) balanceAdmission(ap string, mac [6]byte, now time.Time) bool {
 	}
 	for _, c := range m.clients.All() {
 		known, ok := m.known[c.APID]
-		// V6 balance add/delete callbacks ignore MLO peer records (flag2).
-		if ok && !c.MLOPeer && known.Online && c.State == "connected" && !c.Seen.Before(known.ConnectedAt) {
+		// V4 add/delete callbacks count each DB MAC; V6 explicitly skips
+		// MLO peers (flag2). Radio capacity still counts links in both.
+		counted := !c.MLOPeer || roamingPolicy(m.config) == mobility.V4Policy
+		if ok && counted && known.Online && c.State == "connected" && !c.Seen.Before(known.ConnectedAt) {
 			v := aps[c.APID]
 			v.Clients++
 			aps[c.APID] = v

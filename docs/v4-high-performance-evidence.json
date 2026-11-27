@@ -1,0 +1,628 @@
+{
+  "reference_release": "TL-AC100 V4.0 1.4.3 Build240715 Rel.80898n",
+  "requested_release": "1.4.4 Build240911 Rel.65759n (not acquired)",
+  "source": "https://resource.tp-link.com.cn/pc/docCenter/showDoc?id=1730963408141364",
+  "zip_sha256": "f82338235732ec6e77910c663861dc54a0ac77539b69c77ee9754575b8d938aa",
+  "image_sha256": "7a41be6adeb61b5a45815dd8dce6d7552b8c53ad8d46687f9cc7ff0f8db830fa",
+  "uac_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+  "functions": [
+    {
+      "name": "get_acs_timeout",
+      "address": "0x00483000",
+      "size": 20,
+      "sha256": "bb266bc51fc9f3a2cd0221353bbceca3f0bc2bba38e6ffb0f42c4dcbf5032d08"
+    },
+    {
+      "name": "rdmngr_db_get_band_by_channel",
+      "address": "0x0061e4c0",
+      "size": 64,
+      "sha256": "789a19a16a23ec179012eb96ef97a8b3b80dcee8b8dbe90da22d6adc6fe239cb"
+    },
+    {
+      "name": "update_high_per_ap_chn_info",
+      "address": "0x00482dfc",
+      "size": 516,
+      "sha256": "516c4fa0af491492a6c6486cc64fbdabec16a4dfc49358f7a5f93e0736d8ca1f"
+    },
+    {
+      "name": "check_cur_wireless_network_mode",
+      "address": "0x00486994",
+      "size": 276,
+      "sha256": "a1162680c78b8e73c18e1f3b406e8fec6acd318f1a312f68e461741faedeb378"
+    },
+    {
+      "name": "wireless_network_mode_change_handle",
+      "address": "0x00484624",
+      "size": 476,
+      "sha256": "664da5a2142253218557befef0dd147b654a6e1fde129eaff86a00e48d1e2d67"
+    },
+    {
+      "name": "wsta_intelligent_roam_manual_change_wireless_network_mode",
+      "address": "0x00489c08",
+      "size": 456,
+      "sha256": "243ab146052b976ff21cd874267b68cd2892a515bd10ebf42554786b2ac958a0"
+    },
+    {
+      "name": "_wsta_intelligent_roam_ctl_pkt_send_cb",
+      "address": "0x00489930",
+      "size": 436,
+      "sha256": "b4322c2ea1367e77d957607d031bc0c791411b8ab80db93e0cd7dc5e07a68940"
+    },
+    {
+      "name": "_wsta_intelligent_roam_set_wireless_network_mode_send",
+      "address": "0x004839a0",
+      "size": 676,
+      "sha256": "2c64e632fa3687b501a6df489a4566d50a9379a3c2d91d504ebc820bd67cb0d8"
+    },
+    {
+      "name": "_wstat_roam_update_wireless_network_mode_to_ap",
+      "address": "0x00483c44",
+      "size": 368,
+      "sha256": "920540009fc2bc112d941f9bff41b5591c4dee0778c6931c97fe7ff40b87d69b"
+    },
+    {
+      "name": "_wsta_intelligent_roam_ctl_packet_create",
+      "address": "0x00489464",
+      "size": 612,
+      "sha256": "87b82d1043fab76e0a2141228ceb2e24dfb8e86372dad2e2e4aeab050dab3f60"
+    },
+    {
+      "name": "_wsta_intelligent_roam_set_rd_info",
+      "address": "0x00484800",
+      "size": 936,
+      "sha256": "4eafd3f4f91e32ec76ab7397ba2a087cc8eb659e9e6c42421ef3f4480c82fe5c"
+    },
+    {
+      "name": "_wsta_intelligent_roam_set_rd_cfg",
+      "address": "0x00484ba8",
+      "size": 88,
+      "sha256": "ac95c388a9037075698acd51af998ac963569704f3186fcb0c203c39506f764f"
+    },
+    {
+      "name": "_wsta_roam_rd_chnl_changed_by_subdev",
+      "address": "0x00485e48",
+      "size": 376,
+      "sha256": "9e2c816a2c05e1ce326b8fdabcbd587e381783613027e1f5967963305e485909"
+    },
+    {
+      "name": "_wsta_roam_rd_chnl_modify_by_manual",
+      "address": "0x00489b60",
+      "size": 160,
+      "sha256": "cdb7b80b7292ef2f9fa4a701bf364c7378abc62b22cc3625b0539ad1ece9da14"
+    },
+    {
+      "name": "_wsta_intelligent_roam_callback_wtp_leave",
+      "address": "0x00485294",
+      "size": 656,
+      "sha256": "1ce447e31ee023f81a26f6d554516ce59573e9823d14eb8d2e9fc440a82f490d"
+    },
+    {
+      "name": "_wsta_intelligent_roam_do_acs",
+      "address": "0x00486710",
+      "size": 644,
+      "sha256": "7ef750eee3f1d505d846995738e0e89e6ac955dd73b376bffd55eba24a45f6ea"
+    },
+    {
+      "name": "_wstat_roam_check_support_acs",
+      "address": "0x00483db4",
+      "size": 348,
+      "sha256": "b3add0f47c84d1e92b111b777cf3afcf82d445b9bb8bca64956449e9fe536c79"
+    },
+    {
+      "name": "_wstat_roam_start_acs_to_ap",
+      "address": "0x00484424",
+      "size": 392,
+      "sha256": "81cdbedc57960fa3198d702bd26a7b339abb4557653f017f310f9a0b01013389"
+    },
+    {
+      "name": "_wsta_intelligent_roam_start_acs_send",
+      "address": "0x00483f7c",
+      "size": 1192,
+      "sha256": "948d47ed4d0b296889ecb05002833563e24abd8c11adde137a497b89ac9d1a8c"
+    },
+    {
+      "name": "_wsta_roam_pkt_chnl_scan_report",
+      "address": "0x00489024",
+      "size": 860,
+      "sha256": "0d1196531ae871104bd33ffdf03e153a85d0b29fba99818f374c9492a0529ac1"
+    },
+    {
+      "name": "wsta_roam_chnl_handle",
+      "address": "0x00486aa8",
+      "size": 716,
+      "sha256": "20c049bf972f7ed2bf1e02ecfed07b7818575fccfa459f36d6a863de793f5cb4"
+    },
+    {
+      "name": "wsta_roam_chnl_handle_thread",
+      "address": "0x004857a8",
+      "size": 1696,
+      "sha256": "84109718b32d377e1daf474c3c565a418eb9c4ad5ecaa40f0b7ac718733e33a7"
+    },
+    {
+      "name": "_wsta_roam_collect_chnl_set_to_ap",
+      "address": "0x00485524",
+      "size": 644,
+      "sha256": "7c8b5c00da3f2006e348fc432e4b7ca324fa92762fbb1ff6786b7164dd2f8128"
+    },
+    {
+      "name": "_uac_rdmngr_rd_chnl_bw_set",
+      "address": "0x006301e8",
+      "size": 976,
+      "sha256": "5c962ca4e748fd26fd529e1b93c0ead20dd4a085973d7fdcbbaff67ca7f7bbcb"
+    },
+    {
+      "name": "_wsta_roam_pkt_wtp_event_listener",
+      "address": "0x00489380",
+      "size": 228,
+      "sha256": "9451960d2383e2c6b936ae92069c8365b5d7ee58c8739be4a7d84ad7cbecfb4b"
+    },
+    {
+      "name": "wsta_roam_pkt_init",
+      "address": "0x00489f2c",
+      "size": 820,
+      "sha256": "c87b6d6f6eb51a5d98b5b0814d758dabb2e8770e6f880bb80dd43ed428d6bfb3"
+    },
+    {
+      "name": "_wsta_roam_read_config",
+      "address": "0x00480fe8",
+      "size": 2128,
+      "sha256": "70a5f6d5e8d2ad2d4c626fd67fea95967fa5197cb4f4370fd82210a8b27f2c1e"
+    },
+    {
+      "name": "chnl_rrm_start",
+      "address": "0x004ad1d8",
+      "size": 624,
+      "sha256": "15d9aed0667b11f19adbacccffc50b3ad5c6a211a24430984b8df51395f3ed6e"
+    },
+    {
+      "name": "rrm_acs_timeout",
+      "address": "0x004aa7a0",
+      "size": 256,
+      "sha256": "3d7b2e4849df6e6abc72000621f1700702409d5d8ac72c44786e00e51b615797"
+    },
+    {
+      "name": "rdmngr_callback_proc",
+      "address": "0x00613634",
+      "size": 396,
+      "sha256": "96e48d3eb49219533863d996ca8f66d5a7c7046d04a3e9af8e050a1d3d3500c2"
+    },
+    {
+      "name": "_wsta_intelligent_roam_sta_stats",
+      "address": "0x00484d2c",
+      "size": 676,
+      "sha256": "39de13960f4e5de88e6288f89d5a3640e7529ad0cc3a49db066a09cb07ceba77"
+    },
+    {
+      "name": "_wsta_intelligent_roam_sta_change_ap_info",
+      "address": "0x00484c00",
+      "size": 300,
+      "sha256": "b92e601d393e2b63ec053508640d5f87316789c5bd56f70884eb16b5264ae023"
+    },
+    {
+      "name": "_wsta_intelligent_roam_set_rd_info_by_sta",
+      "address": "0x00484fd0",
+      "size": 708,
+      "sha256": "b5fa202210d1254c82627a5631b5879e4a31d57c42aae05fe10f9f048c2d75cd"
+    },
+    {
+      "name": "_wsta_intelligent_roam_check_sta_is_active",
+      "address": "0x00486468",
+      "size": 224,
+      "sha256": "d8d386dc0af86fbe08a9343c370e01200b854b8f949bcf5ed2f04edb5679ae11"
+    },
+    {
+      "name": "_multi_link_status_switch",
+      "address": "0x006632bc",
+      "size": 404,
+      "sha256": "45bb8992ed4e5ee9ab147b0be7af8400e70b5f9e539eaf29f265116fd4a5d1e4"
+    },
+    {
+      "name": "apmngr_db_active_ap_inc",
+      "address": "0x005390c0",
+      "size": 524,
+      "sha256": "5554af1c3c366377e6e7d0d59c468e115ea296321f78e50a2f3a4d3e5f244ce2"
+    },
+    {
+      "name": "wsta_db_sta_assoc",
+      "address": "0x0063c5e0",
+      "size": 6004,
+      "sha256": "9724566538c1123ffd733c4c558b8262c1b1662c1771382b22837d4c81afef03"
+    },
+    {
+      "name": "_uac_wstation_do_event",
+      "address": "0x00636b58",
+      "size": 340,
+      "sha256": "a0936ef8b9e642e337b43047b0c598c63a5851737b997fd88f892f22223f6b2e"
+    },
+    {
+      "name": "stats_db_sta_for_each_range_for_specify_ap",
+      "address": "0x0066d640",
+      "size": 232,
+      "sha256": "8f6f2d869d3a70e122a571ea3b57f38eb0f6eee6366904dcceb664771218a974"
+    },
+    {
+      "name": "stats_db_sta_update_cnt_target",
+      "address": "0x0066d0d8",
+      "size": 1016,
+      "sha256": "6fe0afc9cd3c607cfd4b5a5256c1e21e574bf8e4eeb720d712e3e2a62995dd89"
+    },
+    {
+      "name": "stats_db_sta_update",
+      "address": "0x0066c750",
+      "size": 800,
+      "sha256": "6a40a8dca3b7d53f357fc51f28d6cef216965f414c2e0a8e381e22da2c5a807b"
+    },
+    {
+      "name": "stats_db_sta_start_del_timer_by_mac",
+      "address": "0x0066d4d0",
+      "size": 164,
+      "sha256": "8c96950232bf531cffc7ebed25af00877f0b4b91e857d4c6bf2804f57e0a1f4e"
+    },
+    {
+      "name": "_stats_sta_idle_timer_handle",
+      "address": "0x006689c4",
+      "size": 252,
+      "sha256": "25394d4e31b6a00c74faed6ba1c58380b00ac4c556c1647bce18405783618c49"
+    },
+    {
+      "name": "_stats_sta_copy_to_list",
+      "address": "0x00668b38",
+      "size": 144,
+      "sha256": "490b544c9950533f8d2331be072df1e47a4cfa6e9518fd5d38a84ad1b95b5aa6"
+    },
+    {
+      "name": "_stats_sta_assoc_cb",
+      "address": "0x00672eac",
+      "size": 152,
+      "sha256": "d78462ef3e80c1abc0309278d80126d008adaf54bb72449f0cf608295353f083"
+    },
+    {
+      "name": "_stats_sta_deassoc_cb",
+      "address": "0x00672f44",
+      "size": 96,
+      "sha256": "c34eacbadc4fd35bc76f0b5c7fa5870de1511eef8fd7db9ac81ddac29931c1a9"
+    },
+    {
+      "name": "uac_stats_init",
+      "address": "0x00673228",
+      "size": 1072,
+      "sha256": "66fd8afa76d9dbe5888c51273a22b47cfd12b6913348ed889df83055b398eba8"
+    },
+    {
+      "name": "_uac_rdmngr_rd_chnl_set",
+      "address": "0x0062fb28",
+      "size": 908,
+      "sha256": "5dc3230adef85ee68a7637c0d138b3fc1b4a44e7ed2d599a6b9f0e98340c5933"
+    },
+    {
+      "name": "apmngr_db_active_ap_num_get",
+      "address": "0x0053903c",
+      "size": 12,
+      "sha256": "3e70462a74f21cb6ea8dbdb4b5555b8d380a2ce44a4b114998370c1402b1bdef"
+    },
+    {
+      "name": "wsta_db_get_total_num",
+      "address": "0x006390c8",
+      "size": 72,
+      "sha256": "31364fd7f4c3aef8d68d380bba517b0ff9b932a6b65c269d8e4657f2e345fb62"
+    },
+    {
+      "name": "wsta_db_get_ap_sta_num",
+      "address": "0x00639110",
+      "size": 336,
+      "sha256": "d6dbb847660771308b3e5564a9e2d9af05e4b439bf7e3f40395eaf9e855633c3"
+    },
+    {
+      "name": "get_high_per_ap_cnt",
+      "address": "0x00482dc0",
+      "size": 12,
+      "sha256": "3a39b5de98f8e5971464d5d82ff8a8e4ad42a61f919c3c952e34d1b5929737f7"
+    },
+    {
+      "name": "get_high_per_sta_cnt",
+      "address": "0x00482dcc",
+      "size": 12,
+      "sha256": "a7ae807bb8b3fdd3b6c2255b8bea2f8deac993cdf78a8eb116a179f5fa4d1a91"
+    },
+    {
+      "name": "apmngr_db_foreach_proc",
+      "address": "0x005382e4",
+      "size": 424,
+      "sha256": "286310638002ba3922380311e4cc43b6aa09872ec537e1e449d5929a85a29383"
+    },
+    {
+      "name": "_stats_ap_join_cb",
+      "address": "0x006730dc",
+      "size": 152,
+      "sha256": "c67b9e163e37ed03063ab41bdc0618367307f71df6c6ff48229ba4649d00f36f"
+    },
+    {
+      "name": "_stats_ap_disconnect_cb",
+      "address": "0x00673040",
+      "size": 156,
+      "sha256": "f8cf503e2772a04c2fdcd4a8490163c19783941e091d1c7442cf5fe75d3db894"
+    },
+    {
+      "name": "_stats_ap_del_cb",
+      "address": "0x00672fa4",
+      "size": 156,
+      "sha256": "31dc0dea7f68bcc401bcff245828ac511499778a34b5d4bee104beeec28d1e07"
+    },
+    {
+      "name": "_stats_ap_online_cb",
+      "address": "0x00672ab0",
+      "size": 480,
+      "sha256": "49d64e6c3f5cb743fccce225dba39180d7d92679d1b18987f538cda7e6f759e9"
+    },
+    {
+      "name": "_stats_rd_enable_cb",
+      "address": "0x00672d08",
+      "size": 120,
+      "sha256": "526bb3bf2d2ae546935c22df0b3875e804f1e9eb43ec960d6e99d6d376c5adce"
+    },
+    {
+      "name": "_stats_rd_disable_cb",
+      "address": "0x00672c90",
+      "size": 120,
+      "sha256": "446db18b971baa5f1fc30fdef74b68d0d70af026d481f2da346d606aecde2e37"
+    },
+    {
+      "name": "_stats_wlan_disable",
+      "address": "0x00672e04",
+      "size": 168,
+      "sha256": "74667932fb741e30d5d88f5bc8a4d9b5292a33088aa321ad6e307d7c35fda07f"
+    },
+    {
+      "name": "_stats_wlan_enable",
+      "address": "0x00672d80",
+      "size": 132,
+      "sha256": "7ff16db92adb110ab8097216c6fb6fefcde5c535f9292264dfe6b7921a9b08dc"
+    }
+  ],
+  "files": [
+    {
+      "path": "etc/apdb.bin",
+      "sha256": "a8a7169b01c023a6d5b18e5ed9c00930712a8eba83615a66a901bd695cb8aaa2"
+    },
+    {
+      "path": "lib/functions/config.sh",
+      "sha256": "f2cbbdd39b4a8495c5d6722c8031949fd89f0de34b2db021ba869eb8bbd09c13"
+    },
+    {
+      "path": "usr/lib/lua/luci/controller/admin/apmng_roam.lua",
+      "sha256": "7c614bccf3d3e1b31f18acbc72c8aa6f43c649908a2cb6d75955c4cdb19e24bc"
+    },
+    {
+      "path": "usr/lib/lua/luci/view/userrpm/apmng_roaming_wireless_mode.htm",
+      "sha256": "aaee4f9ff6920edf6c353415043df13c198aca4b51c89f46fa9b109951208297"
+    }
+  ],
+  "data": [
+    {
+      "name": "compatibility_channel_lookup",
+      "address": "0x00697378",
+      "size": 12,
+      "hex": "01060b0024282c3095999da1",
+      "sha256": "0eb615e57c1cac58f421446eaa1aa343e5b772584571214167087f87462b87bc"
+    },
+    {
+      "name": "idle_station_seconds",
+      "address": "0x00758ce4",
+      "size": 4,
+      "hex": "00000384",
+      "sha256": "cb5f66339aa4e2aa800cd484ff17db92095295998454996900292631fe153e2a"
+    }
+  ],
+  "reverse_direct_targets": [
+    "check_cur_wireless_network_mode",
+    "wireless_network_mode_change_handle",
+    "_wsta_intelligent_roam_sta_change_ap_info",
+    "_wsta_intelligent_roam_set_rd_info_by_sta",
+    "_wsta_intelligent_roam_ctl_pkt_send_cb",
+    "_wsta_intelligent_roam_sta_stats"
+  ],
+  "direct_callers": [
+    {
+      "caller": "_wsta_intelligent_roam_sta_change_ap_info",
+      "target": "wireless_network_mode_change_handle",
+      "site": "0x00484d08",
+      "instruction": "0x0c121189"
+    },
+    {
+      "caller": "_wsta_intelligent_roam_sta_stats",
+      "target": "_wsta_intelligent_roam_sta_change_ap_info",
+      "site": "0x00484d80",
+      "instruction": "0x0c121300"
+    },
+    {
+      "caller": "check_cur_wireless_network_mode",
+      "target": "wireless_network_mode_change_handle",
+      "site": "0x00486a0c",
+      "instruction": "0x0c121189"
+    },
+    {
+      "caller": "_wsta_intelligent_roam_ctl_pkt_send_cb",
+      "target": "wireless_network_mode_change_handle",
+      "site": "0x00489a98",
+      "instruction": "0x0c121189"
+    },
+    {
+      "caller": "wsta_intelligent_roam_manual_change_wireless_network_mode",
+      "target": "check_cur_wireless_network_mode",
+      "site": "0x00489c9c",
+      "instruction": "0x0c121a65"
+    },
+    {
+      "caller": "wsta_roam_pkt_init",
+      "target": "check_cur_wireless_network_mode",
+      "site": "0x0048a0d8",
+      "instruction": "0x0c121a65"
+    }
+  ],
+  "registrations": [
+    {
+      "root": "_wsta_intelligent_roam_sta_change_ap_info",
+      "site": "0x00484d18",
+      "target": "_wsta_intelligent_roam_set_rd_info_by_sta",
+      "address": "0x00484fd0",
+      "instruction": "0x24a54fd0"
+    },
+    {
+      "root": "wsta_roam_pkt_init",
+      "site": "0x00489f3c",
+      "target": "_wsta_roam_pkt_wtp_event_listener",
+      "address": "0x00489380",
+      "instruction": "0x24c69380"
+    },
+    {
+      "root": "wsta_roam_pkt_init",
+      "site": "0x00489fc0",
+      "target": "_wsta_intelligent_roam_ctl_pkt_send_cb",
+      "address": "0x00489930",
+      "instruction": "0xafa20020"
+    },
+    {
+      "root": "wsta_roam_pkt_init",
+      "site": "0x0048a008",
+      "target": "_wsta_intelligent_roam_sta_stats",
+      "address": "0x00484d2c",
+      "instruction": "0xafa2003c"
+    },
+    {
+      "root": "wsta_roam_pkt_init",
+      "site": "0x0048a03c",
+      "target": "_wsta_roam_rd_chnl_changed_by_subdev",
+      "address": "0x00485e48",
+      "instruction": "0xafa20038"
+    },
+    {
+      "root": "wsta_roam_pkt_init",
+      "site": "0x0048a04c",
+      "target": "_wsta_roam_rd_chnl_modify_by_manual",
+      "address": "0x00489b60",
+      "instruction": "0xafa2003c"
+    },
+    {
+      "root": "wsta_roam_pkt_init",
+      "site": "0x0048a080",
+      "target": "_wsta_intelligent_roam_callback_wtp_leave",
+      "address": "0x00485294",
+      "instruction": "0xafa20030"
+    },
+    {
+      "root": "uac_stats_init",
+      "site": "0x0067329c",
+      "target": "_stats_sta_deassoc_cb",
+      "address": "0x00672f44",
+      "instruction": "0xafa2003c"
+    },
+    {
+      "root": "uac_stats_init",
+      "site": "0x00673304",
+      "target": "_stats_sta_assoc_cb",
+      "address": "0x00672eac",
+      "instruction": "0xafa2003c"
+    },
+    {
+      "root": "uac_stats_init",
+      "site": "0x0067337c",
+      "target": "_stats_ap_join_cb",
+      "address": "0x006730dc",
+      "instruction": "0xafa2002c"
+    },
+    {
+      "root": "uac_stats_init",
+      "site": "0x00673388",
+      "target": "_stats_ap_disconnect_cb",
+      "address": "0x00673040",
+      "instruction": "0xafa20030"
+    },
+    {
+      "root": "uac_stats_init",
+      "site": "0x00673398",
+      "target": "_stats_ap_del_cb",
+      "address": "0x00672fa4",
+      "instruction": "0xafa20038"
+    },
+    {
+      "root": "uac_stats_init",
+      "site": "0x006733c8",
+      "target": "_stats_ap_online_cb",
+      "address": "0x00672ab0",
+      "instruction": "0xafa20020"
+    },
+    {
+      "root": "uac_stats_init",
+      "site": "0x006733f4",
+      "target": "_stats_rd_enable_cb",
+      "address": "0x00672d08",
+      "instruction": "0xafa20028"
+    },
+    {
+      "root": "uac_stats_init",
+      "site": "0x00673400",
+      "target": "_stats_rd_disable_cb",
+      "address": "0x00672c90",
+      "instruction": "0xafa2002c"
+    },
+    {
+      "root": "uac_stats_init",
+      "site": "0x00673454",
+      "target": "_stats_wlan_disable",
+      "address": "0x00672e04",
+      "instruction": "0xafa2003c"
+    },
+    {
+      "root": "uac_stats_init",
+      "site": "0x00673544",
+      "target": "_stats_wlan_enable",
+      "address": "0x00672d80",
+      "instruction": "0xafa2003c"
+    }
+  ],
+  "libc": {
+    "path": "lib/libuClibc-0.9.33.2.so",
+    "binary_sha256": "2017c1f29c966c2ccfc3f1b9bba58d447f53d760f8b9d2f36bc23fc73bbd2fe3",
+    "functions": [
+      {
+        "name": "rand",
+        "address": "0x00048920",
+        "size": 24,
+        "sha256": "ed5dd740a2fc580923bed5574688feede3ba687844ba2118a9795c2a599c8c1c"
+      },
+      {
+        "name": "srand",
+        "address": "0x00048940",
+        "size": 140,
+        "sha256": "c21ed7d083300df2343e7df75a89da9ea747b1280141fee02ac52323ddffe86a"
+      },
+      {
+        "name": "random",
+        "address": "0x00048b20",
+        "size": 132,
+        "sha256": "07da97a7991368722da9640803d456c9dde07b9596ed48cfef87510d0edbe13b"
+      },
+      {
+        "name": "random_r",
+        "address": "0x00048bb0",
+        "size": 132,
+        "sha256": "195075a089746def5409ad617c5a1936010788cff0e68e9777c73d2c08195387"
+      },
+      {
+        "name": "srandom_r",
+        "address": "0x00048c34",
+        "size": 268,
+        "sha256": "ad85c7f449d434941e2748e151f8daf229b396a7e5e0d97e7d5a83d9eb212d19"
+      }
+    ],
+    "state": {
+      "address": "0x000672e8",
+      "size": 20,
+      "hex": "0006730c0006730000067300031f03000006737c",
+      "sha256": "5848d5296a8a708ced1253e91e5a997ec1cc71d180415d9675100be23e9727e5",
+      "type": 3,
+      "degree": 31,
+      "separation": 3
+    }
+  }
+}

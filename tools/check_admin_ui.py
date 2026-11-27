@@ -2,8 +2,9 @@
 """Exercise capability-dependent admin forms using real and synthetic AP data.
 Uses mocked HTTP writes so no lab AP configuration changes during UI checks.
 Requires the optional local Playwright environment, not a runtime dependency.
+Uses Playwright's Chromium, or AC100_CHROMIUM_PATH for an existing browser.
 """
-import copy,json,pathlib,threading,http.server,urllib.request
+import copy,json,os,pathlib,threading,http.server,urllib.request
 from playwright.sync_api import sync_playwright
 ROOT=pathlib.Path(__file__).resolve().parents[1];OUT=ROOT/'.local/ac100/ui-check';OUT.mkdir(parents=True,exist_ok=True)
 def live(p):return json.load(urllib.request.urlopen('http://127.0.0.1:8090/api/'+p))
@@ -19,7 +20,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
  def log_message(self,*a):pass
 server=http.server.ThreadingHTTPServer(('127.0.0.1',0),Handler);threading.Thread(target=server.serve_forever,daemon=True).start()
 with sync_playwright() as p:
- browser=p.chromium.launch(headless=True,executable_path='/home/dl/.cache/ms-playwright/chromium-1255/chrome-linux64/chrome')
+ browser=p.chromium.launch(headless=True,executable_path=os.environ.get('AC100_CHROMIUM_PATH'))
  errors=[];writes=[];signal_queries=[]
  for full in (False,True):
   profile=copy.deepcopy(aps);conf=copy.deepcopy(cfg);rf_defaults=copy.deepcopy(defaults)
@@ -92,15 +93,24 @@ with sync_playwright() as p:
   if full:
    visit('pools');page.locator('[data-new-pool]').click();page.locator('[name="pool_name"]').fill('UI Pool');page.locator('[name="pool_vlans"]').fill('100-110');page.locator('#pool-form [type="submit"]').click();page.wait_for_timeout(80)
    assert writes[-1]['path']=='vlan-pools' and writes[-1]['body']['vlans']=='100-110'
-  visit('rrm');page.locator('[data-rrm-new]').click();page.wait_for_selector('#rrm-form');page.locator('[name="name"]').fill('UI RRM');page.locator('[name="rrm_5g_channels"]').fill('36,44,149,157');page.locator('[name="optimize_channel"]').check();page.locator('#rrm-form [type="submit"]').click();page.wait_for_timeout(80);assert writes[-1]['path']=='rrm/rules' and writes[-1]['body'][0]['name']=='UI RRM';visit('rates');page.locator('[data-rates]').click();page.wait_for_selector('#rates-form');page.locator('[data-editor-tab="rates-mcs"]').click();page.locator('[name="11ax_supported"]').fill('15');page.locator('#rates-form [type="submit"]').click();page.wait_for_timeout(80)
+  visit('rrm');page.locator('[data-rrm-new]').click();page.wait_for_selector('#rrm-form');page.locator('[name="strategy_version"]').select_option('v4');assert page.locator('[name="rrm_5g_secondary_channels"]').is_visible();assert page.locator('[name="rrm_5g_power_threshold"]').is_disabled();page.locator('[name="strategy_version"]').select_option('v6');assert not page.locator('[name="rrm_5g_secondary_channels"]').is_visible();assert page.locator('[name="rrm_5g_power_threshold"]').is_enabled();page.locator('[name="name"]').fill('UI RRM');page.locator('[name="rrm_5g_channels"]').fill('36,44,149,157');page.locator('[name="optimize_channel"]').check();page.locator('#rrm-form [type="submit"]').click();page.wait_for_timeout(80);assert writes[-1]['path']=='rrm/rules' and writes[-1]['body'][0]['name']=='UI RRM';visit('rates');page.locator('[data-rates]').click();page.wait_for_selector('#rates-form');page.locator('[data-editor-tab="rates-mcs"]').click();page.locator('[name="11ax_supported"]').fill('15');page.locator('#rates-form [type="submit"]').click();page.wait_for_timeout(80)
   assert writes[-1]['path']=='rates' and writes[-1]['body']['11ax']['supported']==15
+  visit('rrm');page.locator('[data-rrm-new]').click();page.wait_for_selector('#rrm-form');page.locator('[name="strategy_version"]').select_option('v4');page.locator('[name="name"]').fill('UI V4 RRM');page.locator('[name="rrm_5g_channels"]').fill('36,44,149,157');page.locator('[name="rrm_5g_secondary_channels"]').fill('149,157');page.locator('[name="optimize_channel"]').check();page.locator('#rrm-form [type="submit"]').click();page.wait_for_timeout(80)
+  assert writes[-1]['path']=='rrm/rules' and writes[-1]['body'][0]['strategy_version']=='v4'
+  assert writes[-1]['body'][0]['5g']['secondary_channels']==[149,157]
+  assert writes[-1]['body'][0]['5g']['power_threshold']==writes[-1]['body'][0]['2g']['power_threshold']
+
   visit('edca');page.locator('[data-edca-new]').click();page.wait_for_selector('#edca-form');page.locator('#edca-form [name="name"]').fill('UI EDCA');page.locator('#edca-form [name="frequency_mask"]').select_option(['1','256']);page.locator('#edca-form [name="edca_0_txop"]').fill('47');page.locator('#edca-form [type="submit"]').click();page.wait_for_timeout(80);assert writes[-1]['path']=='edca/rules' and writes[-1]['body'][0]['frequency_mask']==257
 
   visit('balance');page.locator('[data-mobility-kind="balance"]').click();page.wait_for_selector('#mobility-form');page.locator('[name="name"]').fill('UI Balance');page.locator('#mobility-form [type="submit"]').click();page.wait_for_timeout(80)
   assert writes[-1]['path']=='mobility' and writes[-1]['body']['balance'][0]['name']=='UI Balance'
-  visit('mobility');page.locator('[data-mobility-kind="default"]').click();page.wait_for_selector('#mobility-form');page.locator('[name="silence_count"]').fill('7');page.locator('[name="silence_seconds"]').fill('61');page.locator('#mobility-form [type="submit"]').click();page.wait_for_timeout(80)
+  visit('mobility');page.locator('[data-mobility-kind="default"]').click();page.wait_for_selector('#mobility-form');page.locator('[name="mode_source"]').select_option('tl-ac100-v4-1.4.3');assert not page.locator('[name="network_mode"] option[value="1"]').is_disabled();page.locator('[name="network_mode"]').select_option('1');page.locator('[name="mode_source"]').select_option('tl-ac100-v6-1.0.3');assert page.locator('[name="network_mode"]').input_value()=='2';assert page.locator('[name="network_mode"] option[value="1"]').is_disabled();page.locator('[name="silence_count"]').fill('7');page.locator('[name="silence_seconds"]').fill('61');page.locator('#mobility-form [type="submit"]').click();page.wait_for_timeout(80)
   assert writes[-1]['path']=='mobility' and writes[-1]['body']['default_roaming']['2g']['rssi_trigger']==-75
   assert writes[-1]['body']['silence']=={'count':7,'seconds':61}
+  assert writes[-1]['body']['mode_source']=='tl-ac100-v6-1.0.3'
+  assert [w for w in writes if w['path']=='rrm/rules'][-1]['body'][0]['strategy_version']=='v4'
+  visit('mobility');page.locator('[data-mobility-kind="default"]').click();page.wait_for_selector('#mobility-form');assert page.locator('#dialog-body').evaluate('(e)=>e.scrollTop')==0;page.locator('[name="mode_source"]').select_option('tl-ac100-v4-1.4.3');page.screenshot(path=str(OUT/('v4-strategy-options-full.png'if full else 'v4-strategy-options.png')));page.locator('#mobility-form [type="submit"]').click();page.wait_for_timeout(80)
+  assert writes[-1]['path']=='mobility' and writes[-1]['body']['mode_source']=='tl-ac100-v4-1.4.3'
   visit('protection')
   for kind in ['servers','bindings','rules']:
    page.locator('[data-defense-kind="'+kind+'"]').last.click();page.wait_for_selector('#defense-form');page.locator('#defense-form [name="name"]').fill('UI '+kind)
@@ -142,6 +152,6 @@ with sync_playwright() as p:
  browser.close()
 server.shutdown()
 assert not errors,errors
-assert len(writes)==54,len(writes)
+assert len(writes)==58,len(writes)
 assert next(w for w in reversed(writes) if w['path']=='radios')['body']['advanced']['edca']['preset']==2
 print(json.dumps({'profiles':2,'pages_per_profile':23,'forms_submitted':len(writes),'javascript_errors':errors,'screenshots':str(OUT)},ensure_ascii=False))

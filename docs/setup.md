@@ -4,7 +4,7 @@
 
 | 用途 | 固件身份 | 默认位置 |
 |---|---|---|
-| 旧 Go 实现、`asm/`、`ghidra-export/` 的基准 | `uac` SHA-256 `ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68`；完整固件发布版本尚未可靠确认 | `firmware/usr/sbin/`，只含二进制和两个符号表 |
+| 旧 Go 实现、`asm/`、`ghidra-export/` 的基准 | `uac` SHA-256 `ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68`；已由官网下载包逐字节确认为 **TL-AC100 V4.0 1.4.3 Build240715 Rel.80898n**（不是用户的1.4.4） | `firmware/usr/sbin/`，二进制和两个符号表；本次完整V4参考解包到`.local/ac100/v4-review/rootfs/` |
 | QEMU 原厂 AC、`notes/vendor-web/`、JCS 字段分析 | **TL-AC100 V6.0 1.0.3 Build 260817 Rel.68871n**；`uac` SHA-256 `b12d1584fcafda2a71aa9038b41b7e1c5b893b350f3e6edf5105e445d024a912` | `.local/ac100/rootfs/`，完整厂商 rootfs |
 
 `identity.json` 中的 2014 年固件串来自厂商样例报文，不足以认定旧二进制的发布版本。

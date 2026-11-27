@@ -23,6 +23,7 @@ func cloneSchedule(p *ServiceSchedule) *ServiceSchedule {
 
 func cloneRadio(r RadioSetting) RadioSetting {
 	r.Enabled, r.Channel = clonePtr(r.Enabled), clonePtr(r.Channel)
+	r.Bandwidth = clonePtr(r.Bandwidth)
 	r.Power, r.PowerLevel = clonePtr(r.Power), clonePtr(r.PowerLevel)
 	r.Advanced = clonePtr(r.Advanced)
 	if a := r.Advanced; a != nil {

@@ -19,7 +19,7 @@ public class ExportTargets extends GhidraScript {
    if(f==null){disassemble(at);f=createFunction(at,parts[3]);}
    if(f==null){println("MISSING "+parts[3]);continue;}
    DecompileResults result=decompiler.decompileFunction(f,45,monitor);
-   String c="// V6 "+parts[3]+" @"+parts[0]+" size="+parts[1]+"\n";
+   String c="// "+currentProgram.getName()+" sha256="+currentProgram.getExecutableSHA256()+" "+parts[3]+" @"+parts[0]+" size="+parts[1]+"\n";
    c+=result.decompileCompleted()?result.getDecompiledFunction().getC():"// FAILED "+result.getErrorMessage();
    Files.writeString(out.resolve(parts[0]+"_"+parts[3].replaceAll("[^A-Za-z0-9_$._]","_")+".c"),c);
    println("EXPORTED "+parts[3]);

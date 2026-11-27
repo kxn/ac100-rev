@@ -178,7 +178,8 @@
         "uacgo/admin/radio_linkage.go",
         "uacgo/cweng/apelem.go",
         "uacgo/cweng/capabilities.go",
-        "uacgo/cweng/radio_linkage.go"
+        "uacgo/cweng/radio_linkage.go",
+        "uacgo/cweng/model_database.go"
       ],
       "regressions": [
         "uacgo/admin/native_radio_test.go",
@@ -187,13 +188,15 @@
         "uacgo/admin/radio_linkage_test.go",
         "uacgo/admin/rf_mode_test.go",
         "uacgo/cweng/capabilities_test.go",
-        "uacgo/cweng/radio_linkage_test.go"
+        "uacgo/cweng/radio_linkage_test.go",
+        "uacgo/cweng/model_database_test.go"
       ],
       "basis": "73abf0 有序行匹配、714b9c peer 联动、5dd2d8 独立归一化；73d0f0→7301dc→742e24→7304f0 两阶段 AX 默认值，使用 radio1 feature bitmap。rail_high_speed_mode_switch 在727f14未实现。",
       "evidence_contracts": [
         "rrst-and-peer",
         "model-radio-inheritance",
-        "ax-defaults-and-model-enums"
+        "ax-defaults-and-model-enums",
+        "complete-model-database-and-negotiation-cache"
       ]
     },
     {
@@ -366,7 +369,15 @@
         "uacgo/mobility/select.go",
         "uacgo/mobility/station_db.go",
         "uacgo/mobility/statistics.go",
-        "uacgo/mobility/tables_generated.go"
+        "uacgo/mobility/tables_generated.go",
+        "uacgo/admin/high_performance.go",
+        "uacgo/mobility/high_performance.go",
+        "uacgo/admin/high_performance_rrm.go",
+        "uacgo/admin/automatic_mode.go",
+        "uacgo/mobility/automatic.go",
+        "uacgo/mobility/policy.go",
+        "uacgo/mobility/legacy_select.go",
+        "uacgo/admin/roaming_policy.go"
       ],
       "regressions": [
         "uacgo/admin/bssid_state_test.go",
@@ -379,9 +390,16 @@
         "uacgo/mobility/statistics_test.go",
         "uacgo/admin/roam_source_audit_test.go",
         "uacgo/admin/roaming_branch_audit_test.go",
-        "uacgo/cweng/roaming_branches_test.go"
+        "uacgo/cweng/roaming_branches_test.go",
+        "uacgo/admin/high_performance_test.go",
+        "uacgo/mobility/high_performance_test.go",
+        "uacgo/cweng/high_performance_report_test.go",
+        "uacgo/admin/automatic_mode_test.go",
+        "uacgo/mobility/automatic_test.go",
+        "uacgo/mobility/policy_test.go",
+        "uacgo/admin/roaming_policy_test.go"
       ],
-      "basis": "4e89ac→4e8440→4e6564→4e5638；JAL不是旧_roaming_nbr_select。原整数表/排序/四候选/弱信号回退；不增加ACK冷却。V6 Web模式只读2，老ACS内部路径不开放。 空邻居跨客户端候选复用属于用户明确要求修复的厂商缺陷，单独列入firmware-bug-fix合同；其余策略继续按原分支。入口清单见roaming-entry-audit.json。",
+      "basis": "4e89ac→4e8440→4e6564→4e5638；JAL不是旧_roaming_nbr_select。原整数表/排序/四候选/弱信号回退；不增加ACK冷却。V6默认兼容2。 空邻居跨客户端候选复用属于用户明确要求修复的厂商缺陷，单独列入firmware-bug-fix合同；其余策略继续按原分支。入口清单见roaming-entry-audit.json。 按独立V4 1.4.3证据补入固定高性能1、自动0及共同信道/回退重分配；入口、uClibc和数据指纹见v4-high-performance-evidence.json；V4/V6候选、估速与PMK逐入口对照，来源同时选择模式控制与客户端决策，自动回退不跨版本；V4 balance策略回调和PMK NULL缺陷单列证据。",
       "evidence_contracts": [
         "active-trigger-wire",
         "candidate-order-and-gates",
@@ -392,12 +410,17 @@
         "mesh-roaming-role-rate",
         "roaming-statistics-authority",
         "roaming-packet-output-state",
-        "roaming-capability-controls"
+        "roaming-capability-controls",
+        "v4-fixed-high-performance-coordinator",
+        "v4-acs-empty-opposite-band-output",
+        "v4-automatic-mode-entries-and-redistribution",
+        "cross-version-station-policy",
+        "v4-pmk-special-association-null-output"
       ]
     },
     {
       "id": "rrm",
-      "title": "原 SCA/TPC、测量任务和计划",
+      "title": "V4 DCA/TPC与V6 SCA/TPC、测量任务和计划",
       "firmware_modules": [
         "apmng_rrm"
       ],
@@ -408,20 +431,26 @@
         "uacgo/admin/rrm_runtime.go",
         "uacgo/admin/rrm_schedule.go",
         "uacgo/rrm/channel.go",
-        "uacgo/rrm/power.go"
+        "uacgo/rrm/power.go",
+        "uacgo/admin/rrm_v4.go",
+        "uacgo/rrm/v4.go"
       ],
       "regressions": [
         "uacgo/admin/config_store_test.go",
         "uacgo/admin/rrm_runtime_test.go",
         "uacgo/admin/rrm_test.go",
-        "uacgo/rrm/firmware_test.go"
+        "uacgo/rrm/firmware_test.go",
+        "uacgo/admin/rrm_v4_test.go",
+        "uacgo/rrm/v4_test.go"
       ],
-      "basis": "527c70/52763c→librrm_business.so+ab44→5094/677c；原有向图、局部枚举和第三入边功率；90s、低高5G/两轮/冻结集合/基线与平滑图/按顺序提交。",
+      "basis": "527c70/52763c→librrm_business.so+ab44→5094/677c；原有向图、局部枚举和第三入边功率；90s、低高5G/两轮/冻结集合/基线与平滑图/按顺序提交。 每条规则独立选择strategy_version；V4按4aef30→4b07f8/4b0180与4b1750，分组、收集、失败保留、量化上下界和新一轮邻居单列v4-rrm-evidence.json，不以V6库代替。",
       "evidence_contracts": [
         "sca-directed-score-and-ties",
         "tpc-third-neighbor-and-quantization",
         "measurement-round-triggers",
-        "rrm-write-gate-and-time-conflicts"
+        "rrm-write-gate-and-time-conflicts",
+        "v4-independent-rrm-policy",
+        "component-policy-selection"
       ]
     },
     {
@@ -519,7 +548,12 @@
         "uacgo/admin/server.go",
         "uacgo/cmd/acd/main.go",
         "uacgo/admin/config_copy.go",
-        "uacgo/cweng/status_copy.go"
+        "uacgo/cweng/status_copy.go",
+        "uacgo/admin/vendor_import.go",
+        "uacgo/admin/vendor_import_policy.go",
+        "uacgo/vendorbackup/archive.go",
+        "uacgo/vendorbackup/uci.go",
+        "uacgo/cmd/acconvert/main.go"
       ],
       "regressions": [
         "tools/check_admin_ui.py",
@@ -529,13 +563,16 @@
         "tools/check_docker.py",
         "uacgo/admin/resource_copy_test.go",
         "uacgo/admin/history_resource_test.go",
-        "uacgo/cweng/status_copy_test.go"
+        "uacgo/cweng/status_copy_test.go",
+        "uacgo/admin/vendor_import_test.go",
+        "uacgo/vendorbackup/archive_test.go"
       ],
       "basis": "Go 程序架构对应；持久化、脱敏、导入校验和原Web RRM修改门禁。HTTP/JSON外观重新设计，不声称和原UI像素/API路径一致。 正式启动不再注册旧 SQLite WLAN/RF 或 JCS；AP 身份编号单独持久化。",
       "evidence_contracts": [
         "single-configuration-authority",
         "configuration-lifecycle-validation",
-        "container-http-binding"
+        "container-http-binding",
+        "vendor-backup-offline-migration"
       ]
     },
     {

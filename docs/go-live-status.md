@@ -1,5 +1,9 @@
 # 独立 Go 控制器实机进度（2026-11-26）
 
+## 2026-11-27 备份迁移源码更新（未部署）
+
+新增原AC备份离线转换、完整型号库加载/协商缓存、客户端名称迁移，并按独立V4参考补入固定高性能协调路径。本轮只做静态代码取证与离线回归，没有修改现场AP或运行数据。下文的设备与部署记录属于此前版本，不能当成本次转换包的实机验证。详见[迁移说明](vendor-backup-import.md)。
+
 ## 最新部署：2026-11-27 10:40（Asia/Singapore）
 
 客户端漫游复核修正已提交并部署为 `e0cdad527bfaaeaf9e2c86e1cfe4b93a04e63cb7`，包含此前资源优化 `e7ee4e5` 与 UI 组织更新。运行二进制确认该 revision、`vcs.modified=false`、`CGO_ENABLED=0`；服务 active/running、NRestarts=0。旧二进制和私有数据快照保存在 `.local/ac100/deployments/20261127T023830Z-roaming-review/`。
@@ -110,7 +114,7 @@ source tools/env.sh
 python3 tools/go_lab.py status
 python3 tools/check_env.py --go-live
 python3 tools/go_lab.py restart --iface enxc817f5dd9eb9
-python3 tools/check_adb_wifi.py cycle --serial a1971f20
+python3 tools/check_adb_wifi.py cycle --serial YOUR_ADB_SERIAL
 go -C uacgo test ./...
 go -C uacgo vet ./...
 ```

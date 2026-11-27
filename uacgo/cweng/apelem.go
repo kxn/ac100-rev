@@ -265,6 +265,7 @@ func ParseAPEntry(req *capwap.ParsedPacket) (*APEntry, error) {
 		}
 	}
 	for i := range e.Capabilities {
+		e.Capabilities[i] = effectiveRadioPower(e.Capabilities[i], e.HasCapability(38))
 		features := map[string]bool{}
 		for name, value := range firstFeatures {
 			features[name] = value

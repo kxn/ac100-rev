@@ -67,6 +67,14 @@ AP capabilities, wire constraints and firmware roaming/RRM policies remain
 separate from these budgets.
 
 
+## Original AC backup migration
+
+`go -C uacgo run ./cmd/acconvert` converts an original encrypted AC export
+offline into Go configuration and a review report. It preserves client aliases
+from the authentication database while excluding authentication and AC Linux
+configuration. See [backup migration](docs/vendor-backup-import.md), especially
+the V4/V6 decision families, including candidate/rate/PMK differences.
+
 ## Docker / RouterOS Container
 
 Two container profiles are available: non-root without DHCP, or AP-only DHCP
@@ -101,3 +109,7 @@ passing fixture tests alone does not establish device interoperability.
   touches an element codec.
 - The vendor certificate files are the ones shipped inside the public
   firmware image; nothing here is device-specific.
+
+V4/V6 roaming policy review: [source mapping](docs/cross-version-mobility-review.md), [firmware quirks and intentional fixes](docs/firmware-mobility-quirks.md).
+
+漫游与射频优化可[按功能选择V4/V6策略](docs/component-strategy-versions.md)，两处选择互相独立。

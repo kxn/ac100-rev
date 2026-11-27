@@ -143,31 +143,7 @@ func (m *Manager) radioPHYLocked(ap cweng.APStatus, r cweng.RadioStatistics, ban
 	if cap.TxStreams < 1 || cap.TxStreams > 16 {
 		p.NSS = 2
 	}
-	switch adv.Mode {
-	case -1:
-		p.Mode = 1
-		if cap.SupportAC {
-			p.Mode = 2
-		}
-		if cap.SupportAX {
-			p.Mode = 3
-		}
-		if cap.SupportBE {
-			p.Mode = 4
-		}
-	case 0, 1, 2, 5:
-		p.Mode = 0
-	case 3, 4, 6, 7:
-		p.Mode = 1
-	case 8, 9:
-		p.Mode = 2
-	case 10, 11:
-		p.Mode = 3
-	case 12, 13:
-		p.Mode = 4
-	default:
-		p.Mode = 1
-	}
+	p.Mode = roamingPolicy(m.config).RadioMode(adv.Mode, cap.SupportAC, cap.SupportAX, cap.SupportBE)
 	return p
 }
 
@@ -242,7 +218,8 @@ func (m *Manager) candidateLocked(mac [6]byte, ap cweng.APStatus, radio, wlan ui
 				}
 			}
 		}
-		n.Rate = mobility.CandidateRate(rssi, caps.PHY(band), m.radioPHYLocked(ap, stats, band), band, mesh, backhaul)
+		policy := roamingPolicy(m.config)
+		n.Rate = policy.CandidateRate(rssi, caps.PHYFor(policy, band), m.radioPHYLocked(ap, stats, band), band, mesh, backhaul)
 	}
 	return n, true
 }
@@ -317,7 +294,9 @@ func (m *Manager) calculateRoamingLocked(ap cweng.APStatus, report capwap.PrivRo
 						continue
 					}
 					if i == 0 && target.ID == ap.ID && radio == report.Radio && wlan == sta.WLAN {
-						currentRSSI, currentRate = n.RSSI, n.Rate
+						if roamingPolicy(m.config) == mobility.V6Policy {
+							currentRSSI, currentRate = n.RSSI, n.Rate
+						}
 						continue
 					}
 					if n.Rate == -1 {
@@ -365,7 +344,11 @@ func (m *Manager) calculateRoamingLocked(ap cweng.APStatus, report capwap.PrivRo
 		}
 		// Each station owns its result. The firmware's stale output-count
 		// bug must not copy another station's candidates into this row.
-		selected := (mobility.Selection{CurrentRSSI: currentRSSI, CurrentRate: currentRate, ThresholdType2G: settings.Band2G.Type, ThresholdType5G: settings.Band5G.Type}).Select(grouped)
+		selected := m.selectRoamingLocked(ap.ID, report.Radio, sta.MAC, currentRSSI, currentRate, settings, grouped)
+		// V4 packet_create skips stations with no selected neighbors entirely.
+		if roamingPolicy(m.config) == mobility.V4Policy && len(selected) == 0 {
+			continue
+		}
 		row := capwap.RoamResultStation{MAC: sta.MAC}
 		row.APBitmap[0] = 1
 		d := RoamDecision{At: now, AP: ap.ID, MAC: net.HardwareAddr(sta.MAC[:]).String(), Candidates: []string{}, Reason: "原厂速率、负载及 RSSI 门限未选中候选"}

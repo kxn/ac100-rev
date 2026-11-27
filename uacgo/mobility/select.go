@@ -43,18 +43,22 @@ func candidateCompare(a, b Candidate) int {
 // The firmware quicksort's tie behavior is part of selection. Do not introduce
 // an AP-ID/client-count tiebreaker or replace it with an unrelated sort.
 func firmwareSort(rows []Candidate, low, high int) {
+	firmwareQuickSort(rows, low, high, candidateCompare)
+}
+
+func firmwareQuickSort[T any](rows []T, low, high int, compare func(T, T) int) {
 	for low < high {
 		pivot := rows[low]
 		left, right := low, high
 		for left < right {
-			for candidateCompare(rows[right], pivot) >= 0 && right > left {
+			for compare(rows[right], pivot) >= 0 && right > left {
 				right--
 			}
 			if left != right {
 				rows[left] = rows[right]
 				left++
 			}
-			for candidateCompare(rows[left], pivot) <= 0 && left < right {
+			for compare(rows[left], pivot) <= 0 && left < right {
 				left++
 			}
 			if left != right {
@@ -64,7 +68,7 @@ func firmwareSort(rows []Candidate, low, high int) {
 		}
 		rows[left] = pivot
 		if low < left {
-			firmwareSort(rows, low, left-1)
+			firmwareQuickSort(rows, low, left-1, compare)
 		}
 		low = left + 1
 	}

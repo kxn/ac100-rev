@@ -94,6 +94,7 @@ type ApplyStatus struct {
 	At               time.Time `json:"at"`
 }
 type Manager struct {
+	highPerformance      highPerformanceState
 	meshJobs             map[string]MeshJob
 	history              WirelessHistory
 	historySamples       map[string]time.Time
@@ -160,6 +161,12 @@ func New(engine *cweng.Engine, clients *cweng.ClientTable, dataDir string) (*Man
 	namesMigrated := migrateAPNames(&m.config)
 	if b, err = os.ReadFile(filepath.Join(dataDir, "known-aps.json")); err == nil {
 		_ = json.Unmarshal(b, &m.known)
+		// Saved observations aren't active AP sessions after controller startup.
+		for id, ap := range m.known {
+			ap.Online = false
+			ap.State = "OFFLINE"
+			m.known[id] = ap
+		}
 	}
 	if _, err := os.Stat(filepath.Join(dataDir, "wlan-state.json")); err == nil {
 		if err := m.loadWLANState(); err != nil {
@@ -253,16 +260,19 @@ func New(engine *cweng.Engine, clients *cweng.ClientTable, dataDir string) (*Man
 	engine.OnAPStatistics = m.observeAPStatistics
 	engine.OnBSSIDLocations = m.observeBSSIDLocations
 	engine.OnRRMReport = m.observeRRMReport
+	engine.OnChannelScan = m.observeHighPerformanceScan
+	engine.OnRadioObservation = m.observeHighPerformanceRadio
 	engine.RegisterMeshControl(m.meshConfigure, m.meshAuthorize)
 	// Same V6 upgrade boundary as36_roam_cfg_sync.sh; old Go prototypes
 	// exposed modes which the shipped V6 Web never permits setting.
-	modeChanged := m.config.Mobility != nil && m.config.Mobility.NetworkMode != 2
+	modeChanged := m.config.Mobility != nil && m.config.Mobility.NetworkMode != 2 && m.config.Mobility.ModeSource == ""
 	if modeChanged {
 		p := *m.config.Mobility
 		p.NetworkMode = 2
 		m.config.Mobility = &p
 	}
 	defaults := mergeOptions(standaloneAPDefaults(), m.config.APDefaults)
+	automaticInitialized := m.initializeAutomaticMode()
 	defaultsChanged := configurationKey(defaults, time.Time{}) != configurationKey(m.config.APDefaults, time.Time{})
 	m.config.APDefaults = defaults
 	resourcesMissing := m.config.Resources == nil
@@ -276,7 +286,7 @@ func New(engine *cweng.Engine, clients *cweng.ClientTable, dataDir string) (*Man
 	if err := m.validateResourceUsage(m.config); err != nil {
 		return nil, err
 	}
-	if resourcesMissing || defaultsChanged || modeChanged || namesMigrated {
+	if resourcesMissing || defaultsChanged || modeChanged || namesMigrated || automaticInitialized {
 		if err := atomicJSON(m.path, m.config); err != nil {
 			return nil, err
 		}
@@ -372,6 +382,12 @@ func (m *Manager) snapshot() Config {
 }
 
 func (m *Manager) Run(ctx context.Context) {
+	defer func() {
+		m.mu.Lock()
+		defer m.mu.Unlock()
+		m.highPerformance.resetCollection()
+		m.highPerformance.State = ""
+	}()
 	rrmDone := make(chan struct{})
 	go func() { defer close(rrmDone); m.runRRM(ctx) }()
 	defer func() {
@@ -414,6 +430,7 @@ func (m *Manager) Run(ctx context.Context) {
 			m.stationStatistics.Tick(time.Now())
 			m.mu.Unlock()
 			m.tickRRM(time.Now())
+			m.tickHighPerformance(time.Now())
 			cfg := m.snapshot()
 			m.mu.Lock()
 			if time.Since(lastSave) > 30*time.Second {
@@ -463,6 +480,10 @@ func (m *Manager) reconcileAP(ctx context.Context, ap cweng.APStatus, cfg Config
 	if err := m.applyAPManagement(ctx, ap, cfg); err != nil {
 		return
 	}
+	modeFirst := m.modeBeforeRadio(ap)
+	if modeFirst && !m.applyMobility(ctx, ap, cfg) {
+		return
+	}
 	cfg = effectiveRadioConfig(cfg, ap)
 	navigation := cfg.BandNavigation
 	m.applyBandNavigation(ctx, ap, navigation)
@@ -483,7 +504,9 @@ func (m *Manager) reconcileAP(ctx context.Context, ap cweng.APStatus, cfg Config
 		}
 	}
 	m.applyRates(ctx, ap, cfg)
-	m.applyMobility(ctx, ap, cfg)
+	if !modeFirst {
+		m.applyMobility(ctx, ap, cfg)
+	}
 	m.applyMesh(ctx, ap, cfg)
 	m.applyMulticastGroups(ctx, ap, cfg)
 	for _, service := range cfg.Services {
@@ -912,6 +935,7 @@ func (m *Manager) HandlerWithOptions(options HTTPOptions) http.Handler {
 	})
 	mux.HandleFunc("POST /api/radios", m.saveRadioHTTP)
 	m.mobilityRoutes(mux)
+	m.highPerformanceRoutes(mux)
 	m.meshRoutes(mux)
 	m.multicastRoutes(mux)
 	m.rrmRoutes(mux)
@@ -1058,6 +1082,9 @@ func hasString(xs []string, v string) bool {
 // mu held. Session-specific failures cannot block a new session, but WLAN
 // ownership and deletion intent must survive until the new commit completes.
 func (m *Manager) clearAPSessionLocked(ap string, connection time.Time) {
+	if epoch, ok := m.highPerformance.ModeTargets[ap]; ok && epoch == connection {
+		delete(m.highPerformance.ModeTargets, ap)
+	}
 	for key, fact := range m.vapFacts {
 		if key.AP == ap && fact.Connection.Equal(connection) {
 			delete(m.vapFacts, key)

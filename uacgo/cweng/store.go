@@ -2,12 +2,13 @@
 // firmware (the Go port never reads the firmware image at runtime; everything
 // it depends on lives in data/):
 //
-//	data/apdb.json    — AP capability database, decrypted from /etc/apdb.bin
-//	                    (DES-ECB key @uac 0x71ced0 verified; payload MD5 ok)
+//	data/apdb.json    — complete normal/multi-AP library from /etc/apdb.bin
+//	                    (DES-ECB + payload MD5; audit_model_library.go)
+//	data/apdb-nego.json— optional firmware-indexed AP negotiation metadata
 //	data/identity.json— AC identity shown in responses (matches the vendor's
 //	                    .data fixture values)
-//	data/profile.ini  — the "profile" config uac reads via embedded Lua UCI
-//	                    (hard runtime dependency, reconstructed; see header)
+//	data/profile.ini  — reconstructed profile for research adapters only;
+//	                    the standalone daemon uses Go resource defaults.
 package cweng
 
 import (
@@ -15,6 +16,7 @@ import (
 	"fmt"
 	"net"
 	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 )
@@ -48,24 +50,51 @@ func LoadIdentity(path string) (*Identity, error) {
 
 // APDB is the AP capability database (apdb.json).
 type APDB struct {
-	Version string `json:"version"`
-	Vendor  int    `json:"vendor"`
-	APList  []struct {
-		APName string `json:"ap_name"`
-		ID     uint64 `json:"id"`
-		Models []struct {
-			HWVer  string `json:"hwver"`
-			Radios map[string]struct {
-				MaxSSID     int         `json:"max_ssid"`
-				MaxStations int         `json:"max_stations"`
-				MaxTxPower  int         `json:"max_tx_power"`
-				MinTxPower  int         `json:"min_tx_power"`
-				DftTxPower  int         `json:"dft_tx_power"`
-				DftBWMode   int         `json:"dft_bw_mode"`
-				Support11Ac interface{} `json:"support_11ac"`
-			} `json:"radios"`
-		} `json:"models"`
-	} `json:"ap_list"`
+	Version     string            `json:"version"`
+	Vendor      int               `json:"vendor"`
+	APList      []APDBModel       `json:"ap_list"`
+	MultiAPList []APDBModel       `json:"multi_ap_list"`
+	Negotiated  []NegotiatedModel `json:"-"`
+}
+type APDBModel struct {
+	APName       string `json:"ap_name"`
+	ID           uint64 `json:"id"`
+	HardwareID   string `json:"hardware_id"`
+	MeshDevice   bool   `json:"is_mesh_device"`
+	SupportTrunk bool   `json:"support_ap_trunk"`
+	Models       []struct {
+		HWVer  string               `json:"hwver"`
+		Radios map[string]APDBRadio `json:"radios"`
+	} `json:"models"`
+}
+type APDBRadio struct {
+	MaxSSID          int    `json:"max_ssid"`
+	MaxStations      int    `json:"max_stations"`
+	MaxTxPower       int    `json:"max_tx_power"`
+	MinTxPower       int    `json:"min_tx_power"`
+	DftTxPower       int    `json:"dft_tx_power"`
+	DftBWMode        *int   `json:"dft_bw_mode"`
+	Support11Ac      any    `json:"support_11ac"`
+	Support11Ax      any    `json:"support_11ax"`
+	Support11Be      any    `json:"support_11be"`
+	Support160       any    `json:"support_160M"`
+	Support240       any    `json:"support_240M"`
+	Support80P80     any    `json:"support_80M_80M"`
+	SupportWPA3      any    `json:"support_WPA3"`
+	MaxTxStream      int    `json:"max_tx_stream"`
+	MaxRxStream      int    `json:"max_rx_stream"`
+	MutexChannel     string `json:"mutex_channel"`
+	ExtendCapability string `json:"extend_capability"`
+	FunctionType     int    `json:"radio_func_type"`
+}
+type NegotiatedModel struct {
+	ID          uint64 `json:"id"`
+	APName      string `json:"ap_name"`
+	FirmwareIDs []struct {
+		FirmwareID string `json:"fwid"`
+		Index      int    `json:"ap_index"`
+	} `json:"fwid_list"`
+	APList []APDBModel `json:"ap_list"`
 }
 
 // LoadAPDB reads apdb.json (already decrypted + md5-verified at extraction).
@@ -78,6 +107,17 @@ func LoadAPDB(path string) (*APDB, error) {
 	if err := json.Unmarshal(b, &db); err != nil {
 		return nil, fmt.Errorf("apdb: %w", err)
 	}
+	if data, err := os.ReadFile(filepath.Join(filepath.Dir(path), "apdb-nego.json")); err == nil {
+		var cache struct {
+			Items []NegotiatedModel `json:"ap_item_list"`
+		}
+		if err := json.Unmarshal(data, &cache); err != nil {
+			return nil, fmt.Errorf("apdb negotiated cache: %w", err)
+		}
+		db.Negotiated = cache.Items
+	} else if !os.IsNotExist(err) {
+		return nil, err
+	}
 	return &db, nil
 }
 
@@ -87,9 +127,8 @@ func (db *APDB) LookupAP(name string) *struct {
 	APName string
 	ID     uint64
 } {
-	for i := range db.APList {
-		if db.APList[i].APName == name {
-			a := &db.APList[i]
+	for _, a := range db.Models() {
+		if a.APName == name {
 			return &struct {
 				APName string
 				ID     uint64

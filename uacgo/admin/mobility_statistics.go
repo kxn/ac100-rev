@@ -119,6 +119,7 @@ func (m *Manager) observeStationStatistics(ap string, connection time.Time, r ca
 		return
 	}
 	m.stationStatistics.Observe(mobility.MAC(r.MAC), radioBand(known, r.Radio), r.SupportWord, int8(r.Bandwidth))
+	m.stationStatistics.ObserveActivity(mobility.MAC(r.MAC), r.UpstreamKbps, r.DownstreamKbps)
 
 }
 func (m *Manager) observeAPStatistics(ap string, connection time.Time, stats capwap.PrivApStatistics) {

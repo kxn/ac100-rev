@@ -139,12 +139,26 @@ func (e *Engine) RegisterObservationHandlers() {
 				s.radioStatus = map[uint8]RadioStatus{}
 			}
 			s.radioStatus[b[0]] = RadioStatus{Radio: b[0], Mode: b[1], Channel: b[2], Power: binary.BigEndian.Uint16(b[3:]), Seen: time.Now()}
+			if e.OnRadioObservation != nil {
+				e.OnRadioObservation(sessionID(s), s.Created, s.radioStatus[b[0]])
+			}
 		})
 		return true
 	}
 	e.Register(9, 90, "radio_observations", observe)
 	e.Register(8, 90, "configuration_observations", observe)
 	e.Register(5, 90, "configure_observations", observe)
+	// V4's single roam listener processes PMK, trigger, then the first9c.
+	// An explicit priority keeps that policy order independent of which
+	// public registration helper an embedding controller calls first.
+	e.Register(9, 91, "high_performance_scan", func(ctx *Ctx, req, rsp *capwap.ParsedPacket) bool {
+		if b, ok := firstPrivateElement(req, 0x9c); ok && e.OnChannelScan != nil {
+			if rows, err := capwap.ParseChannelScanReport(b); err == nil {
+				e.OnChannelScan(sessionID(ctx.Session), ctx.Session.Created, rows)
+			}
+		}
+		return true
+	})
 	e.Register(5, 101, "reported_ssids", func(ctx *Ctx, req, rsp *capwap.ParsedPacket) bool {
 		privateElements(req, func(typ uint16, b []byte) {
 			if typ != 0x1e {
