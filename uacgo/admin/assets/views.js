@@ -538,37 +538,61 @@ function renderBandNavigation() {
   };
   const supported = data.aps.some((a) => a.features?.band_navigation);
   const states = data.apply.filter((s) => s.service_id === "band-navigation");
+  const bad = states.filter((s) =>
+    ["failed", "failed_recovered", "blocked"].includes(s.state),
+  ).length;
+  const pending = states.filter((s) => s.state === "applying").length;
+  const ok = states.filter((s) =>
+    ["acknowledged", "verified"].includes(s.state),
+  ).length;
+  const syncSummary = !states.length
+    ? "设备同步状态（暂无待同步项）"
+    : bad > 0
+      ? `设备同步状态（存在 ${bad} 项异常）`
+      : pending > 0
+        ? `设备同步状态（${pending} 项下发中）`
+        : `设备同步状态（${ok}/${states.length} 已同步）`;
 
   const formHtml = `<div class="panel-body">
     <form id="band-navigation-form" data-inline="1" novalidate>
-      <div class="form-grid">
-        <div class="full">${toggle("band_enabled", "启用 5 GHz 优先引导", b.enabled)}</div>
-        ${field("band_threshold", "5 GHz 客户端数量门限", b.threshold_5g, "number", 'required min="2" max="40"', "台")}
-        ${field("band_difference", "频段客户端数量差值", b.difference, "number", 'required min="1" max="8"', "台")}
-        ${field("band_failures", "最大引导失败次数", b.max_failures, "number", 'required min="0" max="100"', "次")}
+      <div class="setting-hero">
+        <div class="setting-copy">
+          <span class="setting-title">启用 5 GHz 优先引导</span>
+          <span class="setting-desc">2.4 GHz 与 5 GHz 使用相同 SSID 和密码时，自动引导支持 5 GHz 的终端优先接入 5 GHz。</span>
+        </div>
+        <label class="toggle"><input type="checkbox" name="band_enabled" aria-label="启用 5 GHz 优先引导" ${b.enabled ? "checked" : ""}></label>
       </div>
-      <p class="help">双频需使用相同 SSID 和安全配置。</p>
-      ${formEnd("保存并下发")}
+      <details class="advanced-section" data-band-advanced>
+        <summary>高级门限参数</summary>
+        <div class="form-grid">
+          ${field("band_threshold", "5 GHz 客户端数量门限", b.threshold_5g, "number", 'required min="2" max="40"', "台")}
+          ${field("band_difference", "频段客户端数量差值", b.difference, "number", 'required min="1" max="8"', "台")}
+          ${field("band_failures", "最大引导失败次数", b.max_failures, "number", 'required min="0" max="100"', "次")}
+        </div>
+      </details>
+      ${formEnd("保存设置")}
     </form>
   </div>`;
+
+  const syncDetails = `<details class="advanced-section sync-details"${bad > 0 || pending > 0 ? " open" : ""}>
+    <summary>${syncSummary}</summary>
+    ${table(
+      ["AP", "状态", "说明"],
+      states
+        .map(
+          (s) =>
+            `<tr><td>${esc(apName(s.ap_id))}</td><td>${statePill(s.state)}</td><td>${esc(s.error || s.reason || "—")}</td></tr>`,
+        )
+        .join(""),
+    )}
+  </details>`;
 
   return (
     (!supported && data.aps.length
       ? '<div class="notice warning">当前在线 AP 未声明支持双频优选。</div>'
       : "") +
     panel("双频优选", formHtml) +
-    panel(
-      "设备同步状态",
-      table(
-        ["AP", "状态", "说明"],
-        states
-          .map(
-            (s) =>
-              `<tr><td>${esc(apName(s.ap_id))}</td><td>${statePill(s.state)}</td><td>${esc(s.error || s.reason || "—")}</td></tr>`,
-          )
-          .join(""),
-      ),
-    )
+    syncDetails
   );
 }
 

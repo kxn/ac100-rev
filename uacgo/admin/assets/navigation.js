@@ -133,12 +133,10 @@ function headerActionsFor(page) {
       '<button class="btn primary" type="button" data-new-pool="1">新建 VLAN 池</button>',
     multicast:
       '<button class="btn secondary" type="button" data-multicast-bulk="1">批量编辑</button><button class="btn primary" type="button" data-multicast-new="1">添加规则</button>',
-    rrm: '<button class="btn secondary" type="button" data-rrm-status="1">任务记录</button><button class="btn primary" type="button" data-rrm-new="1">新建优化规则</button>',
+    rrm: '<button class="btn secondary" type="button" data-rrm-status="1">优化记录</button>',
     edca: '<button class="btn primary" type="button" data-edca-new="1">新建 EDCA 规则</button>',
-    mobility:
-      '<button class="btn primary" type="button" data-mobility-kind="roaming">新建漫游规则</button>',
-    balance:
-      '<button class="btn primary" type="button" data-mobility-kind="balance">新建均衡规则</button>',
+    mobility: "",
+    balance: "",
     upgrades:
       '<label class="btn primary file-btn">上传固件<input type="file" id="firmware-upload" accept=".bin" class="hidden" /></label>',
   };

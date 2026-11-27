@@ -86,8 +86,7 @@ document.addEventListener("change", async (e) => {
       headers: { "Content-Type": "application/octet-stream" },
       body: f,
     });
-    const v = await r.json();
-    if (!r.ok) throw Error(v.error);
+    await parseAPIResponse(r);
     await refreshUpgrades();
     toast("固件已上传");
   } catch (err) {

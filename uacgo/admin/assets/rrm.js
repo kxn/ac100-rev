@@ -2,9 +2,127 @@
 
 let rrmEdit = null;
 
+function findQuickRRMRule(rules) {
+  return (
+    (rules || []).find((r) => !(r.aps?.length) && !(r.groups?.length)) || null
+  );
+}
+
+function defaultQuickRRMBands(defaults) {
+  const d = defaults || {};
+  return {
+    "2g": {
+      bandwidth: 0,
+      channels: d["2g"]?.channels?.length ? d["2g"].channels : [1, 6, 11],
+      power_threshold: d["2g"]?.power_threshold ?? -65,
+      min_power_dbm: d["2g"]?.min_power_dbm ?? 10,
+      max_power_dbm: d["2g"]?.max_power_dbm ?? 50,
+    },
+    "5g": {
+      bandwidth: d["5g"]?.bandwidth === 0 || d["5g"]?.bandwidth === 1 || d["5g"]?.bandwidth === 3 || d["5g"]?.bandwidth === 5 ? (d["5g"]?.channels?.length ? d["5g"].bandwidth : 3) : 3,
+      channels: d["5g"]?.channels?.length
+        ? d["5g"].channels
+        : [36, 40, 44, 48, 149, 153, 157, 161],
+      power_threshold: d["5g"]?.power_threshold ?? -65,
+      min_power_dbm: d["5g"]?.min_power_dbm ?? 10,
+      max_power_dbm: d["5g"]?.max_power_dbm ?? 50,
+    },
+  };
+}
+
+function buildQuickRRMRule(existing, defaults, frequency, optChannel, optPower) {
+  const bands = defaultQuickRRMBands(defaults);
+  const base = existing || {
+    id: newID(),
+    name: "默认射频优化",
+    strategy_version: "v6",
+    enabled: false,
+    aps: [],
+    groups: [],
+    "2g": bands["2g"],
+    "5g": bands["5g"],
+  };
+  return {
+    ...base,
+    id: base.id || newID(),
+    name: base.name || "默认射频优化",
+    strategy_version: base.strategy_version || "v6",
+    aps: [],
+    groups: [],
+    frequency,
+    optimize_channel: optChannel,
+    optimize_power: optPower,
+    "2g": base["2g"]?.channels?.length ? base["2g"] : bands["2g"],
+    "5g": base["5g"]?.channels?.length ? base["5g"] : bands["5g"],
+  };
+}
+
 function renderRRM() {
   const highPerf = currentNetworkMode() === 1;
-  const rows = (data.config.rrm || [])
+  const rules = data.config.rrm || [];
+  const quick = findQuickRRMRule(rules);
+  const qFreq = quick ? (quick.frequency ?? 0) : 0;
+  const qChannel = quick ? Boolean(quick.optimize_channel) : true;
+  const qPower = quick ? Boolean(quick.optimize_power) : true;
+  const showAdvancedOpen =
+    rules.length > 1 ||
+    rules.some(
+      (r) =>
+        (r.aps?.length || 0) + (r.groups?.length || 0) > 0 ||
+        r.strategy_version === "v4" ||
+        (r.enabled && r.schedule?.enabled),
+    );
+
+  const quickCard = panel(
+    "一键射频调优",
+    `<div class="panel-body">
+      <form id="rrm-quick-form" data-inline="1" novalidate>
+        <p class="help">自动检测周边无线干扰，为 AP 分配干扰更小的信道和合适的发射功率。测量优化约需 1–3 分钟，期间无线可能短暂中断。</p>
+        <div class="setting-stack">
+          <div class="setting-row">
+            <div class="setting-copy">
+              <span class="setting-title">优化频段</span>
+              <span class="setting-desc">选择需要自动调整的无线频段。</span>
+            </div>
+            <div class="setting-control">
+              <select name="rrm_quick_frequency" aria-label="优化频段">
+                <option value="0" ${qFreq === 0 ? "selected" : ""}>双频（推荐）</option>
+                <option value="1" ${qFreq === 1 ? "selected" : ""}>仅 2.4 GHz</option>
+                <option value="2" ${qFreq === 2 ? "selected" : ""}>仅 5 GHz</option>
+              </select>
+            </div>
+          </div>
+          <div class="setting-row">
+            <div class="setting-copy">
+              <span class="setting-title">优化信道</span>
+              <span class="setting-desc">避开拥挤信道，降低同频干扰。</span>
+            </div>
+            <div class="setting-control">
+              <label class="toggle"><input type="checkbox" name="rrm_quick_channel" aria-label="优化信道" ${qChannel ? "checked" : ""}></label>
+            </div>
+          </div>
+          <div class="setting-row">
+            <div class="setting-copy">
+              <span class="setting-title">优化发射功率</span>
+              <span class="setting-desc">根据相邻 AP 信号强度自动调节功率，减少重叠覆盖。</span>
+            </div>
+            <div class="setting-control">
+              <label class="toggle"><input type="checkbox" name="rrm_quick_power" aria-label="优化发射功率" ${qPower ? "checked" : ""}></label>
+            </div>
+          </div>
+        </div>
+        <div class="form-footer">
+          <span class="form-error" id="form-error" role="status"></span>
+          <div class="form-actions">
+            <button type="submit" class="btn secondary">保存设置</button>
+            <button type="button" class="btn primary" data-rrm-quick-run="1">立即优化</button>
+          </div>
+        </div>
+      </form>
+    </div>`,
+  );
+
+  const rows = rules
     .map(
       (r) => `<tr>
         <td><strong>${esc(r.name)}</strong><small>${esc(targetSummary(r))}</small></td>
@@ -23,14 +141,21 @@ function renderRRM() {
     )
     .join("");
 
+  const advancedRules = `<details class="advanced-section" data-rrm-advanced${showAdvancedOpen ? " open" : ""}>
+    <summary>高级规则与定时计划${rules.length ? `（${rules.length}）` : ""}</summary>
+    <div class="advanced-panel-head">
+      <p class="help">可按 AP / 分组配置定时自动优化、自定义候选信道或 V4/V6 策略。</p>
+      <button type="button" class="btn secondary sm" data-rrm-new="1">新建自定义规则</button>
+    </div>
+    ${table(["规则", "策略版本", "优化项", "频段", "定时", "操作"], rows)}
+  </details>`;
+
   return (
     (highPerf
       ? '<div class="notice warning">当前处于高性能网络模式，仅支持共同信道优化；V6 优化规则需在兼容模式下运行。</div>'
       : "") +
-    panel(
-      "自动射频优化",
-      table(["规则", "策略版本", "优化项", "频段", "定时", "操作"], rows),
-    )
+    quickCard +
+    advancedRules
   );
 }
 
@@ -51,10 +176,61 @@ function rrmBandFields(band, b) {
   </fieldset>`;
 }
 
+async function saveQuickRRM(f, runAfter) {
+  const optChannel = f.elements.rrm_quick_channel.checked;
+  const optPower = f.elements.rrm_quick_power.checked;
+  const errEl = f.querySelector("#form-error");
+  if (errEl) errEl.textContent = "";
+  if (!optChannel && !optPower) {
+    toast("请至少开启优化信道或优化发射功率");
+    return;
+  }
+  if (
+    runAfter &&
+    !confirm("立即执行射频测量与优化？测量期间连接可能短暂中断。")
+  ) {
+    return;
+  }
+  const freq = Number(f.elements.rrm_quick_frequency.value);
+  const p = await api("rrm");
+  const rows = [...(p.rules || [])];
+  const existing = findQuickRRMRule(rows);
+  const nextRule = buildQuickRRMRule(
+    existing,
+    p.defaults,
+    freq,
+    optChannel,
+    optPower,
+  );
+  const idx = rows.findIndex((r) => r.id === nextRule.id);
+  if (idx < 0) rows.push(nextRule);
+  else rows[idx] = nextRule;
+  await api("rrm/rules", rows);
+  if (runAfter) {
+    await api("rrm/run", { rule_id: nextRule.id });
+    toast("优化任务已启动");
+  } else {
+    toast("射频调优设置已保存");
+  }
+  delete f.dataset.dirty;
+  await refresh();
+}
+
 document.addEventListener("click", async (event) => {
   const b = event.target.closest("button");
   if (!b) return;
   try {
+    if (b.hasAttribute("data-rrm-quick-run")) {
+      const f = b.closest("#rrm-quick-form");
+      if (!f) return;
+      b.disabled = true;
+      try {
+        await saveQuickRRM(f, true);
+      } finally {
+        b.disabled = false;
+      }
+      return;
+    }
     if (b.dataset.rrmRun) {
       if (!confirm("立即执行射频测量与优化？测量期间连接可能短暂中断。"))
         return;
@@ -103,11 +279,22 @@ document.addEventListener("click", async (event) => {
     }
     if (!b.dataset.rrmNew && !b.dataset.rrmEdit) return;
     const p = await api("rrm");
-    const item = (p.rules || []).find((r) => r.id === b.dataset.rrmEdit) || {
-      ...p.defaults,
-      id: newID(),
-      name: "",
-    };
+    const found = (p.rules || []).find((r) => r.id === b.dataset.rrmEdit);
+    const item = found
+      ? structuredClone(found)
+      : {
+          ...structuredClone(p.defaults),
+          id: newID(),
+          name: "",
+        };
+    if (!item["5g"]?.channels?.length) {
+      item["5g"] = {
+        ...item["5g"],
+        bandwidth: 3,
+        channels: [36, 44, 149, 157],
+        secondary_channels: [149, 157],
+      };
+    }
     rrmEdit = { p, item };
     openDialog(
       "rrm",
@@ -144,6 +331,21 @@ document.addEventListener("click", async (event) => {
 
 document.addEventListener("submit", async (event) => {
   const f = event.target;
+  if (f.id === "rrm-quick-form") {
+    event.preventDefault();
+    const btn = f.querySelector('[type="submit"]');
+    btn.disabled = true;
+    try {
+      await saveQuickRRM(f, false);
+    } catch (e) {
+      const errEl = f.querySelector("#form-error");
+      if (errEl) errEl.textContent = e.message;
+      else toast(e.message);
+    } finally {
+      btn.disabled = false;
+    }
+    return;
+  }
   if (f.id !== "rrm-form") return;
   event.preventDefault();
   if (!f.reportValidity()) return;

@@ -677,6 +677,7 @@ with sync_playwright() as p:
         )
 
         visit("band")
+        page.locator('[data-band-advanced] > summary').click()
         page.locator('#band-navigation-form [name="band_threshold"]').fill("22")
         page.locator('#band-navigation-form [type="submit"]').click()
         page.wait_for_timeout(80)
@@ -698,6 +699,23 @@ with sync_playwright() as p:
             )
 
         visit("rrm")
+        page.locator('#rrm-quick-form [type="submit"]').click()
+        page.wait_for_timeout(80)
+        assert (
+            writes[-1]["path"] == "rrm/rules"
+            and writes[-1]["body"][0]["name"] == "默认射频优化"
+            and writes[-1]["body"][0]["optimize_channel"] is True
+            and writes[-1]["body"][0]["optimize_power"] is True
+            and writes[-1]["body"][0]["5g"]["channels"]
+            == [36, 40, 44, 48, 149, 153, 157, 161]
+        )
+        page.locator("[data-rrm-quick-run]").click()
+        page.wait_for_timeout(80)
+        assert (
+            writes[-2]["path"] == "rrm/rules"
+            and writes[-1]["path"] == "rrm/run"
+        )
+        page.locator("[data-rrm-advanced] > summary").click()
         page.locator("[data-rrm-new]").click()
         page.wait_for_selector("#rrm-form")
         page.locator('#rrm-form [name="strategy_version"]').select_option("v4")
@@ -736,6 +754,7 @@ with sync_playwright() as p:
         )
 
         visit("rrm")
+        page.locator("[data-rrm-advanced] > summary").click()
         page.locator("[data-rrm-new]").click()
         page.wait_for_selector("#rrm-form")
         page.locator('#rrm-form [name="strategy_version"]').select_option("v4")
@@ -776,6 +795,30 @@ with sync_playwright() as p:
         )
 
         visit("balance")
+        assert not page.locator("[data-balance-conflict]").is_visible()
+        page.locator('#balance-simple-form [name="balance_enabled"]').check()
+        assert page.locator("[data-balance-conflict]").is_visible()
+        page.locator('#balance-simple-form [name="client_threshold"]').fill(
+            "18"
+        )
+        page.locator('#balance-simple-form [type="submit"]').click()
+        page.wait_for_timeout(80)
+        assert (
+            writes[-1]["path"] == "mobility"
+            and len(writes[-1]["body"]["balance"]) == 1
+            and writes[-1]["body"]["balance"][0]["enabled"] is True
+            and writes[-1]["body"]["balance"][0]["client_threshold"] == 18
+        )
+        page.locator('#balance-simple-form [name="balance_enabled"]').check()
+        page.locator('#balance-simple-form [name="balance_enabled"]').uncheck()
+        assert not page.locator("[data-balance-simple-options]").is_visible()
+        page.locator('#balance-simple-form [type="submit"]').click()
+        page.wait_for_timeout(80)
+        assert (
+            writes[-1]["path"] == "mobility"
+            and writes[-1]["body"]["balance"] == []
+        )
+        page.locator('[data-mobility-advanced="balance"] > summary').click()
         page.locator('[data-mobility-kind="balance"]').click()
         page.wait_for_selector("#mobility-form")
         page.locator('#mobility-form [name="name"]').fill("UI Balance")
@@ -789,6 +832,37 @@ with sync_playwright() as p:
         visit("mobility")
         if full:
             page.screenshot(path=str(OUT / "mobility.png"), full_page=True)
+        page.locator('#roam-simple-form [name="roam_enabled"]').check()
+        page.locator(
+            '#roam-simple-form [name="roam_sensitivity"]'
+        ).select_option("aggressive")
+        page.locator('#roam-simple-form [name="roam_11r"]').check()
+        page.locator('#roam-simple-form [name="roam_rssi_kick"]').check()
+        page.locator('#roam-simple-form [type="submit"]').click()
+        page.wait_for_timeout(80)
+        assert writes[-1]["path"] == "mobility"
+        roam_def = writes[-1]["body"]["default_roaming"]
+        assert (
+            roam_def["2g"]["rssi_trigger"] == -70
+            and roam_def["5g"]["rssi_trigger"] == -75
+            and roam_def["difference"] == 6
+            and roam_def["11r"] is True
+            and roam_def["2g"]["rssi_kick"] is True
+            and roam_def["5g"]["rssi_kick"] is True
+        )
+        page.locator('#roam-simple-form [name="roam_enabled"]').uncheck()
+        assert not page.locator("[data-roam-simple-options]").is_visible()
+        page.locator('#roam-simple-form [type="submit"]').click()
+        page.wait_for_timeout(80)
+        roam_off = writes[-1]["body"]["default_roaming"]
+        assert (
+            roam_off["11k"] is False
+            and roam_off["11v"] is False
+            and roam_off["11r"] is False
+            and roam_off["2g"]["rssi_kick"] is False
+            and roam_off["5g"]["rssi_kick"] is False
+        )
+        page.locator('[data-mobility-advanced="roaming"] > summary').click()
         page.locator('[data-mobility-kind="default"]').click()
         page.wait_for_selector("#mobility-form")
         page.locator('#mobility-form [name="mode_source"]').select_option(
@@ -827,6 +901,12 @@ with sync_playwright() as p:
         )
 
         visit("mobility")
+        if not page.locator('[data-mobility-advanced="roaming"]').evaluate(
+            "(e) => e.open"
+        ):
+            page.locator(
+                '[data-mobility-advanced="roaming"] > summary'
+            ).click()
         page.locator('[data-mobility-kind="default"]').click()
         page.wait_for_selector("#mobility-form")
         assert page.locator("#dialog-body").evaluate("(e)=>e.scrollTop") == 0
@@ -1173,12 +1253,67 @@ with sync_playwright() as p:
             page.screenshot(path=str(OUT / "overview-mobile.png"), full_page=True)
         page.close()
 
+    ro_errors = []
+    ro_console = []
+    ro_page = browser.new_page(viewport={"width": 1280, "height": 800})
+    ro_page.on("pageerror", lambda e: ro_errors.append(str(e)))
+    ro_page.on(
+        "console",
+        lambda m: ro_console.append(m.text)
+        if m.type == "error" and "405" not in m.text
+        else None,
+    )
+
+    def ro_route(r):
+        path = r.request.url.split("/api/")[1]
+        if r.request.method != "GET":
+            r.fulfill(
+                status=405,
+                content_type="text/html; charset=utf-8",
+                body="<!DOCTYPE HTML><html><body><h1>405 Read-only UI preview</h1></body></html>",
+            )
+            return
+        value = (
+            aps
+            if path == "aps"
+            else cfg
+            if path == "config"
+            else clients
+            if path == "clients"
+            else mobility
+            if path == "mobility"
+            else {
+                "configured_mode": 2,
+                "actual_mode": 2,
+                "mode_writable": False,
+                "unsupported_aps": [],
+            }
+            if path == "mobility/status"
+            else []
+        )
+        r.fulfill(json=value)
+
+    ro_page.route("**/api/**", ro_route)
+    ro_page.goto("http://127.0.0.1:" + str(server.server_port) + "/#mobility")
+    ro_page.wait_for_function(
+        '() => document.querySelector("#connection").textContent === "控制器已连接"'
+    )
+    ro_page.locator('#roam-simple-form [type="submit"]').click()
+    ro_page.wait_for_timeout(120)
+    assert (
+        ro_page.locator("#form-error").inner_text()
+        == "当前为只读预览模式，无法保存修改"
+    ), ro_page.locator("#form-error").inner_text()
+    assert not ro_errors, ro_errors
+    assert not ro_console, ro_console
+    ro_page.close()
+
     browser.close()
 
 server.shutdown()
 assert not errors, errors
 assert not console_errors, console_errors
-assert len(writes) == 58, len(writes)
+assert len(writes) == 72, len(writes)
 assert (
     next(w for w in reversed(writes) if w["path"] == "radios")["body"][
         "advanced"

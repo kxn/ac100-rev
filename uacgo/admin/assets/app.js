@@ -25,6 +25,7 @@ let data = {
   timezone: "",
 };
 let tab = "overview";
+let renderedTab = "";
 let query = "";
 let apStatusFilter = "all";
 let apGroupFilter = "";
@@ -107,6 +108,28 @@ const featureNames = {
   wifi6_features: "Wi-Fi 6 特性",
 };
 
+async function parseAPIResponse(r) {
+  const ct = (r.headers.get("content-type") || "").toLowerCase();
+  if (ct.includes("application/json")) {
+    const v = await r.json();
+    if (!r.ok) throw Error(v.error || "请求失败（HTTP " + r.status + "）");
+    return v;
+  }
+  const text = (await r.text()).trim();
+  if (r.status === 405) throw Error("当前为只读预览模式，无法保存修改");
+  if (!r.ok) {
+    if (r.status === 403) throw Error("无权执行此操作（HTTP 403）");
+    if ([502, 503, 504].includes(r.status))
+      throw Error("控制器暂不可用（HTTP " + r.status + "）");
+    throw Error("请求失败（HTTP " + r.status + "）");
+  }
+  try {
+    return JSON.parse(text);
+  } catch {
+    throw Error("控制器返回了无效的响应格式");
+  }
+}
+
 async function api(path, body, method) {
   const r = await fetch(
     "/api/" + path,
@@ -118,9 +141,7 @@ async function api(path, body, method) {
           ...(body === undefined ? {} : { body: JSON.stringify(body) }),
         },
   );
-  const v = await r.json();
-  if (!r.ok) throw Error(v.error || "请求失败");
-  return v;
+  return parseAPIResponse(r);
 }
 
 function toast(s) {
@@ -564,19 +585,26 @@ function renderContent(background = false) {
     backup: renderBackup,
   };
 
-  const activeId = document.activeElement?.id;
+  const sameView = renderedTab === tab;
+  const activeId = sameView ? document.activeElement?.id : null;
   const selStart =
     activeId && typeof document.activeElement.selectionStart === "number"
       ? document.activeElement.selectionStart
       : null;
-  const openDetails = [...root.querySelectorAll("details")].map((d) => d.open);
-  const tableScrolls = [...root.querySelectorAll(".table-wrap")].map((t) => [
-    t.scrollLeft,
-    t.scrollTop,
-  ]);
-  const activeInnerTab = root.querySelector("[data-editor-tab].active")?.dataset
-    .editorTab;
+  const openDetails = sameView
+    ? [...root.querySelectorAll("details")].map((d) => d.open)
+    : [];
+  const tableScrolls = sameView
+    ? [...root.querySelectorAll(".table-wrap")].map((t) => [
+        t.scrollLeft,
+        t.scrollTop,
+      ])
+    : [];
+  const activeInnerTab = sameView
+    ? root.querySelector("[data-editor-tab].active")?.dataset.editorTab
+    : null;
 
+  renderedTab = tab;
   root.innerHTML = (renderers[tab] || renderOverview)();
 
   if (activeInnerTab) {
@@ -632,8 +660,14 @@ async function refresh() {
     if (tab === "interfaces") interfaces = await api("interfaces");
     if (tab === "resources")
       controllerResources = await api("controller/resources");
-    if (["mobility", "balance"].includes(tab))
-      mobilityStatus = await api("mobility/status");
+    if (["mobility", "balance"].includes(tab)) {
+      const [st, mob] = await Promise.all([
+        api("mobility/status"),
+        api("mobility"),
+      ]);
+      mobilityStatus = st;
+      mobilityData = mob;
+    }
     if (tab === "rates") {
       const dirty = $("#content")?.querySelector("#rates-form[data-dirty='1']");
       if (!dirty) ratesData = await api("rates");
@@ -1796,6 +1830,8 @@ document.addEventListener("submit", async (e) => {
   e.preventDefault();
   const invalid = f.querySelector(":invalid");
   if (invalid) {
+    const det = invalid.closest("details");
+    if (det) det.open = true;
     const section = invalid.closest("[data-pane]");
     if (section) {
       const b = f.querySelector(
