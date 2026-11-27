@@ -98,8 +98,9 @@ with sync_playwright() as p:
 
   visit('balance');page.locator('[data-mobility-kind="balance"]').click();page.wait_for_selector('#mobility-form');page.locator('[name="name"]').fill('UI Balance');page.locator('#mobility-form [type="submit"]').click();page.wait_for_timeout(80)
   assert writes[-1]['path']=='mobility' and writes[-1]['body']['balance'][0]['name']=='UI Balance'
-  visit('mobility');page.locator('[data-mobility-kind="default"]').click();page.wait_for_selector('#mobility-form');page.locator('#mobility-form [type="submit"]').click();page.wait_for_timeout(80)
+  visit('mobility');page.locator('[data-mobility-kind="default"]').click();page.wait_for_selector('#mobility-form');page.locator('[name="silence_count"]').fill('7');page.locator('[name="silence_seconds"]').fill('61');page.locator('#mobility-form [type="submit"]').click();page.wait_for_timeout(80)
   assert writes[-1]['path']=='mobility' and writes[-1]['body']['default_roaming']['2g']['rssi_trigger']==-75
+  assert writes[-1]['body']['silence']=={'count':7,'seconds':61}
   visit('protection')
   for kind in ['servers','bindings','rules']:
    page.locator('[data-defense-kind="'+kind+'"]').last.click();page.wait_for_selector('#defense-form');page.locator('#defense-form [name="name"]').fill('UI '+kind)

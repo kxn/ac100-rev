@@ -75,10 +75,11 @@ func TestRoamingTriggerAcrossTwoUDPSimulatedAPs(t *testing.T) {
 	a.MAC = a.ID
 	b.MAC = b.ID
 	bssid := [6]byte{2, 5, 4, 3, 2, 1}
-	b.Telemetry = &cweng.WirelessTelemetry{VAPs: []cweng.WirelessVAP{{RadioID: 1, SSID: "Office", BSSID: "02:05:04:03:02:01"}}}
+	b.VAPStatistics = []capwap.APVAPStatistics{{Radio: 1, WLAN: 1, BSSID: bssid}}
 	b.Capabilities = []cweng.RadioCapability{{RadioID: 1, Band: "2.4 GHz", TxStreams: 2, SupportAX: true}}
 	b.RadioStatistics = []cweng.RadioStatistics{{APRadioStatistics: capwap.APRadioStatistics{Radio: 1, Channel: 6}}}
 	m.known = map[string]cweng.APStatus{a.ID: a, b.ID: b}
+	m.observeBSSIDLocations(b.ID, b.ConnectedAt, []capwap.BSSIDLocation{{Radio: 1, WLAN: 1, BSSID: bssid}})
 	p := defaultMobility()
 	s := Service{ID: "office", SSID: "Office", Security: "open", Enabled: true, Radios: []uint8{1}}
 	m.config = Config{Mobility: &p, Services: []Service{s}}

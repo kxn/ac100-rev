@@ -2,6 +2,21 @@ package mobility
 
 import "testing"
 
+func TestObservedBandwidthIncludesUnknownTwoFallback(t *testing.T) {
+	// _sta_caps_calculate 4ea640 and _wlan_caps_calculate 4ea84c:
+	// accepted observed enums are 0,1,3,5. Enum2 is not 80 MHz.
+	for _, tc := range []struct {
+		width        int8
+		want2, want5 uint8
+	}{{-1, 0, 2}, {0, 0, 0}, {1, 1, 1}, {2, 0, 2}, {3, 2, 2}, {4, 0, 2}, {5, 3, 3}, {6, 0, 2}} {
+		for band, want := range []uint8{tc.want2, tc.want5} {
+			if got := StationPHY(0x11, tc.width, band).Bandwidth; got != want {
+				t.Fatalf("observed%d band%d: got%d want%d", tc.width, band, got, want)
+			}
+		}
+	}
+}
+
 func TestRateUsesFirmwareTableAndTruncatedSlope(t *testing.T) {
 	p := PHY{0, 1, 2, 9}
 	// 5g VHT at SNR27: slope(65-57)/(28-26)=4 =>61Mbps.

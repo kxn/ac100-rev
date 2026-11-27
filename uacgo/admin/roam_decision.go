@@ -138,10 +138,7 @@ func (m *Manager) radioPHYLocked(ap cweng.APStatus, r cweng.RadioStatistics, ban
 	if bw == 2 {
 		bw = int(r.Bandwidth)
 	}
-	// WLAN width decoding differs from station decoding for an unresolved
-	// automatic width (2); keep the original WLAN fallback by frequency.
-	p := mobility.StationPHY(0x11, int8(bw), band)
-	p.Bandwidth = mobility.RadioBandwidth(bw, band)
+	p := mobility.PHY{Bandwidth: mobility.ObservedBandwidth(bw, band)}
 	p.NSS = uint8(cap.TxStreams)
 	if cap.TxStreams < 1 || cap.TxStreams > 16 {
 		p.NSS = 2
@@ -220,7 +217,7 @@ func roamingRole(ap cweng.APStatus) uint8 {
 func (m *Manager) candidateLocked(mac [6]byte, ap cweng.APStatus, radio, wlan uint8, bssid [6]byte, rssi int8, rate bool) (mobility.Candidate, bool) {
 	stats, ok := radioStats(ap, radio)
 	band := radioBand(ap, radio)
-	if !ok || !ap.Online || band < 0 {
+	if !ok || !ap.Online || band < 0 || radioDisabled(m.config, ap.ID, radio) || m.roamingRadioReset[radioSlot{ap.ID, radio}] {
 		return mobility.Candidate{}, false
 	}
 	n := mobility.Candidate{AP: ap.ID, Radio: radio, WLAN: wlan, BSSID: mobility.MAC(bssid), Channel: stats.Channel, Band: band, RSSI: rssi, Rate: -1, Load: stats.ChannelLoad}
@@ -255,30 +252,6 @@ func (m *Manager) findBSSIDLocked(bssid [6]byte) (cweng.APStatus, uint8, uint8, 
 			return ap, loc.Radio, loc.WLAN, true
 		}
 	}
-	for _, ap := range m.known {
-		for _, v := range ap.VAPStatistics {
-			if v.BSSID == bssid {
-				return ap, v.Radio, v.WLAN, true
-			}
-		}
-		if ap.Telemetry == nil || len(ap.VAPStatistics) > 0 {
-			continue
-		}
-		for _, vap := range ap.Telemetry.VAPs {
-			mac, ok := parseMAC6(vap.BSSID)
-			if !ok || mac != bssid {
-				continue
-			}
-			radio := uint8(vap.RadioID)
-			for _, s := range m.config.Services {
-				slot := m.assignments[ap.ID][s.ID][radio]
-				wireSSID, _ := serviceSSID(s)
-				if slot != 0 && (vap.SSID == s.SSID || vap.SSID == string(wireSSID)) {
-					return ap, radio, slot, true
-				}
-			}
-		}
-	}
 	return cweng.APStatus{}, 0, 0, false
 }
 func (m *Manager) calculateRoamingLocked(ap cweng.APStatus, report capwap.PrivRoamingTrigger, now time.Time) []capwap.PrivRoamingCalcResult {
@@ -292,11 +265,17 @@ func (m *Manager) calculateRoamingLocked(ap cweng.APStatus, report capwap.PrivRo
 	}
 	settings := roamingFor(m.config.Mobility, ap.ID, m.config)
 	out := capwap.PrivRoamingCalcResult{Radio: report.Radio, APs: [][6]byte{apMAC(ap)}}
+	// 4e6564 initializes the selector's output count once per packet.
+	// 4e5638 returns without writing it when the neighbor count is zero.
+	// Preserve that packet-local output state explicitly, without unsafe
+	// memory reuse or introducing an independent fallback algorithm.
+	var lastSelection []mobility.Candidate
 	flush := func() {
 		if len(out.Stations) > 0 {
 			results = append(results, out)
 		}
 		out = capwap.PrivRoamingCalcResult{Radio: report.Radio, APs: [][6]byte{apMAC(ap)}}
+		lastSelection = nil
 	}
 	addAP := func(id string) int {
 		mac := apMAC(m.known[id])
@@ -359,28 +338,12 @@ func (m *Manager) calculateRoamingLocked(ap cweng.APStatus, report capwap.PrivRo
 				if !ok || (r.AP == ap.ID && r.Radio == report.Radio) {
 					continue
 				}
-				var bssid [6]byte
-				for _, v := range target.VAPStatistics {
-					if v.Radio == r.Radio && v.WLAN == r.WLAN {
-						bssid = v.BSSID
-						break
-					}
-				}
-				if bssid == [6]byte{} && target.Telemetry != nil {
-					for _, vap := range target.Telemetry.VAPs {
-						if uint8(vap.RadioID) == r.Radio {
-							s := m.serviceForSlotLocked(r.AP, r.Radio, r.WLAN)
-							if s != nil && vap.SSID == s.SSID {
-								bssid, _ = parseMAC6(vap.BSSID)
-								break
-							}
-						}
-					}
-				}
-				if bssid == [6]byte{} {
+				service := m.serviceForSlotLocked(r.AP, r.Radio, r.WLAN)
+				fact, ready := m.vapFacts[vapSlot{r.AP, r.Radio, r.WLAN}]
+				if !ready || !fact.Connection.Equal(target.ConnectedAt) || service == nil || !service.Enabled || service.Deleting || fact.Statistics.BSSID == [6]byte{} {
 					continue
 				}
-				if n, ok := m.candidateLocked(sta.MAC, target, r.Radio, r.WLAN, bssid, r.RSSI, false); ok {
+				if n, ok := m.candidateLocked(sta.MAC, target, r.Radio, r.WLAN, fact.Statistics.BSSID, r.RSSI, false); ok {
 					neighbors = append(neighbors, n)
 				}
 			}
@@ -395,10 +358,6 @@ func (m *Manager) calculateRoamingLocked(ap cweng.APStatus, report capwap.PrivRo
 				}
 			}
 		}
-		selected := (mobility.Selection{CurrentRSSI: currentRSSI, CurrentRate: currentRate, ThresholdType2G: settings.Band2G.Type, ThresholdType5G: settings.Band5G.Type}).Select(grouped)
-		row := capwap.RoamResultStation{MAC: sta.MAC}
-		row.APBitmap[0] = 1
-		d := RoamDecision{At: now, AP: ap.ID, MAC: net.HardwareAddr(sta.MAC[:]).String(), Candidates: []string{}, Reason: "原厂速率、负载及 RSSI 门限未选中候选"}
 		// Preflight the AP union: a packet cannot address more than128 APs.
 		needed := map[[6]byte]bool{}
 		for _, a := range out.APs {
@@ -410,6 +369,13 @@ func (m *Manager) calculateRoamingLocked(ap cweng.APStatus, report capwap.PrivRo
 		if len(out.Stations) >= 128 || len(needed) > 128 {
 			flush()
 		}
+		if len(grouped) > 0 {
+			lastSelection = (mobility.Selection{CurrentRSSI: currentRSSI, CurrentRate: currentRate, ThresholdType2G: settings.Band2G.Type, ThresholdType5G: settings.Band5G.Type}).Select(grouped)
+		}
+		selected := lastSelection
+		row := capwap.RoamResultStation{MAC: sta.MAC}
+		row.APBitmap[0] = 1
+		d := RoamDecision{At: now, AP: ap.ID, MAC: net.HardwareAddr(sta.MAC[:]).String(), Candidates: []string{}, Reason: "原厂速率、负载及 RSSI 门限未选中候选"}
 		for _, n := range selected {
 			idx := addAP(n.AP)
 			if idx < 0 {
@@ -432,6 +398,9 @@ func (m *Manager) calculateRoamingLocked(ap cweng.APStatus, report capwap.PrivRo
 		}
 		if len(selected) > 0 {
 			d.Reason = "原厂 roam_nbr_select 选择结果"
+			if len(grouped) == 0 {
+				d.Reason = "原固件空邻居返回保留同包上一站点选择结果"
+			}
 		}
 		out.Stations = append(out.Stations, row)
 		m.roamHistory = append(m.roamHistory, d)

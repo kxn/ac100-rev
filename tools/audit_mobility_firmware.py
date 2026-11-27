@@ -65,6 +65,27 @@ class ELF32BE:
 
 
 FUNCTIONS = {
+    'stats_db_ssid_reset': 0x7b1b30,
+    '_stats_rd_disable_cb': 0x7b410c,
+    '_stats_rd_enable_cb': 0x7b4190,
+    'stats_db_radio_reset': 0x7b17cc,
+    'stats_db_radio_get': 0x7b0324,
+    'stats_db_radio_active': 0x7b0020,
+    'wsta_intelligent_roam_ctl_send_to_ap': 0x4e9534,
+    '_wstat_roam_update_wireless_network_mode_to_ap': 0x4e1620,
+    '_wsta_intelligent_roam_set_wireless_network_mode_send': 0x4e136c,
+    '_wsta_intelligent_roam_ctl_packet_create': 0x4e8a94,
+    'wsta_roam_sta_assoc_callback': 0x4d746c,
+    'wsta_roam_db_pmk_add': 0x4df034,
+    'wsta_roam_db_pmk_start_del_timer': 0x4df244,
+    'wsta_roam_db_pmk_expiretime_set': 0x4df2fc,
+    'wsta_roam_sql_get_ap_rule': 0x4dba30,
+    'wsta_roam_sql_check_ap_bind': 0x4db504,
+    'wsta_roam_sql_check_group_bind': 0x4db088,
+    'uac_list_insert_last': 0x59a6f4,
+    'wsta_roam_db_cfg_get': 0x4dfc2c,
+    'wsta_roam_db_cfg_set': 0x4dfb98,
+    '_wsta_roam_pkt_chnl_scan_report': 0x4e8630,
     "balance_wsta_callback_balance_sta_add": 0x4ed3e4,
     "balance_wsta_callback_balance_sta_del": 0x4ed520,
     "_apdb_pkt_manage": 0x70cc34,
@@ -234,6 +255,8 @@ def extract(rootfs):
     target = ((callsite + 4) & 0xf0000000) | ((instruction & 0x3ffffff) << 2)
     if instruction >> 26 != 3 or target != FUNCTIONS["roam_nbr_select"]:
         raise ValueError("Expected active JAL to roam_nbr_select is absent")
+    if (uac.u32(0x4e577c), uac.u32(0x4e5aac), uac.u32(0x4e7140)) != (0x52400267, 0xaea00000, 0x27c70c20):
+        raise ValueError("Expected empty-neighbor/count-output data flow differs")
 
     constants = uac.read(0x8cc370, 0x1a)
     tables = {}
@@ -264,6 +287,15 @@ def extract(rootfs):
         "active_candidate_call": {"instruction_address": f"0x{callsite:08x}",
                                   "instruction": f"0x{instruction:08x}", "target": f"0x{target:08x}",
                                   "function": "roam_nbr_select"},
+        "roaming_packet_output_state": {
+            "caller_packet_count_zero_store": {"address": "0x004e6ba0", "instruction": f"0x{uac.u32(0x4e6ba0):08x}"},
+            "empty_neighbor_branch": {"address": "0x004e577c", "instruction": f"0x{uac.u32(0x4e577c):08x}", "target": "0x004e611c"},
+            "output_count_zero_store": {"address": "0x004e5aac", "instruction": f"0x{uac.u32(0x4e5aac):08x}"},
+            "caller_output_argument": {"address": "0x004e7140", "instruction": f"0x{uac.u32(0x4e7140):08x}", "stack_offset": "0xc20"},
+            "parameter_sender": {"address": "0x004e8e80", "size": 0x268, "sha256": hashlib.sha256(uac.read(0x4e8e80,0x268)).hexdigest()},
+            "meaning": "Zero-neighbor return precedes the only selector count reset; caller initializes its output once per packet. This records data flow, not an inferred vendor intention.",
+        },
+        "mode_uci_descriptors": {"address": "0x007e6140", "bytes": uac.read(0x7e6140,0xd8).hex(), "keys": [uac.read(uac.u32(0x7e6140+i*36+4),64).split(b"\0")[0].decode() for i in range(6)], "meaning": "Input keys and target pointers only; actual Flash values are absent from the upgrade image."},
         "compiled_defaults": {
             "base_address": "0x008cc370", "bytes": constants.hex(),
             "auto_high_performance_max_clients": uac.u32(0x8cc370),
@@ -278,7 +310,7 @@ def extract(rootfs):
         "ap_roles": {"pointer_table": "0x0082cb24", "names": [uac.read(uac.u32(0x82cb24+i*4),32).split(b"\0")[0].decode() for i in range(9)]},
         "edca_defaults": {"address": "0x008ec530", "queue_rows_aifs_cwmin_cwmax_txop": [[*uac.read(0x8ec530+i*6,3),struct.unpack(">H",uac.read(0x8ec530+i*6+4,2))[0]] for i in range(8)]},
         "additional_source_files": [{"path": p, "sha256":hashlib.sha256((rootfs/p).read_bytes()).hexdigest()} for p in (
-            "etc/terminal_feature.json", "etc/macFactory.js", "usr/lib/lua/luci/controller/admin/time_mngt.lua", "usr/lib/lua/luci/torchlight/uac/ac_validator.lua", "usr/lib/lua/luci/controller/admin/apmng_rf.lua", "usr/lib/lua/luci/controller/admin/apmng_rrm.lua")],
+            "etc/terminal_feature.json", "etc/macFactory.js", "usr/lib/lua/luci/controller/admin/time_mngt.lua", "usr/lib/lua/luci/torchlight/uac/ac_validator.lua", "usr/lib/lua/luci/torchlight/error.lua", "usr/lib/lua/luci/controller/admin/apmng_rf.lua", "usr/lib/lua/luci/controller/admin/apmng_rrm.lua")],
         "rate_estimation": {
             "table_format": "[SNR threshold byte, padding byte, big-endian uint16 rate]; 5 PHY modes x 14 entries per band",
             "table_addresses": {"5g": "0x008cc3e0", "2g": "0x008cc4f8"},

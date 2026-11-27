@@ -16,7 +16,8 @@ func (m *Manager) persistConfigLocked(next Config, source managementWrite) error
 	if err := m.validateResourceUsage(next); err != nil {
 		return err
 	}
-	if source != managementRRM && source != managementAPEvent && wirelessConfigKey(next) != wirelessConfigKey(m.config) {
+	wirelessChanged := wirelessConfigKey(next) != wirelessConfigKey(m.config)
+	if source != managementRRM && source != managementAPEvent && wirelessChanged {
 		for _, job := range m.rrmJobs {
 			switch job.State {
 			case "preparing", "collecting", "planning", "applying":
@@ -28,6 +29,9 @@ func (m *Manager) persistConfigLocked(next Config, source managementWrite) error
 		return err
 	}
 	resourcesChanged := controllercfg.Effective(next.Resources) != controllercfg.Effective(m.config.Resources)
+	if wirelessChanged {
+		m.resetRoamingRadiosLocked(m.config, next)
+	}
 	m.config = next
 	if resourcesChanged {
 		m.applyControllerResources()

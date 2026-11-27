@@ -18,6 +18,7 @@ import (
 // alone does not restore them. A marker applies the cache, independently of
 // the controller's bookkeeping. This tests behavior beyond codec roundtrips.
 type deferredAP struct {
+	responses     chan *capwap.ParsedPacket
 	onCommand     func(*capwap.ParsedPacket)
 	conn          *net.UDPConn
 	mu            sync.Mutex
@@ -35,7 +36,7 @@ type deferredAP struct {
 	packets       []*capwap.ParsedPacket
 }
 
-func newDeferredAP(t *testing.T, e *cweng.Engine) (*deferredAP, cweng.APStatus) {
+func newDeferredAP(t *testing.T, e *cweng.Engine, joinOptions ...func(*capwap.ParsedPacket)) (*deferredAP, cweng.APStatus) {
 	t.Helper()
 	c, err := net.DialUDP("udp", nil, &net.UDPAddr{IP: net.IPv4(127, 0, 0, 1), Port: e.LocalPort()})
 	if err != nil {
@@ -57,6 +58,9 @@ func newDeferredAP(t *testing.T, e *cweng.Engine) (*deferredAP, cweng.APStatus) 
 			port := c.LocalAddr().(*net.UDPAddr).Port
 			board := []byte{0x12, 0x34, 0x56, 0x78, 0, 4, 0, 6, 2, 0, 0, 0, byte(port >> 8), byte(port)}
 			p.Elements = append(p.Elements, capwap.Element{Type: 0x26, Value: board})
+			for _, option := range joinOptions {
+				option(p)
+			}
 			b = p.Assemble()
 		}
 		if _, err = c.Write(b); err != nil {
@@ -78,7 +82,7 @@ func newDeferredAP(t *testing.T, e *cweng.Engine) (*deferredAP, cweng.APStatus) 
 	}
 	ap.Radios = 2
 	ap.Capabilities = []cweng.RadioCapability{{RadioID: 1, MaxSSID: 1}, {RadioID: 2, MaxSSID: 1}}
-	f := &deferredAP{conn: c, active: map[[2]byte]string{}, staged: map[[2]byte]string{}, seen: map[string]bool{}}
+	f := &deferredAP{conn: c, responses: make(chan *capwap.ParsedPacket, 8), active: map[[2]byte]string{}, staged: map[[2]byte]string{}, seen: map[string]bool{}}
 	go func() {
 		var fragments capwap.Reassembler
 		for {
@@ -97,6 +101,10 @@ func newDeferredAP(t *testing.T, e *cweng.Engine) (*deferredAP, cweng.APStatus) 
 				continue
 			}
 			if p.Control.MsgType%2 == 0 {
+				select {
+				case f.responses <- p:
+				default:
+				}
 				continue
 			}
 			f.mu.Lock()

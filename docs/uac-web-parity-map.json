@@ -246,11 +246,13 @@
       ],
       "regressions": [
         "uacgo/admin/band_navigation_test.go",
-        "uacgo/admin/navigation_interlock_test.go"
+        "uacgo/admin/navigation_interlock_test.go",
+        "uacgo/admin/roaming_branch_audit_test.go"
       ],
       "basis": "633a60 仅能力3+全局配置下发，不加同服务/VLAN/射频开启门禁；0x3a 与射频0x4c分开。实际踢除由 AP 执行。",
       "evidence_contracts": [
-        "band-navigation"
+        "band-navigation",
+        "model-fallback-error-classification"
       ]
     },
     {
@@ -375,7 +377,9 @@
         "uacgo/mobility/rate_test.go",
         "uacgo/mobility/select_test.go",
         "uacgo/mobility/statistics_test.go",
-        "uacgo/admin/roam_source_audit_test.go"
+        "uacgo/admin/roam_source_audit_test.go",
+        "uacgo/admin/roaming_branch_audit_test.go",
+        "uacgo/cweng/roaming_branches_test.go"
       ],
       "basis": "4e89ac→4e8440→4e6564→4e5638；JAL不是旧_roaming_nbr_select。原整数表/排序/四候选/弱信号回退；不增加ACK冷却。V6 Web模式只读2，老ACS内部路径不开放。",
       "evidence_contracts": [
@@ -385,7 +389,10 @@
         "pmk-cache",
         "station-statistics-lifetime",
         "v6-mode-and-reporting",
-        "mesh-roaming-role-rate"
+        "mesh-roaming-role-rate",
+        "roaming-statistics-authority",
+        "roaming-packet-output-state",
+        "roaming-capability-controls"
       ]
     },
     {

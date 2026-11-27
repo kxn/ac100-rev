@@ -10,13 +10,47 @@ type RadioStatistics struct {
 	ReceivedAt time.Time `json:"received_at"`
 }
 
+// Private54 updates individual slots (stats_db_ssid_update @7b1e44).
+// An omitted slot is not a deletion; a new session starts with an empty set.
+func MergeVAPStatistics(previous, updates []capwap.APVAPStatistics, radios int) []capwap.APVAPStatistics {
+	out := append([]capwap.APVAPStatistics{}, previous...)
+	for _, update := range updates {
+		// Keep incremental storage within the declared AP and Go's slot
+		// schema; invalid IDs cannot accumulate an unbounded raw cache.
+		if update.Radio == 0 || int(update.Radio) > radios || update.Radio > 31 || update.WLAN == 0 || update.WLAN > 16 {
+			continue
+		}
+		found := false
+		for i, old := range out {
+			if old.Radio == update.Radio && old.WLAN == update.WLAN {
+				out[i], found = update, true
+				break
+			}
+		}
+		if !found {
+			out = append(out, update)
+		}
+	}
+	return out
+}
+
 // V6 stats_pkt_init @0x007b5d6c runs at priority80, before roaming90
 // and station lifecycle100. A packet can carry both statistics and a trigger.
 func (e *Engine) registerWirelessStatistics(sink ClientSink) {
 	e.Register(9, 80, "v6_wireless_statistics", func(ctx *Ctx, req, rsp *capwap.ParsedPacket) bool {
 		s := ctx.Session
 		ap := sessionID(s)
+		control := capwap.PrivStatisticsControl{A: 1, C: 1, D: 120, E: 120, F: 120}
+		if e.StatisticsControl != nil {
+			control = e.StatisticsControl()
+		}
 		privateElements(privatePacketForTypes(req, []uint16{0x52, 0x56, 0x54, 0x53, 0xbd}), func(typ uint16, b []byte) {
+			// _stats_pkt_wtp_event_listener @7b5694 gates consumption,
+			// not just the configuration sent to the AP. Late disabled
+			// reports cannot refresh the facts used by roaming.
+			if (typ == 0x52 || typ == 0x56) && control.A == 0 || typ == 0x54 && control.C == 0 || typ == 0x53 && control.B == 0 {
+				return
+			}
 			switch typ {
 			case 0x52:
 				if p, err := capwap.ParsePrivStaStatisticsReq(b); err == nil {
@@ -51,7 +85,9 @@ func (e *Engine) registerWirelessStatistics(sink ClientSink) {
 				}
 			case 0x54:
 				if p, err := capwap.ParsePrivApStatistics(b); err == nil {
-					s.vapStatistics = append([]capwap.APVAPStatistics{}, p.VAPs...)
+					if s.apEntry != nil {
+						s.vapStatistics = MergeVAPStatistics(s.vapStatistics, p.VAPs, s.apEntry.RadioCount)
+					}
 					if s.radioStatistics == nil {
 						s.radioStatistics = map[uint8]RadioStatistics{}
 					}

@@ -18,28 +18,13 @@ func StationPHY(word uint32, bandwidth int8, band int) PHY {
 	if nss < 1 || nss > 16 || mode > 4 || mcs > 13 {
 		return DefaultStationPHY(band)
 	}
-	bw := uint8(0)
-	switch bandwidth {
-	case 0:
-		bw = 0
-	case 1:
-		bw = 1
-	case 2, 3:
-		bw = 2
-	case 5:
-		bw = 3
-	default:
-		if band == 1 {
-			bw = 2
-		}
-	}
-	return PHY{bw, nss, mode, mcs}
+	return PHY{ObservedBandwidth(int(bandwidth), band), nss, mode, mcs}
 }
 
-// RadioBandwidth is the WLAN decoder in _wlan_caps_calculate @4ea84c,
-// after configured auto(2) has been replaced by the observed width. Unlike
-// StationPHY, an observed2 is still unknown and falls back by frequency.
-func RadioBandwidth(width, band int) uint8 {
+// ObservedBandwidth is shared by _sta_caps_calculate @4ea640 and
+// _wlan_caps_calculate @4ea84c. Configured AP auto(2) must first be replaced
+// by its observed width; an observed2 itself is unknown, including on a STA.
+func ObservedBandwidth(width, band int) uint8 {
 	switch width {
 	case 0:
 		return 0

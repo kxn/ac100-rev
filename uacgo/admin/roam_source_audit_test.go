@@ -20,6 +20,9 @@ func TestRoamingUsesFiveGHzFirstBeforeFirmwareQuicksort(t *testing.T) {
 		bssid := [6]byte{2, 10, 0, 0, 0, byte(i + 1)}
 		ap := cweng.APStatus{ID: id, MAC: id, Online: true, Capabilities: []cweng.RadioCapability{{RadioID: 1, Band: band, TxStreams: 2}}, RadioStatistics: []cweng.RadioStatistics{{APRadioStatistics: capwap.APRadioStatistics{Radio: 1}}}, VAPStatistics: []capwap.APVAPStatistics{{Radio: 1, WLAN: 1, BSSID: bssid}}}
 		m.known[id] = ap
+		ap.Radios = 1
+		m.known[id] = ap
+		m.observeBSSIDLocations(id, ap.ConnectedAt, []capwap.BSSIDLocation{{Radio: 1, WLAN: 1, BSSID: bssid}})
 		rcpi := uint8(100)
 		if i == 0 {
 			rcpi = 80
@@ -125,6 +128,10 @@ func TestRoamingCurrentUnsupportedRoleKeepsUnknownRate(t *testing.T) {
 	source.VAPStatistics = []capwap.APVAPStatistics{{Radio: 1, WLAN: 1, BSSID: current}}
 	target.VAPStatistics = []capwap.APVAPStatistics{{Radio: 1, WLAN: 1, BSSID: other}}
 	m.known[source.ID], m.known[target.ID] = source, target
+	source.Radios, target.Radios = 1, 1
+	m.known[source.ID], m.known[target.ID] = source, target
+	m.observeBSSIDLocations(source.ID, source.ConnectedAt, []capwap.BSSIDLocation{{Radio: 1, WLAN: 1, BSSID: current}})
+	m.observeBSSIDLocations(target.ID, target.ConnectedAt, []capwap.BSSIDLocation{{Radio: 1, WLAN: 1, BSSID: other}})
 	m.clients.StationEvent(cweng.ClientEvent{MAC: mac, APID: source.ID, RadioID: 1, WLANID: 1, Kind: "associate", Seen: now})
 	got := m.calculateRoamingLocked(source, capwap.PrivRoamingTrigger{Radio: 1, Stations: []capwap.RoamTriggerStation{{MAC: mac, WLAN: 1, RSSI: -50,
 		Neighbors: []capwap.RoamNeighborReport{{BSSID: current, RCPI: 120}, {BSSID: other, RCPI: 140}}}}}, now)

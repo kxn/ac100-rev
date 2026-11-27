@@ -22,6 +22,132 @@
   },
   "uac_functions": [
     {
+      "name": "stats_db_ssid_reset",
+      "address": "0x007b1b30",
+      "size": 788,
+      "bytes_sha256": "0ef27caccc7649c9c065d20e4a379c375a4b562ec45c1134cd2a4f95a6de7146"
+    },
+    {
+      "name": "_stats_rd_disable_cb",
+      "address": "0x007b410c",
+      "size": 132,
+      "bytes_sha256": "ecab52247b9f423fcf1163d05442126e10450e6947ce855f50d51a57880cde2f"
+    },
+    {
+      "name": "_stats_rd_enable_cb",
+      "address": "0x007b4190",
+      "size": 132,
+      "bytes_sha256": "3d9e93d03f8d54d800a20b1d6af9c4ef23e843a4d634f6f5cc2a4d41e5bc9835"
+    },
+    {
+      "name": "stats_db_radio_reset",
+      "address": "0x007b17cc",
+      "size": 868,
+      "bytes_sha256": "0d8645cf8c1cb66725169d99d4fac5f58f6fbb778b83ec0a785584e295db5662"
+    },
+    {
+      "name": "stats_db_radio_get",
+      "address": "0x007b0324",
+      "size": 316,
+      "bytes_sha256": "b7e03156b16ff2d5e9f671718e6d4487bc6b8afad751ac5e56f84cff24f87e9c"
+    },
+    {
+      "name": "stats_db_radio_active",
+      "address": "0x007b0020",
+      "size": 772,
+      "bytes_sha256": "0644b9246b92eaad261c80d4c303c0939d4e1f91f27e4814955873a8cb81316f"
+    },
+    {
+      "name": "wsta_intelligent_roam_ctl_send_to_ap",
+      "address": "0x004e9534",
+      "size": 604,
+      "bytes_sha256": "d8ba1da9e6a3d0cadcb8071a2679e5c3a09614abb154f84fb2055b555ff26b7b"
+    },
+    {
+      "name": "_wstat_roam_update_wireless_network_mode_to_ap",
+      "address": "0x004e1620",
+      "size": 360,
+      "bytes_sha256": "e860ceb90220551fff560a9d23aa2d558083755b42b730b0537f8dfc12620dba"
+    },
+    {
+      "name": "_wsta_intelligent_roam_set_wireless_network_mode_send",
+      "address": "0x004e136c",
+      "size": 692,
+      "bytes_sha256": "428106b6d94a5e7b1754015bcadc3f976c076c09b97aac788674a606e3b69c65"
+    },
+    {
+      "name": "_wsta_intelligent_roam_ctl_packet_create",
+      "address": "0x004e8a94",
+      "size": 784,
+      "bytes_sha256": "bce6d82fe850e6d750daaececb9d0e558a4fe7f67cb476ee8d0be28d119649db"
+    },
+    {
+      "name": "wsta_roam_sta_assoc_callback",
+      "address": "0x004d746c",
+      "size": 212,
+      "bytes_sha256": "b42200929045dbdf9dc8f7c4b750308aa997902b010414c196c64186bf3a7cb2"
+    },
+    {
+      "name": "wsta_roam_db_pmk_add",
+      "address": "0x004df034",
+      "size": 528,
+      "bytes_sha256": "ea7b6437f4ab88bfdfaa924c2f371262de7ecbf6a9ec6219b52b8fc288e959fb"
+    },
+    {
+      "name": "wsta_roam_db_pmk_start_del_timer",
+      "address": "0x004df244",
+      "size": 184,
+      "bytes_sha256": "7f22a16c0e23083b3c4c3ead1b211b271a28053ceb44b1423e0f68423b3fccec"
+    },
+    {
+      "name": "wsta_roam_db_pmk_expiretime_set",
+      "address": "0x004df2fc",
+      "size": 164,
+      "bytes_sha256": "38fd655bb2cfd07163da81f3783c0ed978f7d5a2a460c3120145ea019884732d"
+    },
+    {
+      "name": "wsta_roam_sql_get_ap_rule",
+      "address": "0x004dba30",
+      "size": 656,
+      "bytes_sha256": "91fc59900c99d09ef48bd4cf1b80d56863ebc53709d0f4423c302d161730d60c"
+    },
+    {
+      "name": "wsta_roam_sql_check_ap_bind",
+      "address": "0x004db504",
+      "size": 824,
+      "bytes_sha256": "6bf736db342759efd37f2caad0d0c9e19577569787586ff19f1342e4a3133aa4"
+    },
+    {
+      "name": "wsta_roam_sql_check_group_bind",
+      "address": "0x004db088",
+      "size": 1148,
+      "bytes_sha256": "bb4c07355bb2338d011be292fc0bda0f93b012b70e84298a27f7763d341407b1"
+    },
+    {
+      "name": "uac_list_insert_last",
+      "address": "0x0059a6f4",
+      "size": 120,
+      "bytes_sha256": "60eecd5e338348e284f252b725f08ff4ed5dd7c363738f7e4a6f7efdf8c5c59c"
+    },
+    {
+      "name": "wsta_roam_db_cfg_get",
+      "address": "0x004dfc2c",
+      "size": 148,
+      "bytes_sha256": "c8d67e926d30920a5e2144d9d0ee4d514e1e6074038a836d472d8306d208d007"
+    },
+    {
+      "name": "wsta_roam_db_cfg_set",
+      "address": "0x004dfb98",
+      "size": 148,
+      "bytes_sha256": "b57e54032b428d2a7d18d27a4f19724ab12115170b635a39f60864ee10cfb6f5"
+    },
+    {
+      "name": "_wsta_roam_pkt_chnl_scan_report",
+      "address": "0x004e8630",
+      "size": 892,
+      "bytes_sha256": "22cbbe2696b8e5d6539a373a6107528353a8cb533a46db741e56e5050da4458b"
+    },
+    {
       "name": "balance_wsta_callback_balance_sta_add",
       "address": "0x004ed3e4",
       "size": 316,
@@ -892,6 +1018,45 @@
     "target": "0x004e5638",
     "function": "roam_nbr_select"
   },
+  "roaming_packet_output_state": {
+    "caller_packet_count_zero_store": {
+      "address": "0x004e6ba0",
+      "instruction": "0xafc00c20"
+    },
+    "empty_neighbor_branch": {
+      "address": "0x004e577c",
+      "instruction": "0x52400267",
+      "target": "0x004e611c"
+    },
+    "output_count_zero_store": {
+      "address": "0x004e5aac",
+      "instruction": "0xaea00000"
+    },
+    "caller_output_argument": {
+      "address": "0x004e7140",
+      "instruction": "0x27c70c20",
+      "stack_offset": "0xc20"
+    },
+    "parameter_sender": {
+      "address": "0x004e8e80",
+      "size": 616,
+      "sha256": "61a782e1621173a304b5a330cf4f96cdb25c31a55494c301356c68c4172eb921"
+    },
+    "meaning": "Zero-neighbor return precedes the only selector count reset; caller initializes its output once per packet. This records data flow, not an inferred vendor intention."
+  },
+  "mode_uci_descriptors": {
+    "address": "0x007e6140",
+    "bytes": "00000000007e54940000000000000001000000000000000a00010001009060100000000000000001007e54ac0000000000000001000000000000000a00010001009060120000000000000002007e54c00000000000000001000000000000000a00010002009060140000000000000003007e54d80000000000000001000000000000000a00010001009060160000000000000004007e54f40000000000000001000000000000000a00010002009060180000000000000005007e55140000000000000001000000000000000a000100010090601a00000000",
+    "keys": [
+      "wireless_network_mode",
+      "default_roam_cnt",
+      "default_silence_time",
+      "high_performance_roam_cnt",
+      "high_performance_silence_time",
+      "acs_timeout"
+    ],
+    "meaning": "Input keys and target pointers only; actual Flash values are absent from the upgrade image."
+  },
   "compiled_defaults": {
     "base_address": "0x008cc370",
     "bytes": "0000001e000000050000000200000000ffffffff050455460000",
@@ -992,6 +1157,10 @@
     {
       "path": "usr/lib/lua/luci/torchlight/uac/ac_validator.lua",
       "sha256": "f21ebc22bb59e5544e7ddb697511e8639cc6714615e3847d494b42469ac1d7b9"
+    },
+    {
+      "path": "usr/lib/lua/luci/torchlight/error.lua",
+      "sha256": "05d63d8cac88380ea770dea52d0f6882fca2625d7ca8af18e33eb6459409e042"
     },
     {
       "path": "usr/lib/lua/luci/controller/admin/apmng_rf.lua",

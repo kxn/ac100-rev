@@ -125,7 +125,7 @@ document.addEventListener("click", async (event) => {
         ? `<div class="form-grid">${field("client_threshold", "客户端数量门限", item.client_threshold, "number", 'min="1" max="100" required')}${field("difference", "AP 客户端数量差值", item.difference, "number", 'min="1" max="15" required')}${field("max_failures", "最多拒绝次数", item.max_failures, "number", 'min="1" max="100" required')}${field("rssi_threshold", "探测信号门限（dBm）", item.rssi_threshold, "number", 'min="-95" max="0" required')}</div>`
         : roamSettingsFields(
             kind === "default" ? p.default_roaming : item.settings,
-          );
+          ) + (kind === "default" ? `<fieldset><legend>AP 漫游静默控制</legend><p>全局应用于支持此控制的 AP。</p><div class="form-grid">${field("silence_count", "漫游次数门限", p.silence?.count ?? 3, "number", 'min="0" max="255" required')}${field("silence_seconds", "静默时间（秒）", p.silence?.seconds ?? 30, "number", 'min="0" max="65535" required')}</div></fieldset>` : "");
     openDialog(
       "mobility",
       kind === "balance"
@@ -197,6 +197,7 @@ document.addEventListener("submit", async (event) => {
       if (kind === "default") {
         p.default_roaming = s;
         p.network_mode = 2;
+        p.silence = {count: n("silence_count"), seconds: n("silence_seconds")};
       } else row.settings = s;
     }
     if (row) {

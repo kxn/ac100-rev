@@ -131,7 +131,12 @@ func (e *Engine) RegisterWstaHandlers(sink ClientSink) {
 				}
 			}
 			if response.Result == 0 && p.Operation == 3 {
-				sink.StationEvent(ClientEvent{Connection: ctx.Session.Created, APID: sessionID(ctx.Session), Seen: time.Now(), MAC: p.MAC, RadioID: p.Radio, WLANID: uint32(p.WLAN), Kind: "associate", State: "connected"})
+				event := ClientEvent{Connection: ctx.Session.Created, APID: sessionID(ctx.Session), Seen: time.Now(), MAC: p.MAC, RadioID: p.Radio, WLANID: uint32(p.WLAN), Kind: "associate", State: "connected"}
+				if table, ok := sink.(interface{ AssociatePMK(ClientEvent) }); ok {
+					table.AssociatePMK(event)
+				} else {
+					sink.StationEvent(event)
+				}
 			}
 			rsp.Elements = append(rsp.Elements, capwap.Element{Type: 0x25, Value: capwap.VendorEnvelopeValue(0x12345678, 0x49, []capwap.PrivElementValue{{Type: 0x49, Value: response.AssembleValue()}})})
 		})

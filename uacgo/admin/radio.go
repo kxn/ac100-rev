@@ -55,6 +55,12 @@ func reportingControl(cfg Config, ap string) capwap.PrivStatisticsControl {
 	return p
 }
 
+func (m *Manager) statisticsControl() capwap.PrivStatisticsControl {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	return reportingControl(m.config, "")
+}
+
 func (m *Manager) applyReporting(ctx context.Context, ap cweng.APStatus, cfg Config) {
 	key := ap.ID + "/reporting"
 	value := reportingControl(cfg, ap.ID).AssembleValue()

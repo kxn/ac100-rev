@@ -62,10 +62,25 @@ type RoamRule struct {
 	Settings RoamSettings `json:"settings"`
 }
 type MobilityConfig struct {
+	Silence     *RoamSilence  `json:"silence,omitempty"`
 	Balance     []BalanceRule `json:"balance"`
 	Roaming     []RoamRule    `json:"roaming"`
 	Default     RoamSettings  `json:"default_roaming"`
 	NetworkMode int           `json:"network_mode"`
+}
+
+// Original mode2 reads default_roam_cnt/default_silence_time from UCI.
+// Flash values aren't in the upgrade image; these are standalone defaults.
+type RoamSilence struct {
+	Count   uint8  `json:"count"`
+	Seconds uint16 `json:"seconds"`
+}
+
+func effectiveRoamSilence(p *MobilityConfig) RoamSilence {
+	if p != nil && p.Silence != nil {
+		return *p.Silence
+	}
+	return RoamSilence{Count: 3, Seconds: 30}
 }
 
 func defaultRoamSettings() RoamSettings {
@@ -235,13 +250,16 @@ func (m *Manager) applyMobility(ctx context.Context, ap cweng.APStatus, cfg Conf
 			Settings RoamSettings
 			Mode     int
 		}{s, mode}, []capwap.Element{privateSetting(0x57, s.wire(mode))})
-		if ap.HasCapability(72) {
-			count, seconds := uint8(3), uint16(30)
-			if mode == 1 {
-				count, seconds = 5, 15
-			}
-			m.applyPolicy(ctx, ap, "roaming-mode", mode, []capwap.Element{privateSetting(0x9d, capwap.PrivSilenceParams{A: count, B: seconds}.AssembleValue())})
-		}
+	}
+	// 4e1620 filters capability72 independently of the capability25 filter
+	// used by 4e9534/4e8e80 for private57. Neither capability implies the other.
+	if ap.HasCapability(72) {
+		mode := m.effectiveMobilityMode(cfg)
+		silence := effectiveRoamSilence(cfg.Mobility)
+		m.applyPolicy(ctx, ap, "roaming-mode", struct {
+			Mode    int
+			Silence RoamSilence
+		}{mode, silence}, []capwap.Element{privateSetting(0x9d, capwap.PrivSilenceParams{A: silence.Count, B: silence.Seconds}.AssembleValue())})
 	}
 }
 

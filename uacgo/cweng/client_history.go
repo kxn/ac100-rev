@@ -84,6 +84,19 @@ func (t *ClientTable) Transitions(after uint64) []ClientTransition {
 	return out
 }
 
+// Successful operation3 uses the old DB RSSI, or zero if no station exists
+// (4e46c0), then calls association directly without an admission check.
+func (t *ClientTable) AssociatePMK(event ClientEvent) {
+	rssi := int8(0)
+	t.mu.Lock()
+	if old, ok := t.m[event.MAC]; ok && old.RSSI != nil {
+		rssi = *old.RSSI
+	}
+	t.mu.Unlock()
+	event.RSSI = &rssi
+	t.StationEvent(event)
+}
+
 // uac_wstation_free_sta_by_mac on a failed PMK lookup releases the currently
 // associated location, which can be different from the requesting AP.
 func (t *ClientTable) DisconnectStation(mac [6]byte, at time.Time) {

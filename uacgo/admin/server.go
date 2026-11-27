@@ -116,6 +116,8 @@ type Manager struct {
 	pmks                 mobility.PMKCache
 	stationStatistics    mobility.StationDB
 	bssidLocations       map[[6]byte]bssidLocation
+	vapFacts             map[vapSlot]vapFact
+	roamingRadioReset    map[radioSlot]bool
 	clientRefresh        map[string]time.Time
 	policyOwners         map[string]map[string]bool
 	operations           map[string]APOperation
@@ -247,6 +249,7 @@ func New(engine *cweng.Engine, clients *cweng.ClientTable, dataDir string) (*Man
 	engine.OnStationPMK = m.handlePMK
 	engine.OnStationStatistics = m.observeStationStatistics
 	engine.OnRSSIStatistics = m.observeRSSIStatistics
+	engine.StatisticsControl = m.statisticsControl
 	engine.OnAPStatistics = m.observeAPStatistics
 	engine.OnBSSIDLocations = m.observeBSSIDLocations
 	engine.OnRRMReport = m.observeRRMReport
@@ -1055,7 +1058,22 @@ func hasString(xs []string, v string) bool {
 // mu held. Session-specific failures cannot block a new session, but WLAN
 // ownership and deletion intent must survive until the new commit completes.
 func (m *Manager) clearAPSessionLocked(ap string, connection time.Time) {
+	for key, fact := range m.vapFacts {
+		if key.AP == ap && fact.Connection.Equal(connection) {
+			delete(m.vapFacts, key)
+		}
+	}
+	for mac, location := range m.bssidLocations {
+		if location.AP == ap && location.Connection.Equal(connection) {
+			delete(m.bssidLocations, mac)
+		}
+	}
 	if known, ok := m.known[ap]; !ok || known.ConnectedAt == connection {
+		for key := range m.roamingRadioReset {
+			if key.AP == ap {
+				delete(m.roamingRadioReset, key)
+			}
+		}
 		m.balance.ForgetAP(ap)
 
 	}

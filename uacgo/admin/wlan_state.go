@@ -153,6 +153,13 @@ func (m *Manager) settleWLANs(ap, version string, connection time.Time, now time
 	if err := atomicJSON(filepath.Join(filepath.Dir(m.path), "wlan-state.json"), next); err != nil {
 		return err
 	}
+	for sid, radios := range m.pendingDeletes[ap] {
+		for radio, slot := range radios {
+			if m.assignments[ap][sid][radio] == slot {
+				m.resetVAPFactsLocked(ap, radio, slot)
+			}
+		}
+	}
 	m.assignments, m.owned = next.Assignments, next.Owned
 	delete(m.pendingDeletes, ap)
 	delete(m.settling, ap)

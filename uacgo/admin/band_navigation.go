@@ -3,7 +3,6 @@ package admin
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -47,10 +46,13 @@ func bandModel(b json.RawMessage) (map[string]string, error) {
 		return nil, fmt.Errorf("AP 频段引导回复缺少 error_code")
 	}
 	if *v.Error != 0 {
-		return nil, modelUnavailable{*v.Error}
+		return nil, modelError{*v.Error}
 	}
 	if v.Module.Settings == nil {
 		return nil, fmt.Errorf("AP 未提供频段引导配置回读")
+	}
+	if v.Module.Settings["enable"] != "on" && v.Module.Settings["enable"] != "off" {
+		return nil, fmt.Errorf("AP 频段引导回复缺少有效 enable")
 	}
 	return v.Module.Settings, nil
 }
@@ -72,16 +74,15 @@ func (m *Manager) applyBandNavigation(ctx context.Context, ap cweng.APStatus, b 
 	state := ApplyStatus{AP: ap.ID, Service: "band-navigation", State: "acknowledged", At: time.Now(), EffectiveEnabled: &enabled}
 	var raw json.RawMessage
 	var probeErr error
-	var current map[string]string
-	var modelErr error = modelUnavailable{-1}
+	var modelErr error
 	if ap.HasCapability(70) {
 		raw, probeErr = m.readBandNavigation(c, ap.ID)
 		if probeErr == nil {
-			current, modelErr = bandModel(raw)
+			_, modelErr = bandModel(raw)
 		}
 	}
 	var err error
-	if probeErr == nil && modelErr == nil && current["enable"] != "" {
+	if ap.HasCapability(70) && probeErr == nil && modelErr == nil {
 		enabled := "off"
 		if b.Enabled {
 			enabled = "on"
@@ -115,8 +116,7 @@ func (m *Manager) applyBandNavigation(ctx context.Context, ap cweng.APStatus, b 
 		err = probeErr
 	} else {
 		// Only an explicit unsupported-model response permits the legacy path.
-		var unavailable modelUnavailable
-		if !errors.As(modelErr, &unavailable) {
+		if ap.HasCapability(70) && !unsupportedModel(modelErr) {
 			err = modelErr
 		} else {
 			_, err = m.engine.Request(c, ap.ID, 7, []capwap.Element{b.element()})

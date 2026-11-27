@@ -3,7 +3,6 @@ package admin
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"math"
 	"strconv"
@@ -28,7 +27,7 @@ func radioModel(b json.RawMessage, radio uint8) (map[string]string, error) {
 		return nil, fmt.Errorf("AP model reply lacks error_code")
 	}
 	if *v.Error != 0 {
-		return nil, modelUnavailable{*v.Error}
+		return nil, modelError{*v.Error}
 	}
 	for _, row := range v.Wireless.Rows {
 		for _, r := range row {
@@ -119,8 +118,7 @@ func (m *Manager) tryNativeRadio(ctx context.Context, ap cweng.APStatus, r Radio
 	current, err := m.readRadio(probe, ap.ID, r.Radio)
 	cancel()
 	if err != nil {
-		var unavailable modelUnavailable
-		if errors.As(err, &unavailable) {
+		if unsupportedModel(err) {
 			return false, nil
 		}
 		return true, err

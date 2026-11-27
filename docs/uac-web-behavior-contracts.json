@@ -1251,7 +1251,7 @@
       "id": "active-trigger-wire",
       "feature": "roaming",
       "origin": "firmware",
-      "behavior": "活动 private58 触发调用有效 roam_nbr_select，报告完整分包；下发与 ACK 不增加 AC 漫游冷却。",
+      "behavior": "活动 private58 触发调用有效 roam_nbr_select，报告完整分包；下发与 ACK 不增加 AC 漫游冷却。 能力25仅过滤接收者，不自行增加候选资格过滤。",
       "sources": [
         {
           "kind": "uac",
@@ -1321,6 +1321,10 @@
         {
           "path": "uacgo/admin/mobility_test.go",
           "name": "TestRoamingSignalConversionUsesWholeReport"
+        },
+        {
+          "path": "uacgo/admin/roaming_branch_audit_test.go",
+          "name": "TestRoamingCapability25FiltersRecipientsNotCandidateRanking"
         }
       ]
     },
@@ -1382,7 +1386,7 @@
       "id": "rate-estimation",
       "feature": "roaming",
       "origin": "firmware",
-      "behavior": "STA/AP PHY、空间流和带宽取原组合；原整数速率表、截断斜率、16 位结果；Mesh 调和回传。",
+      "behavior": "STA/AP 观测带宽都仅识别0/1/3/5，2按频段回退；AP配置自动先换成观测值。PHY/流数取原组合，整数表和16位结果保持原行为。",
       "sources": [
         {
           "kind": "uac",
@@ -1434,7 +1438,7 @@
         },
         {
           "path": "uacgo/mobility/rate.go",
-          "symbol": "RadioBandwidth"
+          "symbol": "ObservedBandwidth"
         }
       ],
       "tests": [
@@ -1449,6 +1453,10 @@
         {
           "path": "uacgo/admin/roam_source_audit_test.go",
           "name": "TestRadioAutoWidthUsesWLANFallback"
+        },
+        {
+          "path": "uacgo/mobility/rate_test.go",
+          "name": "TestObservedBandwidthIncludesUnknownTwoFallback"
         }
       ]
     },
@@ -1456,7 +1464,7 @@
       "id": "pmk-cache",
       "feature": "roaming",
       "origin": "firmware",
-      "behavior": "PMK 固定 101 字节、逻辑服务隔离、原 operation/result；断连 60 秒分钟清理，重关联撤销删除。 查找失败清当前站点和 MLO 组，向原所在 AP（不是请求 AP）提交 msg25/0x12 后再发生命周期通知。",
+      "behavior": "PMK 固定 101 字节、逻辑服务隔离、原 operation/result；断连 60 秒分钟清理，重关联撤销删除。 查找失败清当前站点和 MLO 组，向原所在 AP（不是请求 AP）提交 msg25/0x12 后再发生命周期通知。 operation3受能力66门禁，直接关联且携带旧DB RSSI，缺旧条目为0；不能重跑均衡。",
       "sources": [
         {
           "kind": "uac",
@@ -1499,6 +1507,34 @@
           "address": "0x0075efec",
           "size": 1072,
           "sha256": "a7975a2720c0337ffbde28fb3c39d2df319168189025871dadba4144561e44dd"
+        },
+        {
+          "kind": "uac",
+          "name": "wsta_roam_sta_assoc_callback",
+          "address": "0x004d746c",
+          "size": 212,
+          "sha256": "b42200929045dbdf9dc8f7c4b750308aa997902b010414c196c64186bf3a7cb2"
+        },
+        {
+          "kind": "uac",
+          "name": "wsta_roam_db_pmk_add",
+          "address": "0x004df034",
+          "size": 528,
+          "sha256": "ea7b6437f4ab88bfdfaa924c2f371262de7ecbf6a9ec6219b52b8fc288e959fb"
+        },
+        {
+          "kind": "uac",
+          "name": "wsta_roam_db_pmk_start_del_timer",
+          "address": "0x004df244",
+          "size": 184,
+          "sha256": "7f22a16c0e23083b3c4c3ead1b211b271a28053ceb44b1423e0f68423b3fccec"
+        },
+        {
+          "kind": "uac",
+          "name": "wsta_roam_db_pmk_expiretime_set",
+          "address": "0x004df2fc",
+          "size": 164,
+          "sha256": "38fd655bb2cfd07163da81f3783c0ed978f7d5a2a460c3120145ea019884732d"
         }
       ],
       "implementation": [
@@ -1517,6 +1553,10 @@
         {
           "path": "uacgo/cweng/station_extra.go",
           "symbol": "disconnectMLOLocked"
+        },
+        {
+          "path": "uacgo/cweng/client_history.go",
+          "symbol": "AssociatePMK"
         }
       ],
       "tests": [
@@ -1531,6 +1571,10 @@
         {
           "path": "uacgo/cweng/station_policy_test.go",
           "name": "TestPMKReleaseRemovesMLOGroupBeforeLifecycleNotification"
+        },
+        {
+          "path": "uacgo/admin/roaming_branch_audit_test.go",
+          "name": "TestPMKWireOperationsCapabilityAndFailureResults"
         }
       ]
     },
@@ -2736,6 +2780,365 @@
           "name": "TestLegacyAPDBResolvesFiveGHzFirmwareKey"
         }
       ]
+    },
+    {
+      "id": "roaming-statistics-authority",
+      "feature": "roaming",
+      "origin": "firmware",
+      "behavior": "0x54逐槽累积，bd只更新BSSID索引；禁用统计不消费迟到包。候选使用独立逐槽事实和会话代次，释放/复用槽位、关闭射频清有效性，重新启用需要新54；不从SSID或展示缓存猜位置。",
+      "sources": [
+        {
+          "kind": "uac",
+          "name": "_stats_pkt_wtp_event_listener",
+          "address": "0x007b5694",
+          "size": 432,
+          "sha256": "03fe8bcbe6807bd278e151e364c33a1c9a485eb142540e07aaa719ad67f78874"
+        },
+        {
+          "kind": "uac",
+          "name": "_stats_pkt_bssid_update",
+          "address": "0x007b542c",
+          "size": 384,
+          "sha256": "231c87582b58461ebaf7c49dcdb79a3009a48c436478a46dabda5020761440a9"
+        },
+        {
+          "kind": "uac",
+          "name": "stats_db_bssid_update",
+          "address": "0x007b1190",
+          "size": 492,
+          "sha256": "9cd909395d5c9046461c31331cd60728a448104828b94c9b20bb5bb825e5bc6a"
+        },
+        {
+          "kind": "uac",
+          "name": "stats_db_ssid_update",
+          "address": "0x007b1e44",
+          "size": 1188,
+          "sha256": "8d22fdcc38cacd939bb2b50e83560e7764eb69f704d6ce378a8d54ca7bf92c82"
+        },
+        {
+          "kind": "uac",
+          "name": "stats_db_ssid_reset",
+          "address": "0x007b1b30",
+          "size": 788,
+          "sha256": "0ef27caccc7649c9c065d20e4a379c375a4b562ec45c1134cd2a4f95a6de7146"
+        },
+        {
+          "kind": "uac",
+          "name": "_stats_rd_disable_cb",
+          "address": "0x007b410c",
+          "size": 132,
+          "sha256": "ecab52247b9f423fcf1163d05442126e10450e6947ce855f50d51a57880cde2f"
+        },
+        {
+          "kind": "uac",
+          "name": "_stats_rd_enable_cb",
+          "address": "0x007b4190",
+          "size": 132,
+          "sha256": "3d9e93d03f8d54d800a20b1d6af9c4ef23e843a4d634f6f5cc2a4d41e5bc9835"
+        },
+        {
+          "kind": "uac",
+          "name": "stats_db_radio_reset",
+          "address": "0x007b17cc",
+          "size": 868,
+          "sha256": "0d8645cf8c1cb66725169d99d4fac5f58f6fbb778b83ec0a785584e295db5662"
+        },
+        {
+          "kind": "uac",
+          "name": "stats_db_radio_get",
+          "address": "0x007b0324",
+          "size": 316,
+          "sha256": "b7e03156b16ff2d5e9f671718e6d4487bc6b8afad751ac5e56f84cff24f87e9c"
+        },
+        {
+          "kind": "uac",
+          "name": "stats_db_radio_active",
+          "address": "0x007b0020",
+          "size": 772,
+          "sha256": "0644b9246b92eaad261c80d4c303c0939d4e1f91f27e4814955873a8cb81316f"
+        },
+        {
+          "kind": "uac",
+          "name": "stats_db_sta_get_nbr_set",
+          "address": "0x007aef88",
+          "size": 904,
+          "sha256": "7be9f88906c5b7ffb797afd9776ced429ee9b9a443419d2ffcce721405d91b0d"
+        },
+        {
+          "kind": "uac",
+          "name": "_stats_pkt_rssi_request",
+          "address": "0x007b51b4",
+          "size": 632,
+          "sha256": "71a5c21a89b7a35e67a6ca7903d622d55b0f813351c5b5b3c0de356447b7d579"
+        }
+      ],
+      "implementation": [
+        {
+          "path": "uacgo/cweng/wireless_statistics.go",
+          "symbol": "registerWirelessStatistics"
+        },
+        {
+          "path": "uacgo/cweng/wireless_statistics.go",
+          "symbol": "MergeVAPStatistics"
+        },
+        {
+          "path": "uacgo/admin/mobility_statistics.go",
+          "symbol": "observeAPStatistics"
+        },
+        {
+          "path": "uacgo/admin/mobility_statistics.go",
+          "symbol": "resetVAPFactsLocked"
+        },
+        {
+          "path": "uacgo/admin/mobility_statistics.go",
+          "symbol": "resetRoamingRadiosLocked"
+        },
+        {
+          "path": "uacgo/admin/roam_decision.go",
+          "symbol": "findBSSIDLocked"
+        },
+        {
+          "path": "uacgo/admin/wlan_state.go",
+          "symbol": "settleWLANs"
+        }
+      ],
+      "tests": [
+        {
+          "path": "uacgo/cweng/roaming_branches_test.go",
+          "name": "TestV6StatisticsControlGatesFactsButNotBSSIDUpdates"
+        },
+        {
+          "path": "uacgo/cweng/roaming_branches_test.go",
+          "name": "TestV6PartialAPReportRetainsOtherVAPSlotsInSession"
+        },
+        {
+          "path": "uacgo/admin/roaming_branch_audit_test.go",
+          "name": "TestNonBSTMPartialVAPReportKeepsFallbackSlotAndOriginalGates"
+        },
+        {
+          "path": "uacgo/admin/roaming_branch_audit_test.go",
+          "name": "TestRoamingNeverGuessesWLANFromNativeSSIDTelemetry"
+        },
+        {
+          "path": "uacgo/admin/roaming_branch_audit_test.go",
+          "name": "TestRoamingSlotReleaseCannotReviveFromDisplayOrReusedWLAN"
+        },
+        {
+          "path": "uacgo/admin/roaming_branch_audit_test.go",
+          "name": "TestRoamingRadioDisableRequiresFreshAPStatisticsAfterEnable"
+        },
+        {
+          "path": "uacgo/admin/bssid_state_test.go",
+          "name": "TestV6BSSIDIndexRetainsOmittedSlotsAndRemovesChangedSlot"
+        }
+      ]
+    },
+    {
+      "id": "roaming-packet-output-state",
+      "feature": "roaming",
+      "origin": "firmware",
+      "behavior": "零邻居时4e577c提前返回，不执行4e5aac输出数清零；调用循环输出仅每包初始化，保留同包上一结果；新包清状态，有邻居但筛空会清零。不是AC全局sticky或新增回退策略。",
+      "sources": [
+        {
+          "kind": "uac",
+          "name": "roam_nbr_select",
+          "address": "0x004e5638",
+          "size": 2836,
+          "sha256": "06b456dd3a66424ac0f4822e045c956261183dc1cd86e249bff680edcbf0bc6a"
+        },
+        {
+          "kind": "uac",
+          "name": "_wsta_roam_pkt_roaming_by_rssi_low",
+          "address": "0x004e6564",
+          "size": 7900,
+          "sha256": "8b87ea2465fed7e2b0ade702c3da2d48452d8f342c4cec3f6b8e1de3c1e04cb4"
+        },
+        {
+          "kind": "uac",
+          "name": "uac_list_insert_last",
+          "address": "0x0059a6f4",
+          "size": 120,
+          "sha256": "60eecd5e338348e284f252b725f08ff4ed5dd7c363738f7e4a6f7efdf8c5c59c"
+        }
+      ],
+      "implementation": [
+        {
+          "path": "uacgo/admin/roam_decision.go",
+          "symbol": "calculateRoamingLocked"
+        }
+      ],
+      "tests": [
+        {
+          "path": "uacgo/admin/roaming_branch_audit_test.go",
+          "name": "TestRoamingEmptyNeighborOutputIsPacketLocalFirmwareState"
+        },
+        {
+          "path": "uacgo/admin/roaming_branch_audit_test.go",
+          "name": "TestNonBSTMPartialVAPReportKeepsFallbackSlotAndOriginalGates"
+        },
+        {
+          "path": "uacgo/admin/roaming_branch_audit_test.go",
+          "name": "TestRoamingOutputStateResetsAt128StationPacketBoundary"
+        }
+      ]
+    },
+    {
+      "id": "roaming-capability-controls",
+      "feature": "roaming",
+      "origin": "firmware",
+      "behavior": "能力25对应57、72独立对应9d。模式2取default_roam_cnt/default_silence_time，不依赖能力25；Go的缺省3/30明确归为独立程序初值，API/Web可设置，配置身份随参数变化。规则绑定检查按原AP/分组冲突分支。",
+      "sources": [
+        {
+          "kind": "uac",
+          "name": "wsta_intelligent_roam_ctl_send_to_ap",
+          "address": "0x004e9534",
+          "size": 604,
+          "sha256": "d8ba1da9e6a3d0cadcb8071a2679e5c3a09614abb154f84fb2055b555ff26b7b"
+        },
+        {
+          "kind": "uac",
+          "name": "_wstat_roam_update_wireless_network_mode_to_ap",
+          "address": "0x004e1620",
+          "size": 360,
+          "sha256": "e860ceb90220551fff560a9d23aa2d558083755b42b730b0537f8dfc12620dba"
+        },
+        {
+          "kind": "uac",
+          "name": "_wsta_intelligent_roam_set_wireless_network_mode_send",
+          "address": "0x004e136c",
+          "size": 692,
+          "sha256": "428106b6d94a5e7b1754015bcadc3f976c076c09b97aac788674a606e3b69c65"
+        },
+        {
+          "kind": "uac",
+          "name": "_wsta_intelligent_roam_ctl_packet_create",
+          "address": "0x004e8a94",
+          "size": 784,
+          "sha256": "bce6d82fe850e6d750daaececb9d0e558a4fe7f67cb476ee8d0be28d119649db"
+        },
+        {
+          "kind": "uac",
+          "name": "wsta_roam_db_cfg_get",
+          "address": "0x004dfc2c",
+          "size": 148,
+          "sha256": "c8d67e926d30920a5e2144d9d0ee4d514e1e6074038a836d472d8306d208d007"
+        },
+        {
+          "kind": "uac",
+          "name": "wsta_roam_db_cfg_set",
+          "address": "0x004dfb98",
+          "size": 148,
+          "sha256": "b57e54032b428d2a7d18d27a4f19724ab12115170b635a39f60864ee10cfb6f5"
+        },
+        {
+          "kind": "uac",
+          "name": "wsta_roam_sql_get_ap_rule",
+          "address": "0x004dba30",
+          "size": 656,
+          "sha256": "91fc59900c99d09ef48bd4cf1b80d56863ebc53709d0f4423c302d161730d60c"
+        },
+        {
+          "kind": "uac",
+          "name": "wsta_roam_sql_check_ap_bind",
+          "address": "0x004db504",
+          "size": 824,
+          "sha256": "6bf736db342759efd37f2caad0d0c9e19577569787586ff19f1342e4a3133aa4"
+        },
+        {
+          "kind": "uac",
+          "name": "wsta_roam_sql_check_group_bind",
+          "address": "0x004db088",
+          "size": 1148,
+          "sha256": "bb4c07355bb2338d011be292fc0bda0f93b012b70e84298a27f7763d341407b1"
+        },
+        {
+          "kind": "uac",
+          "name": "local_wsta_intelligent_roam_set_params_unnamed",
+          "address": "0x004e8e80",
+          "size": 616,
+          "sha256": "61a782e1621173a304b5a330cf4f96cdb25c31a55494c301356c68c4172eb921"
+        }
+      ],
+      "implementation": [
+        {
+          "path": "uacgo/admin/mobility.go",
+          "symbol": "applyMobility"
+        },
+        {
+          "path": "uacgo/admin/mobility.go",
+          "symbol": "effectiveRoamSilence"
+        },
+        {
+          "path": "uacgo/admin/mobility.go",
+          "symbol": "roamingFor"
+        },
+        {
+          "path": "uacgo/admin/mobility.go",
+          "symbol": "validate"
+        }
+      ],
+      "tests": [
+        {
+          "path": "uacgo/admin/roaming_branch_audit_test.go",
+          "name": "TestRoamingCapabilities25And72AreIndependent"
+        },
+        {
+          "path": "uacgo/admin/roaming_branch_audit_test.go",
+          "name": "TestRoamingSilenceUsesConfiguredUCIEquivalentValues"
+        },
+        {
+          "path": "uacgo/admin/mobility_test.go",
+          "name": "TestRoamControlWireAndPolicyReferenceValidation"
+        }
+      ]
+    },
+    {
+      "id": "model-fallback-error-classification",
+      "feature": "band-steering",
+      "origin": "standalone-go",
+      "behavior": "Go型号JSON适配和原3a配置codec分开；仅未声明JSON能力或明确不支持事件/操作/指令才回旧通道。繁忙/禁止/参数错误、缺enable不标成功，不吞错。",
+      "sources": [
+        {
+          "kind": "file",
+          "path": "usr/lib/lua/luci/torchlight/error.lua",
+          "sha256": "05d63d8cac88380ea770dea52d0f6882fca2625d7ca8af18e33eb6459409e042"
+        },
+        {
+          "kind": "uac",
+          "name": "band_navigation_packet_send",
+          "address": "0x00633400",
+          "size": 528,
+          "sha256": "51d8603b8ec290ed5fb41ba1df0ebf5f3098403cdcf2f60d0c16b370451d57e5"
+        }
+      ],
+      "implementation": [
+        {
+          "path": "uacgo/admin/model_result.go",
+          "symbol": "unsupportedModel"
+        },
+        {
+          "path": "uacgo/admin/band_navigation.go",
+          "symbol": "bandModel"
+        },
+        {
+          "path": "uacgo/admin/band_navigation.go",
+          "symbol": "applyBandNavigation"
+        },
+        {
+          "path": "uacgo/admin/native_radio.go",
+          "symbol": "tryNativeRadio"
+        }
+      ],
+      "tests": [
+        {
+          "path": "uacgo/admin/roaming_branch_audit_test.go",
+          "name": "TestBandNavigationModelFailuresCannotMasqueradeAsLegacySuccess"
+        },
+        {
+          "path": "uacgo/admin/native_radio_test.go",
+          "name": "TestNativeModelResponsesRequireExplicitSuccess"
+        }
+      ]
     }
   ],
   "reference_or_inactive_functions": [
@@ -2818,6 +3221,13 @@
       "address": "0x004e2668",
       "size": 1648,
       "sha256": "c32b5f6e3e133ece95d46d73f4e5c0074e7a4870f5330cfae81ba0da69a93b45"
+    },
+    {
+      "name": "_wsta_roam_pkt_chnl_scan_report",
+      "address": "0x004e8630",
+      "size": 892,
+      "sha256": "22cbbe2696b8e5d6539a373a6107528353a8cb533a46db741e56e5050da4458b",
+      "reason": "0x9c入口先检查ACS process state；V6模式2不启动旧智能ACS。Go仅保留原始扫描展示，不作为客户端候选回退。"
     }
   ]
 }
