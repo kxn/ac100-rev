@@ -1,7 +1,398 @@
-'use strict';
-let protectionEdit=null;
-function protectionConfig(){return structuredClone(data.config.protection||{servers:[],bindings:[],rules:[]})}
-function renderProtection(){const p=protectionConfig();return panel('DHCP 信任服务器','为 AP 的 DHCP 防护指定可信 IPv4、IPv6 或 MAC；按规则绑定。',table(['名称','可信地址','操作'],p.servers.map(s=>`<tr><td>${esc(s.name)}</td><td class="mono">${esc(s.address)}</td><td><button class="text-button" data-defense-kind="servers" data-defense-id="${esc(s.id)}">编辑</button><button class="text-button danger" data-defense-delete="servers" data-defense-id="${esc(s.id)}">删除</button></td></tr>`).join('')),'<button class="secondary" data-defense-kind="servers">新增服务器</button>')+panel('ARP / ND 静态绑定','维护 IPv4/IPv6 与 MAC 的绑定，防止地址冒用。',table(['名称','IP / MAC','说明','操作'],p.bindings.map(s=>`<tr><td>${esc(s.name)}</td><td class="mono">${esc(s.ip)}<small>${esc(s.mac)}</small></td><td>${esc(s.description)}</td><td><button class="text-button" data-defense-kind="bindings" data-defense-id="${esc(s.id)}">编辑</button><button class="text-button danger" data-defense-delete="bindings" data-defense-id="${esc(s.id)}">删除</button></td></tr>`).join('')),'<button class="secondary" data-defense-kind="bindings">新增绑定</button>')+panel('AP 防护规则','按设备与分组配置防护。各 AP 根据自身上报的 IPv4/IPv6 防护能力接收对应配置。',table(['名称','DHCP','ARP / ND','绑定记录','操作'],p.rules.map(s=>`<tr><td>${esc(s.name)}</td><td>${s.dhcp?'启用':'停用'}</td><td>${s.arp?(s.filter?'过滤非绑定 ARP / ND':'仅防冒用'):'停用'}</td><td>${s.servers.length} 台服务器 / ${s.bindings.length} 项地址</td><td><button class="text-button" data-defense-kind="rules" data-defense-id="${esc(s.id)}">编辑</button><button class="text-button danger" data-defense-delete="rules" data-defense-id="${esc(s.id)}">删除</button></td></tr>`).join('')),'<button class="secondary" data-defense-kind="rules">新增规则</button>')+panel('广播 / 组播抑制','配置广播总速率、分协议限制，以及 ARP、ND 和 mDNS 代理。',`<div class="interface-row"><span>${data.config.storm?.enabled?'已启用':'未启用'} · ${data.config.storm?.rate??64} 包/秒</span><button class="secondary" data-storm-edit="1">配置抑制与代理</button></div>`)+panel('各设备能力与同步','不支持的能力不会下发到该 AP。',table(['AP','已上报的防护能力','同步结果'],data.aps.map(a=>`<tr><td>${esc(apName(a.id))}${a.online&&a.features?.arp_scan?`<button class="text-button" data-arp-scan="${esc(a.id)}">扫描地址</button><button class="text-button" data-arp-results="${esc(a.id)}">扫描结果</button>`:''}</td><td>${[['dhcp_defense','DHCPv4'],['dhcpv6_defense','DHCPv6'],['arp_defense','ARP'],['nd_defense','ND'],['storm_control','广播抑制']].filter(([k])=>a.features?.[k]).map(([,v])=>v).join(' / ')||'未声明'}${a.protection_limits?`<small>绑定容量：ARP ${a.protection_limits.arp} / ND ${a.protection_limits.nd}</small>`:''}${a.features?.arp_defense&&!a.features?.arp_defense_mode_scope?'<small>基本防护；端口范围由 AP 固件决定</small>':''}</td><td>${data.apply.filter(x=>x.ap_id===a.id&&['protection','storm'].includes(x.service_id)).map(x=>statePill(x.state)+esc(x.error||'')).join(' ')||'未配置'}</td></tr>`).join('')))}
-function defenseSelect(name,label,rows,chosen){return `<label>${label}<select name="${name}" multiple>${rows.map(x=>`<option value="${esc(x.id)}" ${(chosen||[]).includes(x.id)?'selected':''}>${esc(x.name)}</option>`).join('')}</select></label>`}
-document.addEventListener('click',async e=>{const b=e.target.closest('button');if(!b)return;try{if(b.dataset.arpScan){await api('aps/'+encodeURIComponent(b.dataset.arpScan)+'/arp-scan',{});toast('AP 已应答扫描请求，稍后查看扫描结果');return}if(b.dataset.arpResults){const p=await api('aps/'+encodeURIComponent(b.dataset.arpResults)+'/arp-scan');openDialog('arp-results','AP 地址扫描结果','ARP SCAN',p.report?`<p>AP 上报于 ${esc(new Date(p.report.at).toLocaleString())}</p>${table(['IP','MAC','操作'],p.report.entries.map(v=>`<tr><td>${esc(v.ip)}</td><td>${esc(v.mac)}</td><td><button class="text-button" data-arp-import-ip="${esc(v.ip)}" data-arp-import-mac="${esc(v.mac)}">加入静态绑定</button></td></tr>`).join(''))}`:'<p>尚未收到 AP 的扫描报告。</p>');return}if(b.dataset.arpImportIp){const p=protectionConfig();p.bindings.push({id:newID(),name:b.dataset.arpImportIp,ip:b.dataset.arpImportIp,mac:b.dataset.arpImportMac,description:'来自 AP 地址扫描'});await api('protection',p);$('#editor').close();dialogKind='';await refresh();toast('地址已加入绑定库，可在规则中选择');return}if(b.dataset.defenseDelete){const p=protectionConfig(),kind=b.dataset.defenseDelete,id=b.dataset.defenseId;if(kind!=='rules'&&p.rules.some(r=>r[kind].includes(id)))throw Error('记录正在被规则引用，请先解除绑定');p[kind]=p[kind].filter(r=>r.id!==id);await api('protection',p);await refresh();return}if(b.dataset.defenseKind){const kind=b.dataset.defenseKind,p=protectionConfig(),item=p[kind].find(x=>x.id===b.dataset.defenseId)||{id:newID(),name:'',...(kind==='rules'?{servers:[],bindings:[],wired:true,wireless:true,filter:true}:{})};protectionEdit={kind,p,item};let body=field('name','名称',item.name,'text','required maxlength="50"');if(kind==='servers')body+=field('address','可信 IP 或 MAC',item.address||'','text','required');if(kind==='bindings')body+=field('ip','IP 地址',item.ip||'','text','required')+field('mac','MAC 地址',item.mac||'','text','required')+field('description','说明',item.description||'','text','maxlength="128"');if(kind==='rules')body+=policyTargetFields(item)+check('dhcp','启用 DHCP 防护',item.dhcp)+defenseSelect('servers','信任服务器',p.servers,item.servers)+check('arp','启用 ARP / ND 防护',item.arp)+check('filter','仅允许静态绑定的地址',item.filter)+check('wired','保护有线端口',item.wired)+check('wireless','保护无线客户端',item.wireless)+defenseSelect('bindings','地址绑定',p.bindings,item.bindings)+(data.aps.some(a=>a.features?.arp_defense&&!a.features?.arp_defense_mode_scope)?'<p class="hint">部分 AP 仅支持基本绑定防护，不支持单独选择过滤模式和端口范围；这些 AP 接收基本启停及绑定表。</p>':'');openDialog('protection','AP 网络防护','AP PROTECTION',`<form id="defense-form">${body}${formEnd()}</form>`);return}if(b.dataset.stormEdit){const d=await api('storm/defaults'),s=data.config.storm||d.defaults;protectionEdit={storm:s};const scope={1:'无线',2:'有线',3:'全部'};openDialog('storm','广播抑制与协议代理','BROADCAST CONTROL',`<form id="storm-form">${check('enabled','启用广播抑制',s.enabled)}${field('rate','总速率（包/秒）',s.rate,'number','min="1" max="1024" required')}${check('custom','使用分协议自定义限制',s.custom)}${table(['协议','启用','范围','包/秒'],d.protocols.map((name,i)=>`<tr><td>${esc(name)}</td><td>${check('protocol_'+i+'_enabled','',s.protocols[i].enabled)}</td><td>${select('protocol_'+i+'_scope','',scope,s.protocols[i].scope)}</td><td>${field('protocol_'+i+'_rate','',s.protocols[i].rate,'number','min="0" max="1024" required')}</td></tr>`).join(''))}${['arp','nd','mdns'].map(k=>`<fieldset><legend>${k.toUpperCase()} 代理</legend>${check(k+'_enabled','启用代理',s[k+'_proxy'].enabled)}${k!=='mdns'?select(k+'_scope','代理范围',scope,s[k+'_proxy'].scope):''}${check(k+'_unicast','转换为单播',s[k+'_proxy'].to_unicast)}</fieldset>`).join('')}${formEnd()}</form>`)} }catch(e){toast(e.message)}});
-document.addEventListener('submit',async e=>{const f=e.target;if(!['defense-form','storm-form'].includes(f.id))return;e.preventDefault();if(!f.reportValidity())return;try{const n=k=>Number(f.elements[k].value);if(f.id==='defense-form'){const {p,kind,item}=protectionEdit,next={...item,name:f.elements.name.value};if(kind==='servers')next.address=f.elements.address.value.trim();if(kind==='bindings')for(const k of ['ip','mac','description'])next[k]=f.elements[k].value.trim();if(kind==='rules'){Object.assign(next,readPolicyTarget(f));for(const k of ['arp','dhcp','filter','wired','wireless'])next[k]=f.elements[k].checked;for(const k of ['servers','bindings'])next[k]=[...f.elements[k].selectedOptions].map(o=>o.value)}const i=p[kind].findIndex(x=>x.id===next.id);if(i<0)p[kind].push(next);else p[kind][i]=next;await api('protection',p)}else{const s=structuredClone(protectionEdit.storm);s.enabled=f.elements.enabled.checked;s.custom=f.elements.custom.checked;s.rate=n('rate');s.protocols=s.protocols.map((_,i)=>({enabled:f.elements['protocol_'+i+'_enabled'].checked,scope:n('protocol_'+i+'_scope'),rate:n('protocol_'+i+'_rate')}));for(const k of ['arp','nd','mdns'])s[k+'_proxy']={enabled:f.elements[k+'_enabled'].checked,to_unicast:f.elements[k+'_unicast'].checked,scope:k==='mdns'?3:n(k+'_scope')};await api('storm',s)}$('#editor').close();dialogKind='';await refresh();toast('防护配置已保存')}catch(e){f.querySelector('#form-error').textContent=e.message}});
+"use strict";
+
+let protectionEdit = null;
+let protectionTab = "rules";
+let stormDefaults = null;
+
+function protectionConfig() {
+  return structuredClone(
+    data.config.protection || { servers: [], bindings: [], rules: [] },
+  );
+}
+
+function renderProtection() {
+  const p = protectionConfig();
+  const subAction =
+    protectionTab === "rules"
+      ? '<button type="button" class="btn primary" data-defense-kind="rules">新建规则</button>'
+      : protectionTab === "servers"
+        ? '<button type="button" class="btn primary" data-defense-kind="servers">新增服务器</button>'
+        : protectionTab === "bindings"
+          ? '<button type="button" class="btn primary" data-defense-kind="bindings">新增绑定</button>'
+          : "";
+
+  const subbar = `<div class="subbar">
+    <div class="seg-tabs" role="tablist" aria-label="防护分类">
+      ${[
+        ["rules", `防护规则 (${p.rules.length})`],
+        ["servers", `DHCP 信任服务器 (${p.servers.length})`],
+        ["bindings", `ARP / ND 绑定 (${p.bindings.length})`],
+        ["storm", "风暴抑制与代理"],
+      ]
+        .map(
+          ([id, label]) =>
+            `<button type="button" data-protection-tab="${id}" class="${protectionTab === id ? "active" : ""}">${label}</button>`,
+        )
+        .join("")}
+    </div>
+    <div class="toolbar-group">${subAction}</div>
+  </div>`;
+
+  if (protectionTab === "servers") {
+    return (
+      subbar +
+      panel(
+        "DHCP 信任服务器",
+        table(
+          ["名称", "可信地址", "操作"],
+          p.servers
+            .map(
+              (s) => `<tr>
+                <td><strong>${esc(s.name)}</strong></td>
+                <td class="mono">${esc(s.address)}</td>
+                <td>
+                  <div class="actions">
+                    <button type="button" class="text-button" data-defense-kind="servers" data-defense-id="${esc(s.id)}">编辑</button>
+                    <button type="button" class="text-button danger" data-defense-delete="servers" data-defense-id="${esc(s.id)}">删除</button>
+                  </div>
+                </td>
+              </tr>`,
+            )
+            .join(""),
+        ),
+      )
+    );
+  }
+
+  if (protectionTab === "bindings") {
+    return (
+      subbar +
+      panel(
+        "ARP / ND 静态绑定",
+        table(
+          ["名称", "IP / MAC", "说明", "操作"],
+          p.bindings
+            .map(
+              (s) => `<tr>
+                <td><strong>${esc(s.name)}</strong></td>
+                <td class="mono">${esc(s.ip)}<small>${esc(s.mac)}</small></td>
+                <td>${esc(s.description || "—")}</td>
+                <td>
+                  <div class="actions">
+                    <button type="button" class="text-button" data-defense-kind="bindings" data-defense-id="${esc(s.id)}">编辑</button>
+                    <button type="button" class="text-button danger" data-defense-delete="bindings" data-defense-id="${esc(s.id)}">删除</button>
+                  </div>
+                </td>
+              </tr>`,
+            )
+            .join(""),
+        ),
+      )
+    );
+  }
+
+  if (protectionTab === "storm") {
+    if (!stormDefaults) {
+      void api("storm/defaults")
+        .then((res) => {
+          stormDefaults = res;
+          if (tab === "protection" && protectionTab === "storm")
+            renderContent();
+        })
+        .catch(() => {});
+      return subbar + panel("广播抑制与协议代理", '<div class="empty">加载配置中…</div>');
+    }
+    const d = stormDefaults;
+    const s = data.config.storm || d.defaults;
+    protectionEdit = { storm: s };
+    const scope = { 1: "无线", 2: "有线", 3: "全部" };
+    const formHtml = `<div class="panel-body">
+      <form id="storm-form" data-inline="1" novalidate>
+        <div class="form-grid">
+          ${toggle("enabled", "启用广播抑制", s.enabled)}
+          ${field("rate", "总速率上限", s.rate, "number", 'min="1" max="1024" required', "包/秒")}
+          <div class="full">${check("custom", "启用分协议速率限制", s.custom)}</div>
+        </div>
+        <h3 class="section-title">分协议限制</h3>
+        ${table(
+          ["协议", "启用", "应用范围", "速率（包/秒）"],
+          d.protocols
+            .map(
+              (name, i) => `<tr>
+                <td><strong>${esc(name)}</strong></td>
+                <td>${check("protocol_" + i + "_enabled", "", s.protocols[i].enabled)}</td>
+                <td>${select("protocol_" + i + "_scope", "", scope, s.protocols[i].scope)}</td>
+                <td>${field("protocol_" + i + "_rate", "", s.protocols[i].rate, "number", 'min="0" max="1024" required')}</td>
+              </tr>`,
+            )
+            .join(""),
+        )}
+        <div class="proxy-grid">
+          ${["arp", "nd", "mdns"]
+            .map(
+              (k) => `<fieldset>
+                <legend>${k.toUpperCase()} 代理</legend>
+                ${toggle(k + "_enabled", "启用代理", s[k + "_proxy"].enabled)}
+                ${k !== "mdns" ? select(k + "_scope", "范围", scope, s[k + "_proxy"].scope) : ""}
+                ${check(k + "_unicast", "转为单播", s[k + "_proxy"].to_unicast)}
+              </fieldset>`,
+            )
+            .join("")}
+        </div>
+        ${formEnd()}
+      </form>
+    </div>`;
+    return subbar + panel("广播抑制与协议代理", formHtml);
+  }
+
+  return (
+    subbar +
+    panel(
+      "AP 防护规则",
+      table(
+        ["名称", "应用范围", "DHCP 防护", "ARP / ND 防护", "引用", "操作"],
+        p.rules
+          .map(
+            (s) => `<tr>
+              <td><strong>${esc(s.name)}</strong></td>
+              <td>${esc(targetSummary(s))}</td>
+              <td><span class="pill ${s.dhcp ? "online" : ""}">${s.dhcp ? "启用" : "停用"}</span></td>
+              <td>${s.arp ? (s.filter ? "过滤非绑定" : "仅防冒用") : "停用"}</td>
+              <td class="num">${s.servers.length} 服务器 / ${s.bindings.length} 绑定</td>
+              <td>
+                <div class="actions">
+                  <button type="button" class="text-button" data-defense-kind="rules" data-defense-id="${esc(s.id)}">编辑</button>
+                  <button type="button" class="text-button danger" data-defense-delete="rules" data-defense-id="${esc(s.id)}">删除</button>
+                </div>
+              </td>
+            </tr>`,
+          )
+          .join(""),
+      ),
+    ) +
+    panel(
+      "设备能力与地址扫描",
+      table(
+        ["AP", "防护能力", "同步状态", "操作"],
+        data.aps
+          .map(
+            (a) => `<tr>
+              <td><strong>${esc(apName(a.id))}</strong></td>
+              <td>
+                ${[["dhcp_defense", "DHCPv4"], ["dhcpv6_defense", "DHCPv6"], ["arp_defense", "ARP"], ["nd_defense", "ND"], ["storm_control", "广播抑制"]]
+                  .filter(([k]) => a.features?.[k])
+                  .map(([, v]) => `<span class="tag">${v}</span>`)
+                  .join(" ") || '<span class="muted">未声明</span>'}
+                ${a.protection_limits ? `<small class="num">绑定上限：ARP ${a.protection_limits.arp} / ND ${a.protection_limits.nd}</small>` : ""}
+              </td>
+              <td>${data.apply
+                .filter(
+                  (x) =>
+                    x.ap_id === a.id &&
+                    ["protection", "storm"].includes(x.service_id),
+                )
+                .map((x) => statePill(x.state) + (x.error ? `<small>${esc(x.error)}</small>` : ""))
+                .join(" ") || '<span class="muted">未下发</span>'}</td>
+              <td>${a.online && a.features?.arp_scan ? `<div class="actions"><button type="button" class="text-button" data-arp-scan="${esc(a.id)}">地址扫描</button><button type="button" class="text-button" data-arp-results="${esc(a.id)}">扫描结果</button></div>` : '<span class="muted">—</span>'}</td>
+            </tr>`,
+          )
+          .join(""),
+      ),
+    )
+  );
+}
+
+function defensePicker(name, label, rows, chosen) {
+  const set = new Set(chosen || []);
+  return `<div class="picker-box">
+    <div class="picker-head"><span>${label}</span><span>已选 ${set.size}</span></div>
+    <div class="picker-list">${
+      rows
+        .map(
+          (x) =>
+            `<label class="picker-item"><input type="checkbox" name="${name}" value="${esc(x.id)}" ${set.has(x.id) ? "checked" : ""}><span>${esc(x.name)}</span></label>`,
+        )
+        .join("") || '<span class="help">暂无记录</span>'
+    }</div>
+  </div>`;
+}
+
+document.addEventListener("click", async (e) => {
+  const b = e.target.closest("button");
+  if (!b) return;
+  try {
+    if (b.dataset.protectionTab) {
+      protectionTab = b.dataset.protectionTab;
+      if (protectionTab === "storm" && !stormDefaults) {
+        stormDefaults = await api("storm/defaults");
+      }
+      renderContent();
+      return;
+    }
+    if (b.dataset.arpScan) {
+      await api("aps/" + encodeURIComponent(b.dataset.arpScan) + "/arp-scan", {});
+      toast("已发送扫描请求");
+      return;
+    }
+    if (b.dataset.arpResults) {
+      const p = await api(
+        "aps/" + encodeURIComponent(b.dataset.arpResults) + "/arp-scan",
+      );
+      openDialog(
+        "arp-results",
+        "AP 地址扫描结果",
+        p.report
+          ? "上报时间：" + new Date(p.report.at).toLocaleString("zh-CN")
+          : "",
+        p.report
+          ? table(
+              ["IP", "MAC", "操作"],
+              p.report.entries
+                .map(
+                  (v) =>
+                    `<tr><td class="mono">${esc(v.ip)}</td><td class="mono">${esc(v.mac)}</td><td><button type="button" class="text-button" data-arp-import-ip="${esc(v.ip)}" data-arp-import-mac="${esc(v.mac)}">加入静态绑定</button></td></tr>`,
+                )
+                .join(""),
+            )
+          : '<div class="empty">尚未收到扫描结果</div>',
+      );
+      return;
+    }
+    if (b.dataset.arpImportIp) {
+      const p = protectionConfig();
+      p.bindings.push({
+        id: newID(),
+        name: b.dataset.arpImportIp,
+        ip: b.dataset.arpImportIp,
+        mac: b.dataset.arpImportMac,
+        description: "地址扫描导入",
+      });
+      await api("protection", p);
+      $("#editor").close();
+      dialogKind = "";
+      await refresh();
+      toast("已加入静态绑定");
+      return;
+    }
+    if (b.dataset.defenseDelete) {
+      const p = protectionConfig();
+      const kind = b.dataset.defenseDelete;
+      const id = b.dataset.defenseId;
+      if (kind !== "rules" && p.rules.some((r) => r[kind].includes(id)))
+        throw Error("该记录正在被防护规则引用");
+      if (!confirm("确认删除？")) return;
+      p[kind] = p[kind].filter((r) => r.id !== id);
+      await api("protection", p);
+      await refresh();
+      return;
+    }
+    if (b.dataset.defenseKind) {
+      const kind = b.dataset.defenseKind;
+      const p = protectionConfig();
+      const item = p[kind].find((x) => x.id === b.dataset.defenseId) || {
+        id: newID(),
+        name: "",
+        ...(kind === "rules"
+          ? { servers: [], bindings: [], wired: true, wireless: true, filter: true }
+          : {}),
+      };
+      protectionEdit = { kind, p, item };
+      let body = `<div class="form-grid">${field("name", "名称", item.name, "text", 'required maxlength="50"')}`;
+      if (kind === "servers")
+        body += `${field("address", "可信 IP 或 MAC", item.address || "", "text", "required")}</div>`;
+      if (kind === "bindings")
+        body += `${field("ip", "IP 地址", item.ip || "", "text", "required")}${field("mac", "MAC 地址", item.mac || "", "text", "required")}<div class="full">${field("description", "说明", item.description || "", "text", 'maxlength="128"')}</div></div>`;
+      if (kind === "rules")
+        body += `</div><div class="form-grid">
+          ${targetPicker(item.aps || [], item.groups || [])}
+          <div class="switch-list full">
+            ${check("dhcp", "启用 DHCP 防护", item.dhcp)}
+            ${check("arp", "启用 ARP / ND 防护", item.arp)}
+            ${check("filter", "仅允许静态绑定地址", item.filter)}
+            ${check("wired", "保护有线端口", item.wired)}
+            ${check("wireless", "保护无线客户端", item.wireless)}
+          </div>
+          ${defensePicker("servers", "信任 DHCP 服务器", p.servers, item.servers)}
+          ${defensePicker("bindings", "静态地址绑定", p.bindings, item.bindings)}
+        </div>`;
+      const titles = {
+        servers: "DHCP 信任服务器",
+        bindings: "ARP / ND 静态绑定",
+        rules: "AP 防护规则",
+      };
+      openDialog(
+        "protection",
+        (b.dataset.defenseId ? "编辑" : "新建") + titles[kind],
+        "",
+        `<form id="defense-form" novalidate>${body}${formEnd()}</form>`,
+      );
+    }
+  } catch (err) {
+    toast(err.message);
+  }
+});
+
+document.addEventListener("submit", async (e) => {
+  const f = e.target;
+  if (!["defense-form", "storm-form"].includes(f.id)) return;
+  e.preventDefault();
+  if (!f.reportValidity()) return;
+  const btn = f.querySelector('[type="submit"]');
+  btn.disabled = true;
+  try {
+    const n = (k) => Number(f.elements[k].value);
+    if (f.id === "defense-form") {
+      const { p, kind, item } = protectionEdit;
+      const next = { ...item, name: f.elements.name.value };
+      if (kind === "servers") next.address = f.elements.address.value.trim();
+      if (kind === "bindings")
+        for (const k of ["ip", "mac", "description"])
+          next[k] = f.elements[k].value.trim();
+      if (kind === "rules") {
+        Object.assign(next, readTargetPicker(f));
+        for (const k of ["arp", "dhcp", "filter", "wired", "wireless"])
+          next[k] = f.elements[k].checked;
+        for (const k of ["servers", "bindings"])
+          next[k] = [
+            ...f.querySelectorAll(`input[name="${k}"]:checked`),
+          ].map((o) => o.value);
+      }
+      const i = p[kind].findIndex((x) => x.id === next.id);
+      if (i < 0) p[kind].push(next);
+      else p[kind][i] = next;
+      await api("protection", p);
+    } else {
+      const s = structuredClone(
+        protectionEdit?.storm || data.config.storm || stormDefaults.defaults,
+      );
+      s.enabled = f.elements.enabled.checked;
+      s.custom = f.elements.custom.checked;
+      s.rate = n("rate");
+      s.protocols = s.protocols.map((_, i) => ({
+        enabled: f.elements["protocol_" + i + "_enabled"].checked,
+        scope: n("protocol_" + i + "_scope"),
+        rate: n("protocol_" + i + "_rate"),
+      }));
+      for (const k of ["arp", "nd", "mdns"])
+        s[k + "_proxy"] = {
+          enabled: f.elements[k + "_enabled"].checked,
+          to_unicast: f.elements[k + "_unicast"].checked,
+          scope: k === "mdns" ? 3 : n(k + "_scope"),
+        };
+      await api("storm", s);
+    }
+    delete f.dataset.dirty;
+    if ($("#editor").open) {
+      $("#editor").close();
+      dialogKind = "";
+    }
+    await refresh();
+    toast("防护配置已保存");
+  } catch (err) {
+    const errEl = f.querySelector("#form-error");
+    if (errEl) errEl.textContent = err.message;
+    else toast(err.message);
+  } finally {
+    btn.disabled = false;
+  }
+});

@@ -1,17 +1,230 @@
-'use strict';
-let rrmEdit=null;
-function renderRRM(){return panel('自动射频优化',currentNetworkMode()===1?'高性能模式的信道优化会协调全局 AP 的共同信道，候选信道和频段筛选不用于此阶段；此模式不支持功率优化；V6优化规则需切换为兼容网络模式后运行。过程中连接可能短暂中断。':'按 AP、分组和频段测量邻居关系，再统一选择信道、带宽和功率。测量期间客户端可能短暂断开。',table(['规则','策略版本','优化内容','频段','自动计划','操作'],(data.config.rrm||[]).map(r=>`<tr><td>${esc(r.name)}</td><td>${(r.strategy_version||"v6").toUpperCase()}</td><td>${r.optimize_channel?'信道 / 带宽 ':''}${r.optimize_power?'功率':''}</td><td>${['双频','2.4 GHz','5 GHz'][r.frequency]}</td><td>${r.enabled&&r.schedule?.enabled?'启用':'停用'}</td><td><button class="text-button" data-rrm-edit="${esc(r.id)}">编辑</button><button class="text-button" data-rrm-run="${esc(r.id)}">立即优化</button><button class="text-button danger" data-rrm-delete="${esc(r.id)}">删除</button></td></tr>`).join('')),'<div class="toolbar"><button class="secondary" data-rrm-new="1">新建优化规则</button><button class="secondary" data-rrm-status="1">任务与测量结果</button></div>')}
-function rrmBandFields(band,b){const p='rrm_'+band;return `<fieldset><legend>${band==='2g'?'2.4':'5'} GHz</legend><div class="form-grid">${select(p+'_bandwidth','优化后的带宽',band==='2g'?{0:'20 MHz'}:{0:'20 MHz',1:'40 MHz',3:'80 MHz',5:'160 MHz'},b.bandwidth)}${field(p+'_channels','候选信道',(b.channels||[]).join(','),'text','required placeholder="1,6,11"')}${band==='5g'?`<span data-v4-rrm>${field(p+'_secondary_channels','第二 5 GHz 射频候选信道（留空取主列表的高段）',(b.secondary_channels||[]).join(','),'text','placeholder="149,157"')}</span>`:''}<div class="form-grid" data-rrm-band-power style="grid-column:1/-1">${rrmPowerFields(p,b)}</div></div></fieldset>`}
-function rrmPowerFields(p,b){return `${field(p+'_power_threshold','邻居信号目标（dBm）',b.power_threshold,'number','min="-80" max="-50" required')}${field(p+'_min_power_dbm','最小发射功率（dBm）',b.min_power_dbm,'number','min="3" max="30" required')}${field(p+'_max_power_dbm','最大发射功率（dBm）',b.max_power_dbm,'number','min="10" max="50" required')}`}
-document.addEventListener('click',async event=>{const b=event.target.closest('button');if(!b)return;try{if(b.dataset.rrmRun){if(!confirm('开始测量和优化？可能造成无线客户端短暂断开。'))return;await api('rrm/run',{rule_id:b.dataset.rrmRun});toast('优化任务已开始，可查看任务与测量结果');return}if(b.dataset.rrmStatus){const p=await api('rrm');openDialog('rrm-status','无线优化任务','RADIO OPTIMIZATION',table(['规则','状态','开始时间','测量 / 应用结果'],Object.values(p.jobs||{}).sort((a,b)=>b.started.localeCompare(a.started)).map(j=>`<tr><td>${esc(j.rule.name)}<small>${(j.rule.strategy_version||'v6').toUpperCase()}</small></td><td>${esc(({collecting:'测量中',applying:'下发中',completed:'已完成',failed:'失败'})[j.state]||j.state)}</td><td>${esc(new Date(j.started).toLocaleString())}</td><td>${j.common_channel_cancelled?'<small>网络模式已回退，共同信道阶段结束</small>':''}${j.channel_collection_failed?'<small>信道测量不足，保留原信道和带宽</small>':''}${j.power_collection_failed?'<small>功率测量不足，保留原功率</small>':''}${j.power_skipped?'<small>V4 高性能模式跳过不支持的功率优化</small>':''}${j.phase?`<small>${j.phase==='channel'?'信道':'功率'}测量 · 第 ${j.round} 轮</small>`:''}${esc(j.error||'')}${(j.changes||[]).map(c=>`<small>${esc(apName(c.ap_id))} 射频 ${c.radio_id}：信道 ${c.old_channel} → ${c.channel}，功率 ${c.old_power_dbm} → ${c.power_dbm} dBm</small>`).join('')}</td></tr>`).join('')));return}if(b.dataset.rrmDelete){const p=await api('rrm');await api('rrm/rules',(p.rules||[]).filter(r=>r.id!==b.dataset.rrmDelete));await refresh();return}if(!b.dataset.rrmNew&&!b.dataset.rrmEdit)return;const p=await api('rrm'),item=(p.rules||[]).find(r=>r.id===b.dataset.rrmEdit)||{...p.defaults,id:newID(),name:''};rrmEdit={p,item};openDialog('rrm','全局无线优化规则','RADIO OPTIMIZATION',`<form id="rrm-form">${field('name','规则名称',item.name,'text','required maxlength="64"')}${policyTargetFields(item)}<div class="form-grid">${select("strategy_version","射频优化策略",{v4:"V4 · DCA / TPC",v6:"V6 · SCA / TPC"},item.strategy_version||"v6")}${select('frequency','优化频段',{0:'双频',1:'2.4 GHz',2:'5 GHz'},item.frequency||0)}${check('optimize_channel','优化信道和带宽',item.optimize_channel)}${check('optimize_power','优化发射功率',item.optimize_power)}${check('enabled','启用自动计划',item.enabled)}</div><p class="help" data-rrm-version-help></p><fieldset data-v4-rrm><legend>各频段共用功率设置（V4）</legend><div class="form-grid">${rrmPowerFields('rrm_common',item['2g'])}</div></fieldset>${rrmBandFields('2g',item['2g'])}${rrmBandFields('5g',item['5g'])}${planFields('rrmplan','自动优化时段',item.schedule)}${formEnd('保存规则')}</form>`);updateRRMVersionForm()}catch(e){toast(e.message)}});
-document.addEventListener('submit',async event=>{const f=event.target;if(f.id!=='rrm-form')return;event.preventDefault();if(!f.reportValidity())return;try{const {p,item}=rrmEdit,n=k=>Number(f.elements[k].value),r={...item,strategy_version:f.elements.strategy_version.value,...readPolicyTarget(f),name:f.elements.name.value,frequency:n('frequency'),enabled:f.elements.enabled.checked,optimize_channel:f.elements.optimize_channel.checked,optimize_power:f.elements.optimize_power.checked,schedule:readPlan(f,'rrmplan')};for(const band of ['2g','5g']){r[band]={};for(const key of ['bandwidth','power_threshold','min_power_dbm','max_power_dbm'])r[band][key]=n('rrm_'+band+'_'+key);for(const key of (band==='5g'?['channels','secondary_channels']:['channels']))r[band][key]=f.elements['rrm_'+band+'_'+key].value.split(',').map(s=>s.trim()).filter(Boolean).map(Number)}if(r.strategy_version==='v4'){for(const key of ['power_threshold','min_power_dbm','max_power_dbm'])r['5g'][key]=r['2g'][key]=n('rrm_common_'+key)}const rows=p.rules||[],i=rows.findIndex(row=>row.id===r.id);if(i<0)rows.push(r);else rows[i]=r;await api('rrm/rules',rows);$('#editor').close();dialogKind='';await refresh();toast('无线优化规则已保存')}catch(e){f.querySelector('#form-error').textContent=e.message}});
+"use strict";
 
-function updateRRMVersionForm(){
- const f=document.querySelector('#rrm-form');if(!f)return;
- const v4=f.elements.strategy_version.value==='v4';
- f.querySelector('[data-rrm-version-help]').textContent=v4?'V4：先 DCA 信道测量，再单独进行 TPC 功率测量；每组 1–4 个候选信道；各频段共用一组功率范围和邻居信号目标。高性能网络模式仅支持共同信道优化。':'V6：SCA / TPC，三射频设备按低段、高段分两次测量。此选择独立于漫游策略；旧规则保持 V6。';
- f.querySelectorAll('[data-v4-rrm]').forEach(e=>{e.hidden=!v4});
- f.querySelectorAll('[data-rrm-band-power]').forEach(e=>{e.hidden=v4});
- for(const key of ['power_threshold','min_power_dbm','max_power_dbm']){for(const band of ['2g','5g'])f.elements['rrm_'+band+'_'+key].disabled=v4;f.elements['rrm_common_'+key].disabled=!v4;}
+let rrmEdit = null;
+
+function renderRRM() {
+  const highPerf = currentNetworkMode() === 1;
+  const rows = (data.config.rrm || [])
+    .map(
+      (r) => `<tr>
+        <td><strong>${esc(r.name)}</strong><small>${esc(targetSummary(r))}</small></td>
+        <td><span class="tag">${(r.strategy_version || "v6").toUpperCase()}</span></td>
+        <td>${[r.optimize_channel ? "信道 / 带宽" : "", r.optimize_power ? "发射功率" : ""].filter(Boolean).join("、") || "—"}</td>
+        <td>${["双频", "2.4 GHz", "5 GHz"][r.frequency] || "双频"}</td>
+        <td><span class="pill ${r.enabled && r.schedule?.enabled ? "online" : ""}">${r.enabled && r.schedule?.enabled ? "自动计划" : "手动"}</span></td>
+        <td>
+          <div class="actions">
+            <button type="button" class="text-button" data-rrm-edit="${esc(r.id)}">编辑</button>
+            <button type="button" class="text-button" data-rrm-run="${esc(r.id)}">立即优化</button>
+            <button type="button" class="text-button danger" data-rrm-delete="${esc(r.id)}">删除</button>
+          </div>
+        </td>
+      </tr>`,
+    )
+    .join("");
+
+  return (
+    (highPerf
+      ? '<div class="notice warning">当前处于高性能网络模式，仅支持共同信道优化；V6 优化规则需在兼容模式下运行。</div>'
+      : "") +
+    panel(
+      "自动射频优化",
+      table(["规则", "策略版本", "优化项", "频段", "定时", "操作"], rows),
+    )
+  );
 }
-document.addEventListener('change',event=>{if(event.target.form?.id==='rrm-form'&&event.target.name==='strategy_version')updateRRMVersionForm()});
+
+function rrmPowerFields(p, b) {
+  return `${field(p + "_power_threshold", "邻居信号目标", b.power_threshold, "number", 'min="-80" max="-50" required', "dBm")}${field(p + "_min_power_dbm", "最小发射功率", b.min_power_dbm, "number", 'min="3" max="30" required', "dBm")}${field(p + "_max_power_dbm", "最大发射功率", b.max_power_dbm, "number", 'min="10" max="50" required', "dBm")}`;
+}
+
+function rrmBandFields(band, b) {
+  const p = "rrm_" + band;
+  return `<fieldset>
+    <legend>${band === "2g" ? "2.4" : "5"} GHz</legend>
+    <div class="form-grid">
+      ${select(p + "_bandwidth", "优化后带宽", band === "2g" ? { 0: "20 MHz" } : { 0: "20 MHz", 1: "40 MHz", 3: "80 MHz", 5: "160 MHz" }, b.bandwidth)}
+      ${field(p + "_channels", "候选信道（英文逗号分隔）", (b.channels || []).join(","), "text", 'required placeholder="1,6,11"')}
+      ${band === "5g" ? `<div class="full" data-v4-rrm>${field(p + "_secondary_channels", "第二 5 GHz 射频候选信道", (b.secondary_channels || []).join(","), "text", 'placeholder="149,157"')}</div>` : ""}
+      <div class="form-grid full" data-rrm-band-power>${rrmPowerFields(p, b)}</div>
+    </div>
+  </fieldset>`;
+}
+
+document.addEventListener("click", async (event) => {
+  const b = event.target.closest("button");
+  if (!b) return;
+  try {
+    if (b.dataset.rrmRun) {
+      if (!confirm("立即执行射频测量与优化？测量期间连接可能短暂中断。"))
+        return;
+      await api("rrm/run", { rule_id: b.dataset.rrmRun });
+      toast("优化任务已启动");
+      return;
+    }
+    if (b.dataset.rrmStatus) {
+      const p = await api("rrm");
+      const jobRows = Object.values(p.jobs || {})
+        .sort((a, b) => b.started.localeCompare(a.started))
+        .map(
+          (j) => `<tr>
+            <td><strong>${esc(j.rule.name)}</strong><small>${(j.rule.strategy_version || "v6").toUpperCase()}</small></td>
+            <td>${statePill(j.state)}</td>
+            <td class="num">${esc(new Date(j.started).toLocaleString("zh-CN"))}</td>
+            <td>
+              ${j.common_channel_cancelled ? "<small>网络模式回退，共同信道阶段结束</small>" : ""}
+              ${j.channel_collection_failed ? "<small>信道测量不足，保留原信道与带宽</small>" : ""}
+              ${j.power_collection_failed ? "<small>功率测量不足，保留原功率</small>" : ""}
+              ${j.power_skipped ? "<small>高性能模式跳过功率优化</small>" : ""}
+              ${j.phase ? `<small>${j.phase === "channel" ? "信道" : "功率"}测量 · 第 ${j.round} 轮</small>` : ""}
+              ${esc(j.error || "")}
+              ${(j.changes || []).map((c) => `<small class="num">${esc(apName(c.ap_id))} 射频 ${c.radio_id}：信道 ${c.old_channel} → ${c.channel}，功率 ${c.old_power_dbm} → ${c.power_dbm} dBm</small>`).join("")}
+            </td>
+          </tr>`,
+        )
+        .join("");
+      openDialog(
+        "rrm-status",
+        "射频优化任务记录",
+        "",
+        table(["规则", "状态", "开始时间", "测量与应用结果"], jobRows),
+      );
+      return;
+    }
+    if (b.dataset.rrmDelete) {
+      if (!confirm("删除此优化规则？")) return;
+      const p = await api("rrm");
+      await api(
+        "rrm/rules",
+        (p.rules || []).filter((r) => r.id !== b.dataset.rrmDelete),
+      );
+      await refresh();
+      return;
+    }
+    if (!b.dataset.rrmNew && !b.dataset.rrmEdit) return;
+    const p = await api("rrm");
+    const item = (p.rules || []).find((r) => r.id === b.dataset.rrmEdit) || {
+      ...p.defaults,
+      id: newID(),
+      name: "",
+    };
+    rrmEdit = { p, item };
+    openDialog(
+      "rrm",
+      b.dataset.rrmEdit ? "编辑优化规则" : "新建优化规则",
+      "",
+      `<form id="rrm-form" novalidate>
+        <div class="form-grid">
+          ${field("name", "规则名称", item.name, "text", 'required maxlength="64"')}
+          ${select("strategy_version", "优化策略", { v4: "V4 · DCA / TPC", v6: "V6 · SCA / TPC" }, item.strategy_version || "v6")}
+          ${targetPicker(item.aps || [], item.groups || [])}
+          ${select("frequency", "优化频段", { 0: "双频", 1: "2.4 GHz", 2: "5 GHz" }, item.frequency || 0)}
+          <div class="switch-list full">
+            ${check("optimize_channel", "优化信道与带宽", item.optimize_channel)}
+            ${check("optimize_power", "优化发射功率", item.optimize_power)}
+            ${check("enabled", "启用自动计划", item.enabled)}
+          </div>
+        </div>
+        <p class="help" data-rrm-version-help></p>
+        <fieldset data-v4-rrm>
+          <legend>共用功率设置（V4）</legend>
+          <div class="form-grid">${rrmPowerFields("rrm_common", item["2g"])}</div>
+        </fieldset>
+        ${rrmBandFields("2g", item["2g"])}
+        ${rrmBandFields("5g", item["5g"])}
+        ${planFields("rrmplan", "自动优化时段", item.schedule)}
+        ${formEnd("保存规则")}
+      </form>`,
+    );
+    updateRRMVersionForm();
+  } catch (e) {
+    toast(e.message);
+  }
+});
+
+document.addEventListener("submit", async (event) => {
+  const f = event.target;
+  if (f.id !== "rrm-form") return;
+  event.preventDefault();
+  if (!f.reportValidity()) return;
+  const btn = f.querySelector('[type="submit"]');
+  btn.disabled = true;
+  try {
+    const { p, item } = rrmEdit;
+    const n = (k) => Number(f.elements[k].value);
+    const r = {
+      ...item,
+      strategy_version: f.elements.strategy_version.value,
+      ...readTargetPicker(f),
+      name: f.elements.name.value,
+      frequency: n("frequency"),
+      enabled: f.elements.enabled.checked,
+      optimize_channel: f.elements.optimize_channel.checked,
+      optimize_power: f.elements.optimize_power.checked,
+      schedule: readPlan(f, "rrmplan"),
+    };
+    for (const band of ["2g", "5g"]) {
+      r[band] = {};
+      for (const key of [
+        "bandwidth",
+        "power_threshold",
+        "min_power_dbm",
+        "max_power_dbm",
+      ])
+        r[band][key] = n("rrm_" + band + "_" + key);
+      for (const key of band === "5g"
+        ? ["channels", "secondary_channels"]
+        : ["channels"])
+        r[band][key] = f.elements["rrm_" + band + "_" + key].value
+          .split(",")
+          .map((s) => s.trim())
+          .filter(Boolean)
+          .map(Number);
+    }
+    if (r.strategy_version === "v4") {
+      for (const key of ["power_threshold", "min_power_dbm", "max_power_dbm"])
+        r["5g"][key] = r["2g"][key] = n("rrm_common_" + key);
+    }
+    const rows = p.rules || [];
+    const i = rows.findIndex((row) => row.id === r.id);
+    if (i < 0) rows.push(r);
+    else rows[i] = r;
+    await api("rrm/rules", rows);
+    $("#editor").close();
+    dialogKind = "";
+    await refresh();
+    toast("射频优化规则已保存");
+  } catch (e) {
+    f.querySelector("#form-error").textContent = e.message;
+  } finally {
+    btn.disabled = false;
+  }
+});
+
+function updateRRMVersionForm() {
+  const f = document.querySelector("#rrm-form");
+  if (!f) return;
+  const v4 = f.elements.strategy_version.value === "v4";
+  f.querySelector("[data-rrm-version-help]").textContent = v4
+    ? "V4：先 DCA 信道测量后 TPC 功率测量，每组 1–4 个候选信道，各频段共用功率门限。"
+    : "V6：SCA / TPC，三射频设备按高低频段分次测量。";
+  f.querySelectorAll("[data-v4-rrm]").forEach((e) => {
+    e.hidden = !v4;
+  });
+  f.querySelectorAll("[data-rrm-band-power]").forEach((e) => {
+    e.hidden = v4;
+  });
+  for (const key of ["power_threshold", "min_power_dbm", "max_power_dbm"]) {
+    for (const band of ["2g", "5g"])
+      f.elements["rrm_" + band + "_" + key].disabled = v4;
+    f.elements["rrm_common_" + key].disabled = !v4;
+  }
+}
+
+document.addEventListener("change", (event) => {
+  if (
+    event.target.form?.id === "rrm-form" &&
+    event.target.name === "strategy_version"
+  )
+    updateRRMVersionForm();
+});

@@ -1,6 +1,185 @@
-'use strict';
-const meshActionNames={discover:'扫描节点','stop-discovery':'停止扫描',pair:'配对',unpair:'解除配对',add:'添加',delete:'移除'};
-function renderMesh(){const p=data.config.mesh||{enabled:false,auto_add:false,ssid:'',backhaul_mode:0};return panel('Mesh 无线组网','配置 AP 的无线回传和节点配对。单台 AP 的 Mesh 开关可在 AP 设置中覆盖；节点结果取自 AP 上报。',`<div class="panel-body form-grid"><div><small>组网状态</small><p>${p.enabled?'启用':'关闭'}</p></div><div><small>回传名称</small><p>${esc(p.ssid||'未配置')}</p></div></div>`,'<button class="secondary" data-mesh-config>设置 Mesh</button>')+panel('Mesh AP 与节点','扫描、配对、添加、解除配对和移除节点均发送给所选父 AP。应答后仍需等待拓扑报告确认。',table(['父 AP','发现的节点','已连接节点','操作'],data.aps.filter(a=>a.features?.mesh).map(a=>`<tr><td>${esc(apName(a.id))}</td><td>${(a.mesh?.discoveries||[]).map(n=>`${esc(n.mac)} · ${esc(n.model)} · ${n.rssi} dBm`).join('<br>')||'未发现'}</td><td>${(a.mesh?.nodes||[]).map(n=>`${esc(n.mac)} · ${esc(n.ipv4)} · ${n.wireless?'无线':'有线'} · 父节点 ${esc(n.parent)}`).join('<br>')||'未上报'}</td><td><button class="text-button" data-mesh-ap="${esc(a.id)}" ${p.enabled&&a.online?'':'disabled'}>管理节点</button></td></tr>`).join('')))+panel('Mesh 成员授权','授权与撤销记录随配置备份；清理操作记录不会改变成员权限。',table(['父 AP','节点 MAC','授权状态'],(p.members||[]).slice(0,200).map(m=>`<tr><td>${esc(apName(m.parent_ap_id))}</td><td class="mono">${esc(m.mac)}</td><td>${m.allowed?'已授权':'已撤销'}</td></tr>`).join('')))+panel('Mesh 操作记录','待确认、超时和程序中断均保留记录；不会自动重发配对或移除指令。','<div id="mesh-jobs">读取记录中…</div>')}
-async function loadMeshJobs(){const el=$('#mesh-jobs');if(!el)return;try{const p=await api('mesh');if(!el.isConnected)return;el.innerHTML=table(['父 AP','操作','节点','结果','说明'],Object.values(p.jobs||{}).sort((a,b)=>b.started.localeCompare(a.started)).slice(0,100).map(j=>`<tr><td>${esc(apName(j.ap_id))}</td><td>${esc(meshActionNames[j.action]||j.action)}</td><td>${esc(j.macs.join(', '))}</td><td>${statePill(j.state)}</td><td>${esc(j.error||'')}</td></tr>`).join(''))}catch(e){el.textContent=e.message}}
-document.addEventListener('click',e=>{const t=e.target.closest('[data-mesh-config],[data-mesh-ap]');if(!t)return;dialogKind='mesh';const id=t.dataset.meshAp;const p=data.config.mesh||{enabled:false,auto_add:false,ssid:'',backhaul_mode:0};let body;if(id){body=`<input type="hidden" name="ap_id" value="${esc(id)}">${select('action','操作',{discover:'扫描节点','stop-discovery':'停止扫描',pair:'配对节点',unpair:'解除配对',add:'添加节点',delete:'移除节点'},'discover')}<label>节点 MAC（配对、添加、移除时必填）<textarea name="macs" placeholder="一行一个 MAC"></textarea></label>`}else{body=check('enabled','启用 Mesh',p.enabled)+check('auto_add','自动接入已知 AP',p.auto_add)+field('ssid','回传名称',p.ssid,'text','maxlength="32"')+`<label>回传密钥<input type="password" name="key" minlength="8" maxlength="63" autocomplete="new-password" placeholder="${p.has_key?'已设置，留空保留':'8–63 字节'}"></label><label>Mesh AP 管理密码<input type="password" name="web_password" minlength="6" maxlength="15" autocomplete="new-password" placeholder="${p.has_web_password?'已设置，留空保留':'6–15 字节'}"></label>`+select('backhaul_mode','回传模式',{0:'设备默认',1:'高带机量（5 GHz 回传）',2:'双链路回传（2.4 / 5 GHz）'},p.backhaul_mode)};openDialog('mesh',id?'Mesh 节点管理':'Mesh 组网设置','配置下发后等待 AP 状态确认。',`<form id="mesh-form"><div class="form-grid">${body}</div><p class="error" id="form-error"></p><div class="form-actions"><button type="button" class="secondary" data-close>取消</button><button type="submit">${id?'发送操作':'保存'}</button></div></form>`)});
-document.addEventListener('submit',async e=>{const f=e.target;if(f.id!=='mesh-form')return;e.preventDefault();if(!f.reportValidity())return;const b=f.querySelector('[type="submit"]');b.disabled=true;try{if(f.elements.ap_id){await api('aps/'+encodeURIComponent(f.elements.ap_id.value)+'/mesh',{action:f.elements.action.value,macs:f.elements.macs.value.split(/[\s,]+/).filter(Boolean)})}else{await api('mesh',{enabled:f.elements.enabled.checked,auto_add:f.elements.auto_add.checked,ssid:f.elements.ssid.value,key:f.elements.key.value,web_password:f.elements.web_password.value,backhaul_mode:Number(f.elements.backhaul_mode.value)})}$('#editor').close();dialogKind='';await refresh();toast('Mesh 设置已提交')}catch(e){f.querySelector('#form-error').textContent=e.message}finally{b.disabled=false}});
+"use strict";
+
+const meshActionNames = {
+  discover: "扫描节点",
+  "stop-discovery": "停止扫描",
+  pair: "配对节点",
+  unpair: "解除配对",
+  add: "添加节点",
+  delete: "移除节点",
+};
+
+function renderMesh() {
+  const p = data.config.mesh || {
+    enabled: false,
+    auto_add: false,
+    ssid: "",
+    backhaul_mode: 0,
+  };
+  const backhaulLabel =
+    {
+      0: "默认",
+      1: "高带机量（5 GHz）",
+      2: "双链路（2.4 / 5 GHz）",
+    }[p.backhaul_mode] || "默认";
+
+  const summary = `<div class="strategy-summary">
+    <div class="strategy-items">
+      <div class="strategy-kv"><span>组网状态</span><strong><span class="pill ${p.enabled ? "online" : ""}">${p.enabled ? "已启用" : "未启用"}</span></strong></div>
+      <div class="strategy-kv"><span>回传名称</span><strong>${esc(p.ssid || "—")}</strong></div>
+      <div class="strategy-kv"><span>自动接入</span><strong>${p.auto_add ? "启用" : "停用"}</strong></div>
+      <div class="strategy-kv"><span>回传模式</span><strong>${esc(backhaulLabel)}</strong></div>
+    </div>
+    <button type="button" class="btn secondary" data-mesh-config="1">配置 Mesh</button>
+  </div>`;
+
+  const apRows = data.aps
+    .filter((a) => a.features?.mesh)
+    .map(
+      (a) => `<tr>
+        <td><strong>${esc(apName(a.id))}</strong><small>${a.online ? "在线" : "离线"}</small></td>
+        <td>${(a.mesh?.discoveries || []).map((n) => `<div class="mono">${esc(n.mac)} · ${esc(n.model)} · ${n.rssi} dBm</div>`).join("") || '<span class="muted">无</span>'}</td>
+        <td>${(a.mesh?.nodes || []).map((n) => `<div class="mono">${esc(n.mac)} · ${esc(n.ipv4)} · ${n.wireless ? "无线" : "有线"} · 父 ${esc(n.parent)}</div>`).join("") || '<span class="muted">无</span>'}</td>
+        <td><button type="button" class="text-button" data-mesh-ap="${esc(a.id)}" ${p.enabled && a.online ? "" : "disabled"}>管理节点</button></td>
+      </tr>`,
+    )
+    .join("");
+
+  const memberRows = (p.members || [])
+    .slice(0, 200)
+    .map(
+      (m) =>
+        `<tr><td>${esc(apName(m.parent_ap_id))}</td><td class="mono">${esc(m.mac)}</td><td><span class="pill ${m.allowed ? "online" : ""}">${m.allowed ? "已授权" : "已撤销"}</span></td></tr>`,
+    )
+    .join("");
+
+  return (
+    panel("Mesh 无线组网", summary) +
+    panel("Mesh 节点与拓扑", table(["父 AP", "发现节点", "已接入节点", "操作"], apRows)) +
+    panel("节点授权记录", table(["父 AP", "节点 MAC", "授权状态"], memberRows)) +
+    panel("操作记录", '<div id="mesh-jobs"><div class="empty">加载中…</div></div>')
+  );
+}
+
+async function loadMeshJobs() {
+  const el = $("#mesh-jobs");
+  if (!el) return;
+  try {
+    const p = await api("mesh");
+    if (!el.isConnected) return;
+    el.innerHTML = table(
+      ["父 AP", "操作", "节点", "状态", "说明"],
+      Object.values(p.jobs || {})
+        .sort((a, b) => b.started.localeCompare(a.started))
+        .slice(0, 100)
+        .map(
+          (j) =>
+            `<tr><td>${esc(apName(j.ap_id))}</td><td>${esc(meshActionNames[j.action] || j.action)}</td><td class="mono">${esc(j.macs.join(", ") || "—")}</td><td>${statePill(j.state)}</td><td>${esc(j.error || "—")}</td></tr>`,
+        )
+        .join(""),
+    );
+  } catch (e) {
+    el.textContent = e.message;
+  }
+}
+
+document.addEventListener("click", (e) => {
+  const pick = e.target.closest("[data-mesh-pick-mac]");
+  if (pick) {
+    const f = $("#mesh-form");
+    if (!f?.elements.macs) return;
+    const mac = pick.dataset.meshPickMac;
+    const list = f.elements.macs.value
+      .split(/[\s,]+/)
+      .filter(Boolean);
+    if (!list.includes(mac)) list.push(mac);
+    f.elements.macs.value = list.join("\n");
+    return;
+  }
+  const t = e.target.closest("[data-mesh-config],[data-mesh-ap]");
+  if (!t) return;
+  const id = t.dataset.meshAp;
+  const p = data.config.mesh || {
+    enabled: false,
+    auto_add: false,
+    ssid: "",
+    backhaul_mode: 0,
+  };
+  let body;
+  if (id) {
+    const ap = data.aps.find((a) => a.id === id);
+    const macSuggestions = [
+      ...(ap?.mesh?.discoveries || []).map((n) => ({
+        mac: n.mac,
+        info: `${n.model || "发现"} · ${n.rssi} dBm`,
+      })),
+      ...(ap?.mesh?.nodes || []).map((n) => ({
+        mac: n.mac,
+        info: n.wireless ? "无线节点" : "有线节点",
+      })),
+    ];
+    const quickChips = macSuggestions.length
+      ? `<div class="full"><span class="help">点击快速填入 MAC：</span><div class="chips">${macSuggestions
+          .map(
+            (m) =>
+              `<button type="button" class="chip mono" data-mesh-pick-mac="${esc(m.mac)}">${esc(m.mac)} (${esc(m.info)})</button>`,
+          )
+          .join("")}</div></div>`
+      : "";
+    body = `<input type="hidden" name="ap_id" value="${esc(id)}">
+      ${select("action", "操作", meshActionNames, "discover")}
+      ${quickChips}
+      <label class="full"><span>节点 MAC（配对、添加、移除时填写，每行一个）</span><textarea name="macs" rows="4" placeholder="aa:bb:cc:dd:ee:ff"></textarea></label>`;
+  } else {
+    body = `<div class="full">${toggle("enabled", "启用 Mesh 组网", p.enabled)}</div>
+      <div class="full">${toggle("auto_add", "自动接入已知 AP", p.auto_add)}</div>
+      ${field("ssid", "回传名称", p.ssid, "text", 'maxlength="32"')}
+      ${select("backhaul_mode", "回传模式", { 0: "设备默认", 1: "高带机量（5 GHz）", 2: "双链路（2.4 / 5 GHz）" }, p.backhaul_mode)}
+      <label><span>回传密钥</span><input type="password" name="key" minlength="8" maxlength="63" autocomplete="new-password" placeholder="${p.has_key ? "留空不修改密钥" : "8–63 字节"}"></label>
+      <label><span>Mesh 管理密码</span><input type="password" name="web_password" minlength="6" maxlength="15" autocomplete="new-password" placeholder="${p.has_web_password ? "留空不修改密码" : "6–15 字节"}"></label>`;
+  }
+
+  openDialog(
+    "mesh",
+    id ? "管理 Mesh 节点 · " + apName(id) : "Mesh 组网设置",
+    "",
+    `<form id="mesh-form" novalidate>
+      <div class="form-grid">${body}</div>
+      ${formEnd(id ? "发送操作" : "保存并下发", '<button type="button" class="btn secondary" data-close="1">取消</button>')}
+    </form>`,
+  );
+});
+
+document.addEventListener("submit", async (e) => {
+  const f = e.target;
+  if (f.id !== "mesh-form") return;
+  e.preventDefault();
+  if (!f.reportValidity()) return;
+  const b = f.querySelector('[type="submit"]');
+  b.disabled = true;
+  try {
+    if (f.elements.ap_id) {
+      await api("aps/" + encodeURIComponent(f.elements.ap_id.value) + "/mesh", {
+        action: f.elements.action.value,
+        macs: f.elements.macs.value.split(/[\s,]+/).filter(Boolean),
+      });
+    } else {
+      await api("mesh", {
+        enabled: f.elements.enabled.checked,
+        auto_add: f.elements.auto_add.checked,
+        ssid: f.elements.ssid.value,
+        key: f.elements.key.value,
+        web_password: f.elements.web_password.value,
+        backhaul_mode: Number(f.elements.backhaul_mode.value),
+      });
+    }
+    $("#editor").close();
+    dialogKind = "";
+    await refresh();
+    toast("Mesh 设置已提交");
+  } catch (err) {
+    f.querySelector("#form-error").textContent = err.message;
+  } finally {
+    b.disabled = false;
+  }
+});

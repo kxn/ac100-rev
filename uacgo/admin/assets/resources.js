@@ -1,5 +1,73 @@
-'use strict';
-let controllerResources={settings:{},defaults:{},fields:[]};
-function renderControllerResources(){const r=controllerResources;return panel('程序容量','这些容量由独立 Go 控制器管理，按当前主机需要调整。',table(['参数','当前值','Go 默认值'],r.fields.map(f=>`<tr><td>${esc(f.label)}</td><td>${esc(r.settings[f.key])} ${esc(f.unit||'')}</td><td>${esc(r.defaults[f.key])} ${esc(f.unit||'')}</td></tr>`).join('')),'<button class="secondary" data-resource-edit>编辑程序配置</button>')+panel('生效方式','保存后立即生效并持久化，包含在配置备份中。','<p>降低 AP 会话上限会限制新增接入，已在线设备保持连接；降低待发命令容量后，已有命令继续发送。其他容量不能低于已有配置的占用。</p><p>单台 AP 可接受的配置仍受设备能力限制；无线功能参数在对应页面设置。</p>')}
-document.addEventListener('click',e=>{if(!e.target.closest('[data-resource-edit]'))return;const r=controllerResources;openDialog('controller-resources','程序配置','CONTROLLER SETTINGS',`<form id="controller-resources-form"><div class="form-grid">${r.fields.map(f=>field(f.key,f.label,r.settings[f.key],'number',`min="${f.min}" max="${f.max}" step="1" required`)).join('')}</div><p class="help">规则容量分别用于均衡、漫游、RRM、EDCA及防护规则。单台AP可接受的配置仍受设备能力限制。</p>${formEnd()}</form>`)});
-document.addEventListener('submit',async e=>{const f=e.target;if(f.id!=='controller-resources-form')return;e.preventDefault();if(!f.reportValidity())return;const button=f.querySelector('[type=submit]');button.disabled=true;try{const value=Object.fromEntries(controllerResources.fields.map(p=>[p.key,Number(f.elements[p.key].value)]));await api('controller/resources',value);$('#editor').close();dialogKind='';await refresh();toast('程序配置已保存并生效')}catch(error){f.querySelector('#form-error').textContent=error.message}finally{button.disabled=false}});
+"use strict";
+
+let controllerResources = { settings: {}, defaults: {}, fields: [] };
+
+function renderControllerResources() {
+  const r = controllerResources;
+  if (!r.fields?.length) {
+    void api("controller/resources")
+      .then((res) => {
+        controllerResources = res;
+        if (tab === "resources") renderContent();
+      })
+      .catch(() => {});
+    return panel("容量配额", '<div class="empty">加载容量配置中…</div>');
+  }
+
+  const rows = r.fields
+    .map(
+      (f) => `<div class="resource-row">
+        ${field(f.key, f.label, r.settings[f.key], "number", `min="${f.min}" max="${f.max}" step="1" required`, f.unit || "")}
+        <div class="resource-meta">
+          <span class="num">范围：${f.min} – ${f.max}</span>
+          <span class="num">默认值：${esc(r.defaults[f.key])} ${esc(f.unit || "")}</span>
+        </div>
+      </div>`,
+    )
+    .join("");
+
+  return panel(
+    "容量配额",
+    `<div class="panel-body">
+      <form id="controller-resources-form" data-inline="1" novalidate>
+        <div class="form-grid">${rows}</div>
+        <p class="help">降低 AP 会话上限不影响已在线设备；其余配额不能低于当前已创建对象的数量。</p>
+        ${formEnd("保存配置", '<button type="button" class="btn secondary" data-resource-reset>恢复默认值</button>')}
+      </form>
+    </div>`,
+  );
+}
+
+document.addEventListener("click", (e) => {
+  if (!e.target.closest("[data-resource-reset]")) return;
+  const f = $("#controller-resources-form");
+  if (!f) return;
+  for (const p of controllerResources.fields) {
+    if (f.elements[p.key]) f.elements[p.key].value = controllerResources.defaults[p.key];
+  }
+  f.dataset.dirty = "1";
+});
+
+document.addEventListener("submit", async (e) => {
+  const f = e.target;
+  if (f.id !== "controller-resources-form") return;
+  e.preventDefault();
+  if (!f.reportValidity()) return;
+  const button = f.querySelector('[type="submit"]');
+  button.disabled = true;
+  try {
+    const value = Object.fromEntries(
+      controllerResources.fields.map((p) => [p.key, Number(f.elements[p.key].value)]),
+    );
+    await api("controller/resources", value);
+    delete f.dataset.dirty;
+    await refresh();
+    toast("容量配置已保存");
+  } catch (error) {
+    const errEl = f.querySelector("#form-error");
+    if (errEl) errEl.textContent = error.message;
+    else toast(error.message);
+  } finally {
+    button.disabled = false;
+  }
+});

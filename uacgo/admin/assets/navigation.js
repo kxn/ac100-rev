@@ -1,89 +1,97 @@
 "use strict";
 
-// A single route definition drives the sidebar, section tabs and breadcrumb.
 const navigationGroups = [
-  { label: "", families: ["overview"] },
-  {
-    label: "配置无线网络",
-    families: ["aps", "services", "radios", "mobility"],
-  },
-  { label: "查看运行状态", families: ["clients", "history"] },
-  { label: "维护与程序", families: ["protection", "upgrades", "interfaces"] },
+  { label: "", families: ["overview", "aps", "clients", "history"] },
+  { label: "无线", families: ["services", "radios", "mobility", "protection"] },
+  { label: "系统", families: ["upgrades", "interfaces"] },
 ];
+
 const navigationFamilies = {
-  overview: { label: "总览", pages: ["overview"] },
+  overview: { label: "概览", icon: "overview", pages: ["overview"] },
   aps: {
     label: "AP 管理",
+    icon: "aps",
     pages: ["aps", "management", "templates", "apdefaults", "mesh"],
   },
-  services: { label: "无线服务", pages: ["services", "pools", "multicast"] },
-  radios: { label: "射频设置", pages: ["radios", "rates", "edca"] },
-  mobility: {
-    label: "无线优化",
-    pages: ["mobility", "balance", "band", "rrm"],
+  clients: { label: "客户端", icon: "clients", pages: ["clients"] },
+  history: { label: "运行统计", icon: "history", pages: ["history"] },
+  services: {
+    label: "无线网络",
+    icon: "services",
+    pages: ["services", "pools", "multicast"],
   },
-  clients: { label: "客户端状态", pages: ["clients"] },
-  history: { label: "无线运行记录", pages: ["history"] },
-  protection: { label: "AP 网络防护", pages: ["protection"] },
-  upgrades: { label: "AP 固件升级", pages: ["upgrades"] },
+  radios: {
+    label: "射频管理",
+    icon: "radios",
+    pages: ["radios", "rrm", "rates", "edca"],
+  },
+  mobility: {
+    label: "漫游与均衡",
+    icon: "mobility",
+    pages: ["mobility", "balance", "band"],
+  },
+  protection: { label: "网络防护", icon: "protection", pages: ["protection"] },
+  upgrades: { label: "固件升级", icon: "upgrades", pages: ["upgrades"] },
   interfaces: {
-    label: "程序设置",
+    label: "系统设置",
+    icon: "settings",
     pages: ["interfaces", "resources", "backup"],
   },
 };
+
 const routes = {
-  overview: ["总览", "先查看接入和同步情况，再从下方入口配置无线网络。"],
-  aps: ["AP 列表", "在设备行进入单台 AP 的参数、分组、射频和同步状态。"],
-  management: ["AP 分组", "把使用相同参数或无线服务的 AP 放到同一分组。"],
-  templates: ["AP 模板", "为同型号、同硬件的 AP 复用一套配置。"],
-  apdefaults: [
-    "全局 AP 默认",
-    "设置所有 AP 的基础参数；分组、模板和单台 AP 可覆盖这些值。",
-  ],
-  mesh: ["Mesh 组网", "管理 AP 的无线回传、节点配对与成员授权。"],
-  services: [
-    "无线服务列表",
-    "建立无线名称和密码，选择在哪些 AP 与频段上广播。",
-  ],
-  pools: [
-    "VLAN 池",
-    "供无线服务引用的 VLAN 集合；不使用动态 VLAN 时无需配置。",
-  ],
-  multicast: ["组播地址列表", "管理无线服务使用的组播地址规则。"],
-  radios: [
-    "AP 射频设置",
-    "选择 AP 和频段，配置无线模式、信道、带宽、功率及性能参数。",
-  ],
-  rates: ["速率表", "统一配置基础速率、支持速率和 MCS 索引。"],
-  edca: ["EDCA 队列", "按 AP、分组和频段配置无线争用队列。"],
-  mobility: [
-    "无缝漫游",
-    "配置 802.11k/v/r 与漫游触发门限，并按 AP 或分组应用。",
-  ],
-  balance: ["负载均衡", "在 AP 之间均衡新接入客户端，设置人数与拒绝次数门限。"],
-  band: ["双频优选", "在同一 AP 的 2.4 GHz 与 5 GHz 之间引导双频客户端。"],
-  rrm: [
-    "自动射频优化",
-    "协调多台 AP 的信道、带宽和功率，管理手动任务与优化计划。",
-  ],
-  clients: ["客户端状态", "查看终端实际连接到哪个 AP、无线服务和频段。"],
-  history: [
-    "无线运行记录",
-    "查看无线趋势及已确认的客户端上线、离线和切换记录。",
-  ],
-  protection: [
-    "AP 网络防护",
-    "配置由 AP 执行的 DHCP/ARP/ND 防护、广播抑制与协议代理。",
-  ],
-  upgrades: ["AP 固件升级", "管理固件镜像、升级任务和版本确认结果。"],
-  interfaces: [
-    "通信接口",
-    "选择程序与 AP 通信的网卡，接口调整在下次启动生效。",
-  ],
-  resources: ["运行容量", "配置独立 Go 控制器的对象容量和资源预算。"],
-  backup: ["备份与恢复", "导出或恢复程序配置，包括无线服务、AP 参数与策略。"],
+  overview: ["概览"],
+  aps: ["设备列表"],
+  management: ["分组"],
+  templates: ["模板"],
+  apdefaults: ["全局默认"],
+  mesh: ["Mesh"],
+  services: ["无线服务"],
+  pools: ["VLAN 池"],
+  multicast: ["组播列表"],
+  radios: ["射频配置"],
+  rrm: ["射频调优"],
+  rates: ["速率表"],
+  edca: ["EDCA"],
+  mobility: ["无缝漫游"],
+  balance: ["负载均衡"],
+  band: ["双频优选"],
+  clients: ["客户端"],
+  history: ["运行统计"],
+  protection: ["网络防护"],
+  upgrades: ["固件升级"],
+  interfaces: ["通信接口"],
+  resources: ["容量配额"],
+  backup: ["备份与恢复"],
 };
+
 const names = routes;
+
+function navIcon(name) {
+  const paths = {
+    overview:
+      '<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',
+    aps: '<rect x="5" y="4" width="14" height="16" rx="2"/><circle cx="12" cy="10" r="2"/><path d="M9 16h6"/>',
+    clients:
+      '<rect x="5" y="3" width="14" height="10" rx="1.5"/><path d="M2 18h20"/><path d="M9 13v5m6-5v5"/>',
+    history:
+      '<polyline points="3 17 9 11 13 15 21 7"/><polyline points="16 7 21 7 21 12"/>',
+    services:
+      '<path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><circle cx="12" cy="19.5" r="1" fill="currentColor"/>',
+    radios:
+      '<path d="M12 12v8"/><circle cx="12" cy="10" r="2"/><path d="M6.34 15.66a8 8 0 0 1 0-11.32"/><path d="M17.66 4.34a8 8 0 0 1 0 11.32"/>',
+    mobility:
+      '<path d="M17 3l4 4-4 4"/><path d="M3 7h18"/><path d="M7 21l-4-4 4-4"/><path d="M21 17H3"/>',
+    protection:
+      '<path d="M12 3l8 3v6c0 4.5-3.4 7.7-8 9-4.6-1.3-8-4.5-8-9V6l8-3z"/>',
+    upgrades:
+      '<path d="M12 15V4"/><polyline points="7 9 12 4 17 9"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/>',
+    settings:
+      '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9c0 .69.4 1.31 1.02 1.58.3.13.62.2.95.2H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>',
+  };
+  return `<svg class="nav-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths[name] || ""}</svg>`;
+}
+
 function routeFamily(page) {
   return (
     Object.entries(navigationFamilies).find(([, f]) =>
@@ -91,28 +99,71 @@ function routeFamily(page) {
     )?.[0] || "overview"
   );
 }
+
 function initializeNavigation() {
   $("#navigation").innerHTML = navigationGroups
     .map(
       (g) =>
-        `<div class="nav-group">${g.label ? `<div class="nav-label">${esc(g.label)}</div>` : ""}${g.families.map((id) => `<button data-tab="${id}">${esc(navigationFamilies[id].label)}</button>`).join("")}</div>`,
+        `<div class="nav-group">${g.label ? `<div class="nav-label">${esc(g.label)}</div>` : ""}${g.families
+          .map((id) => {
+            const f = navigationFamilies[id];
+            const badge =
+              id === "aps" || id === "clients"
+                ? `<span class="nav-badge num hidden" id="nav-badge-${id}"></span>`
+                : "";
+            return `<button type="button" data-tab="${id}">${navIcon(f.icon)}<span class="nav-text">${esc(f.label)}</span>${badge}</button>`;
+          })
+          .join("")}</div>`,
     )
     .join("");
 }
+
+function headerActionsFor(page) {
+  const map = {
+    aps: '<button class="btn secondary" type="button" data-ap-batch-names="1">批量命名</button><a class="btn secondary" href="/api/aps/export" download>导出清单</a>',
+    management:
+      '<button class="btn primary" type="button" data-group-new="1">新建分组</button>',
+    templates:
+      '<button class="btn primary" type="button" data-template-new="1">新建模板</button>',
+    clients:
+      '<a class="btn secondary" href="/api/clients/export" download>导出 CSV</a>',
+    services:
+      '<button class="btn primary" id="new-service" type="button">新建无线服务</button>',
+    pools:
+      '<button class="btn primary" type="button" data-new-pool="1">新建 VLAN 池</button>',
+    multicast:
+      '<button class="btn secondary" type="button" data-multicast-bulk="1">批量编辑</button><button class="btn primary" type="button" data-multicast-new="1">添加规则</button>',
+    rrm: '<button class="btn secondary" type="button" data-rrm-status="1">任务记录</button><button class="btn primary" type="button" data-rrm-new="1">新建优化规则</button>',
+    edca: '<button class="btn primary" type="button" data-edca-new="1">新建 EDCA 规则</button>',
+    mobility:
+      '<button class="btn primary" type="button" data-mobility-kind="roaming">新建漫游规则</button>',
+    balance:
+      '<button class="btn primary" type="button" data-mobility-kind="balance">新建均衡规则</button>',
+    upgrades:
+      '<label class="btn primary file-btn">上传固件<input type="file" id="firmware-upload" accept=".bin" class="hidden" /></label>',
+  };
+  return map[page] || "";
+}
+
 function updateNavigation() {
-  const family = routeFamily(tab),
-    group = navigationFamilies[family];
-  $$("nav [data-tab]").forEach((b) =>
+  const family = routeFamily(tab);
+  const group = navigationFamilies[family];
+  $$("#navigation [data-tab]").forEach((b) =>
     b.classList.toggle("active", b.dataset.tab === family),
   );
-  $("#breadcrumb").textContent =
-    group.label + (group.pages.length > 1 ? " / " + names[tab][0] : "");
-  $("#title").textContent = names[tab][0];
-  $("#description").textContent = names[tab][1];
-  $("#summary").classList.toggle("hidden", tab !== "overview");
-  $("#new-service").classList.toggle("hidden", tab !== "services");
-  $("#section-navigation").innerHTML =
-    group.pages.length > 1
-      ? `<nav class="section-navigation" aria-label="${esc(group.label)}的功能页">${group.pages.map((id) => `<button data-view="${id}" class="${id === tab ? "active" : ""}" ${id === tab ? 'aria-current="page"' : ""}>${esc(names[id][0])}</button>`).join("")}</nav>`
-      : "";
+  $("#title").textContent = group.label;
+  $("#header-actions").innerHTML = headerActionsFor(tab);
+  const subnav = $("#section-navigation");
+  if (group.pages.length > 1) {
+    subnav.classList.remove("hidden");
+    subnav.innerHTML = `<nav class="subnav" aria-label="${esc(group.label)}">${group.pages
+      .map(
+        (id) =>
+          `<button type="button" data-view="${id}" class="${id === tab ? "active" : ""}" ${id === tab ? 'aria-current="page"' : ""}>${esc(names[id][0])}</button>`,
+      )
+      .join("")}</nav>`;
+  } else {
+    subnav.classList.add("hidden");
+    subnav.innerHTML = "";
+  }
 }
