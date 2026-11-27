@@ -92,6 +92,12 @@ func TestRoamingTriggerAcrossTwoUDPSimulatedAPs(t *testing.T) {
 	rssi := int8(-80)
 	m.clients.StationEvent(cweng.ClientEvent{MAC: mac, APID: a.ID, RadioID: 1, WLANID: 1, State: "connected", Kind: "associate", RSSI: &rssi, Seen: time.Now()})
 	trigger := capwap.PrivRoamingTrigger{Radio: 1, Stations: []capwap.RoamTriggerStation{{MAC: mac, WLAN: 1, RSSI: -80, Neighbors: []capwap.RoamNeighborReport{{BSSID: bssid, RCPI: 100}}}}}
+	other := mac
+	other[5]++
+	m.clients.StationEvent(cweng.ClientEvent{MAC: other, APID: a.ID, RadioID: 1, WLANID: 1, Kind: "associate", Seen: time.Now()})
+	// Both rows enter the BSTM list. The second row has no resolvable
+	// neighbors and must not inherit the first row's selected target.
+	trigger.Stations = append(trigger.Stations, capwap.RoamTriggerStation{MAC: other, WLAN: 1, RSSI: -90, Neighbors: []capwap.RoamNeighborReport{{BSSID: [6]byte{2, 99}, RCPI: 100}}})
 	pkt, _ := capwap.NewParsedPacket(9)
 	pkt.Control.SeqNum = 5
 	pkt.Elements = []capwap.Element{privateSetting(0x58, trigger.AssembleValue())}
@@ -135,7 +141,7 @@ func TestRoamingTriggerAcrossTwoUDPSimulatedAPs(t *testing.T) {
 			for _, el := range pkt.Elements {
 				if el.Type == 0x25 && len(el.Value) > 10 && el.Value[7] == 0x59 {
 					v, err := capwap.ParsePrivRoamingCalcResult(el.Value[10:])
-					if err != nil || len(v.Stations) != 1 || len(v.Stations[0].Candidates) != 1 || v.Stations[0].Candidates[0].BSSID != bssid {
+					if err != nil || len(v.Stations) != 2 || len(v.Stations[0].Candidates) != 1 || v.Stations[0].Candidates[0].BSSID != bssid || len(v.Stations[1].Candidates) != 0 || v.Stations[1].APBitmap[0] != 1 {
 						fake.mu.Unlock()
 						t.Fatalf("bad roam result %+v %v", v, err)
 					}
@@ -155,7 +161,7 @@ func TestRoamingTriggerAcrossTwoUDPSimulatedAPs(t *testing.T) {
 	m.mu.Lock()
 	got := m.calculateRoamingLocked(a, trigger, time.Now())
 	m.mu.Unlock()
-	if len(got) != 1 || len(got[0].Stations) != 1 || len(got[0].Stations[0].Candidates) != 1 {
+	if len(got) != 1 || len(got[0].Stations) != 2 || len(got[0].Stations[0].Candidates) != 1 || len(got[0].Stations[1].Candidates) != 0 {
 		t.Fatal("transport ACK changed candidate selection")
 	}
 }

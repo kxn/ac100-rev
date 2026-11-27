@@ -265,17 +265,11 @@ func (m *Manager) calculateRoamingLocked(ap cweng.APStatus, report capwap.PrivRo
 	}
 	settings := roamingFor(m.config.Mobility, ap.ID, m.config)
 	out := capwap.PrivRoamingCalcResult{Radio: report.Radio, APs: [][6]byte{apMAC(ap)}}
-	// 4e6564 initializes the selector's output count once per packet.
-	// 4e5638 returns without writing it when the neighbor count is zero.
-	// Preserve that packet-local output state explicitly, without unsafe
-	// memory reuse or introducing an independent fallback algorithm.
-	var lastSelection []mobility.Candidate
 	flush := func() {
 		if len(out.Stations) > 0 {
 			results = append(results, out)
 		}
 		out = capwap.PrivRoamingCalcResult{Radio: report.Radio, APs: [][6]byte{apMAC(ap)}}
-		lastSelection = nil
 	}
 	addAP := func(id string) int {
 		mac := apMAC(m.known[id])
@@ -369,10 +363,9 @@ func (m *Manager) calculateRoamingLocked(ap cweng.APStatus, report capwap.PrivRo
 		if len(out.Stations) >= 128 || len(needed) > 128 {
 			flush()
 		}
-		if len(grouped) > 0 {
-			lastSelection = (mobility.Selection{CurrentRSSI: currentRSSI, CurrentRate: currentRate, ThresholdType2G: settings.Band2G.Type, ThresholdType5G: settings.Band5G.Type}).Select(grouped)
-		}
-		selected := lastSelection
+		// Each station owns its result. The firmware's stale output-count
+		// bug must not copy another station's candidates into this row.
+		selected := (mobility.Selection{CurrentRSSI: currentRSSI, CurrentRate: currentRate, ThresholdType2G: settings.Band2G.Type, ThresholdType5G: settings.Band5G.Type}).Select(grouped)
 		row := capwap.RoamResultStation{MAC: sta.MAC}
 		row.APBitmap[0] = 1
 		d := RoamDecision{At: now, AP: ap.ID, MAC: net.HardwareAddr(sta.MAC[:]).String(), Candidates: []string{}, Reason: "原厂速率、负载及 RSSI 门限未选中候选"}
@@ -398,9 +391,6 @@ func (m *Manager) calculateRoamingLocked(ap cweng.APStatus, report capwap.PrivRo
 		}
 		if len(selected) > 0 {
 			d.Reason = "原厂 roam_nbr_select 选择结果"
-			if len(grouped) == 0 {
-				d.Reason = "原固件空邻居返回保留同包上一站点选择结果"
-			}
 		}
 		out.Stations = append(out.Stations, row)
 		m.roamHistory = append(m.roamHistory, d)

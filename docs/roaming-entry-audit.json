@@ -1,0 +1,2307 @@
+{
+  "firmware": "TL-AC100 V6.0 1.0.3 Build 260817 Rel.68871n",
+  "uac_sha256": "b12d1584fcafda2a71aa9038b41b7e1c5b893b350f3e6edf5105e445d024a912",
+  "symbol_file_sha256": "8cf316c4f26ac5903d1d14986eec7e7e1aa565a347caaa385173d0aaa6c3966b",
+  "scope": "11 registration roots for roaming, balance, band navigation and their statistics; includes callback-address references, four timer-table slots, and all symbol-bounded direct J/JAL callers to the named decision/mode targets. Ghidra references are reviewed static evidence, not a proof that arbitrary indirect calls have been exhaustively resolved.",
+  "roots": [
+    {
+      "name": "wsta_roam_init",
+      "address": "0x004d8240",
+      "size": 1492,
+      "sha256": "1158d0b1d33c4575fbbf67c6d54d0968d22f652ae8fc59ef4b6c002e10127c59"
+    },
+    {
+      "name": "wsta_roam_pkt_init",
+      "address": "0x004e9b78",
+      "size": 1032,
+      "sha256": "d530cee555424f51a3a1dd9f3b5124db888f695d5c2659c47b1af3e9d244d72d"
+    },
+    {
+      "name": "wsta_roam_db_init",
+      "address": "0x004de794",
+      "size": 1124,
+      "sha256": "2bc497d0096f408b16afddab7c3d4a072dfb175d896d3f9b34f0406519557391"
+    },
+    {
+      "name": "wsta_roam_sql_init",
+      "address": "0x004dabf0",
+      "size": 824,
+      "sha256": "77fda4cace08383c29753090dce9b23fb56099654d9ac23da90304d514c0cbfa"
+    },
+    {
+      "name": "balance_init",
+      "address": "0x004ef760",
+      "size": 1676,
+      "sha256": "06ce3a4415481aa930cb23bd73eb1441924a1e1a6ebadf7687ccded9b09332bc"
+    },
+    {
+      "name": "balance_db_init",
+      "address": "0x004f34f4",
+      "size": 1616,
+      "sha256": "781f5f494e4265c10c2815c7af770d3c38a7825d4107a680674ceb19942b66c7"
+    },
+    {
+      "name": "uac_stats_init",
+      "address": "0x007b4578",
+      "size": 1068,
+      "sha256": "a87d4dfc331ce68dbddd67a67afe8595d90ba6c0664b922eb77e095a61cf989f"
+    },
+    {
+      "name": "stats_pkt_init",
+      "address": "0x007b5d6c",
+      "size": 248,
+      "sha256": "4a6a51e4a5b392bd324307d15bb2a743b501089057ea1f93331b8d7c74aa662b"
+    },
+    {
+      "name": "stats_db_init",
+      "address": "0x007ac914",
+      "size": 1956,
+      "sha256": "410edb66c9589216004f408bdb854c524bdc77bda648431ddef6fe498189c75d"
+    },
+    {
+      "name": "band_navigation_init",
+      "address": "0x00633ce8",
+      "size": 368,
+      "sha256": "cb020811d744c6a8ca1af2c5e164a1421e790ada48e98e9d123c14f6c58519ab"
+    },
+    {
+      "name": "band_navigation_db_init",
+      "address": "0x00633e60",
+      "size": 560,
+      "sha256": "f88f97768740e3b687d736b2fb927572c79cf436822a5e9868e62b7c14817111"
+    }
+  ],
+  "entries": [
+    {
+      "source": {
+        "name": "_auth_ok_sta_sc_free_cb",
+        "address": "0x007a9ad0",
+        "size": 24,
+        "sha256": "f04bf1a4e473b66fdab2ddd8d59bc2c1486eafb3e213501731a6f7ed87aab62f"
+      },
+      "references": [
+        {
+          "root": "stats_db_init",
+          "site": "0x007ace30",
+          "instruction": "0x24e79ad0"
+        }
+      ],
+      "classification": "excluded-auth",
+      "contracts": [],
+      "note": "认证成功/失败统计容器回调；用户排除认证状态/认证管理，不引入调度。"
+    },
+    {
+      "source": {
+        "name": "_auth_ok_sta_sc_handle",
+        "address": "0x007a90f8",
+        "size": 40,
+        "sha256": "72d5e8f8090269843976ecf0644a25bf32ff3379bad5ecf1e7d054afbf13b274"
+      },
+      "references": [
+        {
+          "root": "stats_db_init",
+          "site": "0x007ace1c",
+          "instruction": "0xafb80010"
+        }
+      ],
+      "classification": "excluded-auth",
+      "contracts": [],
+      "note": "认证成功/失败统计容器回调；用户排除认证状态/认证管理，不引入调度。"
+    },
+    {
+      "source": {
+        "name": "_balance_apmngr_group_delete",
+        "address": "0x004ed3c0",
+        "size": 36,
+        "sha256": "b55a46081846171fc141d96c08ec7c0c9f0ee4f40d49c22758e9f5349beb6049"
+      },
+      "references": [
+        {
+          "root": "balance_init",
+          "site": "0x004efa0c",
+          "instruction": "0xafb80090"
+        }
+      ],
+      "classification": "configuration",
+      "contracts": [
+        "balance-failures-clock",
+        "configuration-lifecycle-validation",
+        "copy-replace-retire"
+      ],
+      "note": "均衡规则CRUD、组迁移/删除引用检查、AP删除/移组解绑；使用统一保存校验和配置收敛。"
+    },
+    {
+      "source": {
+        "name": "_fail_sta_sc_free_cb",
+        "address": "0x007a9ae8",
+        "size": 24,
+        "sha256": "f04bf1a4e473b66fdab2ddd8d59bc2c1486eafb3e213501731a6f7ed87aab62f"
+      },
+      "references": [
+        {
+          "root": "stats_db_init",
+          "site": "0x007acdd4",
+          "instruction": "0x24e79ae8"
+        }
+      ],
+      "classification": "excluded-auth",
+      "contracts": [],
+      "note": "认证成功/失败统计容器回调；用户排除认证状态/认证管理，不引入调度。"
+    },
+    {
+      "source": {
+        "name": "_fail_sta_sc_handle",
+        "address": "0x007a90d0",
+        "size": 40,
+        "sha256": "90d5103ab1dc72086a72c33bcc0f7d03491b34bbb2546682c8ff4cb888cdb6e8"
+      },
+      "references": [
+        {
+          "root": "stats_db_init",
+          "site": "0x007acdc0",
+          "instruction": "0xafb80010"
+        }
+      ],
+      "classification": "excluded-auth",
+      "contracts": [],
+      "note": "认证成功/失败统计容器回调；用户排除认证状态/认证管理，不引入调度。"
+    },
+    {
+      "source": {
+        "name": "_stats_ap_del_cb",
+        "address": "0x007b4314",
+        "size": 144,
+        "sha256": "616c1f51d6bd1ea62fa9a59e4f711f6cb62aae20659160a4a69a14cb81e973c4"
+      },
+      "references": [
+        {
+          "root": "uac_stats_init",
+          "site": "0x007b471c",
+          "instruction": "0xafb80038"
+        }
+      ],
+      "classification": "lifecycle",
+      "contracts": [
+        "roaming-statistics-authority"
+      ],
+      "note": "AP/射频/WLAN创建、激活、重置与删除有效事实；离线清理和新会话隔离，不能用展示缓存复活候选。"
+    },
+    {
+      "source": {
+        "name": "_stats_ap_disconnect_cb",
+        "address": "0x007b43a4",
+        "size": 144,
+        "sha256": "13b80752af444d4b8fc03c357486b36f8ac541448152d8a02f0f7c086220522b"
+      },
+      "references": [
+        {
+          "root": "uac_stats_init",
+          "site": "0x007b4700",
+          "instruction": "0xafb80030"
+        }
+      ],
+      "classification": "lifecycle",
+      "contracts": [
+        "roaming-statistics-authority"
+      ],
+      "note": "AP/射频/WLAN创建、激活、重置与删除有效事实；离线清理和新会话隔离，不能用展示缓存复活候选。"
+    },
+    {
+      "source": {
+        "name": "_stats_ap_idle_timer_handle",
+        "address": "0x007a94f4",
+        "size": 196,
+        "sha256": "bba97b4b3167975ff5c906d1218f1601dcd73997be9048e95b8e42b866c7a5de"
+      },
+      "references": [
+        {
+          "root": "stats_db_init",
+          "site": "0x007acf54",
+          "instruction": "0x24c694f4"
+        }
+      ],
+      "classification": "diagnostic",
+      "contracts": [],
+      "note": "每分钟清离线AP统计采样；_stats_db_ap_stat_idle_clear先跳过status&7非零的AP，不新增在线候选超时策略。"
+    },
+    {
+      "source": {
+        "name": "_stats_ap_join_cb",
+        "address": "0x007b4434",
+        "size": 140,
+        "sha256": "56a316903ffcdcbdf100153f84a8d3fd96273995b7b745103fba5619098b13fd"
+      },
+      "references": [
+        {
+          "root": "uac_stats_init",
+          "site": "0x007b46f4",
+          "instruction": "0xafb8002c"
+        }
+      ],
+      "classification": "lifecycle",
+      "contracts": [
+        "roaming-statistics-authority"
+      ],
+      "note": "AP/射频/WLAN创建、激活、重置与删除有效事实；离线清理和新会话隔离，不能用展示缓存复活候选。"
+    },
+    {
+      "source": {
+        "name": "_stats_ap_online_cb",
+        "address": "0x007b3f30",
+        "size": 476,
+        "sha256": "f82de1d368d39dfa28699c577acf7ec4d4040bc724445743e73e8b606e0206b2"
+      },
+      "references": [
+        {
+          "root": "uac_stats_init",
+          "site": "0x007b4788",
+          "instruction": "0xafb80020"
+        }
+      ],
+      "classification": "lifecycle",
+      "contracts": [
+        "roaming-statistics-authority"
+      ],
+      "note": "AP/射频/WLAN创建、激活、重置与删除有效事实；离线清理和新会话隔离，不能用展示缓存复活候选。"
+    },
+    {
+      "source": {
+        "name": "_stats_bssid_cmp",
+        "address": "0x007a9db0",
+        "size": 56,
+        "sha256": "77be9d1890789c0b0fa76cff7a11abf0dc739f128c613f05ffc00dcbdd66b8cc"
+      },
+      "references": [
+        {
+          "root": "stats_db_init",
+          "site": "0x007acd84",
+          "instruction": "0x24c69db0"
+        }
+      ],
+      "classification": "container-utility",
+      "contracts": [],
+      "note": "哈希key/object/compare适配；没有独立触发、选择或准入动作。"
+    },
+    {
+      "source": {
+        "name": "_stats_bssid_key",
+        "address": "0x007a9e24",
+        "size": 16,
+        "sha256": "00929310174e47e5615f672e6f38b86d0a5a08864f2c071ddfbe7aeac79dae7a"
+      },
+      "references": [
+        {
+          "root": "stats_db_init",
+          "site": "0x007acd7c",
+          "instruction": "0x24a59e24"
+        }
+      ],
+      "classification": "container-utility",
+      "contracts": [],
+      "note": "哈希key/object/compare适配；没有独立触发、选择或准入动作。"
+    },
+    {
+      "source": {
+        "name": "_stats_bssid_obj",
+        "address": "0x007a9e34",
+        "size": 8,
+        "sha256": "81d6d4b76713713fc695e6af9806ff00ffa9db42d2c01fa984203b6f1e1354f4"
+      },
+      "references": [
+        {
+          "root": "stats_db_init",
+          "site": "0x007acd78",
+          "instruction": "0x24849e34"
+        }
+      ],
+      "classification": "container-utility",
+      "contracts": [],
+      "note": "哈希key/object/compare适配；没有独立触发、选择或准入动作。"
+    },
+    {
+      "source": {
+        "name": "_stats_ctl_pkt_send_cb",
+        "address": "0x007b5ad8",
+        "size": 384,
+        "sha256": "a181cd708ce34cece13b75e74a6a1a63445c79381977487a035e613bd70198d1"
+      },
+      "references": [
+        {
+          "root": "stats_pkt_init",
+          "site": "0x007b5de4",
+          "instruction": "0xafb80020"
+        }
+      ],
+      "classification": "configuration",
+      "contracts": [
+        "v6-mode-and-reporting"
+      ],
+      "note": "统计55控制发送/参数保存；reporting配置不另建周期漫游策略。"
+    },
+    {
+      "source": {
+        "name": "_stats_db_ap_radio_stat_init",
+        "address": "0x007aad34",
+        "size": 672,
+        "sha256": "23c29d0e14e716a6ee1dcc98373657d49e99b3d9e97cfca6433e732bcc53274c"
+      },
+      "references": [
+        {
+          "root": "stats_db_init",
+          "site": "0x007acd4c",
+          "instruction": "0x24a5ad34"
+        }
+      ],
+      "classification": "lifecycle",
+      "contracts": [
+        "roaming-statistics-authority"
+      ],
+      "note": "AP/射频/WLAN创建、激活、重置与删除有效事实；离线清理和新会话隔离，不能用展示缓存复活候选。"
+    },
+    {
+      "source": {
+        "name": "_stats_pkt_wtp_event_listener",
+        "address": "0x007b5694",
+        "size": 432,
+        "sha256": "03fe8bcbe6807bd278e151e364c33a1c9a485eb142540e07aaa719ad67f78874"
+      },
+      "references": [
+        {
+          "root": "stats_pkt_init",
+          "site": "0x007b5d8c",
+          "instruction": "0x24c65694"
+        }
+      ],
+      "classification": "lifecycle",
+      "contracts": [
+        "roaming-statistics-authority"
+      ],
+      "note": "msg9 priority80：按A/B/C控制52/54/53接收，独立处理bd索引；发生在priority90选择之前。"
+    },
+    {
+      "source": {
+        "name": "_stats_rd_disable_cb",
+        "address": "0x007b410c",
+        "size": 132,
+        "sha256": "ecab52247b9f423fcf1163d05442126e10450e6947ce855f50d51a57880cde2f"
+      },
+      "references": [
+        {
+          "root": "uac_stats_init",
+          "site": "0x007b4804",
+          "instruction": "0xafb8002c"
+        }
+      ],
+      "classification": "lifecycle",
+      "contracts": [
+        "roaming-statistics-authority"
+      ],
+      "note": "AP/射频/WLAN创建、激活、重置与删除有效事实；离线清理和新会话隔离，不能用展示缓存复活候选。"
+    },
+    {
+      "source": {
+        "name": "_stats_rd_enable_cb",
+        "address": "0x007b4190",
+        "size": 132,
+        "sha256": "3d9e93d03f8d54d800a20b1d6af9c4ef23e843a4d634f6f5cc2a4d41e5bc9835"
+      },
+      "references": [
+        {
+          "root": "uac_stats_init",
+          "site": "0x007b47f8",
+          "instruction": "0xafb80028"
+        }
+      ],
+      "classification": "lifecycle",
+      "contracts": [
+        "roaming-statistics-authority"
+      ],
+      "note": "AP/射频/WLAN创建、激活、重置与删除有效事实；离线清理和新会话隔离，不能用展示缓存复活候选。"
+    },
+    {
+      "source": {
+        "name": "_stats_sta_assoc_cb",
+        "address": "0x007b4214",
+        "size": 160,
+        "sha256": "5b9d225c991c83dec05aee9231fc76b6c7ce5e726bac9e604edc9d320c579f6d"
+      },
+      "references": [
+        {
+          "root": "uac_stats_init",
+          "site": "0x007b467c",
+          "instruction": "0xafb8003c"
+        }
+      ],
+      "classification": "lifecycle",
+      "contracts": [
+        "station-statistics-lifetime"
+      ],
+      "note": "统计站点断开保留、同站点重新关联及每分钟老化；Go逻辑站点事实与统计寿命分开。"
+    },
+    {
+      "source": {
+        "name": "_stats_sta_deassoc_cb",
+        "address": "0x007b42b4",
+        "size": 96,
+        "sha256": "070c49f3509beb3b96081e7cd15b23dfa176bcb25161483cf3bca27f2aa91424"
+      },
+      "references": [
+        {
+          "root": "uac_stats_init",
+          "site": "0x007b4638",
+          "instruction": "0xafb8003c"
+        }
+      ],
+      "classification": "lifecycle",
+      "contracts": [
+        "station-statistics-lifetime"
+      ],
+      "note": "统计站点断开保留、同站点重新关联及每分钟老化；Go逻辑站点事实与统计寿命分开。"
+    },
+    {
+      "source": {
+        "name": "_stats_sta_idle_timer_handle",
+        "address": "0x007a9b48",
+        "size": 236,
+        "sha256": "6603caad52aaef50d3c91645fe2d9d9a1d33e2e7ddd54661b29d27d9deb5f5a8"
+      },
+      "references": [
+        {
+          "root": "stats_db_init",
+          "site": "0x007acaf0",
+          "instruction": "0x24c69b48"
+        }
+      ],
+      "classification": "lifecycle",
+      "contracts": [
+        "station-statistics-lifetime"
+      ],
+      "note": "统计站点断开保留、同站点重新关联及每分钟老化；Go逻辑站点事实与统计寿命分开。"
+    },
+    {
+      "source": {
+        "name": "_stats_sta_mac_cmp",
+        "address": "0x007a9de8",
+        "size": 60,
+        "sha256": "5a0b17a31842fde04ce303fbf330ff74c090855b3db10101480828b23c38c3dd"
+      },
+      "references": [
+        {
+          "root": "stats_db_init",
+          "site": "0x007aca94",
+          "instruction": "0x24c69de8"
+        }
+      ],
+      "classification": "container-utility",
+      "contracts": [],
+      "note": "哈希key/object/compare适配；没有独立触发、选择或准入动作。"
+    },
+    {
+      "source": {
+        "name": "_stats_sta_mac_key",
+        "address": "0x007a9e3c",
+        "size": 16,
+        "sha256": "00929310174e47e5615f672e6f38b86d0a5a08864f2c071ddfbe7aeac79dae7a"
+      },
+      "references": [
+        {
+          "root": "stats_db_init",
+          "site": "0x007aca90",
+          "instruction": "0x24a59e3c"
+        }
+      ],
+      "classification": "container-utility",
+      "contracts": [],
+      "note": "哈希key/object/compare适配；没有独立触发、选择或准入动作。"
+    },
+    {
+      "source": {
+        "name": "_stats_sta_mac_obj",
+        "address": "0x007a9e4c",
+        "size": 12,
+        "sha256": "d6dce570c55d9da797d47855a23f93b5e87df2555eb768c530808d326c048f46"
+      },
+      "references": [
+        {
+          "root": "stats_db_init",
+          "site": "0x007aca8c",
+          "instruction": "0x24849e4c"
+        }
+      ],
+      "classification": "container-utility",
+      "contracts": [],
+      "note": "哈希key/object/compare适配；没有独立触发、选择或准入动作。"
+    },
+    {
+      "source": {
+        "name": "_stats_sta_sample_timer_handle",
+        "address": "0x007aac7c",
+        "size": 184,
+        "sha256": "9b86dfec3b7182d44b00639ff0d1588817b0678f516f8b19498ecabe668c980f"
+      },
+      "references": [
+        {
+          "root": "stats_db_init",
+          "site": "0x007acecc",
+          "instruction": "0x8f060000"
+        }
+      ],
+      "classification": "diagnostic",
+      "contracts": [],
+      "note": "历史统计采样/计数，未选择AP或修改准入；机器统计排除，Go无线历史使用实际观测时间独立存储。"
+    },
+    {
+      "source": {
+        "name": "_stats_wlan_disable",
+        "address": "0x007b3df0",
+        "size": 176,
+        "sha256": "107f375f9a4bcf406d83e5f6c54e45cea89f44d407b0751805b5ded53a30fe1d"
+      },
+      "references": [
+        {
+          "root": "uac_stats_init",
+          "site": "0x007b48a4",
+          "instruction": "0xafb8003c"
+        }
+      ],
+      "classification": "lifecycle",
+      "contracts": [
+        "roaming-statistics-authority"
+      ],
+      "note": "AP/射频/WLAN创建、激活、重置与删除有效事实；离线清理和新会话隔离，不能用展示缓存复活候选。"
+    },
+    {
+      "source": {
+        "name": "_stats_wlan_enable",
+        "address": "0x007b3ea0",
+        "size": 144,
+        "sha256": "c43cb56be40e19be1a3345882d8b1b7a3e248e2dd5e15f7e23ef86e47e9ba2a6"
+      },
+      "references": [
+        {
+          "root": "uac_stats_init",
+          "site": "0x007b48fc",
+          "instruction": "0xafb8003c"
+        }
+      ],
+      "classification": "lifecycle",
+      "contracts": [
+        "roaming-statistics-authority"
+      ],
+      "note": "AP/射频/WLAN创建、激活、重置与删除有效事实；离线清理和新会话隔离，不能用展示缓存复活候选。"
+    },
+    {
+      "source": {
+        "name": "_wsta_intelligent_roam_callback_wtp_leave",
+        "address": "0x004e3864",
+        "size": 660,
+        "sha256": "75331e1c1d6b8b00d3bac46affc54185b8af900a0c1f11cabfcc3ca6a0a759f5"
+      },
+      "references": [
+        {
+          "root": "wsta_roam_pkt_init",
+          "site": "0x004e9df4",
+          "instruction": "0xafb80048"
+        }
+      ],
+      "classification": "lifecycle",
+      "contracts": [
+        "roaming-statistics-authority"
+      ],
+      "note": "离线移除该AP有效工作信道；Go通过在线/会话事实及离线清理排除旧射频。"
+    },
+    {
+      "source": {
+        "name": "_wsta_intelligent_roam_ctl_pkt_send_cb",
+        "address": "0x004e90e8",
+        "size": 496,
+        "sha256": "8cc21d4efb3a851188fd2db2b6dc2659405ccd12b11f5a258ec0c4ba7aa4f0ca"
+      },
+      "references": [
+        {
+          "root": "wsta_roam_pkt_init",
+          "site": "0x004e9c4c",
+          "instruction": "0xafb80038"
+        }
+      ],
+      "classification": "configuration",
+      "contracts": [
+        "roaming-capability-controls"
+      ],
+      "note": "AP连接时发送工作信道与57；旧自动模式切换要求configured=0、actual<=1；mode2不进入该分支。9d按独立能力72路径收敛。"
+    },
+    {
+      "source": {
+        "name": "_wsta_intelligent_roam_sta_stats",
+        "address": "0x004e3204",
+        "size": 680,
+        "sha256": "be14fc3bbe8b31c61a0842d1adb7cde64af4c38941825c69042af032a0cac92f"
+      },
+      "references": [
+        {
+          "root": "wsta_roam_pkt_init",
+          "site": "0x004e9ce8",
+          "instruction": "0xafb80054"
+        }
+      ],
+      "classification": "diagnostic",
+      "contracts": [],
+      "note": "关联事件累积漫游耗时/成功率直方图并删除临时记录；尾部change_ap_info仅configured=0才可自动改模式。计数器仅有debug打印读取，不另增调度。"
+    },
+    {
+      "source": {
+        "name": "_wsta_roam_ap_disconnect_cb",
+        "address": "0x004d7138",
+        "size": 60,
+        "sha256": "417c74b1066077479d1a14de26aaccfef2d0ba376b3cd5bc396e8b6dde5f66e8"
+      },
+      "references": [
+        {
+          "root": "wsta_roam_init",
+          "site": "0x004d8400",
+          "instruction": "0xafb80030"
+        },
+        {
+          "root": "wsta_roam_init",
+          "site": "0x004d8408",
+          "instruction": "0xafb80038"
+        }
+      ],
+      "classification": "diagnostic",
+      "contracts": [],
+      "note": "分别清理漫游统计临时记录/3秒待统计记录、激活或清空AP漫游计数；未调用选择器、准入或踢除。"
+    },
+    {
+      "source": {
+        "name": "_wsta_roam_ap_online_cb",
+        "address": "0x004d73ec",
+        "size": 32,
+        "sha256": "f12194780abf09b3e8cc8cd19026f8be585ba274db01399c06331255e1f5176e"
+      },
+      "references": [
+        {
+          "root": "wsta_roam_init",
+          "site": "0x004d8570",
+          "instruction": "0xafb80020"
+        }
+      ],
+      "classification": "diagnostic",
+      "contracts": [],
+      "note": "分别清理漫游统计临时记录/3秒待统计记录、激活或清空AP漫游计数；未调用选择器、准入或踢除。"
+    },
+    {
+      "source": {
+        "name": "_wsta_roam_jcs_exist_unsupport_ap",
+        "address": "0x004d3890",
+        "size": 108,
+        "sha256": "ab77671e45f3e6ee4cb1a03e8ca002b396e7b7f12bac151c15832e9b425075a4"
+      },
+      "references": [
+        {
+          "root": "wsta_roam_init",
+          "site": "0x004d8780",
+          "instruction": "0x24c63890"
+        }
+      ],
+      "classification": "configuration",
+      "contracts": [
+        "roaming-capability-controls",
+        "v6-mode-and-reporting"
+      ],
+      "note": "默认/列表规则、绑定及能力查询；CLOUD_ROAM兼容入口写入同一规则库，Go无独立云策略源。"
+    },
+    {
+      "source": {
+        "name": "_wsta_roam_jcs_intelligent_set",
+        "address": "0x004d6e50",
+        "size": 744,
+        "sha256": "961a2adc54024ab16ad541f3588d1d00613e50f53ab769875db21ccb4a1e267f"
+      },
+      "references": [
+        {
+          "root": "wsta_roam_init",
+          "site": "0x004d85d0",
+          "instruction": "0x24c66e50"
+        }
+      ],
+      "classification": "configuration",
+      "contracts": [
+        "roaming-capability-controls",
+        "v6-mode-and-reporting"
+      ],
+      "note": "默认/列表规则、绑定及能力查询；CLOUD_ROAM兼容入口写入同一规则库，Go无独立云策略源。"
+    },
+    {
+      "source": {
+        "name": "_wsta_roam_jcs_intelligent_wireless_network_get",
+        "address": "0x004d3a94",
+        "size": 200,
+        "sha256": "d9630d1acae778f3f4c4d1157037e0ca099fa8138065e87e5ca910b401a00028"
+      },
+      "references": [
+        {
+          "root": "wsta_roam_init",
+          "site": "0x004d8740",
+          "instruction": "0x24c63a94"
+        }
+      ],
+      "classification": "configuration",
+      "contracts": [
+        "roaming-capability-controls",
+        "v6-mode-and-reporting"
+      ],
+      "note": "默认/列表规则、绑定及能力查询；CLOUD_ROAM兼容入口写入同一规则库，Go无独立云策略源。"
+    },
+    {
+      "source": {
+        "name": "_wsta_roam_jcs_intelligent_wireless_network_set",
+        "address": "0x004d3b5c",
+        "size": 232,
+        "sha256": "93525d7dfc1ee2acf1c9123729fd8503c4fd994e837f7485ddcfe5cf52ecb316"
+      },
+      "references": [
+        {
+          "root": "wsta_roam_init",
+          "site": "0x004d8704",
+          "instruction": "0x24c63b5c"
+        }
+      ],
+      "classification": "legacy-mode",
+      "contracts": [
+        "v6-mode-and-reporting"
+      ],
+      "note": "内部JCS仍能调用manual_change_mode，但V6 Web setter直接EFORBID、迁移固定configured/actual=2；Go拒绝配置0/1，不暴露原内部调试接口。"
+    },
+    {
+      "source": {
+        "name": "_wsta_roam_jcs_roam_list_add",
+        "address": "0x004d5734",
+        "size": 552,
+        "sha256": "9eaa406cd6e263c322121d8469ba5474992fb869ee8c5b2850cb18ff7dd5479a"
+      },
+      "references": [
+        {
+          "root": "wsta_roam_init",
+          "site": "0x004d8688",
+          "instruction": "0x24c65734"
+        }
+      ],
+      "classification": "configuration",
+      "contracts": [
+        "roaming-capability-controls",
+        "v6-mode-and-reporting"
+      ],
+      "note": "默认/列表规则、绑定及能力查询；CLOUD_ROAM兼容入口写入同一规则库，Go无独立云策略源。"
+    },
+    {
+      "source": {
+        "name": "_wsta_roam_jcs_roam_list_del",
+        "address": "0x004d3c44",
+        "size": 1256,
+        "sha256": "71b760175f8f2227a458c0f93dfc75b0629e716aa8a240c50ad26abd64475e09"
+      },
+      "references": [
+        {
+          "root": "wsta_roam_init",
+          "site": "0x004d86c4",
+          "instruction": "0x24c63c44"
+        }
+      ],
+      "classification": "configuration",
+      "contracts": [
+        "roaming-capability-controls",
+        "v6-mode-and-reporting"
+      ],
+      "note": "默认/列表规则、绑定及能力查询；CLOUD_ROAM兼容入口写入同一规则库，Go无独立云策略源。"
+    },
+    {
+      "source": {
+        "name": "_wsta_roam_jcs_roam_list_get",
+        "address": "0x004d66ac",
+        "size": 1956,
+        "sha256": "1fb07bcf0f68fae3a8fd680641b7f80aef48e0ccac4a3ca27f1e1e5522bcc9ac"
+      },
+      "references": [
+        {
+          "root": "wsta_roam_init",
+          "site": "0x004d864c",
+          "instruction": "0x24c666ac"
+        }
+      ],
+      "classification": "configuration",
+      "contracts": [
+        "roaming-capability-controls",
+        "v6-mode-and-reporting"
+      ],
+      "note": "默认/列表规则、绑定及能力查询；CLOUD_ROAM兼容入口写入同一规则库，Go无独立云策略源。"
+    },
+    {
+      "source": {
+        "name": "_wsta_roam_jcs_roam_list_set",
+        "address": "0x004d7c30",
+        "size": 1344,
+        "sha256": "b4edf7e26ecfb7c12bc72b1464a6a833579e6425ba000fa992daff5ba8e80839"
+      },
+      "references": [
+        {
+          "root": "wsta_roam_init",
+          "site": "0x004d860c",
+          "instruction": "0x24c67c30"
+        }
+      ],
+      "classification": "configuration",
+      "contracts": [
+        "roaming-capability-controls",
+        "v6-mode-and-reporting"
+      ],
+      "note": "默认/列表规则、绑定及能力查询；CLOUD_ROAM兼容入口写入同一规则库，Go无独立云策略源。"
+    },
+    {
+      "source": {
+        "name": "_wsta_roam_list_apmngr_group_delete",
+        "address": "0x004d7174",
+        "size": 36,
+        "sha256": "5ba03c7bd15fdc481331499c7f39d6ec61c8c4c3fa75e0be57480cd1327b1cec"
+      },
+      "references": [
+        {
+          "root": "wsta_roam_init",
+          "site": "0x004d84f4",
+          "instruction": "0xafb80090"
+        }
+      ],
+      "classification": "configuration",
+      "contracts": [
+        "roaming-capability-controls",
+        "copy-replace-retire"
+      ],
+      "note": "AP删除移除策略绑定；分组迁移检查AP/组绑定冲突并选择新组或默认规则；组删除检查引用。"
+    },
+    {
+      "source": {
+        "name": "_wsta_roam_pkt_wtp_event_listener",
+        "address": "0x004e89ac",
+        "size": 232,
+        "sha256": "b34f18a84c646a049f4dafe233686e9353e21a1b5e33b38b11858197c2e55a1e"
+      },
+      "references": [
+        {
+          "root": "wsta_roam_pkt_init",
+          "site": "0x004e9be4",
+          "instruction": "0x24c689ac"
+        }
+      ],
+      "classification": "decision",
+      "contracts": [
+        "active-trigger-wire",
+        "pmk-cache",
+        "v6-event-order-and-mlo"
+      ],
+      "note": "msg9 priority90，先首个49、再首个58、最后9c；49/58互不排斥；9c只在旧ACS流程中消费。"
+    },
+    {
+      "source": {
+        "name": "_wsta_roam_pmk_idle_timer_handle",
+        "address": "0x004dda7c",
+        "size": 236,
+        "sha256": "ad0a96a72e3d5b150e9f9606d1fc42e48359d35c8d6edf303935ba1bd7777f8f"
+      },
+      "references": [
+        {
+          "root": "wsta_roam_db_init",
+          "site": "0x004de904",
+          "instruction": "0x24c6da7c"
+        }
+      ],
+      "classification": "lifecycle",
+      "contracts": [
+        "pmk-cache"
+      ],
+      "note": "关联时按服务匹配取消PMK删除；离线标记60秒，到每分钟扫表删除；不选择目标AP。"
+    },
+    {
+      "source": {
+        "name": "_wsta_roam_pmk_mac_cmp",
+        "address": "0x004dd920",
+        "size": 60,
+        "sha256": "79e5d6432b8014de63510a8d9f5efc7d8940bf2025bf9febfe46bc76304a73dc"
+      },
+      "references": [
+        {
+          "root": "wsta_roam_db_init",
+          "site": "0x004de8a8",
+          "instruction": "0x24c6d920"
+        }
+      ],
+      "classification": "container-utility",
+      "contracts": [],
+      "note": "哈希key/object/compare适配；没有独立触发、选择或准入动作。"
+    },
+    {
+      "source": {
+        "name": "_wsta_roam_pmk_mac_key",
+        "address": "0x004dd974",
+        "size": 16,
+        "sha256": "00929310174e47e5615f672e6f38b86d0a5a08864f2c071ddfbe7aeac79dae7a"
+      },
+      "references": [
+        {
+          "root": "wsta_roam_db_init",
+          "site": "0x004de8a4",
+          "instruction": "0x24a5d974"
+        }
+      ],
+      "classification": "container-utility",
+      "contracts": [],
+      "note": "哈希key/object/compare适配；没有独立触发、选择或准入动作。"
+    },
+    {
+      "source": {
+        "name": "_wsta_roam_pmk_mac_obj",
+        "address": "0x004dd984",
+        "size": 12,
+        "sha256": "105590519fe8ac1a82844b9b4c703ce7999ba4302f771e45520ed48f1470ba79"
+      },
+      "references": [
+        {
+          "root": "wsta_roam_db_init",
+          "site": "0x004de8a0",
+          "instruction": "0x2484d984"
+        }
+      ],
+      "classification": "container-utility",
+      "contracts": [],
+      "note": "哈希key/object/compare适配；没有独立触发、选择或准入动作。"
+    },
+    {
+      "source": {
+        "name": "_wsta_roam_rd_chnl_changed_by_subdev",
+        "address": "0x004e2fc0",
+        "size": 524,
+        "sha256": "26f68410fa94297a1ccaae6074dd1db0901fa4581ef0a5741d6267ed34cdfa6a"
+      },
+      "references": [
+        {
+          "root": "wsta_roam_pkt_init",
+          "site": "0x004e9d54",
+          "instruction": "0xafb80050"
+        }
+      ],
+      "classification": "configuration",
+      "contracts": [
+        "roaming-statistics-authority",
+        "v6-mode-and-reporting"
+      ],
+      "note": "更新工作信道/服务信道与high_per缓存；set_rd_cfg只是包装，最终都落到set_rd_info的actual=1门禁，V6 mode2不自动修改其它AP射频。漫游候选信道取统计数据库。"
+    },
+    {
+      "source": {
+        "name": "_wsta_roam_rd_chnl_modify_by_manual",
+        "address": "0x004e92f0",
+        "size": 144,
+        "sha256": "3a58b7fc0f4e5529695985e621dea7d3cad5be25537d3c2b0ad247c897b49484"
+      },
+      "references": [
+        {
+          "root": "wsta_roam_pkt_init",
+          "site": "0x004e9d60",
+          "instruction": "0xafb80054"
+        }
+      ],
+      "classification": "configuration",
+      "contracts": [
+        "roaming-statistics-authority",
+        "v6-mode-and-reporting"
+      ],
+      "note": "更新工作信道/服务信道与high_per缓存；set_rd_cfg只是包装，最终都落到set_rd_info的actual=1门禁，V6 mode2不自动修改其它AP射频。漫游候选信道取统计数据库。"
+    },
+    {
+      "source": {
+        "name": "_wsta_roam_rssi_interval",
+        "address": "0x004dd370",
+        "size": 12,
+        "sha256": "07d2bff8171cb8af143bab124b84554e000f5664c3caf68c1497f102bf7381e1"
+      },
+      "references": [
+        {
+          "root": "wsta_roam_db_init",
+          "site": "0x004dea98",
+          "instruction": "0x24a5d370"
+        }
+      ],
+      "classification": "configuration",
+      "contracts": [
+        "v6-mode-and-reporting"
+      ],
+      "note": "RSSI统计控制消费者，返回全局开关和间隔；全局配置重算55接收/发送门禁，与每AP57规则分开。"
+    },
+    {
+      "source": {
+        "name": "_wsta_roam_rssi_switch",
+        "address": "0x004dd360",
+        "size": 16,
+        "sha256": "1b1771e4e91317cbe02032c6ff5464d70d43339317f93505ab095dee834f0a1a"
+      },
+      "references": [
+        {
+          "root": "wsta_roam_db_init",
+          "site": "0x004dea90",
+          "instruction": "0x2484d360"
+        }
+      ],
+      "classification": "configuration",
+      "contracts": [
+        "v6-mode-and-reporting"
+      ],
+      "note": "RSSI统计控制消费者，返回全局开关和间隔；全局配置重算55接收/发送门禁，与每AP57规则分开。"
+    },
+    {
+      "source": {
+        "name": "_wsta_roam_sta_info_deading_handle",
+        "address": "0x004dd4d4",
+        "size": 1044,
+        "sha256": "899465ff080d1c195a85980dae79f8a9852607e77c878fd19c571b62bb7d76a1"
+      },
+      "references": [
+        {
+          "root": "wsta_roam_db_init",
+          "site": "0x004deb90",
+          "instruction": "0x24c6d4d4"
+        }
+      ],
+      "classification": "diagnostic",
+      "contracts": [],
+      "note": "分别清理漫游统计临时记录/3秒待统计记录、激活或清空AP漫游计数；未调用选择器、准入或踢除。"
+    },
+    {
+      "source": {
+        "name": "_wsta_roam_sta_rcd_mac_cmp",
+        "address": "0x004dd8e8",
+        "size": 56,
+        "sha256": "77be9d1890789c0b0fa76cff7a11abf0dc739f128c613f05ffc00dcbdd66b8cc"
+      },
+      "references": [
+        {
+          "root": "wsta_roam_db_init",
+          "site": "0x004de9d4",
+          "instruction": "0x24c6d8e8"
+        }
+      ],
+      "classification": "container-utility",
+      "contracts": [],
+      "note": "哈希key/object/compare适配；没有独立触发、选择或准入动作。"
+    },
+    {
+      "source": {
+        "name": "_wsta_roam_sta_rcd_mac_key",
+        "address": "0x004dd95c",
+        "size": 16,
+        "sha256": "00929310174e47e5615f672e6f38b86d0a5a08864f2c071ddfbe7aeac79dae7a"
+      },
+      "references": [
+        {
+          "root": "wsta_roam_db_init",
+          "site": "0x004de9d0",
+          "instruction": "0x24a5d95c"
+        }
+      ],
+      "classification": "container-utility",
+      "contracts": [],
+      "note": "哈希key/object/compare适配；没有独立触发、选择或准入动作。"
+    },
+    {
+      "source": {
+        "name": "_wsta_roam_sta_rcd_mac_obj",
+        "address": "0x004dd96c",
+        "size": 8,
+        "sha256": "1155513a5b31036481115e28bc5fde7ce6f889122d40f15a35a205a0242ceebd"
+      },
+      "references": [
+        {
+          "root": "wsta_roam_db_init",
+          "site": "0x004de9cc",
+          "instruction": "0x2484d96c"
+        }
+      ],
+      "classification": "container-utility",
+      "contracts": [],
+      "note": "哈希key/object/compare适配；没有独立触发、选择或准入动作。"
+    },
+    {
+      "source": {
+        "name": "_wsta_roam_sta_tmprcd_idle_timer_handle",
+        "address": "0x004dd990",
+        "size": 236,
+        "sha256": "b99cd4d1dbf66a379418ecfed2a4d0080fe68ea3831f9569c909ce74a5589ac2"
+      },
+      "references": [
+        {
+          "root": "wsta_roam_db_init",
+          "site": "0x004dea24",
+          "instruction": "0x24c6d990"
+        }
+      ],
+      "classification": "diagnostic",
+      "contracts": [],
+      "note": "分别清理漫游统计临时记录/3秒待统计记录、激活或清空AP漫游计数；未调用选择器、准入或踢除。"
+    },
+    {
+      "source": {
+        "name": "balance_apmngr_callback_balance_group_join",
+        "address": "0x004edbe0",
+        "size": 1228,
+        "sha256": "c7559a09eb0e20a8907da83779ff392b7a2b53bb8bac148526cb3ce1750b26bb"
+      },
+      "references": [
+        {
+          "root": "balance_init",
+          "site": "0x004ef9a8",
+          "instruction": "0xafb80040"
+        }
+      ],
+      "classification": "configuration",
+      "contracts": [
+        "balance-failures-clock",
+        "configuration-lifecycle-validation",
+        "copy-replace-retire"
+      ],
+      "note": "均衡规则CRUD、组迁移/删除引用检查、AP删除/移组解绑；使用统一保存校验和配置收敛。"
+    },
+    {
+      "source": {
+        "name": "balance_apmngr_callback_balance_wtp_del",
+        "address": "0x004f0240",
+        "size": 324,
+        "sha256": "d895ffcc5561c9addfbc48ea1af6a09f1c8f1b7ade303910806fcbb28ad9ad66"
+      },
+      "references": [
+        {
+          "root": "balance_init",
+          "site": "0x004ef980",
+          "instruction": "0xafb80030"
+        }
+      ],
+      "classification": "configuration",
+      "contracts": [
+        "balance-failures-clock",
+        "configuration-lifecycle-validation",
+        "copy-replace-retire"
+      ],
+      "note": "均衡规则CRUD、组迁移/删除引用检查、AP删除/移组解绑；使用统一保存校验和配置收敛。"
+    },
+    {
+      "source": {
+        "name": "balance_apmngr_callback_wtp_destroy",
+        "address": "0x004f0384",
+        "size": 780,
+        "sha256": "0327f82c2389f7af9afaefcdb5ad6ea2f775d783379b35b852da689874f26337"
+      },
+      "references": [
+        {
+          "root": "balance_init",
+          "site": "0x004ef974",
+          "instruction": "0xafb80038"
+        }
+      ],
+      "classification": "configuration",
+      "contracts": [
+        "balance-failures-clock",
+        "configuration-lifecycle-validation",
+        "copy-replace-retire"
+      ],
+      "note": "均衡规则CRUD、组迁移/删除引用检查、AP删除/移组解绑；使用统一保存校验和配置收敛。"
+    },
+    {
+      "source": {
+        "name": "balance_capwap_callback_cfg_status_request_listen",
+        "address": "0x004ee16c",
+        "size": 476,
+        "sha256": "a158d60b1717612ff7183e75f56c7e2265518911ef0a31413c455961bdb0c1d6"
+      },
+      "references": [
+        {
+          "root": "balance_init",
+          "site": "0x004efd40",
+          "instruction": "0x24c6e16c"
+        }
+      ],
+      "classification": "configuration",
+      "contracts": [
+        "balance-failures-clock"
+      ],
+      "note": "msg5 priority50，按规则把26启用位带入配置响应；Go配置/RUN收敛发送相同开关。"
+    },
+    {
+      "source": {
+        "name": "balance_capwap_callback_wtp_event_request_listen",
+        "address": "0x004f0a04",
+        "size": 216,
+        "sha256": "a82a8a7ab6c546aa5e8a8e7f4ac0d16b386949e9a60b36ea3f08e3ba7211390d"
+      },
+      "references": [
+        {
+          "root": "balance_init",
+          "site": "0x004efcf0",
+          "instruction": "0x24c60a04"
+        }
+      ],
+      "classification": "decision",
+      "contracts": [
+        "balance-discovery-aging"
+      ],
+      "note": "msg9 priority1消费首个0b，建立发现记录；不从53或58替代均衡发现。"
+    },
+    {
+      "source": {
+        "name": "balance_dis_sta_hash_cmp",
+        "address": "0x004f2880",
+        "size": 108,
+        "sha256": "4065eaf64bc292c1f30455c83067823d1bdd162d36e4b72fb3b6d766808baf53"
+      },
+      "references": [
+        {
+          "root": "balance_db_init",
+          "site": "0x004f38f8",
+          "instruction": "0x24c62880"
+        }
+      ],
+      "classification": "container-utility",
+      "contracts": [],
+      "note": "哈希key/object/compare适配；没有独立触发、选择或准入动作。"
+    },
+    {
+      "source": {
+        "name": "balance_dis_sta_hash_key",
+        "address": "0x004f295c",
+        "size": 108,
+        "sha256": "de880ecc198df41e2094aa0877a397b48147edffdc07978c04b04bf93a584e7a"
+      },
+      "references": [
+        {
+          "root": "balance_db_init",
+          "site": "0x004f38f0",
+          "instruction": "0x24a5295c"
+        }
+      ],
+      "classification": "container-utility",
+      "contracts": [],
+      "note": "哈希key/object/compare适配；没有独立触发、选择或准入动作。"
+    },
+    {
+      "source": {
+        "name": "balance_dis_sta_hash_obj",
+        "address": "0x004f29c8",
+        "size": 108,
+        "sha256": "666bd8bcc21309f2c7b4429d085f972aeab680a4ec646b4cab269a9c1aad3895"
+      },
+      "references": [
+        {
+          "root": "balance_db_init",
+          "site": "0x004f38ec",
+          "instruction": "0x248429c8"
+        }
+      ],
+      "classification": "container-utility",
+      "contracts": [],
+      "note": "哈希key/object/compare适配；没有独立触发、选择或准入动作。"
+    },
+    {
+      "source": {
+        "name": "balance_jcs_callback_balance_add",
+        "address": "0x004ee97c",
+        "size": 476,
+        "sha256": "975265183ebb247f7e67e41cb21e23934a8c03cd43681e9a5e8b7ba208db790a"
+      },
+      "references": [
+        {
+          "root": "balance_init",
+          "site": "0x004ef870",
+          "instruction": "0x24c6e97c"
+        }
+      ],
+      "classification": "configuration",
+      "contracts": [
+        "balance-failures-clock",
+        "configuration-lifecycle-validation",
+        "copy-replace-retire"
+      ],
+      "note": "均衡规则CRUD、组迁移/删除引用检查、AP删除/移组解绑；使用统一保存校验和配置收敛。"
+    },
+    {
+      "source": {
+        "name": "balance_jcs_callback_balance_del",
+        "address": "0x004ee73c",
+        "size": 576,
+        "sha256": "a258b96cbfff4ea927878f5750a8d2dab1c1505e9f1eff3005fe8848268948e1"
+      },
+      "references": [
+        {
+          "root": "balance_init",
+          "site": "0x004ef8c0",
+          "instruction": "0x24c6e73c"
+        }
+      ],
+      "classification": "configuration",
+      "contracts": [
+        "balance-failures-clock",
+        "configuration-lifecycle-validation",
+        "copy-replace-retire"
+      ],
+      "note": "均衡规则CRUD、组迁移/删除引用检查、AP删除/移组解绑；使用统一保存校验和配置收敛。"
+    },
+    {
+      "source": {
+        "name": "balance_jcs_callback_balance_get",
+        "address": "0x004ec470",
+        "size": 1440,
+        "sha256": "8c7974aeac103a7aabd7c655451b5f0f9fe9d9239077fc9d6f3f35ab23e21104"
+      },
+      "references": [
+        {
+          "root": "balance_init",
+          "site": "0x004ef7d0",
+          "instruction": "0x24c6c470"
+        }
+      ],
+      "classification": "configuration",
+      "contracts": [
+        "balance-failures-clock",
+        "configuration-lifecycle-validation",
+        "copy-replace-retire"
+      ],
+      "note": "均衡规则CRUD、组迁移/删除引用检查、AP删除/移组解绑；使用统一保存校验和配置收敛。"
+    },
+    {
+      "source": {
+        "name": "balance_jcs_callback_balance_set",
+        "address": "0x004eeb58",
+        "size": 2028,
+        "sha256": "daa3e080ad66d70ba8fdd2ac6999151b010cc7399efdb9c04067eb9e178e0440"
+      },
+      "references": [
+        {
+          "root": "balance_init",
+          "site": "0x004ef820",
+          "instruction": "0x24c6eb58"
+        }
+      ],
+      "classification": "configuration",
+      "contracts": [
+        "balance-failures-clock",
+        "configuration-lifecycle-validation",
+        "copy-replace-retire"
+      ],
+      "note": "均衡规则CRUD、组迁移/删除引用检查、AP删除/移组解绑；使用统一保存校验和配置收敛。"
+    },
+    {
+      "source": {
+        "name": "balance_multilink_callback_balance_wtp_add",
+        "address": "0x004eff3c",
+        "size": 436,
+        "sha256": "e10ccb527f37c67b1fb9d12bde6664699ae9a14e5ee1ed50010bc9bcc12c14c1"
+      },
+      "references": [
+        {
+          "root": "balance_init",
+          "site": "0x004efab0",
+          "instruction": "0xafb80020"
+        }
+      ],
+      "classification": "lifecycle",
+      "contracts": [
+        "balance-discovery-aging"
+      ],
+      "note": "维护均衡AP在线数据库；上线发送配置，离线从发现AP列表移除。"
+    },
+    {
+      "source": {
+        "name": "balance_multilink_callback_balance_wtp_del",
+        "address": "0x004f0690",
+        "size": 252,
+        "sha256": "39ddc3e77103fea598cc05a231ce081f0f2a1a47e67f4873ed94efdec851cd2b"
+      },
+      "references": [
+        {
+          "root": "balance_init",
+          "site": "0x004efac8",
+          "instruction": "0xafb80024"
+        }
+      ],
+      "classification": "lifecycle",
+      "contracts": [
+        "balance-discovery-aging"
+      ],
+      "note": "维护均衡AP在线数据库；上线发送配置，离线从发现AP列表移除。"
+    },
+    {
+      "source": {
+        "name": "balance_thread_callback",
+        "address": "0x004f1a5c",
+        "size": 92,
+        "sha256": "23a204645cfbf303a437314f229b8f45c24283690de2485ec0c22c9640c241c5"
+      },
+      "references": [
+        {
+          "root": "balance_db_init",
+          "site": "0x004f3a0c",
+          "instruction": "0x24c61a5c"
+        }
+      ],
+      "classification": "lifecycle",
+      "contracts": [
+        "balance-discovery-aging"
+      ],
+      "note": "每300秒遍历发现记录，900秒过期；没有调用Admit或主动删除客户端。"
+    },
+    {
+      "source": {
+        "name": "balance_wsta_callback_balance_sta_add",
+        "address": "0x004ed3e4",
+        "size": 316,
+        "sha256": "2c71784462bc242136e81d23cc8138b84c2a4488ed822a2f6ddcd1e8bea69d44"
+      },
+      "references": [
+        {
+          "root": "balance_init",
+          "site": "0x004efc04",
+          "instruction": "0xafb8003c"
+        }
+      ],
+      "classification": "lifecycle",
+      "contracts": [
+        "balance-failures-clock",
+        "v6-event-order-and-mlo"
+      ],
+      "note": "更新逻辑客户端数；MLO peer标志2不重复计数，无周期踢人。"
+    },
+    {
+      "source": {
+        "name": "balance_wsta_callback_balance_sta_check",
+        "address": "0x004f0dfc",
+        "size": 884,
+        "sha256": "23837834ba4c4bc5b507633ae03a961e81baa581a8c73af8a1e98e9d76c31eff"
+      },
+      "references": [
+        {
+          "root": "balance_init",
+          "site": "0x004efbb0",
+          "instruction": "0xafb80098"
+        }
+      ],
+      "classification": "decision",
+      "contracts": [
+        "balance-failures-clock"
+      ],
+      "note": "关联准入回调：使用全局每MAC失败记录和在线AP逻辑客户端数；达到失败上限放行。"
+    },
+    {
+      "source": {
+        "name": "balance_wsta_callback_balance_sta_del",
+        "address": "0x004ed520",
+        "size": 316,
+        "sha256": "ab64889e90db6fd882ed7b3e061e9055ab3f6d70e1e86e709d43cf91dd81b5da"
+      },
+      "references": [
+        {
+          "root": "balance_init",
+          "site": "0x004efc58",
+          "instruction": "0xafb8003c"
+        }
+      ],
+      "classification": "lifecycle",
+      "contracts": [
+        "balance-failures-clock",
+        "v6-event-order-and-mlo"
+      ],
+      "note": "更新逻辑客户端数；MLO peer标志2不重复计数，无周期踢人。"
+    },
+    {
+      "source": {
+        "name": "balance_wtp_hash_cmp",
+        "address": "0x004f28ec",
+        "size": 112,
+        "sha256": "5f18973ec8411214584c5b496eaaad59ff8c52c27c7c3b2b045cef6eb8eab2fa"
+      },
+      "references": [
+        {
+          "root": "balance_db_init",
+          "site": "0x004f3894",
+          "instruction": "0x24c628ec"
+        }
+      ],
+      "classification": "container-utility",
+      "contracts": [],
+      "note": "哈希key/object/compare适配；没有独立触发、选择或准入动作。"
+    },
+    {
+      "source": {
+        "name": "balance_wtp_hash_key",
+        "address": "0x004f2a34",
+        "size": 108,
+        "sha256": "bc8a234a547542f62dc0f12faea80bba1ea43960df5eab6030b4f75c26543cb2"
+      },
+      "references": [
+        {
+          "root": "balance_db_init",
+          "site": "0x004f388c",
+          "instruction": "0x24a52a34"
+        }
+      ],
+      "classification": "container-utility",
+      "contracts": [],
+      "note": "哈希key/object/compare适配；没有独立触发、选择或准入动作。"
+    },
+    {
+      "source": {
+        "name": "balance_wtp_hash_obj",
+        "address": "0x004f2aa0",
+        "size": 112,
+        "sha256": "b45aa39bfd040091ddf3d4b442d4cc306608368ebf36a038aaab70740223256d"
+      },
+      "references": [
+        {
+          "root": "balance_db_init",
+          "site": "0x004f3888",
+          "instruction": "0x24842aa0"
+        }
+      ],
+      "classification": "container-utility",
+      "contracts": [],
+      "note": "哈希key/object/compare适配；没有独立触发、选择或准入动作。"
+    },
+    {
+      "source": {
+        "name": "band_navigation_jcs_set",
+        "address": "0x00633610",
+        "size": 1104,
+        "sha256": "96b212714929d37f40b2197a5c8f2cfd1bbbdd0cdb54d320c6c9e967b0c377cc"
+      },
+      "references": [
+        {
+          "root": "band_navigation_init",
+          "site": "0x00633d54",
+          "instruction": "0x24c63610"
+        }
+      ],
+      "classification": "configuration",
+      "contracts": [
+        "band-navigation"
+      ],
+      "note": "双频优选配置写入及AP连接下发，能力3；由AP执行，不是AC候选计算的新入口。"
+    },
+    {
+      "source": {
+        "name": "band_navigation_wtp_packt_send",
+        "address": "0x00633a60",
+        "size": 572,
+        "sha256": "6e207ff64f3f0fd9530f0b237304e6dd2eb2d3689f46b02642f4cd045289d1e5"
+      },
+      "references": [
+        {
+          "root": "band_navigation_init",
+          "site": "0x00633dc4",
+          "instruction": "0xafb80020"
+        }
+      ],
+      "classification": "configuration",
+      "contracts": [
+        "band-navigation"
+      ],
+      "note": "双频优选配置写入及AP连接下发，能力3；由AP执行，不是AC候选计算的新入口。"
+    },
+    {
+      "source": {
+        "name": "stats_db_callback_wtp_leave",
+        "address": "0x007aafd4",
+        "size": 236,
+        "sha256": "034044e25e54e26f72207f2ffe5adadd7124122264e7cda0144dd2746a70cfc2"
+      },
+      "references": [
+        {
+          "root": "stats_db_init",
+          "site": "0x007acfbc",
+          "instruction": "0xafb80040"
+        }
+      ],
+      "classification": "lifecycle",
+      "contracts": [
+        "roaming-statistics-authority"
+      ],
+      "note": "AP/射频/WLAN创建、激活、重置与删除有效事实；离线清理和新会话隔离，不能用展示缓存复活候选。"
+    },
+    {
+      "source": {
+        "name": "stats_sta_jcs_report_para_set",
+        "address": "0x007aba98",
+        "size": 1452,
+        "sha256": "5557d0aa30e216d0beb963404ceced74afe0dc1db7659de1cb58b02a607977fc"
+      },
+      "references": [
+        {
+          "root": "stats_db_init",
+          "site": "0x007ad070",
+          "instruction": "0x24c6ba98"
+        }
+      ],
+      "classification": "configuration",
+      "contracts": [
+        "v6-mode-and-reporting"
+      ],
+      "note": "统计55控制发送/参数保存；reporting配置不另建周期漫游策略。"
+    },
+    {
+      "source": {
+        "name": "wsta_fast_sql_work_task",
+        "address": "0x004d9b68",
+        "size": 492,
+        "sha256": "ad32cf86924a1657608a1069a205551f9684889ff2b53de8a8f526b4360a6d34"
+      },
+      "references": [
+        {
+          "root": "wsta_roam_sql_init",
+          "site": "0x004daecc",
+          "instruction": "0x24c69b68"
+        }
+      ],
+      "classification": "configuration",
+      "contracts": [
+        "roaming-capability-controls"
+      ],
+      "note": "SQL队列处理规则插入/更新/删除；Go单一配置源持久化与收敛代替原线程/SQLite。"
+    },
+    {
+      "source": {
+        "name": "wsta_roam_apmngr_callback_ap_destroy",
+        "address": "0x004d7540",
+        "size": 140,
+        "sha256": "3ee9be33c369a3d72e3b369405f87c23f6ed4d3078ae809442e541b8704d3792"
+      },
+      "references": [
+        {
+          "root": "wsta_roam_init",
+          "site": "0x004d8480",
+          "instruction": "0xafb80038"
+        }
+      ],
+      "classification": "configuration",
+      "contracts": [
+        "roaming-capability-controls",
+        "copy-replace-retire"
+      ],
+      "note": "AP删除移除策略绑定；分组迁移检查AP/组绑定冲突并选择新组或默认规则；组删除检查引用。"
+    },
+    {
+      "source": {
+        "name": "wsta_roam_apmngr_callback_ap_join_group",
+        "address": "0x004d7198",
+        "size": 596,
+        "sha256": "fc2d31520fcf4fa3fa6feb3aa5ff7942d8199614a8e98c12c726c338971964f4"
+      },
+      "references": [
+        {
+          "root": "wsta_roam_init",
+          "site": "0x004d84a4",
+          "instruction": "0xafb80040"
+        }
+      ],
+      "classification": "configuration",
+      "contracts": [
+        "roaming-capability-controls",
+        "copy-replace-retire"
+      ],
+      "note": "AP删除移除策略绑定；分组迁移检查AP/组绑定冲突并选择新组或默认规则；组删除检查引用。"
+    },
+    {
+      "source": {
+        "name": "wsta_roam_chnl_cmp_func",
+        "address": "0x004e31cc",
+        "size": 56,
+        "sha256": "d06ed53bbdbd88eed6895c6e1971a0e7576de729111a21874bd59d0a8543c7b1"
+      },
+      "references": [
+        {
+          "root": "wsta_roam_pkt_init",
+          "site": "0x004e9f08",
+          "instruction": "0xafb80014"
+        }
+      ],
+      "classification": "container-utility",
+      "contracts": [],
+      "note": "旧ACS容器的key/hash/compare/free/过期更新，无独立候选决策入口。"
+    },
+    {
+      "source": {
+        "name": "wsta_roam_chnl_data_free",
+        "address": "0x004e11b8",
+        "size": 108,
+        "sha256": "e9024d245477e9890e7f57411a81cdc992c98045dbd84c57aff4a515f3619d4b"
+      },
+      "references": [
+        {
+          "root": "wsta_roam_pkt_init",
+          "site": "0x004e9f20",
+          "instruction": "0xafb8001c"
+        }
+      ],
+      "classification": "container-utility",
+      "contracts": [],
+      "note": "旧ACS容器的key/hash/compare/free/过期更新，无独立候选决策入口。"
+    },
+    {
+      "source": {
+        "name": "wsta_roam_chnl_handle",
+        "address": "0x004e43f4",
+        "size": 716,
+        "sha256": "482531ffc9480f65f6691e39a1ffb0e3c6911d3e432ff735d7edacc2ace9dab3"
+      },
+      "references": [
+        {
+          "root": "wsta_roam_pkt_init",
+          "site": "0x004e9f40",
+          "instruction": "0xafb80024"
+        }
+      ],
+      "classification": "legacy-mode",
+      "contracts": [
+        "v6-mode-and-reporting"
+      ],
+      "note": "begin_to_acs的超时回调；先检查ACS process，mode2不启动旧智能ACS；不替代独立RRM。"
+    },
+    {
+      "source": {
+        "name": "wsta_roam_chnl_key_get_func",
+        "address": "0x004e0b50",
+        "size": 8,
+        "sha256": "33b8a3ecc253e501e8d6cc02eef147b269f0076c36976aed96857a56b68cec73"
+      },
+      "references": [
+        {
+          "root": "wsta_roam_pkt_init",
+          "site": "0x004e9f14",
+          "instruction": "0xafb80018"
+        }
+      ],
+      "classification": "container-utility",
+      "contracts": [],
+      "note": "旧ACS容器的key/hash/compare/free/过期更新，无独立候选决策入口。"
+    },
+    {
+      "source": {
+        "name": "wsta_roam_chnl_key_hash_func",
+        "address": "0x004e1158",
+        "size": 48,
+        "sha256": "4460beb05d3cbd4c479b361976500f64b8401480054860ee319b9d9dcbf268e0"
+      },
+      "references": [
+        {
+          "root": "wsta_roam_pkt_init",
+          "site": "0x004e9efc",
+          "instruction": "0xafb80010"
+        }
+      ],
+      "classification": "container-utility",
+      "contracts": [],
+      "note": "旧ACS容器的key/hash/compare/free/过期更新，无独立候选决策入口。"
+    },
+    {
+      "source": {
+        "name": "wsta_roam_chnl_obj_hash_func",
+        "address": "0x004e1188",
+        "size": 48,
+        "sha256": "4460beb05d3cbd4c479b361976500f64b8401480054860ee319b9d9dcbf268e0"
+      },
+      "references": [
+        {
+          "root": "wsta_roam_pkt_init",
+          "site": "0x004e9f54",
+          "instruction": "0x24e71188"
+        }
+      ],
+      "classification": "container-utility",
+      "contracts": [],
+      "note": "旧ACS容器的key/hash/compare/free/过期更新，无独立候选决策入口。"
+    },
+    {
+      "source": {
+        "name": "wsta_roam_chnl_update_func",
+        "address": "0x004e0b58",
+        "size": 28,
+        "sha256": "9e05fa5a705578c1707e86f1eede8ea71e1080962748fb00d83b99e0693b7565"
+      },
+      "references": [
+        {
+          "root": "wsta_roam_pkt_init",
+          "site": "0x004e9f2c",
+          "instruction": "0xafb80020"
+        }
+      ],
+      "classification": "container-utility",
+      "contracts": [],
+      "note": "旧ACS容器的key/hash/compare/free/过期更新，无独立候选决策入口。"
+    },
+    {
+      "source": {
+        "name": "wsta_roam_info_hash_cmp",
+        "address": "0x004de500",
+        "size": 108,
+        "sha256": "87d6e03b458ee2002c21bf1172c593fe128502da8c2a78777aa177ee52042fad"
+      },
+      "references": [
+        {
+          "root": "wsta_roam_db_init",
+          "site": "0x004deb24",
+          "instruction": "0x24c6e500"
+        }
+      ],
+      "classification": "container-utility",
+      "contracts": [],
+      "note": "哈希key/object/compare适配；没有独立触发、选择或准入动作。"
+    },
+    {
+      "source": {
+        "name": "wsta_roam_info_hash_key",
+        "address": "0x004de56c",
+        "size": 88,
+        "sha256": "be1ba76c40d4e90b4d34ddf1e78c0b0dd4d04dd47756e9fa69979bcc17b25331"
+      },
+      "references": [
+        {
+          "root": "wsta_roam_db_init",
+          "site": "0x004deb20",
+          "instruction": "0x24a5e56c"
+        }
+      ],
+      "classification": "container-utility",
+      "contracts": [],
+      "note": "哈希key/object/compare适配；没有独立触发、选择或准入动作。"
+    },
+    {
+      "source": {
+        "name": "wsta_roam_info_hash_obj",
+        "address": "0x004de5c4",
+        "size": 92,
+        "sha256": "e98f521656138300c69fe03b79e550da2ae0745eabaa94a5fc62b98280411b89"
+      },
+      "references": [
+        {
+          "root": "wsta_roam_db_init",
+          "site": "0x004deb1c",
+          "instruction": "0x2484e5c4"
+        }
+      ],
+      "classification": "container-utility",
+      "contracts": [],
+      "note": "哈希key/object/compare适配；没有独立触发、选择或准入动作。"
+    },
+    {
+      "source": {
+        "name": "wsta_roam_sta_assoc_callback",
+        "address": "0x004d746c",
+        "size": 212,
+        "sha256": "b42200929045dbdf9dc8f7c4b750308aa997902b010414c196c64186bf3a7cb2"
+      },
+      "references": [
+        {
+          "root": "wsta_roam_init",
+          "site": "0x004d8338",
+          "instruction": "0xafb8003c"
+        }
+      ],
+      "classification": "lifecycle",
+      "contracts": [
+        "pmk-cache"
+      ],
+      "note": "关联时按服务匹配取消PMK删除；离线标记60秒，到每分钟扫表删除；不选择目标AP。"
+    },
+    {
+      "source": {
+        "name": "wsta_roam_start_delete_timer",
+        "address": "0x004d740c",
+        "size": 96,
+        "sha256": "e3622c4856e107659c2b4721822f56fc3c1bbe19aa04ee7bca9f901e94744afb"
+      },
+      "references": [
+        {
+          "root": "wsta_roam_init",
+          "site": "0x004d837c",
+          "instruction": "0xafb8003c"
+        }
+      ],
+      "classification": "lifecycle",
+      "contracts": [
+        "pmk-cache"
+      ],
+      "note": "关联时按服务匹配取消PMK删除；离线标记60秒，到每分钟扫表删除；不选择目标AP。"
+    }
+  ],
+  "statistics_timer_table": [
+    {
+      "pointer": "0x008f5620",
+      "interval_address": "0x008f5640",
+      "seconds": 900,
+      "source": {
+        "name": "_stats_sta_sample_timer_handle",
+        "address": "0x007aac7c",
+        "size": 184,
+        "sha256": "9b86dfec3b7182d44b00639ff0d1588817b0678f516f8b19498ecabe668c980f"
+      },
+      "classification": "diagnostic",
+      "note": "历史统计采样/计数，未选择AP或修改准入；机器统计排除，Go无线历史使用实际观测时间独立存储。"
+    },
+    {
+      "pointer": "0x008f5624",
+      "interval_address": "0x008f5644",
+      "seconds": 600,
+      "source": {
+        "name": "_stats_dev_normal_sample_timer_handle",
+        "address": "0x007ab744",
+        "size": 128,
+        "sha256": "5576a21dc8fde4342c3dcea4dab207a03c21562647f3c466cef3b926ee3272c6"
+      },
+      "classification": "diagnostic",
+      "note": "历史统计采样/计数，未选择AP或修改准入；机器统计排除，Go无线历史使用实际观测时间独立存储。"
+    },
+    {
+      "pointer": "0x008f5628",
+      "interval_address": "0x008f5648",
+      "seconds": 600,
+      "source": {
+        "name": "_stats_radio_normal_sample_timer_handle",
+        "address": "0x007ab6c4",
+        "size": 128,
+        "sha256": "e18e191263f8992f53e734a735740a5371fd0c5108f8f1d8c89506878ff3f197"
+      },
+      "classification": "diagnostic",
+      "note": "历史统计采样/计数，未选择AP或修改准入；机器统计排除，Go无线历史使用实际观测时间独立存储。"
+    },
+    {
+      "pointer": "0x008f562c",
+      "interval_address": "0x008f564c",
+      "seconds": 600,
+      "source": {
+        "name": "_stats_vap_normal_sample_timer_handle",
+        "address": "0x007ab644",
+        "size": 128,
+        "sha256": "45da96d5f6a4b5fdc8d2086308940df8a706310454f4bb2385df789d7d37ad68"
+      },
+      "classification": "diagnostic",
+      "note": "历史统计采样/计数，未选择AP或修改准入；机器统计排除，Go无线历史使用实际观测时间独立存储。"
+    }
+  ],
+  "direct_targets": [
+    {
+      "name": "roam_nbr_select",
+      "address": "0x004e5638",
+      "size": 2836,
+      "sha256": "06b456dd3a66424ac0f4822e045c956261183dc1cd86e249bff680edcbf0bc6a"
+    },
+    {
+      "name": "_roaming_nbr_select",
+      "address": "0x004e4b3c",
+      "size": 1216,
+      "sha256": "2f0e46aab3497665b542694541be400c5bdbe80a88a4cd8e4d4162f3c51856ed"
+    },
+    {
+      "name": "_wsta_roam_pkt_roaming_trigger_request",
+      "address": "0x004e8440",
+      "size": 444,
+      "sha256": "72640c2d48710f41c4c7014db8c91d2b1e3e09ef280e8cc288dacf22258759be"
+    },
+    {
+      "name": "_wsta_roam_pkt_roaming_by_rssi_low",
+      "address": "0x004e6564",
+      "size": 7900,
+      "sha256": "8b87ea2465fed7e2b0ade702c3da2d48452d8f342c4cec3f6b8e1de3c1e04cb4"
+    },
+    {
+      "name": "_wsta_roam_pkt_pmk_request",
+      "address": "0x004e46c0",
+      "size": 1108,
+      "sha256": "0810a8aa59c78227d5f3b00d185c90d94fc2cfac8a26fd71ab7864014181ecd9"
+    },
+    {
+      "name": "balance_allow_sta_conect_wtp",
+      "address": "0x004f0adc",
+      "size": 800,
+      "sha256": "b74246baaf8ed9ba8508f2cd4c9e6a0977f9bf2d3161d51acce121923ac1476b"
+    },
+    {
+      "name": "wireless_network_mode_change_handle",
+      "address": "0x004e2cd8",
+      "size": 416,
+      "sha256": "ecd2c6a9b726fb26bbcaff53abdeeca252b541a524415c9c24fee1f8a9c9a4d4"
+    },
+    {
+      "name": "_wsta_roam_pkt_chnl_scan_report",
+      "address": "0x004e8630",
+      "size": 892,
+      "sha256": "22cbbe2696b8e5d6539a373a6107528353a8cb533a46db741e56e5050da4458b"
+    },
+    {
+      "name": "_wsta_intelligent_roam_set_rd_info_by_sta",
+      "address": "0x004e34ac",
+      "size": 952,
+      "sha256": "20cbdea93aa4eeb7aece71addbbae7e5ecc7ff7d5fc398f5d0dbdf09590b4efe"
+    },
+    {
+      "name": "_wsta_intelligent_roam_set_rd_info",
+      "address": "0x004e1788",
+      "size": 1236,
+      "sha256": "677695362b8b3afcfb3f017cfe0efbac672d532b5fe4d7a1666d3fcdb486bdef"
+    }
+  ],
+  "direct_callers": [
+    {
+      "caller": "_wsta_intelligent_roam_set_rd_cfg",
+      "site": "0x004e1cac",
+      "instruction": "0x081385e2",
+      "target": "_wsta_intelligent_roam_set_rd_info"
+    },
+    {
+      "caller": "_wsta_intelligent_roam_sta_change_ap_info",
+      "site": "0x004e2f88",
+      "instruction": "0x0c138b36",
+      "target": "wireless_network_mode_change_handle"
+    },
+    {
+      "caller": "check_cur_wireless_network_mode",
+      "site": "0x004e43b4",
+      "instruction": "0x0c138b36",
+      "target": "wireless_network_mode_change_handle"
+    },
+    {
+      "caller": "_wsta_roam_pkt_roaming_by_rssi_low",
+      "site": "0x004e713c",
+      "instruction": "0x0c13958e",
+      "target": "roam_nbr_select"
+    },
+    {
+      "caller": "_wsta_roam_pkt_roaming_trigger_request",
+      "site": "0x004e85d8",
+      "instruction": "0x0c139959",
+      "target": "_wsta_roam_pkt_roaming_by_rssi_low"
+    },
+    {
+      "caller": "_wsta_roam_pkt_wtp_event_listener",
+      "site": "0x004e89e8",
+      "instruction": "0x0c1391b0",
+      "target": "_wsta_roam_pkt_pmk_request"
+    },
+    {
+      "caller": "_wsta_roam_pkt_wtp_event_listener",
+      "site": "0x004e8a18",
+      "instruction": "0x0c13a110",
+      "target": "_wsta_roam_pkt_roaming_trigger_request"
+    },
+    {
+      "caller": "_wsta_roam_pkt_wtp_event_listener",
+      "site": "0x004e8a40",
+      "instruction": "0x0c13a18c",
+      "target": "_wsta_roam_pkt_chnl_scan_report"
+    },
+    {
+      "caller": "_wsta_intelligent_roam_ctl_pkt_send_cb",
+      "site": "0x004e927c",
+      "instruction": "0x0c138b36",
+      "target": "wireless_network_mode_change_handle"
+    },
+    {
+      "caller": "_wsta_intelligent_roam_ctl_pkt_send_cb",
+      "site": "0x004e9294",
+      "instruction": "0x0c1385e2",
+      "target": "_wsta_intelligent_roam_set_rd_info"
+    },
+    {
+      "caller": "balance_wsta_callback_balance_sta_check",
+      "site": "0x004f0fb0",
+      "instruction": "0x0c13c2b7",
+      "target": "balance_allow_sta_conect_wtp"
+    }
+  ],
+  "review_support": [
+    {
+      "name": "_stats_db_ap_stat_idle_clear",
+      "address": "0x007ac49c",
+      "size": 1144,
+      "sha256": "aad6e9a43677a3eb78790e8575bc5ce3be699cd163bab5d5eb7e72e8122d855c"
+    },
+    {
+      "name": "_wsta_intelligent_roam_sta_change_ap_info",
+      "address": "0x004e2e78",
+      "size": 328,
+      "sha256": "6d5435cefd29bad698a524b643acb40f32a4c8e231cd1283c04b5b34d3bb010e"
+    },
+    {
+      "name": "_wsta_intelligent_roam_set_rd_info",
+      "address": "0x004e1788",
+      "size": 1236,
+      "sha256": "677695362b8b3afcfb3f017cfe0efbac672d532b5fe4d7a1666d3fcdb486bdef"
+    },
+    {
+      "name": "_wsta_intelligent_roam_set_rd_cfg",
+      "address": "0x004e1c5c",
+      "size": 88,
+      "sha256": "0bb4367058e1613120997d045391696dca3d8047e0a2df3bdf5f505eb57141e2"
+    },
+    {
+      "name": "update_high_per_ap_chn_info",
+      "address": "0x004dffe8",
+      "size": 460,
+      "sha256": "23f579cc36776a24ed6a9b2ea32f8101bad354ca2b1e9c33e0c0d4d684a5f45e"
+    },
+    {
+      "name": "_wsta_roam_pkt_chnl_scan_report",
+      "address": "0x004e8630",
+      "size": 892,
+      "sha256": "22cbbe2696b8e5d6539a373a6107528353a8cb533a46db741e56e5050da4458b"
+    },
+    {
+      "name": "check_cur_wireless_network_mode",
+      "address": "0x004e42f8",
+      "size": 252,
+      "sha256": "9ddfa22dcf40bc3b0f9efd31a3cee10f6119a9ee61a5a3598ab13539dbe8fb14"
+    },
+    {
+      "name": "wsta_roam_chnl_handle_thread",
+      "address": "0x004e2668",
+      "size": 1648,
+      "sha256": "c32b5f6e3e133ece95d46d73f4e5c0074e7a4870f5330cfae81ba0da69a93b45"
+    },
+    {
+      "name": "_wsta_intelligent_roam_do_acs",
+      "address": "0x004e418c",
+      "size": 364,
+      "sha256": "afa1718aabff4cceef1dfff1d1fe94cdde27db8364a4e3bfe235e02a6bffb207"
+    },
+    {
+      "name": "_wsta_intelligent_roam_ctl_pkt_send_cb",
+      "address": "0x004e90e8",
+      "size": 496,
+      "sha256": "8cc21d4efb3a851188fd2db2b6dc2659405ccd12b11f5a258ec0c4ba7aa4f0ca"
+    },
+    {
+      "name": "_wsta_roam_pkt_roaming_by_rssi_low",
+      "address": "0x004e6564",
+      "size": 7900,
+      "sha256": "8b87ea2465fed7e2b0ade702c3da2d48452d8f342c4cec3f6b8e1de3c1e04cb4"
+    },
+    {
+      "name": "_wsta_roam_pkt_roaming_trigger_request",
+      "address": "0x004e8440",
+      "size": 444,
+      "sha256": "72640c2d48710f41c4c7014db8c91d2b1e3e09ef280e8cc288dacf22258759be"
+    },
+    {
+      "name": "_wsta_roam_pkt_wtp_event_listener",
+      "address": "0x004e89ac",
+      "size": 232,
+      "sha256": "b34f18a84c646a049f4dafe233686e9353e21a1b5e33b38b11858197c2e55a1e"
+    },
+    {
+      "name": "_wsta_roam_rd_chnl_changed_by_subdev",
+      "address": "0x004e2fc0",
+      "size": 524,
+      "sha256": "26f68410fa94297a1ccaae6074dd1db0901fa4581ef0a5741d6267ed34cdfa6a"
+    },
+    {
+      "name": "balance_wsta_callback_balance_sta_check",
+      "address": "0x004f0dfc",
+      "size": 884,
+      "sha256": "23837834ba4c4bc5b507633ae03a961e81baa581a8c73af8a1e98e9d76c31eff"
+    }
+  ],
+  "intentional_firmware_bug_fix_contract": "roaming-packet-output-state",
+  "reverse_references": [
+    {
+      "caller": "_wsta_roam_pkt_roaming_by_rssi_low",
+      "site": "0x004e713c",
+      "instruction": "0x0c13958e",
+      "target": "roam_nbr_select",
+      "direct": true
+    },
+    {
+      "caller": "_wsta_roam_pkt_wtp_event_listener",
+      "site": "0x004e8a18",
+      "instruction": "0x0c13a110",
+      "target": "_wsta_roam_pkt_roaming_trigger_request",
+      "direct": true
+    },
+    {
+      "caller": "_wsta_roam_pkt_roaming_trigger_request",
+      "site": "0x004e85d8",
+      "instruction": "0x0c139959",
+      "target": "_wsta_roam_pkt_roaming_by_rssi_low",
+      "direct": true
+    },
+    {
+      "caller": "_wsta_roam_pkt_wtp_event_listener",
+      "site": "0x004e89e8",
+      "instruction": "0x0c1391b0",
+      "target": "_wsta_roam_pkt_pmk_request",
+      "direct": true
+    },
+    {
+      "caller": "balance_wsta_callback_balance_sta_check",
+      "site": "0x004f0fb0",
+      "instruction": "0x0c13c2b7",
+      "target": "balance_allow_sta_conect_wtp",
+      "direct": true
+    },
+    {
+      "caller": "check_cur_wireless_network_mode",
+      "site": "0x004e43b4",
+      "instruction": "0x0c138b36",
+      "target": "wireless_network_mode_change_handle",
+      "direct": true
+    },
+    {
+      "caller": "_wsta_intelligent_roam_sta_change_ap_info",
+      "site": "0x004e2f88",
+      "instruction": "0x0c138b36",
+      "target": "wireless_network_mode_change_handle",
+      "direct": true
+    },
+    {
+      "caller": "_wsta_intelligent_roam_ctl_pkt_send_cb",
+      "site": "0x004e927c",
+      "instruction": "0x0c138b36",
+      "target": "wireless_network_mode_change_handle",
+      "direct": true
+    },
+    {
+      "caller": "_wsta_roam_pkt_wtp_event_listener",
+      "site": "0x004e8a40",
+      "instruction": "0x0c13a18c",
+      "target": "_wsta_roam_pkt_chnl_scan_report",
+      "direct": true
+    },
+    {
+      "caller": "_wsta_intelligent_roam_sta_change_ap_info",
+      "site": "0x004e2f98",
+      "instruction": "0x24a534ac",
+      "target": "_wsta_intelligent_roam_set_rd_info_by_sta",
+      "direct": false
+    },
+    {
+      "caller": "_wsta_intelligent_roam_ctl_pkt_send_cb",
+      "site": "0x004e9294",
+      "instruction": "0x0c1385e2",
+      "target": "_wsta_intelligent_roam_set_rd_info",
+      "direct": true
+    },
+    {
+      "caller": "_wsta_intelligent_roam_set_rd_cfg",
+      "site": "0x004e1cac",
+      "instruction": "0x081385e2",
+      "target": "_wsta_intelligent_roam_set_rd_info",
+      "direct": true
+    },
+    {
+      "caller": "_wsta_roam_rd_chnl_changed_by_subdev",
+      "site": "0x004e319c",
+      "instruction": "0x24a51788",
+      "target": "_wsta_intelligent_roam_set_rd_info",
+      "direct": false
+    }
+  ]
+}

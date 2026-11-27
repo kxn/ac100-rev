@@ -381,7 +381,7 @@
         "uacgo/admin/roaming_branch_audit_test.go",
         "uacgo/cweng/roaming_branches_test.go"
       ],
-      "basis": "4e89ac→4e8440→4e6564→4e5638；JAL不是旧_roaming_nbr_select。原整数表/排序/四候选/弱信号回退；不增加ACK冷却。V6 Web模式只读2，老ACS内部路径不开放。",
+      "basis": "4e89ac→4e8440→4e6564→4e5638；JAL不是旧_roaming_nbr_select。原整数表/排序/四候选/弱信号回退；不增加ACK冷却。V6 Web模式只读2，老ACS内部路径不开放。 空邻居跨客户端候选复用属于用户明确要求修复的厂商缺陷，单独列入firmware-bug-fix合同；其余策略继续按原分支。入口清单见roaming-entry-audit.json。",
       "evidence_contracts": [
         "active-trigger-wire",
         "candidate-order-and-gates",

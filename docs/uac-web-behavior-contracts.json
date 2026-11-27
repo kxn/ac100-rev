@@ -2406,6 +2406,10 @@
         {
           "path": "uacgo/cweng/station_policy_test.go",
           "name": "TestMLOMissingLinkSentinelDoesNotForgeRSSISample"
+        },
+        {
+          "path": "uacgo/cweng/roaming_branches_test.go",
+          "name": "TestV6PMKPrecedesRoamingTriggerAndUsesFirstElement"
         }
       ]
     },
@@ -2936,8 +2940,8 @@
     {
       "id": "roaming-packet-output-state",
       "feature": "roaming",
-      "origin": "firmware",
-      "behavior": "零邻居时4e577c提前返回，不执行4e5aac输出数清零；调用循环输出仅每包初始化，保留同包上一结果；新包清状态，有邻居但筛空会清零。不是AC全局sticky或新增回退策略。",
+      "origin": "firmware-bug-fix",
+      "behavior": "每个客户端独立计算选择结果；零有效邻居返回空候选，保留本客户端的AP bitmap；不得继承同包其它客户端/无线服务的候选。排序、门限、弱信号回退及分包保持原策略。",
       "sources": [
         {
           "kind": "uac",
@@ -2970,7 +2974,7 @@
       "tests": [
         {
           "path": "uacgo/admin/roaming_branch_audit_test.go",
-          "name": "TestRoamingEmptyNeighborOutputIsPacketLocalFirmwareState"
+          "name": "TestRoamingEmptyNeighborsNeverReuseAnotherStationCandidates"
         },
         {
           "path": "uacgo/admin/roaming_branch_audit_test.go",
@@ -2978,9 +2982,20 @@
         },
         {
           "path": "uacgo/admin/roaming_branch_audit_test.go",
-          "name": "TestRoamingOutputStateResetsAt128StationPacketBoundary"
+          "name": "TestRoamingStationResultsStayIsolatedAcrossPacketBoundary"
+        },
+        {
+          "path": "uacgo/admin/roaming_branch_audit_test.go",
+          "name": "TestRoamingInvalidOrMissingNeighborsAreIsolatedAcrossServices"
+        },
+        {
+          "path": "uacgo/admin/mobility_test.go",
+          "name": "TestRoamingTriggerAcrossTwoUDPSimulatedAPs"
         }
-      ]
+      ],
+      "firmware_defect": "4e577c零邻居提前返回，绕过4e5aac清输出数；4e6ba0仅每包初始化，可能复用前一客户端候选。",
+      "intentional_change": "删除包内共享选择状态，每站点始终调用纯选择器；不复制厂商输出参数残留缺陷。",
+      "authorization": "用户明确要求：调度策略一致，不复制空邻居沿用前一客户端候选的固件bug。"
     },
     {
       "id": "roaming-capability-controls",

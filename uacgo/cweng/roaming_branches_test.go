@@ -2,10 +2,58 @@ package cweng
 
 import (
 	"net"
+	"reflect"
 	"testing"
 	"time"
 	"uacgo/capwap"
 )
+
+// 4e89ac looks up the first 49, then the first 58, independently of wire
+// order. In particular operation3 association is visible to the trigger.
+func TestV6PMKPrecedesRoamingTriggerAndUsesFirstElement(t *testing.T) {
+	for _, syncOK := range []bool{false, true} {
+		t.Run(map[bool]string{false: "failed-pmk", true: "synced-pmk"}[syncOK], func(t *testing.T) {
+			e, err := NewEngine(0)
+			if err != nil {
+				t.Fatal(err)
+			}
+			defer e.Close()
+			table := NewClientTable()
+			e.RegisterWstaHandlers(table)
+			s := newSession(&net.UDPAddr{}, e.acData)
+			s.apEntry = &APEntry{RadioCount: 1, GeneralCapabilities: []uint32{0, 0, 1 << 2}}
+			mac := [6]byte{2, 1, 2, 3, 4, 5}
+			var calls []string
+			e.OnStationPMK = func(_ string, _ time.Time, _ bool, p capwap.PrivStaPMKReq) *capwap.PrivStaPMKReq {
+				calls = append(calls, "pmk")
+				p.Operation = 2
+				if !syncOK {
+					p.Result = 1
+				}
+				return &p
+			}
+			e.OnRoamingTrigger = func(_ string, _ time.Time, p capwap.PrivRoamingTrigger) {
+				calls = append(calls, "trigger")
+				if p.ChannelLoad != 17 || (len(table.All()) == 1) != syncOK {
+					t.Error("trigger used duplicate element or preceded PMK outcome", p, table.All())
+				}
+			}
+			a := capwap.PrivRoamingTrigger{Radio: 1, ChannelLoad: 17}
+			b := capwap.PrivRoamingTrigger{Radio: 1, ChannelLoad: 99}
+			pmk := capwap.PrivStaPMKReq{Operation: 3, MAC: mac, Radio: 1, WLAN: 1}
+			req, _ := capwap.NewParsedPacket(9)
+			rsp, _ := capwap.NewParsedPacket(10)
+			req.Elements = []capwap.Element{{Type: 0x25, Value: capwap.VendorEnvelopeValue(0, 0, []capwap.PrivElementValue{
+				{Type: 0x58, Value: a.AssembleValue()}, {Type: 0x49, Value: pmk.AssembleValue()},
+				{Type: 0x58, Value: b.AssembleValue()}, {Type: 0x49, Value: pmk.AssembleValue()},
+			})}}
+			e.reg.handleMsg(&Ctx{Session: s}, 9, req, rsp)
+			if !reflect.DeepEqual(calls, []string{"pmk", "trigger"}) {
+				t.Fatal("listener did not follow original lookup order", calls)
+			}
+		})
+	}
+}
 
 func TestV6StatisticsControlGatesFactsButNotBSSIDUpdates(t *testing.T) {
 	e, err := NewEngine(0)

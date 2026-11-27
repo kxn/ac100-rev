@@ -60,8 +60,10 @@ def main():
     source_count = set()
     for c in contracts:
         assert c['behavior'] and c['implementation'] and c['tests'], c['id']
-        assert c['origin'] in ('firmware', 'standalone-go'), c['id']
+        assert c['origin'] in ('firmware', 'standalone-go', 'firmware-bug-fix'), c['id']
         assert c['origin'] == 'standalone-go' or c['sources'], c['id']
+        if c['origin'] == 'firmware-bug-fix':
+            assert c['firmware_defect'] and c['intentional_change'] and c['authorization'], c['id']
         for imp in c['implementation']:
             assert declared(ROOT / imp['path'], imp['symbol']), f'Missing Go implementation: {imp}'
             symbol_count.add((imp['path'], imp['symbol']))
@@ -112,7 +114,9 @@ def main():
         if run.returncode or not expected <= passed:
             failures = [line for line in run.stdout.splitlines() if '"Action":"fail"' in line]
             raise RuntimeError(f'Contract execution failed: missing pass {sorted(expected - passed)}, failure events {failures}; stderr={run.stderr[-2000:]}')
-    report = dict(firmware=manifest['firmware'], contracts=len(contracts), features=len(expected_features), pinned_uac_functions_classified=len(firmware['uac_functions']), implementation_symbols=len(symbol_count), source_references=len(source_count), named_tests=sum(map(len, selected.values())), verified_firmware=args.verify_firmware, executed_tests=len({(p,n) for p,n in passed if n in selected[p]}), meaning='Named branch contracts only; no original runtime oracle or exhaustive equivalence claim.')
+    from check_roaming_entries import verify_entries
+    entry_report = verify_entries(args.verify_firmware)
+    report = dict(firmware=manifest['firmware'], contracts=len(contracts), features=len(expected_features), pinned_uac_functions_classified=len(firmware['uac_functions']), implementation_symbols=len(symbol_count), source_references=len(source_count), named_tests=sum(map(len, selected.values())), verified_firmware=args.verify_firmware, executed_tests=len({(p,n) for p,n in passed if n in selected[p]}), intentional_firmware_bug_fixes=[c['id'] for c in contracts if c['origin'] == 'firmware-bug-fix'], roaming_entries=entry_report, meaning='Named branch contracts only; no original runtime oracle or exhaustive equivalence claim.')
     if args.report:
         args.report.write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n')
     print(json.dumps(report, ensure_ascii=False))

@@ -3,7 +3,6 @@ package admin
 import (
 	"context"
 	"encoding/binary"
-	"strings"
 	"testing"
 	"time"
 	"uacgo/capwap"
@@ -159,7 +158,7 @@ func TestRoamingRadioDisableRequiresFreshAPStatisticsAfterEnable(t *testing.T) {
 	}
 }
 
-func TestRoamingEmptyNeighborOutputIsPacketLocalFirmwareState(t *testing.T) {
+func TestRoamingEmptyNeighborsNeverReuseAnotherStationCandidates(t *testing.T) {
 	m, source, target, mac, now := rssiRoamingFixture(t)
 	bssid := [6]byte{2, 10, 1}
 	target.VAPStatistics = []capwap.APVAPStatistics{{Radio: 1, WLAN: 1, BSSID: bssid}}
@@ -172,14 +171,13 @@ func TestRoamingEmptyNeighborOutputIsPacketLocalFirmwareState(t *testing.T) {
 	second := capwap.RoamTriggerStation{MAC: other, WLAN: 1, RSSI: -30}
 	r := capwap.PrivRoamingTrigger{Radio: 1, Stations: []capwap.RoamTriggerStation{{MAC: mac, WLAN: 1, RSSI: -90}, second}}
 	got := m.calculateRoamingLocked(source, r, now)
-	if len(got) != 1 || len(got[0].Stations) != 2 || len(got[0].Stations[1].Candidates) != 1 || got[0].Stations[1].Candidates[0].BSSID != bssid {
-		t.Fatal("empty-neighbor early return lost the original output parameter", got)
+	if len(got) != 1 || len(got[0].Stations) != 2 || len(got[0].Stations[0].Candidates) != 1 || len(got[0].Stations[1].Candidates) != 0 {
+		t.Fatal("station results are not independent", got)
 	}
-	if !strings.Contains(m.roamHistory[len(m.roamHistory)-1].Reason, "同包") {
-		t.Fatal("quirk was misrepresented as a newly calculated result")
+	if len(m.roamHistory[len(m.roamHistory)-1].Candidates) != 0 || got[0].Stations[1].APBitmap[0] != 1 {
+		t.Fatal("history or bitmap retained another station's candidates")
 	}
-	// A new report has a new packet output count, not a controller cooldown
-	// or a sticky candidate cached across triggers.
+	// A later report must also remain independent.
 	r.Stations = []capwap.RoamTriggerStation{second}
 	got = m.calculateRoamingLocked(source, r, now)
 	if len(got[0].Stations[0].Candidates) != 0 {
@@ -187,7 +185,7 @@ func TestRoamingEmptyNeighborOutputIsPacketLocalFirmwareState(t *testing.T) {
 	}
 }
 
-func TestRoamingOutputStateResetsAt128StationPacketBoundary(t *testing.T) {
+func TestRoamingStationResultsStayIsolatedAcrossPacketBoundary(t *testing.T) {
 	m, source, target, mac, now := rssiRoamingFixture(t)
 	bssid := [6]byte{2, 10, 1}
 	m.observeAPStatistics(target.ID, target.ConnectedAt, capwap.PrivApStatistics{VAPs: []capwap.APVAPStatistics{{Radio: 1, WLAN: 1, BSSID: bssid}}})
@@ -203,8 +201,47 @@ func TestRoamingOutputStateResetsAt128StationPacketBoundary(t *testing.T) {
 	if len(got) != 2 || len(got[0].Stations) != 128 || len(got[1].Stations) != 2 {
 		t.Fatal("report truncated or incorrectly chunked", len(got))
 	}
-	if len(got[0].Stations[127].Candidates) != 1 || len(got[1].Stations[0].Candidates) != 0 || len(got[1].Stations[1].Candidates) != 0 {
-		t.Fatal("selector output state escaped its packet lifetime")
+	for packet, result := range got {
+		for row, station := range result.Stations {
+			want := 0
+			if packet == 0 && row == 0 {
+				want = 1
+			}
+			if len(station.Candidates) != want {
+				t.Fatal("station selection escaped its lifetime", packet, row, station)
+			}
+		}
+	}
+}
+
+func TestRoamingInvalidOrMissingNeighborsAreIsolatedAcrossServices(t *testing.T) {
+	for _, mode := range []string{"no-rssi-history", "unknown-bssid", "conflicting-signal-encoding"} {
+		t.Run(mode, func(t *testing.T) {
+			m, source, target, mac, now := rssiRoamingFixture(t)
+			bssid := [6]byte{2, 10, 1}
+			m.observeAPStatistics(target.ID, target.ConnectedAt, capwap.PrivApStatistics{VAPs: []capwap.APVAPStatistics{{Radio: 1, WLAN: 1, BSSID: bssid}}})
+			m.stationStatistics.UpdateNeighbor(mobility.MAC(mac), mobility.RSSINeighbor{AP: target.ID, Radio: 1, WLAN: 1, RSSI: -50, At: now}, time.Minute)
+			guest := Service{ID: "guest", SSID: "Guest", Security: "open", Enabled: true, Radios: []uint8{1}}
+			m.config.Services = append(m.config.Services, guest)
+			slot, err := m.allocate(source.ID, guest.ID, 1, 8)
+			if err != nil {
+				t.Fatal(err)
+			}
+			other := mac
+			other[5]++
+			m.clients.StationEvent(cweng.ClientEvent{MAC: other, APID: source.ID, RadioID: 1, WLANID: uint32(slot), Kind: "associate", Seen: now})
+			second := capwap.RoamTriggerStation{MAC: other, WLAN: slot, RSSI: -90}
+			switch mode {
+			case "unknown-bssid":
+				second.Neighbors = []capwap.RoamNeighborReport{{BSSID: [6]byte{2, 99}, RCPI: 120}}
+			case "conflicting-signal-encoding":
+				second.Neighbors = []capwap.RoamNeighborReport{{BSSID: bssid, RCPI: 140, RSNI: 61}, {BSSID: bssid, RCPI: 141}}
+			}
+			got := m.calculateRoamingLocked(source, capwap.PrivRoamingTrigger{Radio: 1, Stations: []capwap.RoamTriggerStation{{MAC: mac, WLAN: 1, RSSI: -90}, second}}, now)
+			if len(got) != 1 || len(got[0].Stations) != 2 || len(got[0].Stations[0].Candidates) != 1 || len(got[0].Stations[1].Candidates) != 0 || got[0].Stations[1].APBitmap[0] != 1 {
+				t.Fatal("invalid/empty guest data inherited office candidates", got)
+			}
+		})
 	}
 }
 
