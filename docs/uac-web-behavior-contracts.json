@@ -1121,7 +1121,7 @@
       "id": "balance-failures-clock",
       "feature": "balance",
       "origin": "firmware",
-      "behavior": "每 MAC 共享拒绝计数，距最后拒绝 60 秒重置，达到次数放行；无同 SSID/VLAN 二次过滤。",
+      "behavior": "每 MAC 共享拒绝计数，距最后拒绝 60 秒重置，达到次数放行；无同 SSID/VLAN 二次过滤。 AP 人数按逻辑 MLD/普通站点，跳过 peer 类型2；不改变各射频链路容量。",
       "sources": [
         {
           "kind": "uac",
@@ -1150,12 +1150,37 @@
           "address": "0x004f0adc",
           "size": 800,
           "sha256": "b74246baaf8ed9ba8508f2cd4c9e6a0977f9bf2d3161d51acce121923ac1476b"
+        },
+        {
+          "kind": "uac",
+          "name": "balance_wsta_callback_balance_sta_add",
+          "address": "0x004ed3e4",
+          "size": 316,
+          "sha256": "2c71784462bc242136e81d23cc8138b84c2a4488ed822a2f6ddcd1e8bea69d44"
+        },
+        {
+          "kind": "uac",
+          "name": "balance_wsta_callback_balance_sta_del",
+          "address": "0x004ed520",
+          "size": 316,
+          "sha256": "ab64889e90db6fd882ed7b3e061e9055ab3f6d70e1e86e709d43cf91dd81b5da"
+        },
+        {
+          "kind": "uac",
+          "name": "uac_wstation_mlo_peer_assoc",
+          "address": "0x00766458",
+          "size": 604,
+          "sha256": "ef1390f9ce15522f3e99d14406a5123c74baa9f5561b5aad5336333d8aee516b"
         }
       ],
       "implementation": [
         {
           "path": "uacgo/mobility/balance.go",
           "symbol": "Admit"
+        },
+        {
+          "path": "uacgo/admin/balance_decision.go",
+          "symbol": "balanceAdmission"
         }
       ],
       "tests": [
@@ -1166,6 +1191,10 @@
         {
           "path": "uacgo/admin/mobility_test.go",
           "name": "TestBalanceUsesDiscoveredPeerAndBoundedRejections"
+        },
+        {
+          "path": "uacgo/admin/roam_source_audit_test.go",
+          "name": "TestBalanceCountsMLDOnceAndExcludesPeerRows"
         }
       ]
     },
@@ -1299,7 +1328,7 @@
       "id": "candidate-order-and-gates",
       "feature": "roaming",
       "origin": "firmware",
-      "behavior": "有效候选率/频段/RSSI 排序，原 quicksort 同分次序；原负载及增益边界、四候选上限、弱信号尾 band 回退。",
+      "behavior": "有效候选率/频段/RSSI 排序，原 quicksort 同分次序；原负载及增益边界、四候选上限、弱信号尾 band 回退。 排序前先拼 5G 再拼 2G，避免非稳定排序翻转同分顺序。",
       "sources": [
         {
           "kind": "uac",
@@ -1324,6 +1353,10 @@
         {
           "path": "uacgo/mobility/select.go",
           "symbol": "firmwareSort"
+        },
+        {
+          "path": "uacgo/admin/roam_decision.go",
+          "symbol": "calculateRoamingLocked"
         }
       ],
       "tests": [
@@ -1338,6 +1371,10 @@
         {
           "path": "uacgo/mobility/select_test.go",
           "name": "TestFirmwareSortPreservesComparatorWithoutInventedTieKey"
+        },
+        {
+          "path": "uacgo/admin/roam_source_audit_test.go",
+          "name": "TestRoamingUsesFiveGHzFirstBeforeFirmwareQuicksort"
         }
       ]
     },
@@ -1394,6 +1431,10 @@
         {
           "path": "uacgo/mobility/rate.go",
           "symbol": "EstimateRate"
+        },
+        {
+          "path": "uacgo/mobility/rate.go",
+          "symbol": "RadioBandwidth"
         }
       ],
       "tests": [
@@ -1404,6 +1445,10 @@
         {
           "path": "uacgo/mobility/rate_test.go",
           "name": "TestCapabilitiesAndMeshRateFollowVendorOperations"
+        },
+        {
+          "path": "uacgo/admin/roam_source_audit_test.go",
+          "name": "TestRadioAutoWidthUsesWLANFallback"
         }
       ]
     },
@@ -1411,7 +1456,7 @@
       "id": "pmk-cache",
       "feature": "roaming",
       "origin": "firmware",
-      "behavior": "PMK 固定 101 字节、逻辑服务隔离、原 operation/result；断连 60 秒分钟清理，重关联撤销删除。",
+      "behavior": "PMK 固定 101 字节、逻辑服务隔离、原 operation/result；断连 60 秒分钟清理，重关联撤销删除。 查找失败清当前站点和 MLO 组，向原所在 AP（不是请求 AP）提交 msg25/0x12 后再发生命周期通知。",
       "sources": [
         {
           "kind": "uac",
@@ -1426,18 +1471,66 @@
           "address": "0x006b14d8",
           "size": 464,
           "sha256": "7e1776e63c5dd8175dd6046ec4622887f15585a11b71ee3619b338cffd6d1e26"
+        },
+        {
+          "kind": "uac",
+          "name": "uac_wstation_free_sta_by_mac",
+          "address": "0x00766fdc",
+          "size": 24,
+          "sha256": "c5b7d3d87bdd55eb707684a53a455ebadcc2b46adf7a763c0779fb1ba741e13e"
+        },
+        {
+          "kind": "uac",
+          "name": "wsta_db_free_sta_by_mac_new",
+          "address": "0x00754c74",
+          "size": 408,
+          "sha256": "ce7334bfed134f64004ca268e5ecc37e455e51e2ff1df4af72d8e45d615a1ecd"
+        },
+        {
+          "kind": "uac",
+          "name": "_wsta_free_entry_new",
+          "address": "0x0075492c",
+          "size": 368,
+          "sha256": "99dfa1c2ad343b209bb25cddbe66deae475a685bf5289e05cfa8fa71814cc0a4"
+        },
+        {
+          "kind": "uac",
+          "name": "_uac_wsta_del_cb",
+          "address": "0x0075efec",
+          "size": 1072,
+          "sha256": "a7975a2720c0337ffbde28fb3c39d2df319168189025871dadba4144561e44dd"
         }
       ],
       "implementation": [
         {
           "path": "uacgo/mobility/pmk.go",
           "symbol": "Lookup"
+        },
+        {
+          "path": "uacgo/admin/pmk.go",
+          "symbol": "queueStationRelease"
+        },
+        {
+          "path": "uacgo/cweng/client_history.go",
+          "symbol": "DisconnectStation"
+        },
+        {
+          "path": "uacgo/cweng/station_extra.go",
+          "symbol": "disconnectMLOLocked"
         }
       ],
       "tests": [
         {
           "path": "uacgo/mobility/pmk_test.go",
           "name": "TestPMKLookupStatusesAndDisconnectTimerFollowFirmware"
+        },
+        {
+          "path": "uacgo/admin/roam_source_audit_test.go",
+          "name": "TestPMKFailureDeletesStationOnItsCurrentAP"
+        },
+        {
+          "path": "uacgo/cweng/station_policy_test.go",
+          "name": "TestPMKReleaseRemovesMLOGroupBeforeLifecycleNotification"
         }
       ]
     },
@@ -2520,6 +2613,127 @@
         {
           "path": "uacgo/admin/server_test.go",
           "name": "TestRemoteHTTPOptInKeepsSameOriginWriteBoundary"
+        }
+      ]
+    },
+    {
+      "id": "mesh-roaming-role-rate",
+      "feature": "roaming",
+      "origin": "firmware",
+      "behavior": "APDB 顶层12/13传播 Mesh-device/product_type，Join 角色选择回传估算；4/6/8 使用当前父节点速率，缺失为0；5/7/未知估算-1，保留当前 BSS 的-1，仅跳过-1邻居。 旧型号库按原5.0G键恢复双频，不跨硬件版本取能力。",
+      "sources": [
+        {
+          "kind": "uac",
+          "name": "_apdb_pkt_manage",
+          "address": "0x0070cc34",
+          "size": 10228,
+          "sha256": "e00d8a972d1a5bad1ffdd464455f59fe66d278722b6f1e62d40c581a7e745ceb"
+        },
+        {
+          "kind": "uac",
+          "name": "_apmngr_pkt_join_req_listen",
+          "address": "0x0060b040",
+          "size": 10420,
+          "sha256": "a536395d68c775387feef4e9c3cddd3bad9b6324a413f2c1c6edf3445e8ecea8"
+        },
+        {
+          "kind": "uac",
+          "name": "_mesh_pkt_join_req_listen",
+          "address": "0x0053c1a8",
+          "size": 1740,
+          "sha256": "0eaa6a0a151e564ddc4d0f6115d725550feb2627182964e9301a2229983c635e"
+        },
+        {
+          "kind": "uac",
+          "name": "mesh_db_ap_entry_add",
+          "address": "0x0053196c",
+          "size": 1040,
+          "sha256": "ef5bdf0c6c3da3d3f2bac44f624ec88846381607c9cbdf237ec5e19dc5c26048"
+        },
+        {
+          "kind": "uac",
+          "name": "mesh_db_ap_entry_get",
+          "address": "0x00531eb8",
+          "size": 320,
+          "sha256": "bbf5aa17b09d8ac7f81633594029572eee2cd6ab2f0c0169dd9b9723a0e86067"
+        },
+        {
+          "kind": "uac",
+          "name": "apmngr_db_role_str",
+          "address": "0x005b490c",
+          "size": 44,
+          "sha256": "151414c6a68e55754bdae4adaa32769fccd535a80e68fd2001e1721c1e91b6c6"
+        },
+        {
+          "kind": "uac",
+          "name": "wss_steer_candidate_rate_estimate",
+          "address": "0x004eb314",
+          "size": 1036,
+          "sha256": "9e7cc21aac7aab32da010bd4edc6e0deb5c770abc7d9e49cc1cacc9288b4475b"
+        },
+        {
+          "kind": "uac",
+          "name": "_wsta_roam_pkt_roaming_by_rssi_low",
+          "address": "0x004e6564",
+          "size": 7900,
+          "sha256": "8b87ea2465fed7e2b0ade702c3da2d48452d8f342c4cec3f6b8e1de3c1e04cb4"
+        },
+        {
+          "kind": "uac",
+          "name": "_apdb_ap_list_parse",
+          "address": "0x006f8780",
+          "size": 3912,
+          "sha256": "245b520587fb8d0fbfcfa38fea9cea929a6716b88f010e080bdac98544c2e763"
+        },
+        {
+          "kind": "uac",
+          "name": "_apdb_parse_radio",
+          "address": "0x006f239c",
+          "size": 1400,
+          "sha256": "f479eb8352586fc0291766e41df228dd185a7782986a033125ec25d9502f95bf"
+        },
+        {
+          "kind": "uac",
+          "name": "_apdb_radio_freq_string_to_enum",
+          "address": "0x006f1b54",
+          "size": 156,
+          "sha256": "36d4aa976150a8c3802f7dacd39aaba9bbd176b728d5cc704db9591d79c05add"
+        }
+      ],
+      "implementation": [
+        {
+          "path": "uacgo/cweng/capabilities.go",
+          "symbol": "parseAPCapabilities"
+        },
+        {
+          "path": "uacgo/admin/roam_decision.go",
+          "symbol": "roamingRole"
+        },
+        {
+          "path": "uacgo/admin/roam_decision.go",
+          "symbol": "candidateLocked"
+        },
+        {
+          "path": "uacgo/cweng/capabilities.go",
+          "symbol": "ResolveCapabilities"
+        }
+      ],
+      "tests": [
+        {
+          "path": "uacgo/admin/roam_source_audit_test.go",
+          "name": "TestRoamingMeshRateUsesRoleAndCurrentParent"
+        },
+        {
+          "path": "uacgo/admin/roam_source_audit_test.go",
+          "name": "TestRoamingCurrentUnsupportedRoleKeepsUnknownRate"
+        },
+        {
+          "path": "uacgo/cweng/capabilities_test.go",
+          "name": "TestProductMetadataFlowsFromAPReportToStatus"
+        },
+        {
+          "path": "uacgo/cweng/capabilities_test.go",
+          "name": "TestLegacyAPDBResolvesFiveGHzFirmwareKey"
         }
       ]
     }

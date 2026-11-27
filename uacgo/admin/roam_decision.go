@@ -138,8 +138,10 @@ func (m *Manager) radioPHYLocked(ap cweng.APStatus, r cweng.RadioStatistics, ban
 	if bw == 2 {
 		bw = int(r.Bandwidth)
 	}
-	// Width normalization is shared with the original station conversion.
+	// WLAN width decoding differs from station decoding for an unresolved
+	// automatic width (2); keep the original WLAN fallback by frequency.
 	p := mobility.StationPHY(0x11, int8(bw), band)
+	p.Bandwidth = mobility.RadioBandwidth(bw, band)
 	p.NSS = uint8(cap.TxStreams)
 	if cap.TxStreams < 1 || cap.TxStreams > 16 {
 		p.NSS = 2
@@ -171,6 +173,50 @@ func (m *Manager) radioPHYLocked(ap cweng.APStatus, r cweng.RadioStatistics, ban
 	}
 	return p
 }
+
+// V6 Join derives roles from product type, Mesh-device flag and transport:
+// normal0, CAP1, CAP-XVR2, CAP-router3, RE-AP4, encapsulated-router5,
+// Mesh2-router6, sensor7, RE-XVR8. The estimator rejects5/7/unknown.
+func roamingRole(ap cweng.APStatus) uint8 {
+	if ap.ProductType > 3 {
+		return 9
+	}
+	if ap.Encapsulated {
+		switch ap.ProductType {
+		case 1:
+			return 5
+		case 3:
+			return 8
+		default:
+			return 9
+		}
+	}
+	if ap.ProductType == 2 {
+		return 7
+	}
+	if !ap.MeshDevice {
+		return 0
+	}
+	if ap.MeshParent != "" {
+		switch ap.ProductType {
+		case 1:
+			return 6
+		case 3:
+			return 8
+		default:
+			return 4
+		}
+	}
+	switch ap.ProductType {
+	case 1:
+		return 3
+	case 3:
+		return 2
+	default:
+		return 1
+	}
+}
+
 func (m *Manager) candidateLocked(mac [6]byte, ap cweng.APStatus, radio, wlan uint8, bssid [6]byte, rssi int8, rate bool) (mobility.Candidate, bool) {
 	stats, ok := radioStats(ap, radio)
 	band := radioBand(ap, radio)
@@ -180,19 +226,26 @@ func (m *Manager) candidateLocked(mac [6]byte, ap cweng.APStatus, radio, wlan ui
 	n := mobility.Candidate{AP: ap.ID, Radio: radio, WLAN: wlan, BSSID: mobility.MAC(bssid), Channel: stats.Channel, Band: band, RSSI: rssi, Rate: -1, Load: stats.ChannelLoad}
 	if rate {
 		caps := m.stationStatistics.Capabilities(mobility.MAC(mac))
-		mesh, backhaul := false, 0
-		for _, parent := range m.known {
-			if parent.Mesh != nil {
-				for _, node := range parent.Mesh.Nodes {
-					if normalizeMAC(node.MAC) == normalizeMAC(ap.ID) && node.Wireless {
-						mesh = true
-						backhaul = int(node.Rate)
+		role := roamingRole(ap)
+		n.RSSI = int8(max(-95, int(rssi)-10))
+		if role > 4 && role != 6 && role != 8 {
+			// The estimator returns -1. The current BSS retains that value;
+			// only the caller's neighbor-insertion branch skips it.
+			return n, true
+		}
+		mesh, backhaul := role == 4 || role == 6 || role == 8, 0
+		if mesh {
+			if parent, ok := m.known[ap.MeshParent]; ok {
+				if parent.Mesh != nil {
+					for _, node := range parent.Mesh.Nodes {
+						if normalizeMAC(node.MAC) == normalizeMAC(ap.ID) {
+							backhaul = int(node.Rate)
+						}
 					}
 				}
 			}
 		}
 		n.Rate = mobility.CandidateRate(rssi, caps.PHY(band), m.radioPHYLocked(ap, stats, band), band, mesh, backhaul)
-		n.RSSI = int8(max(-95, int(rssi)-10))
 	}
 	return n, true
 }
@@ -294,6 +347,9 @@ func (m *Manager) calculateRoamingLocked(ap cweng.APStatus, report capwap.PrivRo
 						currentRSSI, currentRate = n.RSSI, n.Rate
 						continue
 					}
+					if n.Rate == -1 {
+						continue
+					}
 					neighbors = append(neighbors, n)
 				}
 			}
@@ -329,16 +385,14 @@ func (m *Manager) calculateRoamingLocked(ap cweng.APStatus, report capwap.PrivRo
 				}
 			}
 		}
-		// Original groups 2G then5G before its exact quicksort.
+		// roam_nbr_select copies 5G (+0x1a8), then 2G (+0x28), before
+		// quicksort. Its non-stable ties depend on that initial order.
 		grouped := []mobility.Candidate{}
-		for _, n := range neighbors {
-			if n.Band == 0 {
-				grouped = append(grouped, n)
-			}
-		}
-		for _, n := range neighbors {
-			if n.Band == 1 {
-				grouped = append(grouped, n)
+		for _, band := range []int{1, 0} {
+			for _, n := range neighbors {
+				if n.Band == band {
+					grouped = append(grouped, n)
+				}
 			}
 		}
 		selected := (mobility.Selection{CurrentRSSI: currentRSSI, CurrentRate: currentRate, ThresholdType2G: settings.Band2G.Type, ThresholdType5G: settings.Band5G.Type}).Select(grouped)

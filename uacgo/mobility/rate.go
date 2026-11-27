@@ -36,6 +36,27 @@ func StationPHY(word uint32, bandwidth int8, band int) PHY {
 	return PHY{bw, nss, mode, mcs}
 }
 
+// RadioBandwidth is the WLAN decoder in _wlan_caps_calculate @4ea84c,
+// after configured auto(2) has been replaced by the observed width. Unlike
+// StationPHY, an observed2 is still unknown and falls back by frequency.
+func RadioBandwidth(width, band int) uint8 {
+	switch width {
+	case 0:
+		return 0
+	case 1:
+		return 1
+	case 3:
+		return 2
+	case 5:
+		return 3
+	default:
+		if band == 1 {
+			return 2
+		}
+		return 0
+	}
+}
+
 // CandidatePHY uses the station's MCS and min(width, streams, PHY mode),
 // exactly as _steer_candidate_caps_calculate @0x004ea4c0.
 func CandidatePHY(station, radio PHY) PHY {

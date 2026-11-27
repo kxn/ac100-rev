@@ -98,6 +98,44 @@ func TestMLOPeerDatabaseRadioCountingAndDisplay(t *testing.T) {
 		}
 	}
 }
+
+func TestPMKReleaseRemovesMLOGroupBeforeLifecycleNotification(t *testing.T) {
+	table := NewClientTable()
+	mld, a, b := [6]byte{2, 0, 0, 0, 0, 1}, [6]byte{2, 0, 0, 0, 0, 2}, [6]byte{2, 0, 0, 0, 0, 3}
+	now := time.Unix(2000, 0)
+	table.StationEvent(ClientEvent{APID: "old-ap", MAC: mld, MLD: &mld, RadioID: 1, WLANID: 1, Kind: "associate", Seen: now,
+		MLOLinks: []capwap.AssociationLink{{MAC: a, Radio: 1, WLAN: 1}, {MAC: b, Radio: 2, WLAN: 1}}})
+	releases, notifications := 0, 0
+	table.OnRelease = func(old ClientEvent) {
+		releases++
+		if old.MAC != b || old.APID != "old-ap" || old.RadioID != 2 || old.State != "connected" {
+			t.Fatal("release lost original DB location", old)
+		}
+		// Callbacks may read the table: no lock is held and every link
+		// has already lost membership before the wire delete is queued.
+		for _, row := range table.All() {
+			if row.State != "disconnected" {
+				t.Fatal("partial MLO release", row)
+			}
+		}
+	}
+	table.OnTransition = func(ev ClientTransition) {
+		notifications++
+		if releases != 1 || ev.Kind != "disconnected" {
+			t.Fatal("lifecycle preceded release", releases, ev)
+		}
+	}
+	table.DisconnectStation(b, now.Add(time.Second))
+	table.DisconnectStation(b, now.Add(2*time.Second))
+	if releases != 1 || notifications != 3 {
+		t.Fatal("repeated miss retriggered release or lost a link", releases, notifications)
+	}
+	for _, radio := range []uint8{1, 2} {
+		if n, _ := table.RadioCount("old-ap", radio); n != 0 {
+			t.Fatal("released MLO link retained capacity", radio, n)
+		}
+	}
+}
 func TestV6ExtraNormalAssociationAndDeviceMetadata(t *testing.T) {
 	e, err := NewEngine(0)
 	if err != nil {

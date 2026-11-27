@@ -319,7 +319,9 @@ func (e *Engine) RegisterWstaHandlers(sink ClientSink) {
 
 // ClientTable is a simple in-memory ClientSink (session bookkeeping).
 type ClientTable struct {
-	epochs map[string]clientEpoch
+	// Explicit firmware release callback, separate from AP detach facts.
+	OnRelease func(ClientEvent)
+	epochs    map[string]clientEpoch
 	// Set before events start; resolution occurs outside the table lock.
 	ResolveService func(string, uint8, uint32) (string, string)
 	// Set before events start. Notifications run after releasing the table lock.

@@ -72,6 +72,8 @@ func WTPName(v []byte) string { return string(v) }
 // APEntry is the AP identity derived from a Join Request — the input record
 // for the AP management table (the vendor's _apmngr_try_create_ap_entry...).
 type APEntry struct {
+	ProductType         uint8
+	MeshDevice          bool
 	EntryID             uint32
 	RadioLinkage        *RadioLinkage
 	linkageTable        []byte
@@ -172,6 +174,8 @@ func ParseAPEntry(req *capwap.ParsedPacket) (*APEntry, error) {
 					}
 					if binary.BigEndian.Uint16(v) == 0x51 {
 						if c, err := ParseAPCapabilities(v[4 : 4+n]); err == nil {
+							e.ProductType = c.ProductType
+							e.MeshDevice = c.MeshDevice
 							e.Model = c.Model
 							e.HardwareID = c.HardwareID
 							e.ExtWirePhys = c.ExtWirePhys

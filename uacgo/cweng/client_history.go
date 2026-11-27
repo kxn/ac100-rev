@@ -18,7 +18,7 @@ type ClientTransition struct {
 	Source    string    `json:"source"`
 }
 
-func (t *ClientTable) unlockAndNotify(after uint64) {
+func (t *ClientTable) unlockAndNotify(after uint64, beforeNotify ...func()) {
 	callback := t.OnTransition
 	var pending []ClientTransition
 	if callback != nil {
@@ -32,6 +32,9 @@ func (t *ClientTable) unlockAndNotify(after uint64) {
 		}
 	}
 	t.mu.Unlock()
+	for _, f := range beforeNotify {
+		f()
+	}
 	for i := len(pending) - 1; i >= 0; i-- {
 		callback(pending[i])
 	}
@@ -86,18 +89,24 @@ func (t *ClientTable) Transitions(after uint64) []ClientTransition {
 func (t *ClientTable) DisconnectStation(mac [6]byte, at time.Time) {
 	t.mu.Lock()
 	old, ok := t.m[mac]
-	if !ok {
+	if !ok || old.State != "connected" {
 		t.mu.Unlock()
 		return
 	}
 	after := t.transitionSeq
-	next := old
-	next.State = "disconnected"
-	next.Seen = at
-	next.Kind = "pmk_lookup_failed"
-	t.m[mac] = next
-	t.recordTransition(old, true, next)
-	t.unlockAndNotify(after)
+	if old.MLD != nil {
+		t.disconnectMLOLocked(old, at, "pmk_lookup_failed")
+	} else {
+		next := old
+		next.State, next.Seen, next.Kind = "disconnected", at, "pmk_lookup_failed"
+		t.m[mac] = next
+		t.recordTransition(old, true, next)
+	}
+	t.unlockAndNotify(after, func() {
+		if t.OnRelease != nil {
+			t.OnRelease(old)
+		}
+	})
 }
 
 // AP lifecycle, rather than an arbitrary station age cutoff, releases the

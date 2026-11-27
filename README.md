@@ -1,6 +1,6 @@
 # ac100-rev
 
-> 2026-11-27：本轮已按 V6 原固件有效入口整改调度策略，并建立双向核查索引。已部署的 `587d414` 和此前模拟/单 AP 结果不证明算法等价。当前改动未部署；整改状态和源码依据见 [调度策略对照](docs/mobility-parity-audit.md)。
+> V6 调度策略按原固件有效入口核查；模拟/单 AP 结果不证明算法等价。最新逐路径说明与本轮发现的偏差见 [客户端漫游复核](docs/client-roaming-paths.md)，部署时点见 [部署记录](docs/go-live-status.md)。
 
 
 Reverse-engineering workspace for the TP-Link TL-AC100 `uac` binary (CAPWAP

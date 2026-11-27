@@ -22,6 +22,96 @@
   },
   "uac_functions": [
     {
+      "name": "balance_wsta_callback_balance_sta_add",
+      "address": "0x004ed3e4",
+      "size": 316,
+      "bytes_sha256": "2c71784462bc242136e81d23cc8138b84c2a4488ed822a2f6ddcd1e8bea69d44"
+    },
+    {
+      "name": "balance_wsta_callback_balance_sta_del",
+      "address": "0x004ed520",
+      "size": 316,
+      "bytes_sha256": "ab64889e90db6fd882ed7b3e061e9055ab3f6d70e1e86e709d43cf91dd81b5da"
+    },
+    {
+      "name": "_apdb_pkt_manage",
+      "address": "0x0070cc34",
+      "size": 10228,
+      "bytes_sha256": "e00d8a972d1a5bad1ffdd464455f59fe66d278722b6f1e62d40c581a7e745ceb"
+    },
+    {
+      "name": "_apdb_ap_list_parse",
+      "address": "0x006f8780",
+      "size": 3912,
+      "bytes_sha256": "245b520587fb8d0fbfcfa38fea9cea929a6716b88f010e080bdac98544c2e763"
+    },
+    {
+      "name": "_apdb_parse_radio",
+      "address": "0x006f239c",
+      "size": 1400,
+      "bytes_sha256": "f479eb8352586fc0291766e41df228dd185a7782986a033125ec25d9502f95bf"
+    },
+    {
+      "name": "_apdb_radio_freq_string_to_enum",
+      "address": "0x006f1b54",
+      "size": 156,
+      "bytes_sha256": "36d4aa976150a8c3802f7dacd39aaba9bbd176b728d5cc704db9591d79c05add"
+    },
+    {
+      "name": "_apmngr_pkt_join_req_listen",
+      "address": "0x0060b040",
+      "size": 10420,
+      "bytes_sha256": "a536395d68c775387feef4e9c3cddd3bad9b6324a413f2c1c6edf3445e8ecea8"
+    },
+    {
+      "name": "_mesh_pkt_join_req_listen",
+      "address": "0x0053c1a8",
+      "size": 1740,
+      "bytes_sha256": "0eaa6a0a151e564ddc4d0f6115d725550feb2627182964e9301a2229983c635e"
+    },
+    {
+      "name": "mesh_db_ap_entry_add",
+      "address": "0x0053196c",
+      "size": 1040,
+      "bytes_sha256": "ef5bdf0c6c3da3d3f2bac44f624ec88846381607c9cbdf237ec5e19dc5c26048"
+    },
+    {
+      "name": "mesh_db_ap_entry_get",
+      "address": "0x00531eb8",
+      "size": 320,
+      "bytes_sha256": "bbf5aa17b09d8ac7f81633594029572eee2cd6ab2f0c0169dd9b9723a0e86067"
+    },
+    {
+      "name": "apmngr_db_role_str",
+      "address": "0x005b490c",
+      "size": 44,
+      "bytes_sha256": "151414c6a68e55754bdae4adaa32769fccd535a80e68fd2001e1721c1e91b6c6"
+    },
+    {
+      "name": "uac_wstation_free_sta_by_mac",
+      "address": "0x00766fdc",
+      "size": 24,
+      "bytes_sha256": "c5b7d3d87bdd55eb707684a53a455ebadcc2b46adf7a763c0779fb1ba741e13e"
+    },
+    {
+      "name": "wsta_db_free_sta_by_mac_new",
+      "address": "0x00754c74",
+      "size": 408,
+      "bytes_sha256": "ce7334bfed134f64004ca268e5ecc37e455e51e2ff1df4af72d8e45d615a1ecd"
+    },
+    {
+      "name": "_wsta_free_entry_new",
+      "address": "0x0075492c",
+      "size": 368,
+      "bytes_sha256": "99dfa1c2ad343b209bb25cddbe66deae475a685bf5289e05cfa8fa71814cc0a4"
+    },
+    {
+      "name": "_uac_wsta_del_cb",
+      "address": "0x0075efec",
+      "size": 1072,
+      "bytes_sha256": "a7975a2720c0337ffbde28fb3c39d2df319168189025871dadba4144561e44dd"
+    },
+    {
       "name": "rdmngr_db_sqlite_cb",
       "address": "0x00727f14",
       "size": 4336,
@@ -818,6 +908,20 @@
     "base_seconds": 900,
     "disconnect_extra_seconds": 5,
     "sweep_seconds": 60
+  },
+  "ap_roles": {
+    "pointer_table": "0x0082cb24",
+    "names": [
+      "normal",
+      "cap",
+      "cap_xvr",
+      "cap_router",
+      "re_ap",
+      "re_router",
+      "re_mesh2_router",
+      "sensor",
+      "re_xvr"
+    ]
   },
   "edca_defaults": {
     "address": "0x008ec530",

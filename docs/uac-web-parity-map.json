@@ -338,7 +338,8 @@
       "regressions": [
         "uacgo/admin/admission_test.go",
         "uacgo/admin/mobility_test.go",
-        "uacgo/mobility/balance_test.go"
+        "uacgo/mobility/balance_test.go",
+        "uacgo/admin/roam_source_audit_test.go"
       ],
       "basis": "4f0a04/4f6f54/4f263c：0b发现、10AP、共享失败数、最后拒绝60s、300s扫描900s老化；移除虚构的同SSID/VLAN/规则及第二次RSSI门禁。",
       "evidence_contracts": [
@@ -373,7 +374,8 @@
         "uacgo/mobility/pmk_test.go",
         "uacgo/mobility/rate_test.go",
         "uacgo/mobility/select_test.go",
-        "uacgo/mobility/statistics_test.go"
+        "uacgo/mobility/statistics_test.go",
+        "uacgo/admin/roam_source_audit_test.go"
       ],
       "basis": "4e89ac→4e8440→4e6564→4e5638；JAL不是旧_roaming_nbr_select。原整数表/排序/四候选/弱信号回退；不增加ACK冷却。V6 Web模式只读2，老ACS内部路径不开放。",
       "evidence_contracts": [
@@ -382,7 +384,8 @@
         "rate-estimation",
         "pmk-cache",
         "station-statistics-lifetime",
-        "v6-mode-and-reporting"
+        "v6-mode-and-reporting",
+        "mesh-roaming-role-rate"
       ]
     },
     {

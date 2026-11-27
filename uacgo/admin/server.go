@@ -234,6 +234,7 @@ func New(engine *cweng.Engine, clients *cweng.ClientTable, dataDir string) (*Man
 	m.pmks.Start(time.Now())
 	m.stationStatistics.Start(time.Now())
 	clients.OnTransition = m.observePMKTransition
+	clients.OnRelease = m.queueStationRelease
 	clients.OnDeviceName = m.observeClientName
 	engine.RegisterUpdHandlers(m.confirmImage)
 	engine.RegisterImageActions(m.confirmImageAction)

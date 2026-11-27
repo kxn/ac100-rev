@@ -183,21 +183,25 @@ func (t *ClientTable) DisassociateMLO(ap string, mac [6]byte, at time.Time) bool
 		t.mu.Unlock()
 		return false
 	}
-	mld := *old.MLD
-	for key, ev := range t.m {
-		if ev.APID != ap || ev.State != "connected" || ev.MLD == nil || *ev.MLD != mld {
-			continue
-		}
-		next := ev
-		next.State = "disconnected"
-		next.Kind = "disassociate"
-		next.Seen = at
-		t.m[key] = next
-		t.recordTransition(ev, true, next)
-	}
+	t.disconnectMLOLocked(old, at, "disassociate")
 	t.unlockAndNotify(after)
 	return true
 }
+
+// _wsta_free_entry_new releases the MLD and every peer DB row. Normal AP
+// detach and explicit PMK-failure release share the same group operation.
+func (t *ClientTable) disconnectMLOLocked(old ClientEvent, at time.Time, kind string) {
+	for key, ev := range t.m {
+		if ev.APID != old.APID || ev.State != "connected" || ev.MLD == nil || *ev.MLD != *old.MLD {
+			continue
+		}
+		next := ev
+		next.State, next.Kind, next.Seen = "disconnected", kind, at
+		t.m[key] = next
+		t.recordTransition(ev, true, next)
+	}
+}
+
 func cloneDevice(in *ClientDeviceInfo) *ClientDeviceInfo {
 	if in == nil {
 		return nil

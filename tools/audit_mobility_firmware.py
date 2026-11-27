@@ -65,6 +65,21 @@ class ELF32BE:
 
 
 FUNCTIONS = {
+    "balance_wsta_callback_balance_sta_add": 0x4ed3e4,
+    "balance_wsta_callback_balance_sta_del": 0x4ed520,
+    "_apdb_pkt_manage": 0x70cc34,
+    "_apdb_ap_list_parse": 0x6f8780,
+    "_apdb_parse_radio": 0x6f239c,
+    "_apdb_radio_freq_string_to_enum": 0x6f1b54,
+    "_apmngr_pkt_join_req_listen": 0x60b040,
+    "_mesh_pkt_join_req_listen": 0x53c1a8,
+    "mesh_db_ap_entry_add": 0x53196c,
+    "mesh_db_ap_entry_get": 0x531eb8,
+    "apmngr_db_role_str": 0x5b490c,
+    "uac_wstation_free_sta_by_mac": 0x766fdc,
+    "wsta_db_free_sta_by_mac_new": 0x754c74,
+    "_wsta_free_entry_new": 0x75492c,
+    "_uac_wsta_del_cb": 0x75efec,
     "rdmngr_db_sqlite_cb": 0x727f14,
     "_apmngr_jcs_ap_calibrate_load": 0x5f5ee0,
     "_uac_wserv_jcs_add": 0x6e3970,
@@ -260,6 +275,7 @@ def extract(rootfs):
             "max_channel_load_2g": constants[0x17],
         },
         "station_retention": {"base_seconds_address": "0x008f5630", "base_seconds": uac.u32(0x8f5630), "disconnect_extra_seconds": 5, "sweep_seconds": 60},
+        "ap_roles": {"pointer_table": "0x0082cb24", "names": [uac.read(uac.u32(0x82cb24+i*4),32).split(b"\0")[0].decode() for i in range(9)]},
         "edca_defaults": {"address": "0x008ec530", "queue_rows_aifs_cwmin_cwmax_txop": [[*uac.read(0x8ec530+i*6,3),struct.unpack(">H",uac.read(0x8ec530+i*6+4,2))[0]] for i in range(8)]},
         "additional_source_files": [{"path": p, "sha256":hashlib.sha256((rootfs/p).read_bytes()).hexdigest()} for p in (
             "etc/terminal_feature.json", "etc/macFactory.js", "usr/lib/lua/luci/controller/admin/time_mngt.lua", "usr/lib/lua/luci/torchlight/uac/ac_validator.lua", "usr/lib/lua/luci/controller/admin/apmng_rf.lua", "usr/lib/lua/luci/controller/admin/apmng_rrm.lua")],

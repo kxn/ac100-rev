@@ -32,7 +32,8 @@ func (m *Manager) balanceAdmission(ap string, mac [6]byte, now time.Time) bool {
 	}
 	for _, c := range m.clients.All() {
 		known, ok := m.known[c.APID]
-		if ok && known.Online && c.State == "connected" && !c.Seen.Before(known.ConnectedAt) {
+		// V6 balance add/delete callbacks ignore MLO peer records (flag2).
+		if ok && !c.MLOPeer && known.Online && c.State == "connected" && !c.Seen.Before(known.ConnectedAt) {
 			v := aps[c.APID]
 			v.Clients++
 			aps[c.APID] = v

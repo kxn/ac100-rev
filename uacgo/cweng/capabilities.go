@@ -63,6 +63,8 @@ func parseRadioFeatureDefaults(b []byte) *RadioFeatureDefaults {
 }
 
 type APCapabilities struct {
+	ProductType  uint8
+	MeshDevice   bool
 	ExtWirePhys  int
 	SupportTrunk bool
 	HardwareID   string
@@ -112,6 +114,16 @@ func parseAPCapabilities(b []byte, depth int) (APCapabilities, error) {
 	}
 	err := parseByteTLVs(b[16:], int(count), func(typ byte, v []byte) error {
 		switch typ {
+		case 12: // APDB_MSG_TYPE_IS_MESH_DEVICE: switch(type-1), V6 70cc34.
+			if len(v) != 1 {
+				return fmt.Errorf("apdb: invalid mesh device flag")
+			}
+			out.MeshDevice = v[0] != 0
+		case 13: // APDB_MSG_TYPE_PRODUCT_TYPE: AP/router/sensor/XVR.
+			if len(v) != 1 {
+				return fmt.Errorf("apdb: invalid product type")
+			}
+			out.ProductType = v[0]
 		case 4:
 			if len(v) != 1 {
 				return fmt.Errorf("apdb: invalid port count")
@@ -302,8 +314,12 @@ func (db *APDB) ResolveCapabilities(ap *APEntry) {
 			if hw.HWVer != ap.HardwareVersion {
 				continue
 			}
-			for _, band := range []string{"2.4G", "5G"} {
+			for _, band := range []string{"2.4G", "5.0G"} {
 				v, ok := hw.Radios[band]
+				if !ok && band == "5.0G" {
+					// Older user-supplied DB exports also used "5G".
+					v, ok = hw.Radios["5G"]
+				}
 				if !ok {
 					continue
 				}
@@ -319,7 +335,7 @@ func (db *APDB) ResolveCapabilities(ap *APEntry) {
 				if r.DefaultPower == 0 {
 					r.DefaultPower = r.MaxPower
 				}
-				if band == "5G" {
+				if band == "5.0G" {
 					r.Band = "5 GHz"
 					r.Modes = []int{0, 4, 7}
 					r.Channels = []int{36, 40, 44, 48, 149, 153, 157, 161, 165}
