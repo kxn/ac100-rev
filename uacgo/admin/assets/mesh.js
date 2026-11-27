@@ -16,23 +16,6 @@ function renderMesh() {
     ssid: "",
     backhaul_mode: 0,
   };
-  const backhaulLabel =
-    {
-      0: "默认",
-      1: "高带机量（5 GHz）",
-      2: "双链路（2.4 / 5 GHz）",
-    }[p.backhaul_mode] || "默认";
-
-  const summary = `<div class="strategy-summary">
-    <div class="strategy-items">
-      <div class="strategy-kv"><span>组网状态</span><strong><span class="pill ${p.enabled ? "online" : ""}">${p.enabled ? "已启用" : "未启用"}</span></strong></div>
-      <div class="strategy-kv"><span>回传名称</span><strong>${esc(p.ssid || "—")}</strong></div>
-      <div class="strategy-kv"><span>自动接入</span><strong>${p.auto_add ? "启用" : "停用"}</strong></div>
-      <div class="strategy-kv"><span>回传模式</span><strong>${esc(backhaulLabel)}</strong></div>
-    </div>
-    <button type="button" class="btn secondary" data-mesh-config="1">配置 Mesh</button>
-  </div>`;
-
   const apRows = data.aps
     .filter((a) => a.features?.mesh)
     .map(
@@ -54,10 +37,18 @@ function renderMesh() {
     .join("");
 
   return (
-    panel("Mesh 无线组网", summary) +
-    panel("Mesh 节点与拓扑", table(["父 AP", "发现节点", "已接入节点", "操作"], apRows)) +
-    panel("节点授权记录", table(["父 AP", "节点 MAC", "授权状态"], memberRows)) +
-    panel("操作记录", '<div id="mesh-jobs"><div class="empty">加载中…</div></div>')
+    panel(
+      "设备列表",
+      table(["父 AP", "发现节点", "已接入节点", "操作"], apRows),
+    ) +
+    panel(
+      "节点授权记录",
+      table(["父 AP", "节点 MAC", "授权状态"], memberRows),
+    ) +
+    panel(
+      "操作记录",
+      '<div id="mesh-jobs"><div class="empty">加载中…</div></div>',
+    )
   );
 }
 
@@ -89,9 +80,7 @@ document.addEventListener("click", (e) => {
     const f = $("#mesh-form");
     if (!f?.elements.macs) return;
     const mac = pick.dataset.meshPickMac;
-    const list = f.elements.macs.value
-      .split(/[\s,]+/)
-      .filter(Boolean);
+    const list = f.elements.macs.value.split(/[\s,]+/).filter(Boolean);
     if (!list.includes(mac)) list.push(mac);
     f.elements.macs.value = list.join("\n");
     return;
@@ -131,12 +120,7 @@ document.addEventListener("click", (e) => {
       ${quickChips}
       <label class="full"><span>节点 MAC（配对、添加、移除时填写，每行一个）</span><textarea name="macs" rows="4" placeholder="aa:bb:cc:dd:ee:ff"></textarea></label>`;
   } else {
-    body = `<div class="full">${toggle("enabled", "启用 Mesh 组网", p.enabled)}</div>
-      <div class="full">${toggle("auto_add", "自动接入已知 AP", p.auto_add)}</div>
-      ${field("ssid", "回传名称", p.ssid, "text", 'maxlength="32"')}
-      ${select("backhaul_mode", "回传模式", { 0: "设备默认", 1: "高带机量（5 GHz）", 2: "双链路（2.4 / 5 GHz）" }, p.backhaul_mode)}
-      <label><span>回传密钥</span><input type="password" name="key" minlength="8" maxlength="63" autocomplete="new-password" placeholder="${p.has_key ? "留空不修改密钥" : "8–63 字节"}"></label>
-      <label><span>Mesh 管理密码</span><input type="password" name="web_password" minlength="6" maxlength="15" autocomplete="new-password" placeholder="${p.has_web_password ? "留空不修改密码" : "6–15 字节"}"></label>`;
+    body = meshSettingsFields(p);
   }
 
   openDialog(
@@ -154,7 +138,7 @@ document.addEventListener("submit", async (e) => {
   const f = e.target;
   if (f.id !== "mesh-form") return;
   e.preventDefault();
-  if (!f.reportValidity()) return;
+  if (!validateForm(f)) return;
   const b = f.querySelector('[type="submit"]');
   b.disabled = true;
   try {
@@ -173,13 +157,41 @@ document.addEventListener("submit", async (e) => {
         backhaul_mode: Number(f.elements.backhaul_mode.value),
       });
     }
-    $("#editor").close();
-    dialogKind = "";
+    delete f.dataset.dirty;
+    closeEditorFor(f);
     await refresh();
     toast("Mesh 设置已提交");
   } catch (err) {
-    f.querySelector("#form-error").textContent = err.message;
+    f.querySelector(".form-error").textContent = err.message;
   } finally {
     b.disabled = false;
   }
 });
+
+function meshSettingsFields(p) {
+  return `<div class="full">${toggle("enabled", "启用 Mesh 组网", p.enabled)}</div>
+      <div class="full">${toggle("auto_add", "自动接入已知 AP", p.auto_add)}</div>
+      ${field("ssid", "回传名称", p.ssid, "text", 'maxlength="32"')}
+      ${select("backhaul_mode", "回传模式", { 0: "设备默认", 1: "高带机量（5 GHz）", 2: "双链路（2.4 / 5 GHz）" }, p.backhaul_mode)}
+      <label><span>回传密钥</span><input type="password" name="key" minlength="8" maxlength="63" autocomplete="new-password" placeholder="${p.has_key ? "留空不修改密钥" : "8–63 字节"}"></label>
+      <label><span>Mesh 管理密码</span><input type="password" name="web_password" minlength="6" maxlength="15" autocomplete="new-password" placeholder="${p.has_web_password ? "留空不修改密码" : "6–15 字节"}"></label>`;
+}
+function renderMeshSettings() {
+  const p = data.config.mesh || {
+    enabled: false,
+    auto_add: false,
+    ssid: "",
+    backhaul_mode: 0,
+  };
+  return panel(
+    "高级设置",
+    `<form id="mesh-form" data-inline="1" novalidate><div class="form-grid">${meshSettingsFields(p)}</div>${formEnd("保存")}</form>`,
+  );
+}
+function renderMeshTopology() {
+  const aps = data.aps.filter((a) => a.features?.mesh);
+  return panel(
+    "拓扑结构",
+    `<div class="mesh-tree">${aps.map((a) => `<div><button type="button" class="link-btn" data-ap="${esc(a.id)}">${esc(apName(a.id))}</button><small>${a.mesh_parent ? "上联：" + esc(a.mesh_parent) : "上联未上报"}</small>${(a.mesh?.nodes || []).map((n) => `<div class="mesh-node"><span class="mono">${esc(n.mac)}</span> · ${esc(n.ipv4 || "IP未上报")}<small>${n.wireless ? "无线回传" : "有线连接"} · 父节点 ${esc(n.parent || "未上报")}</small></div>`).join("")}</div>`).join("") || '<div class="empty">暂无易展拓扑上报</div>'}</div>`,
+  );
+}

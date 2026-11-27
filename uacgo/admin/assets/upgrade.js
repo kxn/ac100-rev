@@ -16,7 +16,7 @@ const upgradeStates = {
 
 async function refreshUpgrades() {
   upgradeData = await api("upgrades");
-  if (tab === "upgrades") renderContent();
+  if (["upgrades", "mesh-upgrades"].includes(tab)) renderContent();
 }
 
 function renderUpgrades() {
@@ -56,8 +56,14 @@ function renderUpgrades() {
     .join("");
 
   return (
-    panel("固件镜像", table(["型号 / 版本", "大小", "硬件兼容", "操作"], imageRows)) +
-    panel("升级任务", table(["AP", "目标版本", "状态", "进度", "计划时间", "详情"], jobRows))
+    panel(
+      "固件镜像",
+      table(["型号 / 版本", "大小", "硬件兼容", "操作"], imageRows),
+    ) +
+    panel(
+      "升级任务",
+      table(["AP", "目标版本", "状态", "进度", "计划时间", "详情"], jobRows),
+    )
   );
 }
 
@@ -121,7 +127,11 @@ document.addEventListener("click", async (e) => {
     }
     if (!b.dataset.upgradeImage) return;
     const im = upgradeData.images.find((i) => i.id === b.dataset.upgradeImage);
-    const aps = data.aps.filter((a) => upgradeCompatible(im, a));
+    const aps = data.aps.filter(
+      (a) =>
+        upgradeCompatible(im, a) &&
+        (tab !== "mesh-upgrades" || a.mesh_device || a.features?.mesh),
+    );
     openDialog(
       "upgrade",
       "下发固件升级",
@@ -163,12 +173,11 @@ document.addEventListener("submit", async (e) => {
     if (f.elements.not_before.value)
       body.not_before = new Date(f.elements.not_before.value).toISOString();
     await api("upgrades", body);
-    $("#editor").close();
-    dialogKind = "";
+    closeEditorFor(f);
     await refreshUpgrades();
     toast("升级任务已创建");
   } catch (err) {
-    f.querySelector("#form-error").textContent = err.message;
+    f.querySelector(".form-error").textContent = err.message;
   } finally {
     btn.disabled = false;
   }

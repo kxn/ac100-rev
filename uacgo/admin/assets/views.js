@@ -5,9 +5,7 @@ function targetSummary(target) {
   const groups = (target.groups || []).map(
     (id) => (data.config.groups || []).find((g) => g.id === id)?.name || id,
   );
-  return (
-    [...groups.map((g) => "分组 " + g), ...aps].join("、") || "全部 AP"
-  );
+  return [...groups.map((g) => "分组 " + g), ...aps].join("、") || "全部 AP";
 }
 
 function serviceBands(service) {
@@ -33,25 +31,6 @@ function serviceBands(service) {
       .join("、");
   }
   return "射频 " + (service.radios || []).join("、");
-}
-
-function breakdownBar(label, count, total, swatchClass) {
-  const pct = total > 0 ? Math.round((count / total) * 100) : 0;
-  const fills = {
-    0: "#2563eb",
-    1: "#059669",
-    2: "#d97706",
-    3: "#dc2626",
-    4: "#7c3aed",
-  };
-  const fill = fills[swatchClass] || "#2563eb";
-  return `<div class="breakdown-row">
-    <div class="breakdown-head"><span>${esc(label)}</span><span class="num">${count} (${pct}%)</span></div>
-    <svg class="breakdown-svg" viewBox="0 0 100 7" preserveAspectRatio="none" aria-hidden="true">
-      <rect width="100" height="7" rx="0" fill="#f1f3f6" />
-      <rect width="${pct}" height="7" rx="0" fill="${fill}" />
-    </svg>
-  </div>`;
 }
 
 function apRadioSummary(ap) {
@@ -81,182 +60,16 @@ function apRadioSummary(ap) {
     .join(" ");
 }
 
-function renderOverview() {
-  const inventory = data.aps.filter(
-    (a) => !data.config.retired_aps?.includes(a.id),
-  );
-  const online = inventory.filter((a) => a.online).length;
-  const offline = inventory.length - online;
-  const connected = data.clients.filter((c) => c.state === "connected");
-  const apsById = Object.fromEntries(data.aps.map((a) => [a.id, a]));
-
-  let c2g = 0;
-  let c5g = 0;
-  let c6g = 0;
-  let cMlo = 0;
-  let sigGood = 0;
-  let sigFair = 0;
-  let sigWeak = 0;
-  for (const c of connected) {
-    const band = apsById[c.ap_id]?.capabilities?.find(
-      (r) => r.radio_id === c.radio_id,
-    )?.band;
-    if (c.mlo || (c.radio_entries && c.radio_entries.length > 1)) cMlo++;
-    if (band?.includes("2.4")) c2g++;
-    else if (band?.includes("6")) c6g++;
-    else if (band?.includes("5")) c5g++;
-    if (c.rssi_dbm != null) {
-      if (c.rssi_dbm >= -60) sigGood++;
-      else if (c.rssi_dbm >= -74) sigFair++;
-      else sigWeak++;
-    }
-  }
-
-  const activeServices = data.config.services.filter((s) => !s.deleting);
-  const enabledServices = activeServices.filter((s) => s.enabled).length;
-  const problems = data.apply.filter((s) =>
-    ["failed", "failed_recovered", "blocked"].includes(s.state),
-  );
-  const pending = data.apply.filter((s) => s.state === "applying").length;
-
-  const syncText = problems.length
-    ? `${problems.length} 项异常`
-    : pending
-      ? `${pending} 项下发中`
-      : !online && enabledServices > 0
-        ? "等待 AP"
-        : "正常";
-  const syncTone = problems.length ? "err" : pending ? "warn" : "ok";
-
-  const kpis = `<div class="kpi-grid" id="summary">
-    <button type="button" class="kpi-card" data-view="aps">
-      <span class="kpi-label">在线 AP</span>
-      <strong class="kpi-value num" id="online">${online} / ${inventory.length}</strong>
-      <span class="kpi-sub" id="total-ap">${inventory.length ? (offline ? offline + " 台离线" : "全部在线") : "暂无 AP"}</span>
-    </button>
-    <button type="button" class="kpi-card" data-view="clients">
-      <span class="kpi-label">在线客户端</span>
-      <strong class="kpi-value num" id="client-count">${connected.length}</strong>
-      <span class="kpi-sub num">2.4G ${c2g} · 5G ${c5g}${c6g ? " · 6G " + c6g : ""}</span>
-    </button>
-    <button type="button" class="kpi-card" data-view="services">
-      <span class="kpi-label">无线服务</span>
-      <strong class="kpi-value num" id="service-count">${enabledServices}</strong>
-      <span class="kpi-sub num" id="service-summary">共 ${activeServices.length} 项</span>
-    </button>
-    <button type="button" class="kpi-card" data-view="aps">
-      <span class="kpi-label">配置同步</span>
-      <strong class="kpi-value ${syncTone}" id="pending-count">${syncText}</strong>
-      <span class="kpi-sub" id="apply-summary">${problems.length ? "点击查看异常" : pending ? "正在写入设备" : "设备已同步"}</span>
-    </button>
-  </div>`;
-
-  const problemsPanel = problems.length
-    ? panel(
-        "配置同步异常",
-        table(
-          ["AP", "配置项", "状态", "说明"],
-          problems
-            .map(
-              (s) =>
-                `<tr>
-                  <td><button type="button" class="link-btn" data-ap="${esc(s.ap_id)}">${esc(apName(s.ap_id))}</button></td>
-                  <td>${esc(configurationItemName(s.service_id))}</td>
-                  <td>${statePill(s.state)}</td>
-                  <td>${esc(s.error || "—")}</td>
-                </tr>`,
-            )
-            .join(""),
-        ),
-      )
-    : "";
-
-  const apRows = inventory
-    .slice(0, 8)
-    .map((a) => {
-      const cnt = connected.filter((c) => c.ap_id === a.id).length;
-      const ip = a.local_ip === "0.0.0.0" ? a.address : a.local_ip;
-      return `<tr>
-        <td><button type="button" class="link-btn" data-ap="${esc(a.id)}">${esc(a.name || a.id)}</button><small>${esc(a.model || "—")} · <span class="mono">${esc(ip)}</span></small></td>
-        <td><span class="pill ${a.online ? "online" : ""}">${a.online ? "在线" : "离线"}</span><small class="num">${a.online ? formatUptime(a.connected_at) : ago(a.last_seen)}</small></td>
-        <td>${apRadioSummary(a) || '<span class="muted">—</span>'}</td>
-        <td class="num">${cnt}</td>
-      </tr>`;
-    })
-    .join("");
-
-  const svcRows = activeServices
-    .slice(0, 8)
-    .map((s) => {
-      const cnt = connected.filter(
-        (c) => c.service_id === s.id || (!c.service_id && c.ssid === s.ssid),
-      ).length;
-      return `<tr>
-        <td><strong>${esc(s.ssid)}</strong><small>${esc(securityNames[s.security] || s.security)}</small></td>
-        <td><span class="pill ${s.enabled ? "online" : ""}">${s.enabled ? "启用" : "停用"}</span></td>
-        <td>${esc(serviceBands(s))}</td>
-        <td class="num">${cnt}</td>
-        <td><button type="button" class="text-button" data-edit="${esc(s.id)}">配置</button></td>
-      </tr>`;
-    })
-    .join("");
-
-  const totalSta = connected.length;
-  const distBody = `<div class="panel-body">
-    <div class="breakdown-list">
-      ${breakdownBar("2.4 GHz", c2g, totalSta, 0)}
-      ${breakdownBar("5 GHz", c5g, totalSta, 4)}
-      ${c6g ? breakdownBar("6 GHz", c6g, totalSta, 1) : ""}
-      ${cMlo ? breakdownBar("MLO 多链路", cMlo, totalSta, 2) : ""}
-    </div>
-    <div class="breakdown-list breakdown-sep">
-      ${breakdownBar("信号强 (≥ -60 dBm)", sigGood, totalSta, 1)}
-      ${breakdownBar("信号中 (-60 ~ -74 dBm)", sigFair, totalSta, 2)}
-      ${breakdownBar("信号弱 (< -75 dBm)", sigWeak, totalSta, 3)}
-    </div>
-  </div>`;
-
-  const recentEvents = (overviewHistory.events || []).slice(-6).reverse();
-  const evRows = recentEvents
-    .map(
-      (ev) => `<tr>
-        <td class="num">${ago(ev.at)}</td>
-        <td class="mono">${esc(ev.client_mac)}</td>
-        <td>${esc(({ connected: "上线", disconnected: "离线", roamed: "漫游", service_changed: "变更" })[ev.kind] || ev.kind)}</td>
-        <td>${esc(apName(ev.ap_id))}</td>
-      </tr>`,
-    )
-    .join("");
-
+function renderAPSettings() {
+  const global = `<form id="ap-global-form" data-inline="1" novalidate>${globalRebootFields(data.config.ap_defaults?.reboot_schedule)}${formEnd("设置")}</form>`;
   return (
-    kpis +
-    problemsPanel +
-    `<div class="dash-grid">
-      <div class="dash-col">
-        ${panel(
-          "AP 状态",
-          table(["设备", "状态", "射频信道 / 负载", "终端"], apRows),
-          '<button type="button" class="text-button" data-view="aps">全部 AP</button>',
-        )}
-        ${panel(
-          "无线服务",
-          table(["SSID / 加密", "状态", "频段", "终端", "操作"], svcRows),
-          '<button type="button" class="text-button" data-view="services">管理服务</button>',
-        )}
-      </div>
-      <div class="dash-col">
-        ${panel("客户端分布", distBody)}
-        ${panel(
-          "最近连接动态",
-          table(["时间", "终端", "事件", "AP"], evRows),
-          '<button type="button" class="text-button" data-view="history">查看统计</button>',
-        )}
-      </div>
-    </div>`
+    panel("全局设置", global) +
+    renderManagement("management") +
+    renderAPInventory(true)
   );
 }
 
-function renderAPInventory() {
+function renderAPInventory(configure = false) {
   const profiles = data.config.ap_profiles || [];
   const groups = data.config.groups || [];
   const inventory = data.aps.filter(
@@ -273,88 +86,74 @@ function renderAPInventory() {
       profile?.group_id !== apGroupFilter
     )
       return false;
-    if (!query) return true;
-    return [a.name, a.model, a.mac, a.local_ip, a.address].some((s) =>
-      String(s || "")
-        .toLowerCase()
-        .includes(query),
+    return (
+      !query ||
+      [a.name, a.model, a.mac, a.local_ip, a.address].some((v) =>
+        String(v || "")
+          .toLowerCase()
+          .includes(query),
+      )
     );
   });
-
-  const filterBar = `<div class="filter-bar">
-    <div class="toolbar-group">
-      <input id="search" class="search" type="search" aria-label="搜索 AP" placeholder="搜索名称、型号、MAC 或 IP" value="${esc(query)}">
-      <select name="ap_group_filter" aria-label="按分组筛选">${Object.entries({
-        "": "全部分组",
-        __none: "未分组",
-        ...Object.fromEntries(groups.map((g) => [g.id, g.name])),
-      })
-        .map(
-          ([v, l]) =>
-            `<option value="${esc(v)}" ${v === apGroupFilter ? "selected" : ""}>${esc(l)}</option>`,
-        )
-        .join("")}</select>
-    </div>
-    <div class="seg-tabs" role="tablist" aria-label="状态筛选">
-      ${[
-        ["all", "全部"],
-        ["online", "在线"],
-        ["offline", "离线"],
-      ]
-        .map(
-          ([id, label]) =>
-            `<button type="button" data-ap-filter="${id}" class="${apStatusFilter === id ? "active" : ""}">${label}</button>`,
-        )
-        .join("")}
-    </div>
-  </div>`;
-
+  const filters = `<div class="filter-bar"><label>选择AP分组：<select name="ap_group_filter" aria-label="选择AP分组">${Object.entries(
+    {
+      "": "全部分组",
+      __none: "未分组",
+      ...Object.fromEntries(groups.map((g) => [g.id, g.name])),
+    },
+  )
+    .map(
+      ([v, l]) =>
+        `<option value="${esc(v)}" ${v === apGroupFilter ? "selected" : ""}>${esc(l)}</option>`,
+    )
+    .join(
+      "",
+    )}</select></label><label>选择AP状态：<select name="ap_status_filter" aria-label="选择AP状态">${Object.entries(
+    { all: "全部状态", online: "在线", offline: "离线" },
+  )
+    .map(
+      ([v, l]) =>
+        `<option value="${v}" ${v === apStatusFilter ? "selected" : ""}>${l}</option>`,
+    )
+    .join(
+      "",
+    )}</select></label><input id="search" class="search" type="search" aria-label="搜索AP" placeholder="名称 / 型号 / MAC / IP" value="${esc(query)}"></div>`;
   const rows = filtered
     .map((a) => {
       const profile = profiles.find((p) => p.ap_id === a.id);
+      const group =
+        groups.find((g) => g.id === profile?.group_id)?.name || "未分组";
       const count = data.clients.filter(
         (c) => c.ap_id === a.id && c.state === "connected",
       ).length;
-      const group =
-        groups.find((g) => g.id === profile?.group_id)?.name || "未分组";
-      const ip = a.local_ip === "0.0.0.0" ? a.address : a.local_ip;
-      const ver =
-        a.software_version || a.wireless_telemetry?.software_version || "";
-      return `<tr>
-        <td>
-          <button type="button" class="link-btn" data-ap="${esc(a.id)}">${esc(a.name || a.id)}</button>
-          <small>${esc(a.model || "—")} · <span class="mono">${esc(a.mac)}</span></small>
-        </td>
-        <td>
-          <span class="pill ${a.online ? "online" : ""}">${a.online ? "在线" : "离线"}</span>
-          <small class="num">${a.online ? formatUptime(a.connected_at) : ago(a.last_seen)}</small>
-        </td>
-        <td>${esc(group)}<small>${esc(profile?.location || a.location || "—")}</small></td>
-        <td><span class="mono">${esc(ip)}</span><small>${esc(ver.split(" ")[0] || "—")}</small></td>
-        <td>
-          <div>${apRadioSummary(a) || '<span class="muted">—</span>'}</div>
-          <small class="num">${count} 台客户端</small>
-        </td>
-        <td>
-          <div class="actions">
-            <button type="button" class="text-button" data-ap-settings="${esc(a.id)}">配置</button>
-            <button type="button" class="text-button" data-ap="${esc(a.id)}">详情</button>
-          </div>
-        </td>
-      </tr>`;
+      const ip = a.local_ip === "0.0.0.0" ? a.address : a.local_ip || a.address;
+      return `<tr><td><button type="button" class="link-btn" data-ap="${esc(a.id)}">${esc(apName(a.id))}</button><small>${esc(group)}</small></td><td>${esc(a.model || "未上报")}<small>硬件 ${esc(a.hardware_version || "未上报")}</small></td><td>${esc(ip || "未上报")}<small class="mono">${esc(a.mac)}</small></td><td><span class="pill ${a.online ? "online" : ""}">${a.online ? "在线" : "离线"}</span><small>${esc(a.state || "未上报")}</small></td><td class="num">${count}</td><td>${apRadioSummary(a) || "未上报"}</td><td><div class="actions">${configure ? `<button type="button" class="text-button" data-ap-settings="${esc(a.id)}">编辑</button>` : ""}<button type="button" class="text-button" data-ap="${esc(a.id)}">详情</button><button type="button" class="text-button" data-ap-diagnostic="${esc(a.id)}">能力详情</button></div></td></tr>`;
     })
     .join("");
-
+  const tools = configure
+    ? '<button type="button" class="btn secondary" data-ap-batch-names="1">批量命名</button>'
+    : "";
   return (
     panel(
-      `AP 列表 (${filtered.length})`,
-      table(
-        ["AP / 型号", "状态", "分组 / 位置", "IP / 版本", "射频 / 终端", "操作"],
-        rows,
-      ),
-      "",
-      filterBar,
-    ) + renderAPOperations()
+      "AP列表",
+      (configure
+        ? '<div class="editor-slot" data-editor-slot="management"></div>'
+        : "") +
+        table(
+          [
+            "AP名称",
+            "AP型号",
+            "IP / MAC地址",
+            "连接状态",
+            "客户端数",
+            "射频信息",
+            "设置",
+          ],
+          rows,
+        ),
+      tools,
+      filters,
+    ) + (configure ? renderAPOperations() : "")
   );
 }
 
@@ -398,6 +197,7 @@ function renderServices() {
         <td>
           <div class="actions">
             <button type="button" class="text-button" data-edit="${esc(s.id)}" ${s.deleting ? "disabled" : ""}>配置</button>
+            <button type="button" class="text-button" data-bind-service="${esc(s.id)}" ${s.deleting ? "disabled" : ""}>绑定AP</button>
             <button type="button" class="text-button" data-toggle="${esc(s.id)}" ${s.deleting ? "disabled" : ""}>${s.enabled ? "停用" : "启用"}</button>
             <button type="button" class="text-button danger" data-delete="${esc(s.id)}" ${s.deleting ? "disabled" : ""}>删除</button>
           </div>
@@ -407,11 +207,12 @@ function renderServices() {
     .join("");
 
   return panel(
-    "无线服务",
-    table(
-      ["SSID", "状态", "安全方式", "广播范围", "VLAN", "同步状态", "操作"],
-      rows,
-    ),
+    "无线服务列表",
+    '<div class="page-toolbar"><button type="button" class="btn secondary" id="new-service">新增</button></div><div class="editor-slot" data-editor-slot="service"></div>' +
+      table(
+        ["SSID", "状态", "安全方式", "广播范围", "VLAN", "同步状态", "操作"],
+        rows,
+      ),
   );
 }
 
@@ -520,10 +321,19 @@ function renderRadios() {
 
   return panel(
     "射频状态与配置",
-    table(
-      ["AP", "频段 / 射频", "信道 / 带宽", "发射功率", "信道负载 / 底噪", "同步状态", "操作"],
-      rows,
-    ),
+    '<div class="editor-slot" data-editor-slot="radio"></div>' +
+      table(
+        [
+          "AP",
+          "频段 / 射频",
+          "信道 / 带宽",
+          "发射功率",
+          "信道负载 / 底噪",
+          "同步状态",
+          "操作",
+        ],
+        rows,
+      ),
     "",
     filterBar,
   );
@@ -553,26 +363,12 @@ function renderBandNavigation() {
         ? `设备同步状态（${pending} 项下发中）`
         : `设备同步状态（${ok}/${states.length} 已同步）`;
 
-  const formHtml = `<div class="panel-body">
-    <form id="band-navigation-form" data-inline="1" novalidate>
-      <div class="setting-hero">
-        <div class="setting-copy">
-          <span class="setting-title">启用 5 GHz 优先引导</span>
-          <span class="setting-desc">2.4 GHz 与 5 GHz 使用相同 SSID 和密码时，自动引导支持 5 GHz 的终端优先接入 5 GHz。</span>
-        </div>
-        <label class="toggle"><input type="checkbox" name="band_enabled" aria-label="启用 5 GHz 优先引导" ${b.enabled ? "checked" : ""}></label>
-      </div>
-      <details class="advanced-section" data-band-advanced>
-        <summary>高级门限参数</summary>
-        <div class="form-grid">
-          ${field("band_threshold", "5 GHz 客户端数量门限", b.threshold_5g, "number", 'required min="2" max="40"', "台")}
-          ${field("band_difference", "频段客户端数量差值", b.difference, "number", 'required min="1" max="8"', "台")}
-          ${field("band_failures", "最大引导失败次数", b.max_failures, "number", 'required min="0" max="100"', "次")}
-        </div>
-      </details>
-      ${formEnd("保存设置")}
-    </form>
-  </div>`;
+  const formHtml = `<form id="band-navigation-form" data-inline="1" novalidate><div class="form-grid">
+    ${check("band_enabled", "频谱导航", b.enabled)}
+    ${field("band_threshold", "5G客户端数门限", b.threshold_5g, "number", 'required min="2" max="40"', "个")}
+    ${field("band_difference", "客户端数差值门限", b.difference, "number", 'required min="1" max="8"', "个")}
+    ${field("band_failures", "最大拒绝次数", b.max_failures, "number", 'required min="0" max="100"', "次")}
+    </div>${formEnd("保存")}</form>`;
 
   const syncDetails = `<details class="advanced-section sync-details"${bad > 0 || pending > 0 ? " open" : ""}>
     <summary>${syncSummary}</summary>
@@ -591,7 +387,7 @@ function renderBandNavigation() {
     (!supported && data.aps.length
       ? '<div class="notice warning">当前在线 AP 未声明支持双频优选。</div>'
       : "") +
-    panel("双频优选", formHtml) +
+    panel("频谱导航设置", formHtml) +
     syncDetails
   );
 }

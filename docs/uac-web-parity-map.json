@@ -85,7 +85,8 @@
         "uacgo/admin/policy_retarget.go",
         "uacgo/cweng/ports.go",
         "uacgo/cweng/radio_modes.go",
-        "uacgo/admin/ap_names.go"
+        "uacgo/admin/ap_names.go",
+        "uacgo/admin/assets/diagnostics.js"
       ],
       "regressions": [
         "uacgo/admin/ap_export_test.go",

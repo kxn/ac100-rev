@@ -24,7 +24,9 @@ let data = {
   operations: {},
   timezone: "",
 };
-let tab = "overview";
+let tab = "aps";
+let inlineEditor = null;
+let editorRequest = 0;
 let renderedTab = "";
 let query = "";
 let apStatusFilter = "all";
@@ -40,7 +42,6 @@ let currentRadio = null;
 let refreshing = false;
 let refreshAgain = false;
 let interfaces = [];
-let overviewHistory = { ap_counts: [], radios: [], events: [] };
 let mobilityEvents = [];
 
 const modes = {
@@ -192,7 +193,7 @@ function table(headers, rows) {
 }
 
 function panel(title, body, tools = "", filterBar = "") {
-  return `<div class="panel"><div class="panel-heading"><h2>${title}</h2>${tools ? `<div class="toolbar-group">${tools}</div>` : ""}</div>${filterBar}${body}</div>`;
+  return `<div class="panel"><div class="panel-header"><h2>${title}</h2>${tools ? `<div class="toolbar-group">${tools}</div>` : ""}</div>${filterBar}${body}</div>`;
 }
 
 function statePill(state) {
@@ -241,8 +242,7 @@ function signalMeter(rssi) {
     return '<span class="muted">—</span>';
   const v = Number(rssi);
   const level = v >= -58 ? 4 : v >= -68 ? 3 : v >= -78 ? 2 : 1;
-  const cls =
-    level >= 3 ? "sig-good" : level === 2 ? "sig-fair" : "sig-weak";
+  const cls = level >= 3 ? "sig-good" : level === 2 ? "sig-fair" : "sig-weak";
   const bars = [4, 7, 10, 13]
     .map(
       (h, i) =>
@@ -333,7 +333,9 @@ function readTargetPicker(form) {
 }
 
 function showTab(next) {
-  tab = names[next] ? next : "overview";
+  const resolved = resolveRoute(next);
+  closeDialogs();
+  tab = resolved;
   if (location.hash.slice(1) !== tab) location.hash = tab;
   query = "";
   updateNavigation();
@@ -351,23 +353,6 @@ function newID() {
 }
 
 function updateBadgesAndAlerts() {
-  const inventory = data.aps.filter(
-    (a) => !data.config.retired_aps?.includes(a.id),
-  );
-  const onlineAPs = inventory.filter((a) => a.online).length;
-  const connected = data.clients.filter((c) => c.state === "connected").length;
-  const apBadge = $("#nav-badge-aps");
-  if (apBadge) {
-    apBadge.textContent = inventory.length
-      ? `${onlineAPs}/${inventory.length}`
-      : "";
-    apBadge.classList.toggle("hidden", !inventory.length);
-  }
-  const clientBadge = $("#nav-badge-clients");
-  if (clientBadge) {
-    clientBadge.textContent = connected ? String(connected) : "";
-    clientBadge.classList.toggle("hidden", !connected);
-  }
   const bad = data.apply.filter((a) =>
     ["failed", "failed_recovered", "blocked"].includes(a.state),
   ).length;
@@ -391,9 +376,15 @@ function render() {
   renderContent(true);
 }
 
-function renderClients() {
+function renderClients(meshOnly = false) {
   const apsById = Object.fromEntries(data.aps.map((a) => [a.id, a]));
   const filtered = data.clients.filter((c) => {
+    if (
+      meshOnly &&
+      !apsById[c.ap_id]?.mesh_device &&
+      !apsById[c.ap_id]?.mesh_parent
+    )
+      return false;
     if (clientAPFilter && c.ap_id !== clientAPFilter) return false;
     if (clientStateFilter === "connected" && c.state !== "connected")
       return false;
@@ -418,7 +409,11 @@ function renderClients() {
       c.device?.system,
       apName(c.ap_id),
     ];
-    return hay.some((v) => String(v || "").toLowerCase().includes(clientQuery));
+    return hay.some((v) =>
+      String(v || "")
+        .toLowerCase()
+        .includes(clientQuery),
+    );
   });
 
   const filterBar = `<div class="filter-bar">
@@ -467,7 +462,9 @@ function renderClients() {
         .filter(Boolean)
         .join(" · ");
       const ssid =
-        c.ssid || (c.state === "connected" ? s?.ssid || v?.ssidName : "") || "—";
+        c.ssid ||
+        (c.state === "connected" ? s?.ssid || v?.ssidName : "") ||
+        "—";
       const bandLabel = cap?.band || (c.radio_id ? "射频 " + c.radio_id : "—");
       const stateLabel =
         {
@@ -523,7 +520,15 @@ function renderClients() {
   return panel(
     `客户端 (${filtered.length})`,
     table(
-      ["终端", "状态", "接入 AP / 网络", "信号", "IP 地址", "协商 / 实时速率", "操作"],
+      [
+        "终端",
+        "状态",
+        "接入 AP / 网络",
+        "信号",
+        "IP 地址",
+        "协商 / 实时速率",
+        "操作",
+      ],
       rows,
     ),
     "",
@@ -551,6 +556,7 @@ function renderInterfaces() {
 function renderContent(background = false) {
   const root = $("#content");
   if (background) {
+    if (inlineEditor) return;
     if (
       root.contains(document.activeElement) &&
       ["INPUT", "SELECT", "TEXTAREA"].includes(document.activeElement.tagName)
@@ -560,7 +566,18 @@ function renderContent(background = false) {
   }
 
   const renderers = {
-    overview: renderOverview,
+    apsettings: renderAPSettings,
+    networkmode: renderNetworkMode,
+    "multicast-query": () => renderMulticastSettings("query"),
+    "multicast-list": renderMulticastGroups,
+    "mesh-topology": renderMeshTopology,
+    "mesh-clients": () => renderClients(true),
+    "mesh-settings": renderMeshSettings,
+    "mesh-upgrades": renderUpgrades,
+    storm: renderProtection,
+    arp: renderProtection,
+    "dhcp-servers": renderProtection,
+    "arp-bindings": renderProtection,
     aps: renderAPInventory,
     management: () => renderManagement("management"),
     templates: () => renderManagement("templates"),
@@ -568,7 +585,7 @@ function renderContent(background = false) {
     mesh: renderMesh,
     services: renderServices,
     pools: renderVLANPools,
-    multicast: renderMulticastGroups,
+    multicast: () => renderMulticastSettings("snoop"),
     radios: renderRadios,
     rrm: renderRRM,
     rates: renderRates,
@@ -605,12 +622,10 @@ function renderContent(background = false) {
     : null;
 
   renderedTab = tab;
-  root.innerHTML = (renderers[tab] || renderOverview)();
+  root.innerHTML = (renderers[tab] || renderAPInventory)();
 
   if (activeInnerTab) {
-    const tBtn = root.querySelector(
-      `[data-editor-tab="${activeInnerTab}"]`,
-    );
+    const tBtn = root.querySelector(`[data-editor-tab="${activeInnerTab}"]`);
     if (tBtn) tBtn.click();
   }
   root.querySelectorAll("details").forEach((d, i) => {
@@ -629,6 +644,7 @@ function renderContent(background = false) {
       el.setSelectionRange(selStart, selStart);
   }
   if (tab === "mesh") void loadMeshJobs();
+  if (tab === "rrm") updateRRMVersionForm($("#rrm-primary-form"));
 }
 
 async function refresh() {
@@ -652,15 +668,10 @@ async function refresh() {
       operations: cfg.operations || {},
       timezone: cfg.timezone,
     };
-    if (tab === "overview") {
-      overviewHistory = await api("history?limit=120").catch(
-        () => overviewHistory,
-      );
-    }
     if (tab === "interfaces") interfaces = await api("interfaces");
     if (tab === "resources")
       controllerResources = await api("controller/resources");
-    if (["mobility", "balance"].includes(tab)) {
+    if (["mobility", "balance", "networkmode", "rrm"].includes(tab)) {
       const [st, mob] = await Promise.all([
         api("mobility/status"),
         api("mobility"),
@@ -672,9 +683,12 @@ async function refresh() {
       const dirty = $("#content")?.querySelector("#rates-form[data-dirty='1']");
       if (!dirty) ratesData = await api("rates");
     }
-    if (tab === "protection" && !stormDefaults)
+    if (tab === "storm" && !stormDefaults)
       stormDefaults = await api("storm/defaults");
-    if (tab === "upgrades") upgradeData = await api("upgrades");
+    if (["upgrades", "mesh-upgrades"].includes(tab))
+      upgradeData = await api("upgrades");
+    if (tab === "rrm" && !$("#rrm-primary-form[data-dirty='1']"))
+      rrmData = await api("rrm");
     if (tab === "history") {
       const q = new URLSearchParams({ limit: "1440" });
       if (historyAP) q.set("ap", historyAP);
@@ -695,6 +709,8 @@ async function refresh() {
     if (dialogKind === "ap" && $("#drawer").open) {
       const details = [...$("#drawer-body").querySelectorAll("details")];
       const open = details.map((d) => d.open);
+      const selectedTab = $("#drawer-body [data-editor-tab].active")?.dataset
+        .editorTab;
       const scroll = $("#drawer-body").scrollTop;
       renderAPDetail(currentService);
       $("#drawer-body")
@@ -702,6 +718,8 @@ async function refresh() {
         .forEach((d, i) => {
           if (i < open.length) d.open = open[i];
         });
+      if (selectedTab)
+        $('#drawer-body [data-editor-tab="' + selectedTab + '"]')?.click();
       $("#drawer-body").scrollTop = scroll;
     }
   } catch (e) {
@@ -717,29 +735,64 @@ async function refresh() {
   }
 }
 
-function openDialog(kind, title, subtitle, body) {
-  if ($("#drawer").open) $("#drawer").close();
+function editorSlot(kind) {
+  return document.querySelector(`[data-editor-slot="${kind}"]`);
+}
+
+function openEditor(kind, title, subtitle, body) {
+  openDialog(kind, title, subtitle, body, true);
+}
+
+function openDialog(kind, title, subtitle, body, inline = false) {
+  closeDialogs();
   dialogKind = kind;
+  const slot = inline ? editorSlot(kind) : null;
+  if (slot) {
+    inlineEditor = { kind, page: tab };
+    slot.innerHTML = `<section class="inline-editor"><header class="inline-heading"><h2>${esc(title)}</h2><button type="button" class="text-button" data-close="1">收起</button></header>${body}</section>`;
+    slot.scrollIntoView({ block: "nearest", behavior: "instant" });
+    return;
+  }
   $("#dialog-title").textContent = title;
   $("#dialog-subtitle").textContent = subtitle || "";
   $("#dialog-subtitle").classList.toggle("hidden", !subtitle);
   $("#dialog-body").innerHTML = body;
-  if (!$("#editor").open) $("#editor").showModal();
+  $("#editor").showModal();
   $("#dialog-body").scrollTop = 0;
 }
 
 function openDrawer(kind, title, subtitle, body) {
-  if ($("#editor").open) $("#editor").close();
+  closeDialogs();
   dialogKind = kind;
   $("#drawer-title").textContent = title;
   $("#drawer-subtitle").textContent = subtitle || "";
   $("#drawer-subtitle").classList.toggle("hidden", !subtitle);
   $("#drawer-body").innerHTML = body;
-  if (!$("#drawer").open) $("#drawer").showModal();
+  $("#drawer").showModal();
   $("#drawer-body").scrollTop = 0;
 }
 
-function closeDialogs() {
+function beginEditorRequest() {
+  return ++editorRequest;
+}
+
+function isCurrentEditorRequest(request) {
+  return request === editorRequest;
+}
+
+function closeEditorFor(element) {
+  if (!element.isConnected) return;
+  const owner = element.closest("#editor, #drawer, [data-editor-slot]");
+  if (owner && (owner.hasAttribute("data-editor-slot") || owner.open))
+    closeDialogs(false);
+}
+
+function closeDialogs(cancelRequests = true) {
+  if (cancelRequests) ++editorRequest;
+  inlineEditor = null;
+  document
+    .querySelectorAll("[data-editor-slot]")
+    .forEach((el) => el.replaceChildren());
   if ($("#editor").open) $("#editor").close();
   if ($("#drawer").open) $("#drawer").close();
   dialogKind = "";
@@ -776,8 +829,28 @@ function toggle(name, label, value, extra = "") {
   return `<label class="toggle">${label ? `<span>${label}</span>` : ""}<input type="checkbox" name="${name}" ${value ? "checked" : ""} ${extra}></label>`;
 }
 
-function formEnd(label = "保存并下发", extraActions = "") {
-  return `<div class="form-footer"><span class="form-error" id="form-error" role="status"></span><div class="form-actions">${extraActions}<button class="btn primary" type="submit">${label}</button></div></div>`;
+function validateForm(form) {
+  const invalid = form.querySelector(":invalid");
+  if (!invalid) return true;
+  for (
+    let el = invalid.parentElement;
+    el && el !== form;
+    el = el.parentElement
+  ) {
+    if (el.tagName === "DETAILS") el.open = true;
+    if (el.dataset.pane)
+      form.querySelector(`[data-editor-tab="${el.dataset.pane}"]`)?.click();
+  }
+  invalid.reportValidity();
+  return false;
+}
+
+function formEnd(
+  label = "保存并下发",
+  extraActions = "",
+  trailingActions = "",
+) {
+  return `<div class="form-footer"><span class="form-error" role="status"></span><div class="form-actions">${extraActions}<button class="btn primary" type="submit">${label}</button>${trailingActions}</div></div>`;
 }
 
 function renderAPDetail(id) {
@@ -833,12 +906,41 @@ function renderAPDetail(id) {
     )
     .join("");
 
-  const body = `
-    <div class="toolbar">
-      <span class="pill ${ap.online ? "online" : ""}">${ap.online ? "在线 · " + formatUptime(ap.connected_at) : "离线 · " + ago(ap.last_seen)}</span>
-      <span class="tag">${esc(group)}</span>
-    </div>
-    <div class="drawer-section">
+  const body = `${tabs([
+    ["ap-basic", "AP信息"],
+    ["ap-radio", "射频信息"],
+    ["ap-cap", "能力与调试"],
+    ["ap-raw", "原始上报"],
+  ])}
+    ${pane(
+      "ap-basic",
+      `<dl class="detail-grid">
+      ${[
+        ["AP名称", apName(id)],
+        ["型号", ap.model],
+        ["MAC地址", ap.mac],
+        [
+          "IP地址",
+          ap.local_ip === "0.0.0.0" ? ap.address : ap.local_ip || ap.address,
+        ],
+        ["所属分组", group],
+        ["模板", template],
+        ["安装位置", profile?.location || ap.location],
+        ["序列号", ap.serial],
+        ["硬件版本", ap.hardware_version],
+        [
+          "软件版本",
+          ap.software_version || ap.wireless_telemetry?.software_version,
+        ],
+        ["连接状态", (ap.online ? "在线" : "离线") + " / " + ap.state],
+        ["最后上报", ago(ap.last_seen)],
+      ]
+        .map(
+          ([k, v]) =>
+            `<div><dt>${esc(k)}</dt><dd>${esc(v || "未上报")}</dd></div>`,
+        )
+        .join("")}
+    </dl>    <div class="drawer-section">
       <div class="drawer-actions">
         <button type="button" class="btn primary sm" data-ap-settings="${esc(id)}">配置参数</button>
         <button type="button" class="btn secondary sm" data-label="${esc(id)}">改名</button>
@@ -851,34 +953,12 @@ function renderAPDetail(id) {
         <button type="button" class="btn secondary danger sm" data-ap-action="factory-reset" data-action-ap="${esc(id)}" ${ap.online ? "" : "disabled"}>恢复出厂</button>
       </div>
     </div>
-    <div class="drawer-section">
-      <h3>射频状态</h3>
-      ${table(["频段", "信道 / 带宽", "功率", "信道负载", "操作"], radioRows)}
-    </div>
-    <div class="drawer-section">
-      <h3>广播的无线服务</h3>
-      ${table(["SSID", "射频 / 带宽", "BSSID"], vapRows)}
-    </div>
-    <details class="advanced-section" ${hasSyncProblem ? "open" : ""}>
-      <summary>配置同步 (${settings.length})</summary>
-      ${table(["配置项", "状态", "说明"], syncRows)}
-    </details>
-    <details class="advanced-section">
-      <summary>硬件与能力信息</summary>
-      <dl class="detail-grid">
-        <div><dt>型号</dt><dd>${esc(ap.model || "—")}</dd></div>
-        <div><dt>分组 / 模板</dt><dd>${esc(group)} / ${esc(template)}</dd></div>
-        <div><dt>安装位置</dt><dd>${esc(profile?.location || ap.location || "—")}</dd></div>
-        <div><dt>序列号</dt><dd class="mono">${esc(ap.serial || "—")}</dd></div>
-        <div><dt>硬件版本</dt><dd>${esc(ap.hardware_version || "—")}</dd></div>
-        <div><dt>软件版本</dt><dd>${esc(ap.software_version || ap.wireless_telemetry?.software_version || "—")}</dd></div>
-      </dl>
-      <div class="chips">${Object.entries(ap.features || {})
-        .filter(([, enabled]) => enabled)
-        .map(([key]) => `<span class="chip">${esc(featureNames[key] || key)}</span>`)
-        .join("")}</div>
-      <details class="advanced-section"><summary>原始能力数据</summary><pre class="raw">${esc(JSON.stringify({ general: ap.general_capabilities, sub: ap.sub_capabilities, radios: ap.capabilities }, null, 2))}</pre></details>
-    </details>`;
+`,
+      true,
+    )}
+    ${pane("ap-radio", panel("射频状态", table(["频段", "信道 / 带宽", "功率", "信道负载", "设置"], radioRows)) + panel("无线服务", table(["SSID", "射频 / 带宽", "BSSID"], vapRows)))}
+    ${pane("ap-cap", renderAPCapabilities(ap) + `<details class="advanced-section" ${hasSyncProblem ? "open" : ""}><summary>配置同步 (${settings.length})</summary>${table(["配置项", "状态", "说明"], syncRows)}</details>`)}
+    ${pane("ap-raw", `<div class="page-toolbar"><button type="button" class="btn secondary" data-capability-copy="${esc(id)}">复制JSON</button></div><pre class="raw">${esc(JSON.stringify(apCapabilitySnapshot(ap), null, 2))}</pre>`)}`;
 
   const sub = `${ap.model || "AP"} · ${ap.local_ip === "0.0.0.0" ? ap.address : ap.local_ip || ap.address} · ${ap.mac}`;
   if (dialogKind === "ap" && $("#drawer").open) {
@@ -929,10 +1009,23 @@ function optionDefaults(s) {
     cipher: 2,
     key_update_interval: 86400,
     ...(s?.options || {}),
+    multicast: {
+      configure_global: false,
+      global_snooping: false,
+      snooping: true,
+      to_unicast: true,
+      drop_unknown: false,
+      rate_2g: 1,
+      rate_5g: 6,
+      query: false,
+      query_interval: 60,
+      max_response: 10,
+      ...(s?.options?.multicast || {}),
+    },
   };
 }
 
-function serviceEditor(s) {
+function serviceEditor(s, showBindings = false) {
   currentService = s;
   const o = optionDefaults(s);
   const l = o.rate_limit || {
@@ -955,36 +1048,22 @@ function serviceEditor(s) {
     ...new Set([
       1,
       2,
-      ...data.aps.flatMap((a) =>
-        (a.capabilities || []).map((c) => c.radio_id),
-      ),
+      ...data.aps.flatMap((a) => (a.capabilities || []).map((c) => c.radio_id)),
     ]),
   ];
 
   const basics = `<div class="form-grid">
-    ${field("ssid", "无线名称（SSID）", s?.ssid || "", "text", 'required maxlength="96"')}
-    ${toggle("enabled", "启用此无线服务", s?.enabled ?? true)}
-  </div>`;
-
-  const security = `<div class="form-grid">
-    ${select("security", "安全方式", securityNames, s?.security || "wpa2-psk")}
+    ${check("enabled", "启用", s?.enabled ?? true)}
+    ${field("ssid", "SSID", s?.ssid || "", "text", 'required maxlength="96"')}
+    ${select("encoding", "SSID编码", { "utf-8": "UTF-8", gbk: "GBK" }, o.encoding)}
+    <label><span>描述</span><textarea name="description" maxlength="150" rows="2">${esc(o.description)}</textarea></label>
+    ${check("isolate", "用户隔离", o.isolate)}
+    ${check("hidden", "隐藏SSID", s?.hidden)}
+    ${select("security", "安全选项", securityNames, s?.security || "wpa2-psk")}
+    ${select("cipher", "加密算法", { 2: "AES", 1: "TKIP", 0: "自动" }, o.cipher)}
+    ${field("key_update_interval", "组密钥更新周期", o.key_update_interval, "number", 'min="0" max="604800"', "秒")}
     <label id="password-field"><span>无线密码</span><input name="passphrase" type="password" autocomplete="new-password" placeholder="${s?.has_password ? "留空不修改密码" : "8–63 个字符"}"></label>
-  </div>
-  <p class="help" id="security-compat"></p>
-  <details class="advanced-section">
-    <summary>更多安全与广播参数</summary>
-    <div class="form-grid">
-      ${select("encoding", "SSID 编码", { "utf-8": "UTF-8", gbk: "GBK" }, o.encoding)}
-      ${select("cipher", "加密算法", { 2: "AES", 1: "TKIP", 0: "自动" }, o.cipher)}
-      ${field("key_update_interval", "组密钥更新周期", o.key_update_interval, "number", 'min="0" max="604800"', "秒")}
-      <label class="full"><span>备注</span><textarea name="description" maxlength="150" rows="2">${esc(o.description)}</textarea></label>
-    </div>
-    <div class="switch-list">
-      ${check("hidden", "隐藏 SSID", s?.hidden)}
-      ${check("isolate", "终端隔离", o.isolate)}
-      ${check("mlo", "启用 MLO 多链路", o.mlo, 'id="mlo-check"')}
-    </div>
-  </details>`;
+  </div><p class="help" id="security-compat"></p>`;
 
   const frequencyMask = s?.auto_bind_frequencies ?? 32639;
   const frequencyPreset =
@@ -1004,24 +1083,18 @@ function serviceEditor(s) {
   ).join("");
 
   const binds = `<div class="form-grid">
-    ${targetPicker(s?.aps || [], s?.groups || [])}
-    ${select("binding_mode", "频段绑定方式", { freq: "按频段自动绑定", auto: "按射频编号绑定", explicit: "逐台选择 AP / 射频" }, s?.bindings?.length ? "explicit" : s ? (s.auto_bind_frequencies != null ? "freq" : "auto") : "freq")}
-    ${field("vlan", "默认 VLAN ID（0 不打标签）", o.vlan, "number", 'min="0" max="4094"')}
-    <fieldset class="full">
-      <legend>广播频段</legend>
-      ${select("band_preset", "频段预设", { dual: "2.4 GHz 和 5 GHz（双频）", band2: "仅 2.4 GHz", band5: "仅 5 GHz", custom: "自定义频段序号" }, frequencyPreset)}
-      <details class="frequency-ranks" ${frequencyPreset === "custom" ? "open" : ""}>
-        <summary>多射频频段序号</summary>
-        <div class="picker-grid"><div>${freqChecks2g}</div><div>${freqChecks5g}</div></div>
-      </details>
+    ${select("binding_mode", "频段绑定方式", { freq: "按频段自动绑定", auto: "按射频编号绑定", explicit: "逐台选择AP / 射频" }, s?.bindings?.length ? "explicit" : s ? (s.auto_bind_frequencies != null ? "freq" : "auto") : "freq")}
+    <fieldset><legend>默认绑定频段</legend><div class="form-grid">
+      ${select("band_preset", "默认绑定频段", { dual: "2.4G和5G", band2: "仅2.4G", band5: "仅5G", custom: "自定义频段序号" }, frequencyPreset)}
+      </div><details class="frequency-ranks" ${frequencyPreset === "custom" ? "open" : ""}><summary>多射频频段序号</summary><div class="picker-grid"><div>${freqChecks2g}</div><div>${freqChecks5g}</div></div></details>
     </fieldset>
-    <fieldset class="full">
-      <legend>按射频编号绑定</legend>
-      <div class="switch-list">${radios.map((n) => check("radio_" + n, "射频 " + n, s ? s.radios.includes(n) : n <= 2)).join("")}</div>
-    </fieldset>
-    <div class="full">
-      ${select("vlan_pool", "VLAN 池", { 0: "不使用", ...Object.fromEntries((data.config.vlan_pools || []).filter((p) => !p.deleting).map((p) => [p.id, p.name + " · " + p.vlans])) }, o.vlan_pool || 0)}
+    ${field("vlan", "默认绑定VLAN", o.vlan, "number", 'min="0" max="4094"', "0不标记")}
+    ${check("mlo", "MLO多链路", o.mlo, 'id="mlo-check"')}
     </div>
+    <details class="advanced-section" data-service-bindings ${showBindings ? "open" : ""}><summary>AP绑定与VLAN池 · ${esc(targetSummary(s || {}))}</summary><div class="form-grid">
+      ${targetPicker(s?.aps || [], s?.groups || [])}
+      <fieldset><legend>按射频编号绑定</legend><div class="switch-list">${radios.map((n) => check("radio_" + n, "射频 " + n, s ? (s.radios || []).includes(n) : n <= 2)).join("")}</div></fieldset>
+      ${select("vlan_pool", "VLAN池", { 0: "不使用", ...Object.fromEntries((data.config.vlan_pools || []).filter((p) => !p.deleting).map((p) => [p.id, p.name + " · " + p.vlans])) }, o.vlan_pool || 0)}
     <div class="full" id="explicit-bindings-wrap">
       <h3 class="section-title">选择 AP / 射频</h3>
       <div class="table-wrap">
@@ -1047,35 +1120,26 @@ function serviceEditor(s) {
         </table>
       </div>
     </div>
-  </div>`;
+    </div></details>`;
 
-  const qos = `<fieldset>
-      <legend>无线限速</legend>
-      <div class="form-grid">
-        ${toggle("limit_enabled", "启用限速", l.enabled)}
-        ${select("limit_mode", "限速方式", { client: "按单终端", ssid: "按整个 SSID" }, l.mode)}
-        ${field("upload", "上行限速", l.upload_kbps, "number", 'min="8" max="8000000" step="8"', "kbps")}
-        ${field("download", "下行限速", l.download_kbps, "number", 'min="8" max="8000000" step="8"', "kbps")}
-      </div>
-      <p class="help">速率须为 8 的倍数。</p>
-    </fieldset>
-    <div id="mc-fields">
-      <h3 class="section-title">组播参数</h3>
-      <div class="form-grid">
-        ${check("mc_global", "配置 AP 全局组播参数", m.configure_global)}
-        ${check("mc_global_snoop", "AP 全局 IGMP Snooping", m.global_snooping)}
-        <div class="switch-list full">
-          ${check("mc_snoop", "IGMP Snooping", m.snooping)}
-          ${check("mc_unicast", "组播转单播", m.to_unicast)}
-          ${check("mc_drop", "丢弃未知组播", m.drop_unknown)}
-          ${check("mc_query", "启用 IGMP 查询", m.query)}
-        </div>
-        ${select("rate2", "2.4 GHz 组播速率", Object.fromEntries([1, 2, 5, 6, 9, 11, 12, 18, 24, 36, 48, 54].map((n) => [n, n + " Mbps"])), m.rate_2g)}
-        ${select("rate5", "5 GHz 组播速率", Object.fromEntries([6, 9, 12, 18, 24, 36, 48, 54].map((n) => [n + "", n + " Mbps"])), m.rate_5g)}
-        ${field("query_interval", "查询周期", m.query_interval, "number", 'min="1" max="65535"', "秒")}
-        ${field("max_response", "最大响应时间", m.max_response, "number", 'min="1" max="255"', "秒")}
-      </div>
+  const limits = `<div class="form-grid">
+      ${check("limit_enabled", "带宽控制", l.enabled)}
+      ${select("limit_mode", "控制模式", { client: "每客户端", ssid: "整个SSID" }, l.mode)}
+      ${field("upload", "上行带宽", l.upload_kbps, "number", 'min="8" max="8000000" step="8"', "kbps")}
+      ${field("download", "下行带宽", l.download_kbps, "number", 'min="8" max="8000000" step="8"', "kbps")}
     </div>`;
+  const multicast = `<div id="mc-fields"><div class="form-grid">
+      ${check("mc_global", "配置AP全局组播参数", m.configure_global)}
+      ${check("mc_global_snoop", "AP全局IGMP Snooping", m.global_snooping)}
+      ${check("mc_snoop", "组播侦听", m.snooping)}
+      ${check("mc_unicast", "组播转单播", m.to_unicast)}
+      ${check("mc_drop", "丢弃未知组播", m.drop_unknown)}
+      ${check("mc_query", "组播查询", m.query)}
+      ${select("rate2", "2.4G组播速率", Object.fromEntries([1, 2, 5, 6, 9, 11, 12, 18, 24, 36, 48, 54].map((n) => [n, n + " Mbps"])), m.rate_2g)}
+      ${select("rate5", "5G组播速率", Object.fromEntries([6, 9, 12, 18, 24, 36, 48, 54].map((n) => [n, n + " Mbps"])), m.rate_5g)}
+      ${field("query_interval", "查询间隔", m.query_interval, "number", 'min="1" max="65535"', "秒")}
+      ${field("max_response", "最大响应时间", m.max_response, "number", 'min="1" max="255"', "秒")}
+    </div></div>`;
 
   const schedule = o.schedule || {
     enabled: false,
@@ -1094,7 +1158,15 @@ function serviceEditor(s) {
       <label class="full"><span>生效日期范围（可选，每行一段）</span><textarea name="schedule_dates" rows="2" placeholder="2026-12-01 ~ 2026-12-31">${esc((schedule.dates || []).map((d) => d.start + " ~ " + d.end).join("\n"))}</textarea></label>
     </div>
     <h3 class="section-title">每周时段</h3>
-    <div class="form-grid">${["星期一", "星期二", "星期三", "星期四", "星期五", "星期六", "星期日"]
+    <div class="form-grid">${[
+      "星期一",
+      "星期二",
+      "星期三",
+      "星期四",
+      "星期五",
+      "星期六",
+      "星期日",
+    ]
       .map((day, i) =>
         field(
           "schedule_day_" + i,
@@ -1109,16 +1181,16 @@ function serviceEditor(s) {
       )
       .join("")}</div>`;
 
-  openDialog(
+  openEditor(
     "service",
     s ? "编辑无线服务 · " + s.ssid : "新建无线服务",
     "",
-    `<form id="service-form" novalidate>${tabs([
-      ["basic", "基本与安全"],
-      ["binding", "AP 与频段"],
-      ["qos", "限速与组播"],
-      ["schedule", "无线定时"],
-    ])}${pane("basic", basics + security, true)}${pane("binding", binds)}${pane("qos", qos)}${pane("schedule", scheduleBody)}${formEnd()}</form>`,
+    `<form id="service-form" novalidate>${basics}${limits}
+      <h3 class="section-title">AP与频段绑定</h3>${binds}
+      <details class="advanced-section"><summary>组播参数</summary>${multicast}</details>
+      <details class="advanced-section"><summary>无线定时</summary>${scheduleBody}</details>
+      ${formEnd("确定", '<button type="button" class="btn secondary" data-close="1">取消</button>')}
+    </form>`,
   );
   updateSecurity();
 }
@@ -1343,6 +1415,7 @@ document.addEventListener("change", (e) => {
 });
 
 async function radioEditor(id, radio, reset = false) {
+  const request = beginEditorRequest();
   const ap = data.aps.find((a) => a.id === id);
   const cap = constrainedRadioCapability(
     ap,
@@ -1352,6 +1425,7 @@ async function radioEditor(id, radio, reset = false) {
   const effective = await api(
     "aps/" + encodeURIComponent(id) + "/effective-radios",
   );
+  if (!isCurrentEditorRequest(request)) return;
   const current =
     effective.find((r) => r.radio_id === radio) ||
     effectiveRadioEditorRow(ap, radio);
@@ -1360,6 +1434,7 @@ async function radioEditor(id, radio, reset = false) {
     (await api(
       "radios/defaults?ap_id=" + encodeURIComponent(id) + "&radio_id=" + radio,
     ));
+  if (!isCurrentEditorRequest(request)) return;
   const observed = ap.radio_status?.find((r) => r.radio_id === radio);
   currentRadio = { id, radio, advanced: a, cap };
 
@@ -1397,6 +1472,8 @@ async function radioEditor(id, radio, reset = false) {
     ["psc_6g", "6 GHz PSC", cap.features?.enable_6g],
   ];
 
+  let dynamicChannel = "";
+  let steering = "";
   let performance = `<div class="switch-list">${boolFields
     .filter(([, , supported]) => supported)
     .map(([k, label]) => check(k, label, a[k]))
@@ -1415,7 +1492,7 @@ async function radioEditor(id, radio, reset = false) {
       tolerance: 20,
       reselect: false,
     };
-    performance += `<h3 class="section-title">动态信道优化</h3>
+    dynamicChannel = `<h3 class="section-title">动态信道选择</h3>
       <div class="form-grid">
         ${select("dcs_mode", "动态信道切换", { 0: "自动", 1: "手动", 2: "关闭" }, d.mode)}
         ${check("dcs_online", "在线动态优化", d.online)}
@@ -1427,7 +1504,7 @@ async function radioEditor(id, radio, reset = false) {
   }
   if (ap.features?.band_steering) {
     const x = a.admission || { enabled: true, threshold: -60, difference: 6 };
-    performance += `<h3 class="section-title">射频 RSSI 引导</h3>
+    steering = `<h3 class="section-title">射频RSSI引导</h3>
       <div class="form-grid">
         ${check("admission_enabled", "启用射频 RSSI 引导", x.enabled)}
         ${field("admission_threshold", "接入信号门限", x.threshold, "number", 'min="-100" max="0"', "dBm")}
@@ -1445,20 +1522,16 @@ async function radioEditor(id, radio, reset = false) {
       ${edcaQueueFields(q)}`;
   }
 
-  openDialog(
+  openEditor(
     "radio",
     `${apName(id)} · ${cap.band}`,
     `射频 ${radio}`,
     `<form id="radio-form" novalidate>
-      ${tabs([
-        ["rf-basic", "基本参数"],
-        ["rf-timing", "时序与门限"],
-        ["rf-performance", "高级与性能"],
-      ])}
-      ${pane("rf-basic", basic, true)}
-      ${pane("rf-timing", timing)}
-      ${pane("rf-performance", performance)}
-      ${formEnd("保存并下发", '<button type="button" class="btn secondary" data-radio-reset-defaults>恢复默认值</button>')}
+      <dl class="detail-grid"><div><dt>AP名称</dt><dd>${esc(apName(id))}</dd></div><div><dt>射频单元</dt><dd>${esc(cap.band)} · ${radio}</dd></div></dl>
+      ${basic}${dynamicChannel}${steering}
+      <details class="advanced-section"><summary>高级设置</summary>${timing}${performance}</details>
+      <details class="advanced-section"><summary>能力来源与配置约束</summary>${renderRadioCapabilityDetail(cap)}</details>
+      ${formEnd("确定", '<button type="button" class="btn secondary" data-close="1">取消</button><button type="button" class="btn secondary" data-radio-reset-defaults>恢复默认值</button>')}
     </form>`,
   );
   updateRadioDependencies();
@@ -1657,6 +1730,13 @@ document.addEventListener("click", async (e) => {
       showTab("aps");
       return;
     }
+    if (b.dataset.bindService) {
+      serviceEditor(
+        data.config.services.find((s) => s.id === b.dataset.bindService),
+        true,
+      );
+      return;
+    }
     if (b.id === "new-service") {
       serviceEditor(null);
       return;
@@ -1693,7 +1773,8 @@ document.addEventListener("click", async (e) => {
       showTab(b.dataset.tab || b.dataset.view);
     }
     if (b.dataset.editorTab) {
-      const scope = b.closest("form, #dialog-body, #content") || document;
+      const scope =
+        b.closest("form, #drawer-body, #dialog-body, #content") || document;
       scope
         .querySelectorAll("[data-editor-tab]")
         .forEach((x) => x.classList.toggle("active", x === b));
@@ -1765,9 +1846,16 @@ document.addEventListener("click", async (e) => {
   }
 });
 
+// Keep an inline form stable from the first edit or submit until its own
+// writer clears it, including failed saves and requests lasting several polls.
+function markInlineDirty(event) {
+  const form = event.target.closest("form[data-inline]");
+  if (form) form.dataset.dirty = "1";
+}
+for (const type of ["input", "change", "submit"])
+  document.addEventListener(type, markInlineDirty, true);
+
 document.addEventListener("input", (e) => {
-  const inline = e.target.closest("form[data-inline]");
-  if (inline) inline.dataset.dirty = "1";
   if (e.target.id === "search") {
     query = e.target.value.toLowerCase();
     renderContent();
@@ -1779,8 +1867,10 @@ document.addEventListener("input", (e) => {
 });
 
 document.addEventListener("change", (e) => {
-  const inline = e.target.closest("form[data-inline]");
-  if (inline) inline.dataset.dirty = "1";
+  if (e.target.name === "ap_status_filter") {
+    apStatusFilter = e.target.value;
+    renderContent();
+  }
   if (e.target.name === "ap_group_filter") {
     apGroupFilter = e.target.value;
     renderContent();
@@ -1828,20 +1918,7 @@ document.addEventListener("submit", async (e) => {
   )
     return;
   e.preventDefault();
-  const invalid = f.querySelector(":invalid");
-  if (invalid) {
-    const det = invalid.closest("details");
-    if (det) det.open = true;
-    const section = invalid.closest("[data-pane]");
-    if (section) {
-      const b = f.querySelector(
-        '[data-editor-tab="' + section.dataset.pane + '"]',
-      );
-      b?.click();
-    }
-    invalid.reportValidity();
-    return;
-  }
+  if (!validateForm(f)) return;
   const btn = f.querySelector("[type=submit]");
   btn.disabled = true;
   try {
@@ -1861,14 +1938,11 @@ document.addEventListener("submit", async (e) => {
       });
     else await submitRadio(f);
     delete f.dataset.dirty;
-    if ($("#editor").open) {
-      $("#editor").close();
-      dialogKind = "";
-    }
+    closeEditorFor(f);
     toast("配置已保存，正在同步到 AP");
     await refresh();
   } catch (err) {
-    const errEl = f.querySelector("#form-error");
+    const errEl = f.querySelector(".form-error");
     if (errEl) errEl.textContent = err.message;
     else toast(err.message);
   } finally {
@@ -1880,13 +1954,17 @@ $("#sidebar-backdrop").onclick = closeMobileSidebar;
 $("#close-dialog").onclick = closeDialogs;
 $("#close-drawer").onclick = closeDialogs;
 $("#editor").addEventListener("close", () => {
-  $("#dialog-body").innerHTML = "";
-  if (!$("#drawer").open) dialogKind = "";
+  if (!$("#editor").open) $("#dialog-body").innerHTML = "";
+  if (!$("#drawer").open && !$("#editor").open && !inlineEditor)
+    dialogKind = "";
 });
 $("#drawer").addEventListener("close", () => {
-  $("#drawer-body").innerHTML = "";
-  if (!$("#editor").open) dialogKind = "";
+  if (!$("#drawer").open) $("#drawer-body").innerHTML = "";
+  if (!$("#editor").open && !$("#drawer").open && !inlineEditor)
+    dialogKind = "";
 });
+$("#editor").addEventListener("cancel", () => ++editorRequest);
+$("#drawer").addEventListener("cancel", () => ++editorRequest);
 $("#refresh").onclick = refresh;
 
 window.addEventListener("hashchange", () => {
@@ -1894,7 +1972,7 @@ window.addEventListener("hashchange", () => {
 });
 
 initializeNavigation();
-showTab(location.hash.slice(1) || "overview");
+showTab(location.hash.slice(1) || "aps");
 
 setInterval(() => {
   if (!document.hidden) void refresh();
@@ -1911,4 +1989,8 @@ document.addEventListener("click", async (e) => {
   } catch (err) {
     toast(err.message);
   }
+});
+
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape" && inlineEditor) closeDialogs();
 });

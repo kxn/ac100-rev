@@ -4,6 +4,7 @@ Uses mocked HTTP writes so no lab AP configuration changes during UI checks.
 Requires the optional local Playwright environment, not a runtime dependency.
 Uses Playwright's Chromium, or AC100_CHROMIUM_PATH for an existing browser.
 """
+
 import copy
 import http.server
 import json
@@ -18,8 +19,19 @@ OUT = ROOT / ".local/ac100/ui-check"
 OUT.mkdir(parents=True, exist_ok=True)
 
 
+fixture_path = os.environ.get("AC100_UI_FIXTURE")
+fixture = json.loads(pathlib.Path(fixture_path).read_text()) if fixture_path else {}
+api_reads = {}
+
+
 def live(p):
-    return json.load(urllib.request.urlopen("http://127.0.0.1:8090/api/" + p, timeout=3))
+    if fixture_path:
+        value = fixture[p]
+    else:
+        url = os.environ.get("AC100_UI_API", "http://127.0.0.1:8090/api/")
+        value = json.load(urllib.request.urlopen(url + p, timeout=3))
+    api_reads[p] = copy.deepcopy(value)
+    return value
 
 
 aps = live("aps")
@@ -70,9 +82,7 @@ storm = {
         "arp_proxy": {"enabled": False, "scope": 3, "to_unicast": False},
         "nd_proxy": {"enabled": False, "scope": 3, "to_unicast": False},
         "mdns_proxy": {"enabled": False, "scope": 3, "to_unicast": False},
-        "protocols": [
-            {"enabled": False, "scope": 3, "rate": 64} for _ in range(8)
-        ],
+        "protocols": [{"enabled": False, "scope": 3, "rate": 64} for _ in range(8)],
     },
     "protocols": [
         "ARP",
@@ -115,6 +125,10 @@ resources = {
     "defaults": dict(resource_values),
     "fields": resources["fields"],
 }
+
+
+# Read-only API snapshots can be replayed with no running controller.
+(OUT / "api-fixture.json").write_text(json.dumps(api_reads, ensure_ascii=False))
 
 
 class Handler(http.server.SimpleHTTPRequestHandler):
@@ -332,9 +346,7 @@ with sync_playwright() as p:
         page.on("pageerror", lambda e: errors.append(str(e)))
         page.on(
             "console",
-            lambda m: console_errors.append(m.text)
-            if m.type == "error"
-            else None,
+            lambda m: console_errors.append(m.text) if m.type == "error" else None,
         )
         page.on("dialog", lambda d: d.accept())
 
@@ -472,68 +484,180 @@ with sync_playwright() as p:
         )
 
         def visit(view):
-            family = {
-                "management": "aps",
-                "templates": "aps",
-                "apdefaults": "aps",
-                "mesh": "aps",
-                "pools": "services",
-                "multicast": "services",
-                "rrm": "radios",
-                "rates": "radios",
-                "edca": "radios",
-                "balance": "mobility",
-                "band": "mobility",
-                "resources": "interfaces",
-                "backup": "interfaces",
-            }.get(view, view)
-            page.locator('#navigation [data-tab="' + family + '"]').click()
-            if view != family:
-                page.locator('#section-navigation [data-view="' + view + '"]').click()
+            page.evaluate("v => showTab(v)", view)
             page.wait_for_url("**/#" + view)
+            page.wait_for_timeout(80)
 
-        assert page.locator("#summary").is_visible()
-        assert not page.locator("#menu-toggle").is_visible()
-        page.locator('.kpi-card[data-view="aps"]').first.click()
-        page.wait_for_url("**/#aps")
-        assert page.locator('a[href="/api/aps/export"]').is_visible()
-        visit("radios")
-        assert page.locator('[data-radio="1"]').count() > 0
-        assert (
-            page.locator(
-                "[data-rrm-new],[data-edca-new],[data-band-navigation]"
-            ).count()
-            == 0
+        def expand(form):
+            page.locator(form).wait_for(state="visible")
+            # Open native disclosure controls so all editable fields can be exercised.
+            for detail in page.locator(form + " details").all():
+                if not detail.evaluate("e=>e.open"):
+                    detail.locator("summary").first.click()
+
+        def submit(form):
+            before = len(writes)
+            page.locator(form + ' [type="submit"]:not([value="run"])').click()
+            page.wait_for_timeout(100)
+            assert len(writes) > before, (
+                form,
+                page.locator(form).inner_text()
+                if page.locator(form).count()
+                else "form closed",
+                errors,
+            )
+            return writes[-1]
+
+        # Sidebar organization is the approved V4 hierarchy, including the
+        # unusual original placement of roaming under AP management.
+        assert page.url.endswith("#aps")
+        assert page.locator("#navigation .nav-heading").all_text_contents() == [
+            "运行状态⌄",
+            "AP管理›",
+            "射频管理›",
+            "无线管理›",
+            "易展设备管理›",
+            "安全管理›",
+        ]
+        page.locator('[data-nav-group="ap"]').click()
+        ap_links = page.locator(
+            '[data-nav-group="ap"] + div button'
+        ).all_text_contents()
+        assert ap_links == [
+            "AP设置",
+            "AP升级",
+            "负载均衡",
+            "智能漫游",
+            "无线网络模式",
+            "组播管理",
+        ]
+        page.locator('#navigation [data-view="apsettings"]').click()
+        assert page.url.endswith("#apsettings")
+        for title in ["全局设置", "AP 分组", "AP列表"]:
+            assert title in page.locator("#content").inner_text()
+        assert not any(
+            x in page.locator("#navigation").inner_text()
+            for x in ["RADIUS", "Portal", "认证管理", "云管理", "网络运维", "蓝牙"]
         )
-        assert not page.locator("#summary").is_visible()
 
-        for tab in [
-            "overview",
+        views = [
             "aps",
-            "management",
+            "clients",
+            "apsettings",
             "templates",
             "apdefaults",
-            "mesh",
-            "services",
-            "pools",
+            "upgrades",
+            "balance",
+            "mobility",
+            "networkmode",
             "multicast",
+            "multicast-query",
+            "multicast-list",
             "radios",
             "rrm",
-            "rates",
             "edca",
-            "mobility",
-            "balance",
+            "rates",
             "band",
-            "clients",
-            "history",
+            "services",
+            "pools",
+            "mesh-topology",
+            "mesh",
+            "mesh-upgrades",
+            "mesh-clients",
+            "mesh-settings",
+            "storm",
             "protection",
-            "upgrades",
+            "dhcp-servers",
+            "arp",
+            "arp-bindings",
+            "history",
             "interfaces",
             "resources",
             "backup",
-        ]:
-            visit(tab)
-            page.wait_for_timeout(40)
+        ]
+        for view in views:
+            visit(view)
+            assert page.locator("#content").inner_text().strip(), view
+        assert not errors, errors
+
+        # AP details expose backend facts and raw capability data, not invented
+        # acknowledgements. Polling preserves the selected diagnostic tab.
+        visit("aps")
+        page.locator('[data-ap-diagnostic="' + profile[0]["id"] + '"]').first.click()
+        assert (
+            page.locator('#drawer-body [data-editor-tab="ap-cap"]').get_attribute(
+                "class"
+            )
+            == "active"
+        )
+        assert "通用能力位" in page.locator("#drawer-body").inner_text()
+        page.locator('#drawer-body [data-editor-tab="ap-raw"]').click()
+        raw = json.loads(page.locator("#drawer-body pre.raw").inner_text())
+        assert raw["general_capabilities"] == profile[0]["general_capabilities"]
+        assert not any(
+            k in raw
+            for k in ["account", "key", "passphrase", "pmk", "wireless_telemetry"]
+        )
+        page.wait_for_timeout(4200)
+        assert (
+            page.locator('#drawer-body [data-editor-tab="ap-raw"]').get_attribute(
+                "class"
+            )
+            == "active"
+        )
+        page.locator("#close-drawer").click()
+
+        visit("apsettings")
+        page.locator('[data-ap-settings="' + profile[0]["id"] + '"]').first.click()
+        assert page.locator(
+            '[data-editor-slot="management"] #management-form'
+        ).is_visible()
+        assert not page.locator("#editor").evaluate("e=>e.open")
+        expand("#management-form")
+        page.locator('#management-form [name="management_name"]').fill("V4 AP name")
+        page.locator('#management-form [name="opt_echo_seconds"]').fill("25")
+        page.locator('#management-form [name="opt_client_keep_alive"]').fill("45")
+        page.wait_for_timeout(4200)
+        assert (
+            page.locator('#management-form [name="management_name"]').input_value()
+            == "V4 AP name"
+        )
+        if full:
+            assert (
+                page.locator('#management-form [name="opt_port_103_vlan"]').count() == 1
+            )
+            assert page.locator('#management-form [name="opt_rf_mode_id"]').count() == 1
+            page.locator('#management-form [name="opt_port_103_vlan"]').fill("120")
+        result = submit("#management-form")
+        assert result["path"].endswith("/settings")
+        assert result["body"]["name"] == "V4 AP name"
+        assert result["body"]["options"]["echo_seconds"] == 25
+        assert result["body"]["options"]["client_keep_alive"] == 45
+        assert not page.locator("#management-form").count()
+
+        # The global schedule editor must not replace unrelated AP defaults.
+        before_defaults = copy.deepcopy(conf["config"]["ap_defaults"])
+        page.locator('#ap-global-form [name="reboot_state"]').select_option("off")
+        result = submit("#ap-global-form")
+        assert result["path"] == "ap-defaults"
+        assert result["body"]["reboot_schedule"]["enabled"] is False
+        for key, value in before_defaults.items():
+            if key != "reboot_schedule":
+                assert result["body"][key] == value
+
+        # Group and template controls retain complete settings, at their V4 location.
+        page.locator('[data-group-new="1"]').first.click()
+        page.locator('#management-form [name="management_name"]').fill("UI group")
+        page.locator('#management-form [name="group_start_ip"]').fill("192.0.2.10")
+        page.locator('#management-form [name="group_end_ip"]').fill("192.0.2.20")
+        assert submit("#management-form")["path"] == "groups"
+        visit("templates")
+        page.locator('[data-template-new="1"]').click()
+        page.locator('#management-form [name="management_name"]').fill("UI template")
+        assert submit("#management-form")["path"] == "templates"
+        visit("apdefaults")
+        expand("#management-form")
+        assert submit("#management-form")["path"] == "ap-defaults"
 
         visit("services")
         group_row = page.locator("tr").filter(has_text="Group-only service")
@@ -541,795 +665,472 @@ with sync_playwright() as p:
             "分组 Floor" in group_row.inner_text()
             and "全部 AP" not in group_row.inner_text()
         )
-
-        visit("radios")
-        page.locator('[name="radio_ap_filter"]').select_option(profile[0]["id"])
-        page.locator('[name="radio_ap_filter"]').focus()
-        page.evaluate("() => { window.uiFocusedControl = document.activeElement; }")
-        page.wait_for_timeout(4200)
-        assert page.evaluate(
-            "() => document.activeElement === window.uiFocusedControl"
-        )
-
-        visit("aps")
-        if full:
-            page.screenshot(path=str(OUT / "aps.png"), full_page=True)
-        page.locator('#content [data-ap="' + profile[0]["id"] + '"]').first.click()
-        page.wait_for_selector("#drawer[open]")
-        page.locator("#drawer-body details").first.locator("summary").click()
-        if full:
-            page.screenshot(path=str(OUT / "ap-drawer.png"), full_page=True)
-        page.wait_for_timeout(4200)
-        assert page.locator("#drawer-body details").first.evaluate(
-            "(e)=>e.open"
-        )
-        page.locator("#close-drawer").click()
-
-        visit("overview")
-        page.screenshot(
-            path=str(
-                OUT
-                / (
-                    "all-capabilities-overview.png"
-                    if full
-                    else "real-capabilities-overview.png"
-                )
-            ),
-            full_page=True,
-        )
-
-        visit("resources")
-        page.locator('#controller-resources-form [name="max_ap_sessions"]').fill(
-            "2048"
-        )
-        assert page.locator(
-            '#controller-resources-form input[type="number"]'
-        ).count() == len(resource_values)
-        if full:
-            page.screenshot(path=str(OUT / "resources.png"), full_page=True)
-        page.locator('#controller-resources-form [type="submit"]').click()
-        page.wait_for_timeout(80)
-        assert (
-            writes[-1]["path"] == "controller/resources"
-            and writes[-1]["body"]["max_ap_sessions"] == 2048
-            and writes[-1]["body"]["max_policy_rules"] == 1024
-        )
-
-        visit("services")
-        if full:
-            page.screenshot(path=str(OUT / "services.png"), full_page=True)
         page.locator("#new-service").click()
+        assert page.locator('[data-editor-slot="service"] #service-form').is_visible()
         page.locator('#service-form [name="ssid"]').fill("UI-Parity")
-        page.locator('#service-form [name="passphrase"]').fill(
-            "synthetic-ui-key"
-        )
-        page.screenshot(
-            path=str(
-                OUT
-                / (
-                    "all-capabilities-service.png"
-                    if full
-                    else "real-capabilities-service.png"
-                )
-            ),
-            full_page=True,
-        )
-        assert page.locator('#service-form [name="radius_ip"]').count() == 0
-        for pane in ["binding", "qos", "schedule", "basic"]:
-            page.locator(
-                '#service-form [data-editor-tab="' + pane + '"]'
-            ).click()
-        if not full:
-            assert not page.locator(
-                '#service-form [name="mc_global"]'
-            ).is_visible()
-        else:
-            page.locator('#service-form [data-editor-tab="binding"]').click()
+        page.locator('#service-form [name="passphrase"]').fill("synthetic-ui-key")
+        page.locator('#service-form [name="description"]').fill("V4 layout")
+        expand("#service-form")
+        assert not page.locator('#service-form [name="radius_ip"]').count()
+        assert page.locator('#service-form [name="mc_global"]').is_visible() == full
+        if full:
             page.locator('#service-form [name="vlan_pool"]').select_option("1")
-        page.locator('#service-form [data-editor-tab="binding"]').click()
-        page.locator('#service-form [name="band_preset"]').select_option(
-            "custom"
-        )
-        page.evaluate(
-            """() => {
-              document.querySelectorAll('#service-form input[name="auto_bind_frequencies"]').forEach(el => {
-                el.checked = el.value === '256';
-              });
-              document.querySelector('#service-form input[name="auto_bind_frequencies"]').dispatchEvent(new Event('change', {bubbles: true}));
-            }"""
-        )
-        page.locator('#service-form [type="submit"]').click()
-        page.wait_for_timeout(80)
-        assert not page.locator("#editor").evaluate("(e)=>e.open"), (
-            page.locator("#form-error").inner_text()
-        )
-        assert writes[-1]["body"]["auto_bind_frequencies"] == 256
+        page.locator('#service-form [name="band_preset"]').select_option("custom")
+        for box in page.locator('#service-form [name="auto_bind_frequencies"]').all():
+            box.uncheck()
+        page.locator(
+            '#service-form [name="auto_bind_frequencies"][value="256"]'
+        ).check()
+        service_write = submit("#service-form")
+        assert service_write["path"] == "services"
+        assert service_write["body"]["auto_bind_frequencies"] == 256
+        assert service_write["body"]["options"]["description"] == "V4 layout"
+        assert service_write["body"]["options"]["encoding"] == "utf-8"
+        assert not page.locator("#service-form").count()
 
         visit("radios")
         page.locator('[data-radio="1"]').first.click()
-        page.wait_for_selector("#radio-form")
+        expand("#radio-form")
+        assert page.locator('[data-editor-slot="radio"] #radio-form').is_visible()
         original_mode = page.locator('#radio-form [name="mode"]').input_value()
         assert page.locator('#radio-form [name="wmm"]').is_disabled()
-        assert page.locator('#radio-form [name="fragmentation"]').is_disabled()
         page.locator('#radio-form [name="mode"]').select_option("1")
         assert page.locator('#radio-form [name="wmm"]').is_enabled()
-        page.locator('#radio-form [data-editor-tab="rf-performance"]').click()
-        page.locator('#radio-form [name="wmm"]').uncheck()
-        page.locator('#radio-form [data-editor-tab="rf-basic"]').click()
         page.locator('#radio-form [name="mode"]').select_option(original_mode)
-        assert (
-            page.locator('#radio-form [name="wmm"]').is_disabled()
-            and page.locator('#radio-form [name="wmm"]').is_checked()
-        )
-        for pane in ["rf-timing", "rf-performance", "rf-basic"]:
-            page.locator('#radio-form [data-editor-tab="' + pane + '"]').click()
+        assert page.locator('#radio-form [name="wmm"]').is_disabled()
         if full:
-            page.locator(
-                '#radio-form [data-editor-tab="rf-performance"]'
-            ).click()
-            assert page.locator('#radio-form [name="dcs_mode"]').count() == 1
             assert page.locator('#radio-form [name="edca_7_txop"]').count() == 1
             page.locator('#radio-form [name="edca_preset"]').select_option("2")
-        page.locator('#radio-form [type="submit"]').click()
-        page.wait_for_timeout(80)
-        assert not page.locator("#editor").evaluate("(e)=>e.open"), (
-            page.locator("#form-error").inner_text()
-        )
+        result = submit("#radio-form")
+        assert result["path"] == "radios"
+        assert result["body"]["advanced"]["mode"] == int(original_mode)
+        assert result["body"]["advanced"]["wmm"] is True
+        assert not page.locator("#radio-form").count()
 
+        visit("mobility")
+        expand("#roaming-default-form")
+        page.locator('#roaming-default-form [name="11k"]').check()
+        page.locator('#roaming-default-form [name="2g_rssi_trigger"]').fill("-77")
+        page.locator('#roaming-default-form [data-editor-tab="roam-5g"]').click()
+        page.locator('#roaming-default-form [name="5g_rssi_trigger"]').fill("-81")
+        page.locator('#roaming-default-form [name="mode_source"]').select_option(
+            "tl-ac100-v4-1.4.3"
+        )
+        old_balance = copy.deepcopy(mobility.get("balance", []))
+        result = submit("#roaming-default-form")
+        assert result["body"]["default_roaming"]["2g"]["rssi_trigger"] == -77
+        assert result["body"]["default_roaming"]["5g"]["rssi_trigger"] == -81
+        assert result["body"]["mode_source"] == "tl-ac100-v4-1.4.3"
+        assert result["body"]["balance"] == old_balance
+        assert not page.locator('[name="roam_sensitivity"]').count()
+
+        visit("balance")
+        page.locator('#balance-default-form [name="client_threshold"]').fill("27")
+        page.locator('#balance-default-form [name="enabled"]').check()
+        result = submit("#balance-default-form")
+        assert result["path"] == "mobility"
+        global_balance = [
+            r
+            for r in result["body"]["balance"]
+            if not r.get("aps") and not r.get("groups")
+        ][0]
+        assert global_balance["client_threshold"] == 27
+        assert result["body"]["default_roaming"] == mobility["default_roaming"]
+
+        visit("networkmode")
+        expand("#network-mode-form")
+        assert submit("#network-mode-form")["path"] == "mobility"
         visit("band")
-        page.locator('[data-band-advanced] > summary').click()
-        page.locator('#band-navigation-form [name="band_threshold"]').fill("22")
-        page.locator('#band-navigation-form [type="submit"]').click()
-        page.wait_for_timeout(80)
+        page.locator('#band-navigation-form [name="band_enabled"]').check()
+        page.locator('#band-navigation-form [name="band_threshold"]').fill("23")
+        result = submit("#band-navigation-form")
         assert (
-            writes[-1]["path"] == "band-navigation"
-            and writes[-1]["body"]["threshold_5g"] == 22
+            result["path"] == "band-navigation" and result["body"]["threshold_5g"] == 23
         )
-
-        if full:
-            visit("pools")
-            page.locator("[data-new-pool]").click()
-            page.locator('#pool-form [name="pool_name"]').fill("UI Pool")
-            page.locator('#pool-form [name="pool_vlans"]').fill("100-110")
-            page.locator('#pool-form [type="submit"]').click()
-            page.wait_for_timeout(80)
-            assert (
-                writes[-1]["path"] == "vlan-pools"
-                and writes[-1]["body"]["vlans"] == "100-110"
-            )
 
         visit("rrm")
-        page.locator('#rrm-quick-form [type="submit"]').click()
-        page.wait_for_timeout(80)
-        assert (
-            writes[-1]["path"] == "rrm/rules"
-            and writes[-1]["body"][0]["name"] == "默认射频优化"
-            and writes[-1]["body"][0]["optimize_channel"] is True
-            and writes[-1]["body"][0]["optimize_power"] is True
-            and writes[-1]["body"][0]["5g"]["channels"]
-            == [36, 40, 44, 48, 149, 153, 157, 161]
+        expand("#rrm-primary-form")
+        page.locator('#rrm-primary-form [name="strategy_version"]').select_option("v4")
+        page.locator('#rrm-primary-form [name="rrm_2g_channels"]').fill("1,6,11")
+        page.locator('#rrm-primary-form [name="rrm_5g_channels"]').fill("36,44")
+        page.locator('#rrm-primary-form [name="rrm_common_max_power_dbm"]').fill("28")
+        page.locator('#rrm-primary-form [name="enabled"]').check()
+        page.locator('#rrm-primary-form [name="rrmplan_day_0"]').fill("03:00-03:01")
+        page.locator('#rrm-primary-form [name="rrmplan_dates"]').fill(
+            "2026-12-01 ~ 2026-12-31"
         )
-        page.locator("[data-rrm-quick-run]").click()
-        page.wait_for_timeout(80)
-        assert (
-            writes[-2]["path"] == "rrm/rules"
-            and writes[-1]["path"] == "rrm/run"
+        assert not page.locator('#rrm-primary-form [name="rrmplan_state"]').count()
+        result = submit("#rrm-primary-form")
+        assert result["path"] == "rrm/rules"
+        rule = result["body"][-1]
+        assert rule["strategy_version"] == "v4"
+        assert rule["enabled"] and rule["schedule"]["enabled"]
+        assert rule["schedule"]["dates"] == [
+            {"start": "2026-12-01", "end": "2026-12-31"}
+        ]
+        assert rule["2g"]["max_power_dbm"] == rule["5g"]["max_power_dbm"] == 28
+        page.locator('[data-rrm-new="1"]').evaluate(
+            "e => e.closest('details').open = true"
         )
-        page.locator("[data-rrm-advanced] > summary").click()
-        page.locator("[data-rrm-new]").click()
-        page.wait_for_selector("#rrm-form")
-        page.locator('#rrm-form [name="strategy_version"]').select_option("v4")
-        assert page.locator(
-            '#rrm-form [name="rrm_5g_secondary_channels"]'
-        ).is_visible()
-        assert page.locator(
-            '#rrm-form [name="rrm_5g_power_threshold"]'
-        ).is_disabled()
-        page.locator('#rrm-form [name="strategy_version"]').select_option("v6")
-        assert not page.locator(
-            '#rrm-form [name="rrm_5g_secondary_channels"]'
-        ).is_visible()
-        assert page.locator(
-            '#rrm-form [name="rrm_5g_power_threshold"]'
-        ).is_enabled()
-        page.locator('#rrm-form [name="name"]').fill("UI RRM")
-        page.locator('#rrm-form [name="rrm_5g_channels"]').fill("36,44,149,157")
-        page.locator('#rrm-form [name="optimize_channel"]').check()
-        page.locator('#rrm-form [type="submit"]').click()
-        page.wait_for_timeout(80)
-        assert (
-            writes[-1]["path"] == "rrm/rules"
-            and writes[-1]["body"][0]["name"] == "UI RRM"
-        )
+        page.locator('[data-rrm-new="1"]').click()
+        expand("#rrm-form")
+        page.locator('#rrm-form [name="name"]').fill("UI scoped optimization")
+        assert submit("#rrm-form")["path"] == "rrm/rules"
 
         visit("rates")
-        page.wait_for_selector("#rates-form")
-        page.locator('#rates-form [data-editor-tab="rates-mcs"]').click()
-        page.locator('#rates-form [name="11ax_supported"]').fill("15")
-        page.locator('#rates-form [type="submit"]').click()
-        page.wait_for_timeout(80)
-        assert (
-            writes[-1]["path"] == "rates"
-            and writes[-1]["body"]["11ax"]["supported"] == 15
-        )
+        assert page.locator("#rates-form [data-editor-tab]").count() == 0
+        assert submit("#rates-form")["path"] == "rates"
+        for view in ["multicast", "multicast-query"]:
+            visit(view)
+            if full:
+                result = submit("#multicast-settings-form")
+                assert result["path"] == "services"
+                assert (
+                    result["body"]["options"]["multicast"].get("query_interval")
+                    is not None
+                )
+                assert result["body"]["ssid"] == conf["config"]["services"][0]["ssid"]
+            else:
+                assert not page.locator(
+                    '#multicast-settings-form [type="submit"]'
+                ).count()
+        visit("multicast-list")
+        page.locator('[data-multicast-new="1"]').click()
+        page.locator('#multicast-item-form [name="ip"]').fill("239.1.2.3")
+        assert submit("#multicast-item-form")["path"] == "multicast-groups"
 
-        visit("rrm")
-        page.locator("[data-rrm-advanced] > summary").click()
-        page.locator("[data-rrm-new]").click()
-        page.wait_for_selector("#rrm-form")
-        page.locator('#rrm-form [name="strategy_version"]').select_option("v4")
-        page.locator('#rrm-form [name="name"]').fill("UI V4 RRM")
-        page.locator('#rrm-form [name="rrm_5g_channels"]').fill("36,44,149,157")
-        page.locator('#rrm-form [name="rrm_5g_secondary_channels"]').fill(
-            "149,157"
-        )
-        page.locator('#rrm-form [name="optimize_channel"]').check()
-        page.locator('#rrm-form [type="submit"]').click()
-        page.wait_for_timeout(80)
+        # DHCP and ARP editors share a backend rule but must preserve the part
+        # managed on the other page, including when its selected list is empty.
+        conf["config"]["protection"]["rules"] = [
+            {
+                "id": "shared-rule",
+                "name": "Shared",
+                "aps": [],
+                "groups": [],
+                "arp": True,
+                "dhcp": True,
+                "wired": True,
+                "wireless": True,
+                "filter": False,
+                "servers": ["srv"],
+                "bindings": ["bind"],
+            }
+        ]
+        for view, changed, kept in [
+            ("protection", "dhcp", "arp"),
+            ("arp", "arp", "dhcp"),
+        ]:
+            visit(view)
+            page.locator(
+                '[data-defense-kind="rules"][data-defense-id="shared-rule"]'
+            ).click()
+            page.locator('#defense-form [name="' + changed + '"]').uncheck()
+            result = submit("#defense-form")
+            rule = result["body"]["rules"][0]
+            assert rule[changed] is False and rule[kept] is True
+            assert rule["servers"] == ["srv"] and rule["bindings"] == ["bind"]
+        visit("storm")
+        assert submit("#storm-form")["path"] == "storm"
+        visit("mesh-settings")
+        page.locator('#mesh-form [name="ssid"]').fill("UI mesh")
+        page.locator('#mesh-form [name="key"]').fill("test-mesh-key")
+        page.locator('#mesh-form [name="web_password"]').fill("test-admin")
+        assert submit("#mesh-form")["path"] == "mesh"
+        visit("clients")
+        page.locator("[data-client-label]").first.click()
+        page.locator('#client-label-form [name="name"]').fill("UI tablet")
+        result = submit("#client-label-form")
         assert (
-            writes[-1]["path"] == "rrm/rules"
-            and writes[-1]["body"][0]["strategy_version"] == "v4"
-        )
-        assert writes[-1]["body"][0]["5g"]["secondary_channels"] == [149, 157]
-        assert (
-            writes[-1]["body"][0]["5g"]["power_threshold"]
-            == writes[-1]["body"][0]["2g"]["power_threshold"]
+            result["path"].endswith("/label") and result["body"]["name"] == "UI tablet"
         )
 
         visit("edca")
-        page.locator("[data-edca-new]").click()
-        page.wait_for_selector("#edca-form")
+        page.locator('[data-edca-new="1"]').click()
         page.locator('#edca-form [name="name"]').fill("UI EDCA")
-        page.locator(
-            '#edca-form input[name="frequency_mask"][value="1"]'
-        ).check()
-        page.locator(
-            '#edca-form input[name="frequency_mask"][value="256"]'
-        ).check()
-        page.locator('#edca-form [name="edca_0_txop"]').fill("47")
-        page.locator('#edca-form [type="submit"]').click()
-        page.wait_for_timeout(80)
+        page.locator('#edca-form [name="frequency_mask"][value="1"]').check()
+        assert submit("#edca-form")["path"] == "edca/rules"
+        visit("pools")
+        page.locator('[data-new-pool="1"]').click()
+        page.locator('#pool-form [name="pool_name"]').fill("UI pool")
+        page.locator('#pool-form [name="pool_vlans"]').fill("100-110")
+        assert submit("#pool-form")["path"] == "vlan-pools"
+        visit("resources")
+        page.locator('#controller-resources-form [name="max_ap_sessions"]').fill("2048")
+        result = submit("#controller-resources-form")
         assert (
-            writes[-1]["path"] == "edca/rules"
-            and writes[-1]["body"][0]["frequency_mask"] == 257
-        )
-
-        visit("balance")
-        assert not page.locator("[data-balance-conflict]").is_visible()
-        page.locator('#balance-simple-form [name="balance_enabled"]').check()
-        assert page.locator("[data-balance-conflict]").is_visible()
-        page.locator('#balance-simple-form [name="client_threshold"]').fill(
-            "18"
-        )
-        page.locator('#balance-simple-form [type="submit"]').click()
-        page.wait_for_timeout(80)
-        assert (
-            writes[-1]["path"] == "mobility"
-            and len(writes[-1]["body"]["balance"]) == 1
-            and writes[-1]["body"]["balance"][0]["enabled"] is True
-            and writes[-1]["body"]["balance"][0]["client_threshold"] == 18
-        )
-        page.locator('#balance-simple-form [name="balance_enabled"]').check()
-        page.locator('#balance-simple-form [name="balance_enabled"]').uncheck()
-        assert not page.locator("[data-balance-simple-options]").is_visible()
-        page.locator('#balance-simple-form [type="submit"]').click()
-        page.wait_for_timeout(80)
-        assert (
-            writes[-1]["path"] == "mobility"
-            and writes[-1]["body"]["balance"] == []
-        )
-        page.locator('[data-mobility-advanced="balance"] > summary').click()
-        page.locator('[data-mobility-kind="balance"]').click()
-        page.wait_for_selector("#mobility-form")
-        page.locator('#mobility-form [name="name"]').fill("UI Balance")
-        page.locator('#mobility-form [type="submit"]').click()
-        page.wait_for_timeout(80)
-        assert (
-            writes[-1]["path"] == "mobility"
-            and writes[-1]["body"]["balance"][0]["name"] == "UI Balance"
-        )
-
-        visit("mobility")
-        if full:
-            page.screenshot(path=str(OUT / "mobility.png"), full_page=True)
-        page.locator('#roam-simple-form [name="roam_enabled"]').check()
-        page.locator(
-            '#roam-simple-form [name="roam_sensitivity"]'
-        ).select_option("aggressive")
-        page.locator('#roam-simple-form [name="roam_11r"]').check()
-        page.locator('#roam-simple-form [name="roam_rssi_kick"]').check()
-        page.locator('#roam-simple-form [type="submit"]').click()
-        page.wait_for_timeout(80)
-        assert writes[-1]["path"] == "mobility"
-        roam_def = writes[-1]["body"]["default_roaming"]
-        assert (
-            roam_def["2g"]["rssi_trigger"] == -70
-            and roam_def["5g"]["rssi_trigger"] == -75
-            and roam_def["difference"] == 6
-            and roam_def["11r"] is True
-            and roam_def["2g"]["rssi_kick"] is True
-            and roam_def["5g"]["rssi_kick"] is True
-        )
-        page.locator('#roam-simple-form [name="roam_enabled"]').uncheck()
-        assert not page.locator("[data-roam-simple-options]").is_visible()
-        page.locator('#roam-simple-form [type="submit"]').click()
-        page.wait_for_timeout(80)
-        roam_off = writes[-1]["body"]["default_roaming"]
-        assert (
-            roam_off["11k"] is False
-            and roam_off["11v"] is False
-            and roam_off["11r"] is False
-            and roam_off["2g"]["rssi_kick"] is False
-            and roam_off["5g"]["rssi_kick"] is False
-        )
-        page.locator('[data-mobility-advanced="roaming"] > summary').click()
-        page.locator('[data-mobility-kind="default"]').click()
-        page.wait_for_selector("#mobility-form")
-        page.locator('#mobility-form [name="mode_source"]').select_option(
-            "tl-ac100-v4-1.4.3"
-        )
-        assert not page.locator(
-            '#mobility-form [name="network_mode"] option[value="1"]'
-        ).is_disabled()
-        page.locator('#mobility-form [name="network_mode"]').select_option("1")
-        page.locator('#mobility-form [name="mode_source"]').select_option(
-            "tl-ac100-v6-1.0.3"
-        )
-        assert (
-            page.locator('#mobility-form [name="network_mode"]').input_value()
-            == "2"
-        )
-        assert page.locator(
-            '#mobility-form [name="network_mode"] option[value="1"]'
-        ).is_disabled()
-        page.locator('#mobility-form [name="silence_count"]').fill("7")
-        page.locator('#mobility-form [name="silence_seconds"]').fill("61")
-        page.locator('#mobility-form [type="submit"]').click()
-        page.wait_for_timeout(80)
-        assert (
-            writes[-1]["path"] == "mobility"
-            and writes[-1]["body"]["default_roaming"]["2g"]["rssi_trigger"]
-            == -75
-        )
-        assert writes[-1]["body"]["silence"] == {"count": 7, "seconds": 61}
-        assert writes[-1]["body"]["mode_source"] == "tl-ac100-v6-1.0.3"
-        assert (
-            [w for w in writes if w["path"] == "rrm/rules"][-1]["body"][0][
-                "strategy_version"
-            ]
-            == "v4"
-        )
-
-        visit("mobility")
-        if not page.locator('[data-mobility-advanced="roaming"]').evaluate(
-            "(e) => e.open"
-        ):
-            page.locator(
-                '[data-mobility-advanced="roaming"] > summary'
-            ).click()
-        page.locator('[data-mobility-kind="default"]').click()
-        page.wait_for_selector("#mobility-form")
-        assert page.locator("#dialog-body").evaluate("(e)=>e.scrollTop") == 0
-        page.locator('#mobility-form [name="mode_source"]').select_option(
-            "tl-ac100-v4-1.4.3"
-        )
-        page.screenshot(
-            path=str(
-                OUT
-                / (
-                    "v4-strategy-options-full.png"
-                    if full
-                    else "v4-strategy-options.png"
-                )
-            )
-        )
-        page.locator('#mobility-form [type="submit"]').click()
-        page.wait_for_timeout(80)
-        assert (
-            writes[-1]["path"] == "mobility"
-            and writes[-1]["body"]["mode_source"] == "tl-ac100-v4-1.4.3"
-        )
-
-        visit("protection")
-        if full:
-            page.screenshot(path=str(OUT / "protection.png"), full_page=True)
-        for ptab, kind in [
-            ("servers", "servers"),
-            ("bindings", "bindings"),
-            ("rules", "rules"),
-        ]:
-            page.locator('[data-protection-tab="' + ptab + '"]').click()
-            page.locator('[data-defense-kind="' + kind + '"]').last.click()
-            page.wait_for_selector("#defense-form")
-            page.locator('#defense-form [name="name"]').fill("UI " + kind)
-            if kind == "servers":
-                page.locator('#defense-form [name="address"]').fill("192.0.2.3")
-            if kind == "bindings":
-                page.locator('#defense-form [name="ip"]').fill("2001:db8::3")
-                page.locator('#defense-form [name="mac"]').fill(
-                    "02:03:04:05:06:08"
-                )
-            if kind == "rules":
-                page.locator('#defense-form [name="dhcp"]').check()
-                page.locator(
-                    '#defense-form input[name="servers"][value="srv"]'
-                ).check()
-                page.locator(
-                    '#defense-form input[name="bindings"][value="bind"]'
-                ).check()
-            page.locator('#defense-form [type="submit"]').click()
-            page.wait_for_timeout(80)
-            assert not page.locator("#editor").evaluate("(e)=>e.open"), (
-                page.locator("#form-error").inner_text()
-            )
-            assert writes[-1]["path"] == "protection"
-
-        page.locator('[data-protection-tab="storm"]').click()
-        page.wait_for_selector("#storm-form")
-        page.locator('#storm-form [name="enabled"]').check()
-        page.locator('#storm-form [name="protocol_0_rate"]').fill("200")
-        page.locator('#storm-form [type="submit"]').click()
-        page.wait_for_timeout(80)
-        assert (
-            writes[-1]["path"] == "storm"
-            and writes[-1]["body"]["protocols"][0]["rate"] == 200
+            result["path"] == "controller/resources"
+            and result["body"]["max_ap_sessions"] == 2048
         )
 
         visit("upgrades")
-        page.wait_for_selector("[data-upgrade-image]")
-        page.locator("[data-upgrade-image]").first.click()
-        page.wait_for_selector("#upgrade-form")
+        page.locator('[data-upgrade-image="synthetic-image"]').click()
         page.locator('#upgrade-form input[type="checkbox"]').first.check()
-        page.locator('#upgrade-form [type="submit"]').click()
-        page.wait_for_timeout(80)
-        assert (
-            writes[-1]["path"] == "upgrades"
-            and writes[-1]["body"]["image_id"] == "synthetic-image"
-        )
-
-        visit("history")
-        page.wait_for_selector('svg path[stroke-width="2"]')
-        assert page.locator('svg[aria-label="无线运行统计趋势"]').count() == 2
+        assert submit("#upgrade-form")["path"] == "upgrades"
         if full:
-            page.screenshot(path=str(OUT / "history.png"), full_page=True)
-
-        visit("clients")
-        if full:
-            page.screenshot(path=str(OUT / "clients.png"), full_page=True)
-        page.locator("[data-client-history]").first.click()
-        page.wait_for_selector("#dialog-body svg")
-        assert page.locator("#dialog-body").get_by_text(
-            "-60 dBm", exact=True
-        ).is_visible()
-        before_signals = len(signal_queries)
-        page.locator('[name="client_history_duration"]').select_option("3600")
-        page.wait_for_timeout(100)
-        assert len(signal_queries) > before_signals and signal_queries[
-            -1
-        ].endswith("duration=3600")
-        page.locator("#close-dialog").click()
-
-        visit("mesh")
-        page.locator("[data-mesh-config]").first.click()
-        page.wait_for_selector("#mesh-form")
-        page.locator('#mesh-form [name="enabled"]').check()
-        page.locator('#mesh-form [name="ssid"]').fill("UI Backhaul")
-        page.locator('#mesh-form [name="key"]').fill("MeshKey123")
-        page.locator('#mesh-form [name="web_password"]').fill("Mesh123456")
-        page.locator('#mesh-form [type="submit"]').click()
-        page.wait_for_timeout(80)
-        assert (
-            writes[-1]["path"] == "mesh"
-            and writes[-1]["body"]["ssid"] == "UI Backhaul"
-        )
-        if full:
-            page.locator("[data-mesh-ap]").first.click()
-            page.wait_for_selector("#mesh-form")
-            page.locator('#mesh-form [type="submit"]').click()
-            page.wait_for_timeout(80)
-            assert (
-                writes[-1]["path"].endswith("/mesh")
-                and writes[-1]["body"]["action"] == "discover"
-            )
-
-        visit("management")
-        page.locator("[data-group-new]").click()
-        page.locator('#management-form [name="management_name"]').fill(
-            "UI Group"
-        )
-        page.locator('#management-form [name="group_start_ip"]').fill(
-            "192.0.2.10"
-        )
-        page.locator('#management-form [name="group_end_ip"]').fill(
-            "192.0.2.20"
-        )
-        page.locator('#management-form [name="opt_echo_seconds"]').fill("25")
-        page.locator('#management-form [type="submit"]').click()
-        page.wait_for_timeout(80)
-        assert (
-            writes[-1]["path"] == "groups"
-            and writes[-1]["body"]["options"]["echo_seconds"] == 25
-            and writes[-1]["body"]["strategy"]
-            == {
-                "enabled": True,
-                "type": "ip_range",
-                "start_ip": "192.0.2.10",
-                "end_ip": "192.0.2.20",
-            }
-        )
-
-        visit("templates")
-        page.locator("[data-template-new]").click()
-        page.locator('#management-form [name="management_name"]').fill(
-            "UI Template"
-        )
-        page.locator('#management-form [type="submit"]').click()
-        page.wait_for_timeout(80)
-        assert writes[-1]["path"] == "templates"
-
-        visit("management")
-        page.locator('[data-group-edit="floor"]').click()
-        page.locator('#management-form [name="management_name"]').fill(
-            "UI Floor"
-        )
-        page.locator('#management-form [type="submit"]').click()
-        page.wait_for_timeout(80)
-        assert (
-            writes[-1]["path"] == "groups"
-            and writes[-1]["body"]["name"] == "UI Floor"
-        )
-
-        visit("templates")
-        page.locator('[data-template-edit="template"]').click()
-        page.locator('#management-form [name="management_name"]').fill(
-            "UI Model"
-        )
-        page.locator('#management-form [type="submit"]').click()
-        page.wait_for_timeout(80)
-        assert (
-            writes[-1]["path"] == "templates"
-            and writes[-1]["body"]["name"] == "UI Model"
-        )
-
-        visit("apdefaults")
-        page.wait_for_selector("#management-form")
-        page.locator(
-            '#management-form [name="opt_offline_self_manage"]'
-        ).select_option("on")
-        page.locator('#management-form [type="submit"]').click()
-        page.wait_for_timeout(80)
-        assert (
-            writes[-1]["path"] == "ap-defaults"
-            and writes[-1]["body"]["offline_self_manage"] is True
-        )
-        assert next(
-            r for r in writes[-1]["body"]["radios"] if r["radio_id"] == 8
-        ) == {"radio_id": 8, "channel": 11, "advanced": {"rts": 2000}}
+            visit("mesh")
+            page.locator('[data-mesh-ap="' + spare["id"] + '"]').click()
+            assert submit("#mesh-form")["path"].endswith("/mesh")
 
         visit("aps")
-        page.locator("[data-ap-settings]").first.click()
-        page.locator('#management-form [name="opt_echo_seconds"]').fill("31")
-        page.locator('#management-form [name="opt_led"]').select_option("off")
-        if full:
-            page.locator(
-                '#management-form [data-editor-tab="ap-advanced"]'
-            ).click()
-            page.locator(
-                '#management-form [name="opt_rf_mode_enabled"]'
-            ).select_option("on")
-            page.locator(
-                '#management-form [name="opt_rf_mode_id"]'
-            ).select_option("7")
-            page.locator('#management-form [name="opt_port_103_vlan"]').fill(
-                "100"
-            )
-            assert (
-                page.locator(
-                    '#management-form [name="opt_port_12_vlan"]'
-                ).count()
-                == 0
-            )
-        page.locator('#management-form [type="submit"]').click()
-        page.wait_for_timeout(80)
-        if full:
-            assert writes[-1]["body"]["options"]["rf_mode"] == {
-                "enabled": True,
-                "id": 7,
-            }
-            assert writes[-1]["body"]["options"]["lag"]["ports"] == [103, 104]
-        assert (
-            writes[-1]["path"].endswith("/settings")
-            and writes[-1]["body"]["options"]["led"] is False
-        )
-        assert not page.locator("#editor").evaluate("(e)=>e.open"), (
-            page.locator("#form-error").inner_text()
-        )
-
-        for copy_radios in (False, True):
-            page.locator(
-                '#content [data-ap="' + profile[0]["id"] + '"]'
-            ).first.click()
-            page.locator('[data-ap-copy="' + profile[0]["id"] + '"]').click()
-            page.locator(
-                '#management-copy-form input[name="targets"][value="'
-                + spare["id"]
-                + '"]'
-            ).check()
-            page.locator('#management-copy-form [name="radios"]').set_checked(
-                copy_radios
-            )
-            page.locator('#management-copy-form [type="submit"]').click()
-            page.wait_for_timeout(80)
-            assert writes[-1]["path"].endswith("/copy") and writes[-1][
-                "body"
-            ] == {"targets": [spare["id"]], "radios": copy_radios}
-
-        page.locator('#content [data-ap="' + offline["id"] + '"]').first.click()
-        page.locator('[data-ap-replace="' + offline["id"] + '"]').click()
+        page.locator('[data-ap="' + profile[0]["id"] + '"]').first.click()
+        page.locator("[data-ap-copy]").click()
+        page.locator('#management-copy-form [name="targets"]').first.check()
+        assert submit("#management-copy-form")["path"].endswith("/copy")
+        page.locator('[data-ap="' + offline["id"] + '"]').first.click()
+        page.locator("[data-ap-replace]").click()
         page.locator('#management-replace-form [name="target"]').select_option(
             spare["id"]
         )
-        page.locator('#management-replace-form [type="submit"]').click()
-        page.wait_for_timeout(80)
-        assert writes[-1]["path"].endswith("/replace") and writes[-1][
-            "body"
-        ] == {"target_ap_id": spare["id"]}
-
-        name_csv = "编号,MAC地址,安装位置,设备名称\n1,02-00-00-00-00-01,Original,Updated\n"
-        page.locator("[data-ap-batch-names]").click()
+        assert submit("#management-replace-form")["path"].endswith("/replace")
+        visit("apsettings")
+        page.locator('[data-ap-batch-names="1"]').click()
+        before = len(writes)
         page.locator("#ap-names-import").set_input_files(
             {
-                "name": "ap-names.csv",
+                "name": "names.csv",
                 "mimeType": "text/csv",
-                "buffer": name_csv.encode(),
+                "buffer": ("MAC,Name\n" + profile[0]["mac"] + ",UI renamed\n").encode(),
             }
         )
-        page.wait_for_timeout(100)
-        assert writes[-1]["path"] == "aps/names/import" and writes[-1][
-            "body"
-        ] == {"csv": name_csv}
-
-        restore = {
-            "format": "go-ac-configuration",
-            "schema": 1,
-            "config": {"services": []},
-        }
+        page.wait_for_timeout(120)
+        assert len(writes) > before and writes[-1]["path"] == "aps/names/import"
         visit("backup")
+        restore = {"version": 1, "services": [], "radios": [], "interface": ""}
+        before = len(writes)
         page.locator("#management-import").set_input_files(
             {
-                "name": "go-ac-ui-test.json",
+                "name": "backup.json",
                 "mimeType": "application/json",
                 "buffer": json.dumps(restore).encode(),
             }
         )
-        page.wait_for_timeout(100)
-        assert writes[-1]["path"] == "restore" and writes[-1]["body"] == restore
+        page.wait_for_timeout(120)
+        assert len(writes) > before and writes[-1]["path"] == "restore"
+        assert writes[-1]["body"] == restore
 
-        visit("radios")
-        page.wait_for_function("() => !refreshing")
-        page.evaluate(
-            '() => Object.defineProperty(document, "hidden", {configurable:true,value:true})'
+        # A failed save retains the input and exposes the server's error in the
+        # same editor. A retry uses the same complete form.
+        visit("services")
+        page.locator("#new-service").click()
+        page.locator('#service-form [name="ssid"]').fill("Retry service")
+        page.locator('#service-form [name="passphrase"]').fill("retry-test-key")
+
+        def fail_save(route):
+            if route.request.method == "POST":
+                route.fulfill(status=422, json={"error": "fixture save rejected"})
+            else:
+                route.fallback()
+
+        page.route("**/api/services", fail_save)
+        expected_errors = len(console_errors)
+        page.locator('#service-form [type="submit"]').click()
+        page.locator("#service-form .form-error").filter(
+            has_text="fixture save rejected"
+        ).wait_for()
+        assert (
+            page.locator('#service-form [name="ssid"]').input_value() == "Retry service"
         )
-        before_reads = len(reads)
+        assert page.locator('#service-form [type="submit"]').is_enabled()
+        assert all("422" in message for message in console_errors[expected_errors:])
+        del console_errors[expected_errors:]
+        page.unroute("**/api/services", fail_save)
+        assert submit("#service-form")["path"] == "services"
+
+        # Clearing a date range must remove the saved restriction, not merge it
+        # back from the old global schedule.
+        old_defaults = copy.deepcopy(conf["config"]["ap_defaults"])
+        conf["config"]["ap_defaults"]["reboot_schedule"] = {
+            "enabled": True,
+            "timezone": "UTC",
+            "action": "on",
+            "windows": [{"days": 127, "start_minute": 180, "end_minute": 181}],
+            "dates": [{"start": "2026-12-01", "end": "2026-12-31"}],
+        }
+        visit("apsettings")
+        expand("#ap-global-form")
+        page.locator('#ap-global-form [name="reboot_full_dates"]').fill("")
+        result = submit("#ap-global-form")
+        assert not result["body"]["reboot_schedule"].get("dates")
+        windows = result["body"]["reboot_schedule"]["windows"]
+        assert sum(w["days"] for w in windows) == 127
+        assert all(w["start_minute"] == 180 and w["end_minute"] == 181 for w in windows)
+        conf["config"]["ap_defaults"] = old_defaults
+
+        # An optimization request is tied to the button pressed this time.
+        # Retrying a plain save after either failure must never start a run.
+        visit("rrm")
+        expand("#rrm-primary-form")
+
+        def reject_rules(route):
+            if route.request.method == "POST":
+                route.fulfill(status=422, json={"error": "fixture rules rejected"})
+            else:
+                route.fallback()
+
+        expected_errors = len(console_errors)
+        page.route("**/api/rrm/rules", reject_rules)
+        page.locator('#rrm-primary-form [value="run"]').click()
+        page.locator("#rrm-primary-form .form-error").filter(
+            has_text="fixture rules rejected"
+        ).wait_for()
         page.wait_for_timeout(4200)
-        assert len(reads) == before_reads, "Background page kept polling"
-        page.evaluate(
-            '() => { delete document.hidden; document.dispatchEvent(new Event("visibilitychange")); }'
+        assert (
+            "fixture rules rejected"
+            in page.locator("#rrm-primary-form .form-error").inner_text()
         )
-        page.wait_for_timeout(250)
-        assert len(reads) > before_reads, "Visible page did not refresh"
+        assert all("422" in message for message in console_errors[expected_errors:])
+        del console_errors[expected_errors:]
+        page.unroute("**/api/rrm/rules", reject_rules)
+        before = len(writes)
+        submit("#rrm-primary-form")
+        assert [w["path"] for w in writes[before:]] == ["rrm/rules"]
 
-        visit("radios")
-        page.evaluate("() => window.scrollTo(0,0)")
-        page.screenshot(
-            path=str(
-                OUT
-                / (
-                    "all-capabilities-desktop.png"
-                    if full
-                    else "real-capabilities-desktop.png"
-                )
-            ),
-            full_page=True,
+        # Enter in a parameter field performs a plain save, never optimization.
+        before = len(writes)
+        expand("#rrm-primary-form")
+        page.locator('#rrm-primary-form [name="name"]').press("Enter")
+        page.wait_for_timeout(120)
+        assert [w["path"] for w in writes[before:]] == ["rrm/rules"]
+
+        old_rrm_rules = copy.deepcopy(rrm.get("rules", []))
+        old_cfg_rrm = copy.deepcopy(conf["config"].get("rrm", []))
+
+        def save_rules(route):
+            if route.request.method == "POST":
+                value = route.request.post_data_json
+                writes.append({"path": "rrm/rules", "body": value})
+                rrm["rules"] = copy.deepcopy(value)
+                conf["config"]["rrm"] = copy.deepcopy(value)
+                route.fulfill(json={"status": "saved"})
+            else:
+                route.fallback()
+
+        def reject_run(route):
+            route.fulfill(status=422, json={"error": "fixture run rejected"})
+
+        page.route("**/api/rrm/rules", save_rules)
+        page.route("**/api/rrm/run", reject_run)
+        expected_errors = len(console_errors)
+        page.locator('#rrm-primary-form [value="run"]').click()
+        page.locator("#rrm-primary-form .form-error").filter(
+            has_text="fixture run rejected"
+        ).wait_for()
+        saved_id = page.locator("#rrm-primary-form").get_attribute("data-rule-id")
+        assert saved_id and any(r["id"] == saved_id for r in rrm["rules"])
+        assert all("422" in message for message in console_errors[expected_errors:])
+        del console_errors[expected_errors:]
+        page.unroute("**/api/rrm/run", reject_run)
+        before = len(writes)
+        rule_count = len(rrm["rules"])
+        submit("#rrm-primary-form")
+        assert [w["path"] for w in writes[before:]] == ["rrm/rules"]
+        assert len(rrm["rules"]) == rule_count and any(
+            r["id"] == saved_id for r in rrm["rules"]
         )
-        page.set_viewport_size({"width": 390, "height": 844})
-        page.wait_for_timeout(250)
-        assert page.locator("#menu-toggle").is_visible()
-        page.screenshot(
-            path=str(
-                OUT
-                / (
-                    "all-capabilities-mobile.png"
-                    if full
-                    else "real-capabilities-mobile.png"
-                )
-            ),
-            full_page=True,
-        )
-        if full:
-            page.locator("#menu-toggle").click()
-            visit("overview")
-            page.wait_for_timeout(150)
-            page.screenshot(path=str(OUT / "overview-mobile.png"), full_page=True)
-        page.close()
+        page.unroute("**/api/rrm/rules", save_rules)
+        rrm["rules"] = old_rrm_rules
+        conf["config"]["rrm"] = old_cfg_rrm
 
-    ro_errors = []
-    ro_console = []
-    ro_page = browser.new_page(viewport={"width": 1280, "height": 800})
-    ro_page.on("pageerror", lambda e: ro_errors.append(str(e)))
-    ro_page.on(
-        "console",
-        lambda m: ro_console.append(m.text)
-        if m.type == "error" and "405" not in m.text
-        else None,
-    )
-
-    def ro_route(r):
-        path = r.request.url.split("/api/")[1]
-        if r.request.method != "GET":
-            r.fulfill(
-                status=405,
-                content_type="text/html; charset=utf-8",
-                body="<!DOCTYPE HTML><html><body><h1>405 Read-only UI preview</h1></body></html>",
+        # A delayed response from an abandoned save must not dismiss a newer
+        # editor. Cover both in-page and modal presentations.
+        for kind in ["service", "template"]:
+            visit("services" if kind == "service" else "templates")
+            new_button = (
+                "#new-service" if kind == "service" else '[data-template-new="1"]'
             )
-            return
-        value = (
-            aps
-            if path == "aps"
-            else cfg
-            if path == "config"
-            else clients
-            if path == "clients"
-            else mobility
-            if path == "mobility"
-            else {
-                "configured_mode": 2,
-                "actual_mode": 2,
-                "mode_writable": False,
-                "unsupported_aps": [],
-            }
-            if path == "mobility/status"
-            else []
+            form = "#service-form" if kind == "service" else "#management-form"
+            name = "ssid" if kind == "service" else "management_name"
+            endpoint = "services" if kind == "service" else "templates"
+            page.locator(new_button).click()
+            page.locator(f'{form} [name="{name}"]').fill("Old pending save")
+            if kind == "service":
+                page.locator('#service-form [name="passphrase"]').fill(
+                    "pending-save-key"
+                )
+            pending = []
+
+            def hold_save(route):
+                if route.request.method == "POST":
+                    pending.append(route)
+                else:
+                    route.fallback()
+
+            page.route("**/api/" + endpoint, hold_save)
+            page.locator(form + ' [type="submit"]').click()
+            page.wait_for_timeout(100)
+            assert len(pending) == 1
+            if kind == "service":
+                visit("services")
+            else:
+                page.locator("#close-dialog").click()
+            page.locator(new_button).click()
+            page.locator(f'{form} [name="{name}"]').fill("Keep this editor")
+            pending.pop().fulfill(json={"status": "saved"})
+            page.wait_for_timeout(150)
+            assert (
+                page.locator(f'{form} [name="{name}"]').input_value()
+                == "Keep this editor"
+            )
+            page.unroute("**/api/" + endpoint, hold_save)
+            page.evaluate("closeDialogs()")
+
+        # A radio editor loading in the background must not appear after the
+        # user has navigated to a different page and opened a new form.
+        visit("radios")
+        pending = []
+
+        def hold_radio(route):
+            pending.append(route)
+
+        page.route("**/api/aps/*/effective-radios", hold_radio)
+        page.locator('[data-radio="1"]').first.click()
+        page.wait_for_timeout(100)
+        assert len(pending) == 1
+        visit("services")
+        page.locator("#new-service").click()
+        page.locator('#service-form [name="ssid"]').fill("Current service editor")
+        pending.pop().fulfill(json=[])
+        page.wait_for_timeout(150)
+        assert (
+            page.locator('#service-form [name="ssid"]').input_value()
+            == "Current service editor"
         )
-        r.fulfill(json=value)
+        assert not page.locator("#radio-form").count()
+        page.unroute("**/api/aps/*/effective-radios", hold_radio)
+        page.evaluate("closeDialogs()")
 
-    ro_page.route("**/api/**", ro_route)
-    ro_page.goto("http://127.0.0.1:" + str(server.server_port) + "/#mobility")
-    ro_page.wait_for_function(
-        '() => document.querySelector("#connection").textContent === "控制器已连接"'
-    )
-    ro_page.locator('#roam-simple-form [type="submit"]').click()
-    ro_page.wait_for_timeout(120)
-    assert (
-        ro_page.locator("#form-error").inner_text()
-        == "当前为只读预览模式，无法保存修改"
-    ), ro_page.locator("#form-error").inner_text()
-    assert not ro_errors, ro_errors
-    assert not ro_console, ro_console
-    ro_page.close()
-
+        # At desktop and mobile widths, long tables scroll within their own
+        # container; menus and form controls must not widen the document.
+        for width in [1440, 1024, 390]:
+            page.set_viewport_size({"width": width, "height": 960})
+            visit("services")
+            page.locator("#new-service").click()
+            page.locator('#service-form [name="ssid"]').fill("Unsaved name")
+            page.wait_for_timeout(4200)
+            assert (
+                page.locator('#service-form [name="ssid"]').input_value()
+                == "Unsaved name"
+            )
+            assert page.evaluate(
+                "document.documentElement.scrollWidth <= document.documentElement.clientWidth"
+            ), width
+            page.screenshot(
+                path=str(OUT / f"v4-{'full' if full else 'real'}-{width}.png"),
+                full_page=True,
+            )
+        assert not errors, errors
+        assert not console_errors, console_errors
+        print(
+            json.dumps(
+                {
+                    "profile": "full" if full else "reported",
+                    "pages": len(views),
+                    "writes": len(writes),
+                    "script_errors": len(errors),
+                },
+                ensure_ascii=False,
+            )
+        )
+        page.close()
     browser.close()
-
 server.shutdown()
-assert not errors, errors
-assert not console_errors, console_errors
-assert len(writes) == 72, len(writes)
-assert (
-    next(w for w in reversed(writes) if w["path"] == "radios")["body"][
-        "advanced"
-    ]["edca"]["preset"]
-    == 2
-)
-print(
-    json.dumps(
-        {
-            "profiles": 2,
-            "pages_per_profile": 23,
-            "forms_submitted": len(writes),
-            "javascript_errors": errors,
-            "console_errors": console_errors,
-            "screenshots": str(OUT),
-        },
-        ensure_ascii=False,
-    )
-)

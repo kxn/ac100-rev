@@ -12,31 +12,22 @@ function protectionConfig() {
 
 function renderProtection() {
   const p = protectionConfig();
+  protectionTab =
+    { storm: "storm", "dhcp-servers": "servers", "arp-bindings": "bindings" }[
+      tab
+    ] || "rules";
   const subAction =
-    protectionTab === "rules"
-      ? '<button type="button" class="btn primary" data-defense-kind="rules">新建规则</button>'
-      : protectionTab === "servers"
-        ? '<button type="button" class="btn primary" data-defense-kind="servers">新增服务器</button>'
-        : protectionTab === "bindings"
-          ? '<button type="button" class="btn primary" data-defense-kind="bindings">新增绑定</button>'
-          : "";
-
-  const subbar = `<div class="subbar">
-    <div class="seg-tabs" role="tablist" aria-label="防护分类">
-      ${[
-        ["rules", `防护规则 (${p.rules.length})`],
-        ["servers", `DHCP 信任服务器 (${p.servers.length})`],
-        ["bindings", `ARP / ND 绑定 (${p.bindings.length})`],
-        ["storm", "风暴抑制与代理"],
-      ]
-        .map(
-          ([id, label]) =>
-            `<button type="button" data-protection-tab="${id}" class="${protectionTab === id ? "active" : ""}">${label}</button>`,
-        )
-        .join("")}
-    </div>
-    <div class="toolbar-group">${subAction}</div>
-  </div>`;
+    {
+      rules:
+        '<button type="button" class="btn secondary" data-defense-kind="rules">新增规则</button>',
+      servers:
+        '<button type="button" class="btn secondary" data-defense-kind="servers">新增服务器</button>',
+      bindings:
+        '<button type="button" class="btn secondary" data-defense-kind="bindings">新增条目</button>',
+    }[protectionTab] || "";
+  const subbar = subAction
+    ? `<div class="page-toolbar">${subAction}</div>`
+    : "";
 
   if (protectionTab === "servers") {
     return (
@@ -96,11 +87,13 @@ function renderProtection() {
       void api("storm/defaults")
         .then((res) => {
           stormDefaults = res;
-          if (tab === "protection" && protectionTab === "storm")
-            renderContent();
+          if (tab === "storm") renderContent();
         })
         .catch(() => {});
-      return subbar + panel("广播抑制与协议代理", '<div class="empty">加载配置中…</div>');
+      return (
+        subbar +
+        panel("广播抑制与协议代理", '<div class="empty">加载配置中…</div>')
+      );
     }
     const d = stormDefaults;
     const s = data.config.storm || d.defaults;
@@ -150,15 +143,20 @@ function renderProtection() {
     panel(
       "AP 防护规则",
       table(
-        ["名称", "应用范围", "DHCP 防护", "ARP / ND 防护", "引用", "操作"],
+        [
+          "名称",
+          "应用范围",
+          tab === "protection" ? "DHCP防护" : "ARP/ND防护",
+          "引用",
+          "设置",
+        ],
         p.rules
           .map(
             (s) => `<tr>
               <td><strong>${esc(s.name)}</strong></td>
               <td>${esc(targetSummary(s))}</td>
-              <td><span class="pill ${s.dhcp ? "online" : ""}">${s.dhcp ? "启用" : "停用"}</span></td>
-              <td>${s.arp ? (s.filter ? "过滤非绑定" : "仅防冒用") : "停用"}</td>
-              <td class="num">${s.servers.length} 服务器 / ${s.bindings.length} 绑定</td>
+              <td>${tab === "protection" ? (s.dhcp ? "启用" : "禁用") : s.arp ? (s.filter ? "过滤非绑定" : "仅防冒用") : "禁用"}</td>
+              <td class="num">${tab === "protection" ? s.servers.length + " 个服务器" : s.bindings.length + " 个绑定"}</td>
               <td>
                 <div class="actions">
                   <button type="button" class="text-button" data-defense-kind="rules" data-defense-id="${esc(s.id)}">编辑</button>
@@ -170,6 +168,7 @@ function renderProtection() {
           .join(""),
       ),
     ) +
+    '<details class="advanced-section"><summary>设备能力与地址扫描</summary>' +
     panel(
       "设备能力与地址扫描",
       table(
@@ -179,26 +178,41 @@ function renderProtection() {
             (a) => `<tr>
               <td><strong>${esc(apName(a.id))}</strong></td>
               <td>
-                ${[["dhcp_defense", "DHCPv4"], ["dhcpv6_defense", "DHCPv6"], ["arp_defense", "ARP"], ["nd_defense", "ND"], ["storm_control", "广播抑制"]]
-                  .filter(([k]) => a.features?.[k])
-                  .map(([, v]) => `<span class="tag">${v}</span>`)
-                  .join(" ") || '<span class="muted">未声明</span>'}
+                ${
+                  [
+                    ["dhcp_defense", "DHCPv4"],
+                    ["dhcpv6_defense", "DHCPv6"],
+                    ["arp_defense", "ARP"],
+                    ["nd_defense", "ND"],
+                    ["storm_control", "广播抑制"],
+                  ]
+                    .filter(([k]) => a.features?.[k])
+                    .map(([, v]) => `<span class="tag">${v}</span>`)
+                    .join(" ") || '<span class="muted">未声明</span>'
+                }
                 ${a.protection_limits ? `<small class="num">绑定上限：ARP ${a.protection_limits.arp} / ND ${a.protection_limits.nd}</small>` : ""}
               </td>
-              <td>${data.apply
-                .filter(
-                  (x) =>
-                    x.ap_id === a.id &&
-                    ["protection", "storm"].includes(x.service_id),
-                )
-                .map((x) => statePill(x.state) + (x.error ? `<small>${esc(x.error)}</small>` : ""))
-                .join(" ") || '<span class="muted">未下发</span>'}</td>
+              <td>${
+                data.apply
+                  .filter(
+                    (x) =>
+                      x.ap_id === a.id &&
+                      ["protection", "storm"].includes(x.service_id),
+                  )
+                  .map(
+                    (x) =>
+                      statePill(x.state) +
+                      (x.error ? `<small>${esc(x.error)}</small>` : ""),
+                  )
+                  .join(" ") || '<span class="muted">未下发</span>'
+              }</td>
               <td>${a.online && a.features?.arp_scan ? `<div class="actions"><button type="button" class="text-button" data-arp-scan="${esc(a.id)}">地址扫描</button><button type="button" class="text-button" data-arp-results="${esc(a.id)}">扫描结果</button></div>` : '<span class="muted">—</span>'}</td>
             </tr>`,
           )
           .join(""),
       ),
-    )
+    ) +
+    "</details>"
   );
 }
 
@@ -230,14 +244,19 @@ document.addEventListener("click", async (e) => {
       return;
     }
     if (b.dataset.arpScan) {
-      await api("aps/" + encodeURIComponent(b.dataset.arpScan) + "/arp-scan", {});
+      await api(
+        "aps/" + encodeURIComponent(b.dataset.arpScan) + "/arp-scan",
+        {},
+      );
       toast("已发送扫描请求");
       return;
     }
     if (b.dataset.arpResults) {
+      const request = beginEditorRequest();
       const p = await api(
         "aps/" + encodeURIComponent(b.dataset.arpResults) + "/arp-scan",
       );
+      if (!isCurrentEditorRequest(request)) return;
       openDialog(
         "arp-results",
         "AP 地址扫描结果",
@@ -268,8 +287,7 @@ document.addEventListener("click", async (e) => {
         description: "地址扫描导入",
       });
       await api("protection", p);
-      $("#editor").close();
-      dialogKind = "";
+      closeEditorFor(b);
       await refresh();
       toast("已加入静态绑定");
       return;
@@ -280,7 +298,14 @@ document.addEventListener("click", async (e) => {
       const id = b.dataset.defenseId;
       if (kind !== "rules" && p.rules.some((r) => r[kind].includes(id)))
         throw Error("该记录正在被防护规则引用");
-      if (!confirm("确认删除？")) return;
+      if (
+        !confirm(
+          kind === "rules"
+            ? "删除整条规则，包括其中的DHCP和ARP/ND防护设置？"
+            : "确认删除？",
+        )
+      )
+        return;
       p[kind] = p[kind].filter((r) => r.id !== id);
       await api("protection", p);
       await refresh();
@@ -293,7 +318,13 @@ document.addEventListener("click", async (e) => {
         id: newID(),
         name: "",
         ...(kind === "rules"
-          ? { servers: [], bindings: [], wired: true, wireless: true, filter: true }
+          ? {
+              servers: [],
+              bindings: [],
+              wired: true,
+              wireless: true,
+              filter: true,
+            }
           : {}),
       };
       protectionEdit = { kind, p, item };
@@ -302,19 +333,14 @@ document.addEventListener("click", async (e) => {
         body += `${field("address", "可信 IP 或 MAC", item.address || "", "text", "required")}</div>`;
       if (kind === "bindings")
         body += `${field("ip", "IP 地址", item.ip || "", "text", "required")}${field("mac", "MAC 地址", item.mac || "", "text", "required")}<div class="full">${field("description", "说明", item.description || "", "text", 'maxlength="128"')}</div></div>`;
-      if (kind === "rules")
-        body += `</div><div class="form-grid">
-          ${targetPicker(item.aps || [], item.groups || [])}
-          <div class="switch-list full">
-            ${check("dhcp", "启用 DHCP 防护", item.dhcp)}
-            ${check("arp", "启用 ARP / ND 防护", item.arp)}
-            ${check("filter", "仅允许静态绑定地址", item.filter)}
-            ${check("wired", "保护有线端口", item.wired)}
-            ${check("wireless", "保护无线客户端", item.wireless)}
-          </div>
-          ${defensePicker("servers", "信任 DHCP 服务器", p.servers, item.servers)}
-          ${defensePicker("bindings", "静态地址绑定", p.bindings, item.bindings)}
-        </div>`;
+      if (kind === "rules") {
+        const dhcp = tab === "protection";
+        body +=
+          '<p class="help">AP应用范围由此规则中的DHCP与ARP/ND防护共用。本页仅修改对应防护参数；不同范围请分别建立规则。</p>';
+        body += `</div><div class="form-grid">${targetPicker(item.aps || [], item.groups || [])}
+          ${dhcp ? check("dhcp", "启用DHCP防护", item.dhcp) : check("arp", "启用ARP/ND防护", item.arp) + check("filter", "仅允许静态绑定地址", item.filter) + check("wired", "保护有线端口", item.wired) + check("wireless", "保护无线客户端", item.wireless)}
+          </div><div data-defense-records="${dhcp ? "servers" : "bindings"}">${dhcp ? defensePicker("servers", "合法DHCP服务器", p.servers, item.servers) : defensePicker("bindings", "ARP/ND条目", p.bindings, item.bindings)}</div>`;
+      }
       const titles = {
         servers: "DHCP 信任服务器",
         bindings: "ARP / ND 静态绑定",
@@ -336,7 +362,7 @@ document.addEventListener("submit", async (e) => {
   const f = e.target;
   if (!["defense-form", "storm-form"].includes(f.id)) return;
   e.preventDefault();
-  if (!f.reportValidity()) return;
+  if (!validateForm(f)) return;
   const btn = f.querySelector('[type="submit"]');
   btn.disabled = true;
   try {
@@ -351,11 +377,12 @@ document.addEventListener("submit", async (e) => {
       if (kind === "rules") {
         Object.assign(next, readTargetPicker(f));
         for (const k of ["arp", "dhcp", "filter", "wired", "wireless"])
-          next[k] = f.elements[k].checked;
+          if (f.elements[k]) next[k] = f.elements[k].checked;
         for (const k of ["servers", "bindings"])
-          next[k] = [
-            ...f.querySelectorAll(`input[name="${k}"]:checked`),
-          ].map((o) => o.value);
+          if (f.querySelector(`[data-defense-records="${k}"]`))
+            next[k] = [...f.querySelectorAll(`input[name="${k}"]:checked`)].map(
+              (o) => o.value,
+            );
       }
       const i = p[kind].findIndex((x) => x.id === next.id);
       if (i < 0) p[kind].push(next);
@@ -382,14 +409,11 @@ document.addEventListener("submit", async (e) => {
       await api("storm", s);
     }
     delete f.dataset.dirty;
-    if ($("#editor").open) {
-      $("#editor").close();
-      dialogKind = "";
-    }
+    closeEditorFor(f);
     await refresh();
     toast("防护配置已保存");
   } catch (err) {
-    const errEl = f.querySelector("#form-error");
+    const errEl = f.querySelector(".form-error");
     if (errEl) errEl.textContent = err.message;
     else toast(err.message);
   } finally {

@@ -43,7 +43,8 @@ document.addEventListener("click", (e) => {
   const f = $("#controller-resources-form");
   if (!f) return;
   for (const p of controllerResources.fields) {
-    if (f.elements[p.key]) f.elements[p.key].value = controllerResources.defaults[p.key];
+    if (f.elements[p.key])
+      f.elements[p.key].value = controllerResources.defaults[p.key];
   }
   f.dataset.dirty = "1";
 });
@@ -52,19 +53,22 @@ document.addEventListener("submit", async (e) => {
   const f = e.target;
   if (f.id !== "controller-resources-form") return;
   e.preventDefault();
-  if (!f.reportValidity()) return;
+  if (!validateForm(f)) return;
   const button = f.querySelector('[type="submit"]');
   button.disabled = true;
   try {
     const value = Object.fromEntries(
-      controllerResources.fields.map((p) => [p.key, Number(f.elements[p.key].value)]),
+      controllerResources.fields.map((p) => [
+        p.key,
+        Number(f.elements[p.key].value),
+      ]),
     );
     await api("controller/resources", value);
     delete f.dataset.dirty;
     await refresh();
     toast("容量配置已保存");
   } catch (error) {
-    const errEl = f.querySelector("#form-error");
+    const errEl = f.querySelector(".form-error");
     if (errEl) errEl.textContent = error.message;
     else toast(error.message);
   } finally {

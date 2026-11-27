@@ -30,6 +30,7 @@ function renderManagement(view) {
           )
           .join(""),
       ),
+      '<button type="button" class="btn secondary" data-group-new="1">新增</button>',
     );
   }
 
@@ -65,18 +66,9 @@ function renderManagement(view) {
     "全局默认参数",
     `<div class="panel-body">
       <form id="management-form" data-kind="defaults" data-inline="1" novalidate>
-        ${tabs([
-          ["ap-basic", "基本设置"],
-          ["ap-schedules", "时间计划"],
-          ["ap-radios", "默认射频"],
-          ["ap-account", "设备账号"],
-          ["ap-advanced", "端口与设备选项"],
-        ])}
-        ${pane("ap-basic", parts.basic, true)}
-        ${pane("ap-schedules", parts.schedules)}
-        ${pane("ap-radios", parts.radios)}
-        ${pane("ap-account", parts.account)}
-        ${pane("ap-advanced", parts.advanced)}
+        ${parts.basic}${parts.account}${parts.advanced}
+        <details class="advanced-section"><summary>时间计划</summary>${parts.schedules}</details>
+        <details class="advanced-section"><summary>默认射频</summary>${parts.radios}</details>
         <p class="help">优先级：单台 AP &gt; 分组 &gt; 模板 &gt; 全局默认。</p>
         ${formEnd()}
       </form>
@@ -93,7 +85,7 @@ function optionTri(name, label, value) {
   );
 }
 
-function planFields(prefix, label, plan) {
+function planFields(prefix, label, plan, stateControl = true) {
   const clock = (n) =>
     String(Math.floor(n / 60)).padStart(2, "0") +
     ":" +
@@ -101,7 +93,7 @@ function planFields(prefix, label, plan) {
   return `<fieldset>
     <legend>${label}</legend>
     <div class="form-grid">
-      ${select(prefix + "_state", "计划状态", { "": "继承 / 保持", on: "启用", off: "停用" }, plan == null ? "" : plan.enabled ? "on" : "off")}
+      ${stateControl ? select(prefix + "_state", "计划状态", { "": "继承 / 保持", on: "启用", off: "停用" }, plan == null ? "" : plan.enabled ? "on" : "off") : ""}
       ${field(prefix + "_timezone", "时区", plan?.timezone || data.timezone || "Asia/Singapore", "text")}
       ${prefix === "led" ? select(prefix + "_action", "时段内 LED 状态", { on: "点亮，时段外关闭", off: "关闭，时段外点亮" }, plan?.action || "on") : ""}
       ${["一", "二", "三", "四", "五", "六", "日"]
@@ -120,6 +112,7 @@ function planFields(prefix, label, plan) {
         .join("")}
     </div>
     <p class="help">多个时段用英文逗号分隔。</p>
+    <details class="advanced-section"><summary>生效日期范围（可选）</summary><div class="form-grid"><label><span>日期范围</span><textarea name="${prefix}_dates" rows="2" placeholder="2026-12-01 ~ 2026-12-31">${esc((plan?.dates || []).map((d) => d.start + " ~ " + d.end).join("\n"))}</textarea></label></div></details>
   </fieldset>`;
 }
 
@@ -206,10 +199,7 @@ function managementOptions(o, ap) {
     basic,
     account,
     advanced,
-    radios: table(
-      ["射频", "状态", "信道（0 自动）", "功率（dBm）"],
-      radioRows,
-    ),
+    radios: table(["射频", "状态", "信道（0 自动）", "功率（dBm）"], radioRows),
     schedules:
       planFields("led", "LED 定时", o.led_schedule) +
       planFields("reboot", "定时重启", o.reboot_schedule),
@@ -219,8 +209,7 @@ function managementOptions(o, ap) {
 function managementEditor(kind, item) {
   const cfg = data.config;
   managementEditing = { kind, item };
-  const o =
-    item?.options || (kind === "defaults" ? cfg.ap_defaults || {} : {});
+  const o = item?.options || (kind === "defaults" ? cfg.ap_defaults || {} : {});
   const ap = kind === "ap" ? data.aps.find((a) => a.id === item.ap_id) : null;
   let identity = "";
   if (kind === "ap") {
@@ -261,33 +250,32 @@ function managementEditor(kind, item) {
             : "新建模板"
           : "全局默认参数";
 
-  openDialog(
+  const present = kind === "ap" ? openEditor : openDialog;
+  present(
     "management",
     title,
     "",
     `<form id="management-form" data-kind="${kind}" novalidate>
-      ${tabs([
-        ["ap-basic", "基本设置"],
-        ["ap-schedules", "时间计划"],
-        ["ap-radios", "继承射频"],
-        ["ap-account", "设备账号"],
-        ["ap-advanced", "端口与设备选项"],
-      ])}
-      ${pane("ap-basic", identity + parts.basic, true)}
-      ${pane("ap-schedules", parts.schedules)}
-      ${pane("ap-radios", parts.radios)}
-      ${pane("ap-account", parts.account)}
-      ${pane("ap-advanced", parts.advanced)}
-      ${formEnd()}
+      ${identity}${parts.basic}${parts.account}${parts.advanced}
+      <details class="advanced-section"><summary>LED与定时重启</summary>${parts.schedules}</details>
+      <details class="advanced-section"><summary>继承射频参数</summary>${parts.radios}</details>
+      ${ap ? `<details class="advanced-section"><summary>AP能力与调试</summary>${renderAPCapabilities(ap)}</details>` : ""}
+      ${formEnd("确定", '<button type="button" class="btn secondary" data-close="1">取消</button>')}
     </form>`,
   );
 }
 
-function readPlan(f, prefix) {
+function readPlan(f, prefix, enabled) {
   const v = (name) => f.elements[name]?.value || "";
-  if (!v(prefix + "_state")) return undefined;
+  const state =
+    typeof enabled === "boolean"
+      ? enabled
+        ? "on"
+        : "off"
+      : v(prefix + "_state");
+  if (!state) return undefined;
   const plan = {
-    enabled: v(prefix + "_state") === "on",
+    enabled: state === "on",
     timezone: v(prefix + "_timezone"),
     action: prefix === "led" ? v(prefix + "_action") : "on",
     windows: [],
@@ -311,6 +299,18 @@ function readPlan(f, prefix) {
         end_minute: minute(parts[1]),
       });
     }
+  const dates = v(prefix + "_dates")
+    .split("\n")
+    .map((x) => x.trim())
+    .filter(Boolean);
+  if (dates.length)
+    plan.dates = dates.map((line) => {
+      const match = /^(\d{4}-\d{2}-\d{2})\s*~\s*(\d{4}-\d{2}-\d{2})$/.exec(
+        line,
+      );
+      if (!match) throw Error("日期范围格式为 YYYY-MM-DD ~ YYYY-MM-DD");
+      return { start: match[1], end: match[2] };
+    });
   return plan;
 }
 
@@ -558,8 +558,8 @@ document.addEventListener("submit", async (event) => {
   )
     return;
   event.preventDefault();
-  if (!f.reportValidity()) return;
-  const error = f.querySelector("#form-error");
+  if (!validateForm(f)) return;
+  const error = f.querySelector(".form-error");
   const button = f.querySelector("[type=submit]");
   button.disabled = true;
   try {
@@ -616,10 +616,7 @@ document.addEventListener("submit", async (event) => {
         note: f.elements.note.value,
       });
     delete f.dataset.dirty;
-    if ($("#editor").open) {
-      $("#editor").close();
-      dialogKind = "";
-    }
+    closeEditorFor(f);
     await refresh();
     toast("已保存并下发");
   } catch (e) {
@@ -639,10 +636,7 @@ document.addEventListener("change", async (event) => {
       toast(
         `已更新 ${result.updated} 条，跳过 ${result.skipped} 条${result.errors?.length ? "；错误：" + result.errors.map((e) => `第 ${e.row} 行 ${e.error}`).join("；") : ""}`,
       );
-      if ($("#editor").open) {
-        $("#editor").close();
-        dialogKind = "";
-      }
+      closeEditorFor(event.target);
       await refresh();
     } catch (e) {
       toast(e.message);
@@ -665,4 +659,102 @@ document.addEventListener("change", async (event) => {
   } finally {
     event.target.value = "";
   }
+});
+
+document.addEventListener("submit", async (event) => {
+  const f = event.target;
+  if (f.id !== "ap-global-form") return;
+  event.preventDefault();
+  if (!validateForm(f)) return;
+  const b = f.querySelector("[type=submit]");
+  b.disabled = true;
+  try {
+    // Save only the global plan edited here; preserve the other defaults.
+    const cfg = await api("config");
+    const options = { ...cfg.config.ap_defaults };
+    const plan = readGlobalReboot(f);
+    if (plan) options.reboot_schedule = plan;
+    else delete options.reboot_schedule;
+    await api("ap-defaults", options);
+    delete f.dataset.dirty;
+    await refresh();
+    toast("全局设置已保存并下发");
+  } catch (e) {
+    f.querySelector(".form-error").textContent = e.message;
+  } finally {
+    b.disabled = false;
+  }
+});
+
+function globalRebootFields(plan) {
+  const windows = plan?.windows || [];
+  const simple =
+    !plan?.dates?.length &&
+    windows.every(
+      (w) =>
+        w.end_minute === w.start_minute + 1 &&
+        w.start_minute === windows[0].start_minute,
+    );
+  const days = windows.reduce((mask, w) => mask | w.days, 0) || 127;
+  const minute = windows[0]?.start_minute ?? 180;
+  const clock =
+    String(Math.floor(minute / 60)).padStart(2, "0") +
+    ":" +
+    String(minute % 60).padStart(2, "0");
+  const choices = {
+    127: "每天",
+    31: "星期一至星期五",
+    96: "星期六、星期日",
+    1: "星期一",
+    2: "星期二",
+    4: "星期三",
+    8: "星期四",
+    16: "星期五",
+    32: "星期六",
+    64: "星期日",
+  };
+  if (!choices[days])
+    choices[days] = ["一", "二", "三", "四", "五", "六", "日"]
+      .filter((_, i) => days & (1 << i))
+      .map((d) => "星期" + d)
+      .join("、");
+  return `<div class="form-grid">
+    ${select("reboot_state", "定时重启", { "": "未设置", on: "启用", off: "禁用" }, plan == null ? "" : plan.enabled ? "on" : "off")}
+    ${select("reboot_simple_days", "重启日期", choices, days)}
+    ${field("reboot_simple_time", "重启时间", clock, "time", "required")}
+    </div><details class="advanced-section" ${simple ? "" : "open"}><summary>时区与高级时间计划</summary><div class="form-grid">
+    ${field("reboot_timezone", "时区", plan?.timezone || data.timezone || "Asia/Singapore", "text", "required")}
+    ${select("reboot_format", "计划形式", { simple: "按上方日期与时间重启", full: "完整时间计划" }, simple ? "simple" : "full")}
+    </div><div data-reboot-full ${simple ? "hidden" : ""}>${planFields("reboot_full", "完整时间计划", plan)}</div></details>`;
+}
+function readGlobalReboot(f) {
+  const state = f.elements.reboot_state.value;
+  if (!state) return undefined;
+  if (f.elements.reboot_format.value === "full") {
+    const plan = readPlan(f, "reboot_full");
+    if (!plan) throw Error("请选择完整时间计划的状态");
+    return {
+      ...plan,
+      enabled: state === "on",
+      timezone: f.elements.reboot_timezone.value,
+    };
+  }
+  const [h, m] = f.elements.reboot_simple_time.value.split(":").map(Number);
+  const minute = h * 60 + m;
+  return {
+    enabled: state === "on",
+    timezone: f.elements.reboot_timezone.value,
+    action: "on",
+    windows: [
+      {
+        days: Number(f.elements.reboot_simple_days.value),
+        start_minute: minute,
+        end_minute: minute + 1,
+      },
+    ],
+  };
+}
+document.addEventListener("change", (event) => {
+  if (event.target.name === "reboot_format")
+    $("[data-reboot-full]").hidden = event.target.value !== "full";
 });

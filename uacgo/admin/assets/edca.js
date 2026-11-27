@@ -71,10 +71,15 @@ function renderEDCA() {
 
 document.addEventListener("click", async (event) => {
   const b = event.target.closest("button");
-  if (!b || (!b.dataset.edcaNew && !b.dataset.edcaEdit && !b.dataset.edcaDelete))
+  if (
+    !b ||
+    (!b.dataset.edcaNew && !b.dataset.edcaEdit && !b.dataset.edcaDelete)
+  )
     return;
   try {
+    const request = beginEditorRequest();
     const p = await api("edca");
+    if (!isCurrentEditorRequest(request)) return;
     if (b.dataset.edcaDelete) {
       if (!confirm("删除此 EDCA 规则？")) return;
       await api(
@@ -134,7 +139,7 @@ document.addEventListener("submit", async (event) => {
   const f = event.target;
   if (f.id !== "edca-form") return;
   event.preventDefault();
-  if (!f.reportValidity()) return;
+  if (!validateForm(f)) return;
   const btn = f.querySelector('[type="submit"]');
   btn.disabled = true;
   try {
@@ -162,12 +167,11 @@ document.addEventListener("submit", async (event) => {
     if (i < 0) rows.push(r);
     else rows[i] = r;
     await api("edca/rules", rows);
-    $("#editor").close();
-    dialogKind = "";
+    closeEditorFor(f);
     await refresh();
     toast("EDCA 规则已保存");
   } catch (e) {
-    f.querySelector("#form-error").textContent = e.message;
+    f.querySelector(".form-error").textContent = e.message;
   } finally {
     btn.disabled = false;
   }

@@ -151,7 +151,9 @@ function renderHistory() {
               ...new Set([
                 ...data.aps
                   .filter((a) => !historyAP || a.id === historyAP)
-                  .flatMap((a) => (a.capabilities || []).map((c) => c.radio_id)),
+                  .flatMap((a) =>
+                    (a.capabilities || []).map((c) => c.radio_id),
+                  ),
                 ...historyData.radios.map((r) => r.radio_id),
               ]),
             ]
@@ -169,7 +171,9 @@ function renderHistory() {
   const eventsFiltered = historyData.events
     .slice()
     .reverse()
-    .filter((e) => historyEventFilter === "all" || e.kind === historyEventFilter);
+    .filter(
+      (e) => historyEventFilter === "all" || e.kind === historyEventFilter,
+    );
 
   const eventFilterBar = `<div class="filter-bar">
     <div class="seg-tabs" role="tablist" aria-label="事件类型">
@@ -193,7 +197,7 @@ function renderHistory() {
       (e) => `<tr>
         <td class="num">${esc(new Date(e.at).toLocaleString("zh-CN"))}</td>
         <td class="mono">${esc(e.client_mac)}</td>
-        <td>${esc(({ connected: "上线", disconnected: "离线", roamed: "切换", service_changed: "服务变更" })[e.kind] || e.kind)}${e.from_ap ? `<small>原位置 ${esc(apName(e.from_ap))} / 射频 ${e.from_radio}</small>` : ""}</td>
+        <td>${esc({ connected: "上线", disconnected: "离线", roamed: "切换", service_changed: "服务变更" }[e.kind] || e.kind)}${e.from_ap ? `<small>原位置 ${esc(apName(e.from_ap))} / 射频 ${e.from_radio}</small>` : ""}</td>
         <td>${esc(e.ssid || "—")}</td>
         <td>${esc(apName(e.ap_id))} / 射频 ${e.radio_id}</td>
         <td>${e.source === "wireless_snapshot" ? "实时表" : "连接事件"}</td>
@@ -225,13 +229,19 @@ function renderHistory() {
     ) +
     panel(
       "客户端连接记录",
-      table(["时间", "客户端 MAC", "事件", "SSID", "所在 AP / 射频", "来源"], eventRows),
+      table(
+        ["时间", "客户端 MAC", "事件", "SSID", "所在 AP / 射频", "来源"],
+        eventRows,
+      ),
       "",
       eventFilterBar,
     ) +
     panel(
       "漫游触发记录",
-      table(["时间", "客户端 MAC", "当前 AP", "候选 AP", "结果"], roamDecisionRows),
+      table(
+        ["时间", "客户端 MAC", "当前 AP", "候选 AP", "结果"],
+        roamDecisionRows,
+      ),
     )
   );
 }
@@ -244,7 +254,9 @@ document.addEventListener("click", (e) => {
 });
 
 document.addEventListener("change", async (e) => {
-  if (!["history_ap", "history_radio", "history_metric"].includes(e.target.name))
+  if (
+    !["history_ap", "history_radio", "history_metric"].includes(e.target.name)
+  )
     return;
   try {
     if (e.target.name === "history_ap") historyAP = e.target.value;
@@ -262,9 +274,11 @@ let clientHistoryMAC = "";
 let clientHistoryDuration = 300;
 
 async function showClientSignalHistory(mac, duration = 300) {
+  const request = beginEditorRequest();
   const result = await api(
     "clients/" + encodeURIComponent(mac) + "/history?duration=" + duration,
   );
+  if (!isCurrentEditorRequest(request)) return;
   const rows = result.samples || [];
   clientHistoryMAC = mac;
   clientHistoryDuration = duration;
@@ -298,7 +312,9 @@ document.addEventListener("click", async (e) => {
   try {
     await showClientSignalHistory(
       b.dataset.clientHistory,
-      b.dataset.clientHistory === clientHistoryMAC ? clientHistoryDuration : 300,
+      b.dataset.clientHistory === clientHistoryMAC
+        ? clientHistoryDuration
+        : 300,
     );
   } catch (error) {
     toast(error.message);

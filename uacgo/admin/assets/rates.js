@@ -64,12 +64,7 @@ function renderRates() {
         <div class="full">${toggle("enabled", "启用自定义速率表", p.enabled)}</div>
         ${targetPicker(p.aps || [], p.groups || [])}
       </div>
-      ${tabs([
-        ["rates-legacy", "802.11a/b/g"],
-        ["rates-mcs", "802.11n/ac/ax"],
-      ])}
-      ${pane("rates-legacy", legacy, true)}
-      ${pane("rates-mcs", mcs)}
+      ${legacy}${mcs}
       ${formEnd()}
     </form>
   </div>`;
@@ -95,7 +90,7 @@ document.addEventListener("submit", async (event) => {
   const f = event.target;
   if (f.id !== "rates-form") return;
   event.preventDefault();
-  if (!f.reportValidity()) return;
+  if (!validateForm(f)) return;
   const button = f.querySelector('[type="submit"]');
   button.disabled = true;
   try {
@@ -134,7 +129,7 @@ document.addEventListener("submit", async (event) => {
     await refresh();
     toast("速率表已保存并下发");
   } catch (e) {
-    const errEl = f.querySelector("#form-error");
+    const errEl = f.querySelector(".form-error");
     if (errEl) errEl.textContent = e.message;
     else toast(e.message);
   } finally {
