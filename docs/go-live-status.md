@@ -1,6 +1,20 @@
 # 独立 Go 控制器实机进度（2026-11-26）
 
-## 最新部署：2026-11-27 06:51（Asia/Singapore）
+## 最新部署：2026-11-27 10:40（Asia/Singapore）
+
+客户端漫游复核修正已提交并部署为 `e0cdad527bfaaeaf9e2c86e1cfe4b93a04e63cb7`，包含此前资源优化 `e7ee4e5` 与 UI 组织更新。运行二进制确认该 revision、`vcs.modified=false`、`CGO_ENABLED=0`；服务 active/running、NRestarts=0。旧二进制和私有数据快照保存在 `.local/ac100/deployments/20261127T023830Z-roaming-review/`。
+
+本轮修正六类问题：5G/2G 候选初始拼接、MLO 负载重复计数、AP 自动带宽解码、Mesh 角色/当前父节点回传率、PMK 失败时原 AP 删除命令及 MLO 整组释放、旧型号库 `5.0G` 识别。完整触发条件和源码证据见 [客户端漫游逐路径说明](client-roaming-paths.md)。
+
+全量 Go 测试、vet、admin/cweng/mobility race 通过；48 项行为合同的 137 个具名用例通过，144 个原 UAC 函数指纹完成归类；双向范围索引检查通过。证据来自静态固件和源码分支，不使用原厂运行时或外部设备测试推导算法。
+
+四个 Docker 镜像与导出包（amd64/arm64 × DHCP/无 DHCP）均已重建，OCI revision 均为上述代码版本，四份 `.tar.sha256` 校验通过。两架构容器检查涵盖端口配置、权限、AP 发现和数据持久化；amd64 另在 128 MiB 容器限制下上传 32 MiB 固件，进程峰值 RSS 为 19.31 MiB。arm64 是 QEMU 容器检查，未声称已在 RouterOS 硬件运行。
+
+部署后 AP 恢复 RUN；当前 AP 的产品类别为普通 AP、Mesh-device 标记为 true，已正确从 private51 传播；13 项配置同步为 10 acknowledged、3 verified，无 failed/blocked。平板保持 GoAC-Lab、5 GHz 5200 MHz，网关和 DNS/HTTPS 通过；Go 展示客户端 connected、radio2、IP 192.168.70.78。证据私存 `.local/ac100/adb-tests/20261127-103947-status.json`。Web 只读预览地址仍为 `http://10.10.10.9:18090/`。
+
+本次只做重启后的基本可用性检查，没有通过实机漫游现象证明算法等价。当前仍为模式2，11k/v 开、11r 关、强制踢除关、双频优选开、无均衡规则。以下均为历史记录。
+
+## 历史部署：2026-11-27 06:51（Asia/Singapore）
 
 已部署双向复核与根因整改提交 `90fd82b07b0209a331b04f6b0a3ec467275ff7f4`，构建信息 `vcs.modified=false`、`CGO_ENABLED=0`。详细问题、证据和验证见 [复核记录](controller-revalidation.md)。已补齐 AP 批量 CSV 命名并统一名称存储；会话容量、配置校验和客户端事实入口已收敛，移除 RADIUS 残留及重复修补路径。
 
