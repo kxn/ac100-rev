@@ -61,12 +61,20 @@
     "Dell",
     "Dell EMC",
     "Dell Inc.",
-    "Dell Technologies",
-    "Dell'Orto S.P.A."
+    "Dell Technologies"
+  ],
+  "Dreame": [
+    "Dreame Innovation Technology(Suzhou) Co.,Ltd.",
+    "Dreame Technology (Suzhou) Limited"
   ],
   "Espressif": [
     "Espressif Inc.",
     "Espressif Systems (Singapore) Pte. Ltd"
+  ],
+  "FN-LINK": [
+    "FN-LINK TECHNOLOGY LIMITED",
+    "FN-LINK TECHNOLOGY Ltd.",
+    "HUNAN FN-LINK TECHNOLOGY LIMITED"
   ],
   "Foxconn": [
     "FOXCONN",
@@ -111,7 +119,6 @@
     "Huawei Technologies Co., Ltd."
   ],
   "Intel": [
-    " Intel – GE Care Innovations LLC",
     "Intel Corporate",
     "Intel Corporation",
     "Intel Wireless Network Group"
@@ -147,6 +154,10 @@
     "Lite-On Network Communication (Dongguan) Limited",
     "Lite-On Technogy Corp."
   ],
+  "MXCHIP": [
+    "MXCHIP Company Limited",
+    "Shanghai MXCHIP Information Technology Co., Ltd."
+  ],
   "MediaTek": [
     "MediaTek Inc"
   ],
@@ -158,6 +169,11 @@
     "Microsoft Mobile Oy",
     "Microsoft Research",
     "Microsoft XCG"
+  ],
+  "Midea": [
+    "GD Midea Air-Conditioning Equipment Co.,Ltd.",
+    "GD Midea Heating & Ventilating Equipment Co., Ltd",
+    "Midea Group Co., Ltd."
   ],
   "Motorola": [
     "Motorola Mobility LLC, a Lenovo Company"

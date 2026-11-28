@@ -30,7 +30,7 @@
   ],
   "assignments": 59150,
   "organizations": 34119,
-  "brands": 50,
+  "brands": 54,
   "brand_assignment_counts": {
     "Nokia": 409,
     "Cisco": 1389,
@@ -39,7 +39,7 @@
     "HP": 195,
     "H3C": 178,
     "Honor": 64,
-    "Intel": 687,
+    "Intel": 686,
     "Espressif": 378,
     "Nintendo": 111,
     "Xiaomi": 351,
@@ -53,7 +53,7 @@
     "Samsung": 971,
     "Panasonic": 54,
     "Murata": 81,
-    "Dell": 197,
+    "Dell": 196,
     "Foxconn": 165,
     "Ubiquiti": 49,
     "Sony": 141,
@@ -62,6 +62,7 @@
     "Raspberry Pi": 10,
     "Microsoft": 134,
     "TCL": 77,
+    "Midea": 56,
     "realme": 64,
     "Lenovo": 30,
     "Google": 114,
@@ -69,8 +70,10 @@
     "LG": 176,
     "Compal": 43,
     "Broadcom": 35,
+    "FN-LINK": 55,
     "ASUS": 94,
     "TP-Link": 269,
+    "MXCHIP": 8,
     "Dahua": 33,
     "Wistron": 31,
     "Qualcomm": 5,
@@ -80,14 +83,15 @@
     "Acer": 7,
     "DJI": 17,
     "HPE": 183,
+    "Dreame": 3,
     "Tesla": 7,
     "MediaTek": 4
   },
-  "artifact_sha256": "80a48fa83be6cffb2a13d55857659c9f61f4800b4aa239a49fd0510b01216c42",
-  "artifact_bytes": 1046827,
+  "artifact_sha256": "e2c43b0d7da4010bd8e1ff665c9242ec14692a83663ad198e0c0609893578627",
+  "artifact_bytes": 1047016,
   "chinese_names": {
     "cache_sha256": "cb027c779f663b437a81195e1a9dfd067c84d2bd83a5097353b7786bc253bfb7",
-    "overrides_sha256": "93a05bcf48b339c99230c4f7a6af843a0a590d44585324a4eadcc3a5ad240ace",
+    "overrides_sha256": "817a9154efd47427a3f2f97479aaff4f224be9e8ac822e8cb9433bd6a7537995",
     "model": {
       "name": "Argos Translate en_zh 1.9",
       "package_sha256": "433e7c4f034d87fbe2353161e05f18646d7999452f801a4e1f0378522b9850ab",
@@ -95,14 +99,14 @@
       "engine": "CTranslate2 int8 CPU, beam2",
       "weights_committed": false
     },
-    "with_chinese_reference": 34019,
+    "with_chinese_reference": 34018,
     "source_counts": {
-      "curated-reference": 3,
-      "glossary+machine": 228,
-      "machine-unreviewed": 33778,
+      "curated-reference": 10,
+      "glossary+machine": 227,
+      "machine-unreviewed": 33771,
       "original-han": 9,
       "registry-meaning": 1,
-      "untranslated": 100
+      "untranslated": 101
     }
   }
 }

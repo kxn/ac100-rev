@@ -15,6 +15,7 @@ import time
 from prepare_oui import brand_for
 
 BRANDS_ZH = {
+ "Midea":"美的", "Dreame":"追觅", "MXCHIP":"庆科", "FN-LINK":"欧智通",
  "Apple":"苹果","Samsung":"三星","Huawei":"华为","Xiaomi":"小米","vivo":"维沃","OPPO":"OPPO","Honor":"荣耀","OnePlus":"一加","realme":"真我","Google":"谷歌","Microsoft":"微软","Amazon":"亚马逊","Sony":"索尼","Lenovo":"联想","Motorola":"摩托罗拉","Nokia":"诺基亚","ASUS":"华硕","Acer":"宏碁","Dell":"戴尔","HP":"惠普","HPE":"慧与","TP-Link":"普联","NETGEAR":"网件","Ubiquiti":"优倍快","Cisco":"思科","Aruba":"Aruba","Ruijie":"锐捷","H3C":"新华三","Hikvision":"海康威视","Dahua":"大华","Espressif":"乐鑫","Tuya":"涂鸦","Intel":"英特尔","MediaTek":"联发科","Qualcomm":"高通","Broadcom":"博通","Raspberry Pi":"树莓派","ZTE":"中兴","TCL":"TCL","LG":"LG","Panasonic":"松下","Nintendo":"任天堂","Sonos":"Sonos","DJI":"大疆","Tesla":"特斯拉","Murata":"村田","AzureWave":"海华","Lite-On":"光宝","Foxconn":"富士康","Wistron":"纬创","Compal":"仁宝"
 }
 TOKENS = {

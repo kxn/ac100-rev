@@ -12,12 +12,21 @@ class BrandAliases(unittest.TestCase):
         self.assertEqual(brand_for("TP-Link Systems Inc."), "TP-Link")
         self.assertEqual(brand_for("Hewlett Packard Enterprise "), "HPE")
         self.assertEqual(brand_for("Hewlett Packard"), "HP")
+        self.assertEqual(brand_for("Dell"), "Dell")
+        self.assertEqual(brand_for("Dell Inc."), "Dell")
+        self.assertEqual(brand_for("Intel Corporate"), "Intel")
+        self.assertEqual(brand_for("GD Midea Air-Conditioning Equipment Co.,Ltd."), "Midea")
+        self.assertEqual(brand_for("Dreame Technology (Suzhou) Limited"), "Dreame")
+        self.assertEqual(brand_for("Shanghai MXCHIP Information Technology Co., Ltd."), "MXCHIP")
+        self.assertEqual(brand_for("HUNAN FN-LINK TECHNOLOGY LIMITED"), "FN-LINK")
 
     def test_similar_names_are_not_same_brand(self):
         for name in ["Invivo Research Inc.", "ViVOtech, Inc.", "Vivotek, Inc.", "Vivo International Corporation Pty Ltd", "SHENZHEN HONOR ELECTRONIC CO.,LTD", "Digitron da Amazonia S/A", "Intelbras", "Huawei Symantec Technologies Co.,Ltd.", "Dongguan Koppo Electronic Co.,Ltd"]:
             self.assertEqual(brand_for(name), "", name)
         self.assertEqual(brand_for("vivo Mobile Communication Co., Ltd."), "vivo")
         self.assertEqual(brand_for("Honor Device Co., Ltd."), "Honor")
+        for name in ["Dell'Orto S.P.A.", " Intel – GE Care Innovations LLC", "Limidea Concept Pte. Ltd.", "Shenzhen Adreamer Elite Co.,Ltd"]:
+            self.assertEqual(brand_for(name), "", name)
 
     def test_chinese_reference_does_not_change_organization_identity(self):
         pieces, suffix, glossary = parts("Huawei Device Co., Ltd.")

@@ -53,7 +53,7 @@ FAMILIES = {
     "Nokia": ["nokia"],
     "ASUS": ["asustek", "asus computer"],
     "Acer": ["acer"],
-    "Dell": ["dell"],
+    "Dell": ["dell inc", "dell technologies", "dell emc"],
     "HP": ["hp inc", "hewlett packard"],
     "HPE": ["hewlett packard enterprise", "hpe"],
     "TP-Link": ["tp link", "tplink"],
@@ -67,7 +67,7 @@ FAMILIES = {
     "Dahua": ["zhejiang dahua", "dahua technology"],
     "Espressif": ["espressif"],
     "Tuya": ["tuya", "hangzhou tuya"],
-    "Intel": ["intel"],
+    "Intel": ["intel corporate", "intel corporation", "intel wireless network group"],
     "MediaTek": ["mediatek"],
     "Qualcomm": ["qualcomm"],
     "Broadcom": ["broadcom"],
@@ -86,11 +86,17 @@ FAMILIES = {
     "Foxconn": ["hon hai", "foxconn"],
     "Wistron": ["wistron"],
     "Compal": ["compal"],
+    "Midea": ["gd midea air conditioning", "gd midea heating", "midea group"],
+    "Dreame": ["dreame technology", "dreame innovation technology"],
+    "MXCHIP": ["mxchip company", "shanghai mxchip information technology"],
+    "FN-LINK": ["fn link technology", "hunan fn link technology"],
 }
 
 
 def brand_for(name):
     value = normalize(name)
+    if value == "dell":
+        return "Dell"
     candidates = []
     for brand, prefixes in FAMILIES.items():
         for prefix in prefixes:
