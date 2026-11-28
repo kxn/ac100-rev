@@ -71,6 +71,34 @@
           "sha256": "8b7cd2b1bea7274d2399e2993add5df8e7bcc98609461c0df92e84c9f4a04489",
           "reviewed_behavior": "仅复制0x38字节驱动记录，不改变信号或速率单位。",
           "address": "0x305388"
+        },
+        {
+          "name": "CWAssembleRssiStatisticsMsg",
+          "address": "0x8cd80",
+          "size": 328,
+          "sha256": "677baf16741a7889d146024c3059221289fbc3f2db064654e03e67a85488f31d",
+          "reviewed_behavior": "将独立信号槽写入private53，不作Web原生信号换算。"
+        },
+        {
+          "name": "GetPrivRssiStatistics",
+          "address": "0xa0c50",
+          "size": 1540,
+          "sha256": "54f1eba548e4a747395e26e74692cbf1487b6487209a285743c028b7b1804553",
+          "reviewed_behavior": "从独立probe_sta_list模型复制射频信号槽，不取Web原生rssi字段。"
+        },
+        {
+          "name": "staRoamEventIndicate",
+          "address": "0x1fbdc8",
+          "size": 3076,
+          "sha256": "371d641c22124fe66b2c59a5d307bbc8a43b96ddc7e849753dbdc44b7e2fe4d8",
+          "reviewed_behavior": "漫游事件偏移0x0e以有符号char扩展传入后续事件。"
+        },
+        {
+          "name": "native_probe_table_fill_callback (unnamed)",
+          "address": "0x18ddfc",
+          "size": 316,
+          "sha256": "9900068b6c0c50793f18306286e2fbacc9e5ad8d49533f6eecdb938f15cf6989",
+          "reviewed_behavior": "独立probe_sta_list写入每射频平滑探测样本减95后的有符号字节；不是Web原生rssi输出路径。"
         }
       ],
       "string_references": [
@@ -192,6 +220,34 @@
           "sha256": "30ca1b3a9766d851a1387e1caf413619f6197ec10bd57fa7ef19ecc0a728debd",
           "reviewed_behavior": "同一私有52线格式输出协商速率。",
           "address": "0xcc734"
+        },
+        {
+          "name": "GetPrivRssiStatistics",
+          "address": "0xe1828",
+          "size": 1596,
+          "sha256": "ce7af184f60689c4195fa6b95bc45c1b3aebb9ad8bd24a35fc4dee8f8b5a5804",
+          "reviewed_behavior": "从独立probe_sta_list模型复制射频信号槽，不取Web原生rssi字段。"
+        },
+        {
+          "name": "staRoamEventIndicate",
+          "address": "0x276638",
+          "size": 3304,
+          "sha256": "d897713f6a588d43825508f8952941b42e9905f215e2b67931e63cd53470311b",
+          "reviewed_behavior": "漫游事件偏移0x0e以有符号char扩展传入后续事件。"
+        },
+        {
+          "name": "CWAssembleRssiStatisticsMsg",
+          "address": "0xcc96c",
+          "size": 320,
+          "sha256": "e66872e29c2b4aec07b5d308eed76ef46e20f50ed2714efa981456b542d8fe9f",
+          "reviewed_behavior": "将独立信号槽写入private53，不作Web原生信号换算。"
+        },
+        {
+          "name": "native_probe_table_fill_callback (unnamed)",
+          "address": "0x219228",
+          "size": 368,
+          "sha256": "cda8b2093f1c0793af5550aae8c4830f6e64271bc084593b0af852ab61c5e28a",
+          "reviewed_behavior": "独立probe_sta_list写入每射频平滑探测样本减95后的有符号字节；不是Web原生rssi输出路径。"
         }
       ],
       "string_references": [

@@ -4,12 +4,55 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"reflect"
 	"strings"
 	"sync/atomic"
 	"testing"
 	"time"
+	"uacgo/capwap"
 	"uacgo/cweng"
 )
+
+// Exercise the complete native merge before both real decision paths. A
+// display snapshot must not turn its raw signal/rates into policy inputs,
+// regardless of whether the AP reports a positive SNR or a signed value.
+func TestNativeTelemetryCannotChangeRoamingDecisions(t *testing.T) {
+	for _, policy := range []string{"v4", "v6"} {
+		for _, bstm := range []bool{false, true} {
+			t.Run(fmt.Sprintf("%s/bstm=%v", policy, bstm), func(t *testing.T) {
+				m, source, target, mac, now := v4RoamingFixture(t)
+				if policy == "v6" {
+					m.config.Mobility.ModeSource = ""
+				}
+				rssi := int8(-35) // Deliberately differs from the trigger's -90.
+				m.clients.StationEvent(cweng.ClientEvent{MAC: mac, APID: source.ID, Connection: source.ConnectedAt, RadioID: 1, WLANID: 1, ServiceID: "office", SSID: "Office", Kind: "statistics", RSSI: &rssi, Statistics: &cweng.ClientStatistics{NegotiatedMbps: 0}, Seen: now})
+				report := capwap.PrivRoamingTrigger{Radio: 1, Stations: []capwap.RoamTriggerStation{{MAC: mac, WLAN: 1, RSSI: -90}}}
+				if bstm {
+					report.Stations[0].Neighbors = []capwap.RoamNeighborReport{{BSSID: [6]byte{2, 10, 5}, RCPI: 100}} // -60 dBm, -70 after the original margin.
+				}
+				want := m.calculateRoamingLocked(source, report, now)
+				if len(want) != 1 || len(want[0].Stations) != 1 || len(want[0].Stations[0].Candidates) != 1 || want[0].APs[want[0].Stations[0].Candidates[0].APIndex] != apMAC(target) {
+					t.Fatal("fixture must exercise a successful decision", want)
+				}
+				for i, raw := range []string{"52", "-43", "0", "200"} {
+					started := now.Add(time.Duration(i+1) * time.Millisecond)
+					stations := []byte(fmt.Sprintf(`{"error_code":0,"wireless":{"sta_list":[{"row":{"mac":"02-01-02-03-04-05","radio_id":"1","ssid":"Office","rssi":%q,"tx_rate":"0","rx_rate":"213857"}}]}}`, raw))
+					if err := m.mergeWirelessSnapshot(source, started, stations, json.RawMessage(`{"error_code":0,"hosts_info":{"host_info":[]}}`)); err != nil {
+						t.Fatal(err)
+					}
+					got := m.calculateRoamingLocked(source, report, now)
+					if !reflect.DeepEqual(got, want) {
+						t.Fatalf("native %s changed %s decision: got=%+v want=%+v", raw, policy, got, want)
+					}
+					row := m.clients.All()[0]
+					if row.NativeSignal == nil || row.NativeSignal.Value != raw || row.RSSI == nil || *row.RSSI != -35 {
+						t.Fatal("native snapshot was not applied separately", row)
+					}
+				}
+			})
+		}
+	}
+}
 
 func TestNativeClientRefreshUsesTDCPNotPMKOrAXCapability(t *testing.T) {
 	for _, supported := range []bool{true, false} {

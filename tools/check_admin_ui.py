@@ -46,6 +46,7 @@ clients = [
         "ssid": "GoAC-Lab",
         "state": "connected",
         "rssi_dbm": -52,
+        "native_signal": {"value": "52", "at": "2026-11-27T17:10:00Z"},
         "ip": "192.0.2.20",
         "connected_at": "2026-11-27T11:00:00Z",
         "last_seen": "2026-11-27T17:10:00Z",
@@ -61,6 +62,8 @@ clients = [
 clients.append({
     **clients[0],
     "mac": "02:03:04:05:06:08",
+    "rssi_dbm": None,
+    "native_signal": {"value": "-43", "at": "2026-11-27T17:10:00Z"},
     "native_rates": {"tx": "0", "rx": "213857", "at": "2026-11-27T17:10:00Z"},
     "statistics": {"negotiated_mbps": 0, "upstream_kbps": 0, "downstream_kbps": 3},
 })
@@ -856,7 +859,24 @@ with sync_playwright() as p:
         assert "协商 1201 Mbps" in client_table.inner_text()
         assert "协商 未上报" in client_table.inner_text()
         assert "0 Mbps" not in client_table.inner_text()
-        assert "原生 TX/RX：0 / 213857（接口原值）" in client_table.inner_text()
+        assert "-52 dBm" in client_table.inner_text()
+        assert "52 dBm" not in client_table.inner_text().replace("-52 dBm", "")
+        assert "-43 dBm" not in client_table.inner_text()
+        assert "原生" not in client_table.inner_text()
+        page.locator("[data-client-history]").first.click()
+        signal_dialog = page.locator("#editor")
+        signal_dialog.get_by_text("AP 原始上报（调试）", exact=True).click()
+        assert "原生 rssi：52（接口原值）" in signal_dialog.inner_text()
+        assert "-52 dBm" in signal_dialog.inner_text()
+        assert "不用于漫游候选计算" in signal_dialog.inner_text()
+        page.keyboard.press("Escape")
+        page.locator("[data-client-history]").nth(1).click()
+        signal_dialog.get_by_text("AP 原始上报（调试）", exact=True).click()
+        assert "当前信号：未上报" in signal_dialog.inner_text()
+        assert "原生 rssi：-43（接口原值）" in signal_dialog.inner_text()
+        assert "原生 TX/RX：0 / 213857（接口原值）" in signal_dialog.inner_text()
+        assert "-43 dBm" not in signal_dialog.inner_text()
+        page.keyboard.press("Escape")
         page.locator("[data-client-label]").first.click()
         page.locator('#client-label-form [name="name"]').fill("UI tablet")
         result = submit("#client-label-form")

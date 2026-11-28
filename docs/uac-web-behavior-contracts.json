@@ -1151,6 +1151,10 @@
         {
           "path": "uacgo/cweng/client_snapshot_test.go",
           "name": "TestNativeWirelessSnapshotRetainsAPTrafficCounters"
+        },
+        {
+          "path": "uacgo/admin/client_state_test.go",
+          "name": "TestNativeTelemetryCannotChangeRoamingDecisions"
         }
       ]
     },

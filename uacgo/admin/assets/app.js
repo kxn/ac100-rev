@@ -513,18 +513,17 @@ function renderClients(meshOnly = false) {
           <div>${esc(apName(c.ap_id))}</div>
           <small>${esc(ssid)} · ${esc(bandLabel)}${c.vlan_id ? " · VLAN " + esc(c.vlan_id) : ""}${c.mlo ? ' · <span class="tag tag-info">MLO</span>' : ""}</small>
         </td>
-        <td>${signalMeter(c.rssi_dbm)}${c.rssi_dbm != null && c.rssi_at ? `<small>采样 ${ago(c.rssi_at)}</small>` : ""}${c.native_signal ? `<small title="wireless.sta_list.rssi：该接口的信号单位因 AP 实现而异，不作 dBm 换算，也不用于漫游计算。">原生信号：${esc(c.native_signal.value)}（单位未确认）</small>` : ""}</td>
+        <td>${c.rssi_dbm == null ? '<span class="muted">未上报</span>' : signalMeter(c.rssi_dbm)}${c.rssi_dbm != null && c.rssi_at ? `<small>采样 ${ago(c.rssi_at)}</small>` : ""}</td>
         <td class="mono">${esc(c.ip || "—")}${ipExtra ? `<small class="mono">${esc(ipExtra)}</small>` : ""}</td>
         <td class="num">
           协商 ${esc(negotiatedRateLabel(c.statistics))}
           <small>↑ ${c.statistics?.upstream_kbps ?? "—"} / ↓ ${c.statistics?.downstream_kbps ?? "—"} kbps</small>
-          ${c.native_rates ? `<small title="wireless.sta_list 的原始 TX/RX 字段；部分固件表示实时流量速率，不能当成协商 Mbps。">原生 TX/RX：${esc(c.native_rates.tx || "—")} / ${esc(c.native_rates.rx || "—")}（接口原值）</small>` : ""}
           ${mloRows}
         </td>
         <td>
           <div class="actions">
             <button type="button" class="text-button" data-client-label="${esc(c.mac)}">命名</button>
-            <button type="button" class="text-button" data-client-history="${esc(c.mac)}">信号</button>
+            <button type="button" class="text-button" data-client-history="${esc(c.mac)}">信号详情</button>
             <button type="button" class="text-button danger" data-client-disconnect="${esc(c.mac)}" ${c.state === "connected" ? "" : "disabled"}>下线</button>
           </div>
         </td>

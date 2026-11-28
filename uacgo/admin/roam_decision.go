@@ -298,6 +298,7 @@ func (m *Manager) calculateRoamingLocked(ap cweng.APStatus, report capwap.PrivRo
 			}
 			if valid {
 				m.event("roaming.candidate_path", "ap_id", ap.ID, "client", eventMAC(sta.MAC), "path", "reported_bssid_neighbors")
+				m.event("roaming.signal_decode", "ap_id", ap.ID, "client", eventMAC(sta.MAC), "source", "private58.neighbors", "reported", sta.Neighbors, "decoded_dbm", signals, "selection_margin_db", 10, "selection_floor_dbm", -95)
 				for i, b := range sta.Neighbors {
 					target, radio, wlan, ok := m.findBSSIDLocked(b.BSSID)
 					if !ok {

@@ -141,6 +141,8 @@ V4 中 `phase=stopped` 有排序遍历停止的含义，并不保证后面的每
 
 BSSID 报告入口的 `roaming.rate_estimate` 同时给出 `raw_rssi` 和 `adjusted_rssi`。当前固件派生的预处理包括减 10 dB、下限钳位；`candidate_input.candidate.rssi` 已经是候选侧用于筛选的数值，不能再减一次。缓存入口不要照搬这一步。
 
+`roaming.signal_decode` 给出 `private58.neighbors` 的原编码列表、`decoded_dbm` 及候选余量/下限，数组顺序与原邻居一致。这里可能有正 RCPI 编码，不要把它与原生 JSON 的正 SNR 混为一谈。编码冲突仍按原策略记录 `invalid_or_mixed_signal_encoding`，不会用原生字段救场。页面客户端列表只显示统一 dBm；原始 JSON 信号/速率在该客户端“信号详情 → AP 原始上报（调试）”，不与正常指标混排。客户端详情/历史的展示缓存不是漫游的直接输入；完整路径和已确认缺陷见[上报及调度关系](ap-reporting-review.md#信号怎样进入调度哪些转换确实存在)。
+
 以下仅示范 **V4 同频段**、配置差值为 8 的比较：
 
 | 情形 | 当前信号 | 候选原始 | 候选参与筛选 | 候选减当前 | 结论 |

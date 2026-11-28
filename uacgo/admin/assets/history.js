@@ -283,11 +283,23 @@ async function showClientSignalHistory(mac, duration = 300) {
   clientHistoryMAC = mac;
   clientHistoryDuration = duration;
   const chart = rows.map((r) => ({ ...r, metrics: { rssi_dbm: r.rssi_dbm } }));
+  const client = data.clients.find((c) => c.mac === mac);
+  const native = client?.native_signal;
+  const rates = client?.native_rates;
+  const diagnostics = native || rates ? `<details class="client-report-diagnostics">
+    <summary>AP 原始上报（调试）</summary>
+    <p class="muted">以下是 wireless.sta_list 的接口原值，固件之间含义可能不同，不作为统一 dBm 或协商 Mbps，也不用于漫游候选计算。</p>
+    ${native ? `<p>原生 rssi：<span class="num">${esc(native.value)}</span>（接口原值）<small>采样 ${ago(native.at)}</small></p>` : ""}
+    ${rates ? `<p>原生 TX/RX：<span class="num">${esc(rates.tx || "—")} / ${esc(rates.rx || "—")}</span>（接口原值）<small>采样 ${ago(rates.at)}</small></p>` : ""}
+  </details>` : "";
   openDialog(
     "client-history",
-    "客户端信号记录",
+    "客户端信号详情",
     mac,
-    `<div class="toolbar">
+    `<p>当前信号：${client?.rssi_dbm == null ? "未上报" : signalMeter(client.rssi_dbm)}${client?.rssi_dbm != null && client.rssi_at ? ` · 采样 ${ago(client.rssi_at)}` : ""}</p>
+    <p class="muted">信号列表和历史统一采用 CAPWAP 的 dBm 数据。漫游使用当次触发、邻居报告或独立 RSSI 邻居表；不是直接用这条展示缓存作决策。</p>
+    ${diagnostics}
+    <div class="toolbar">
       ${select("client_history_duration", "", { 300: "最近 5 分钟", 900: "最近 15 分钟", 3600: "最近 1 小时" }, duration, 'aria-label="时间范围"')}
       <button type="button" class="btn secondary sm" data-client-history="${esc(mac)}">刷新</button>
     </div>
