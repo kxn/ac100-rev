@@ -104,16 +104,23 @@ func mcsRateValue(r MCSRateSet, radio uint8) []byte {
 	}
 	return []byte{radio, byte(basic), byte(r.Supported), byte(r.Multicast)}
 }
+
+// Both a full radio update and an edited rate policy use the original
+// rdmngr_wtp_pkt_send predicates: AC on 5GHz with AC support; AX on main70.
+func radioRateElements(p RatePolicy, ap cweng.APStatus, c cweng.RadioCapability) []capwap.Element {
+	out := []capwap.Element{privateSetting(0xa, legacyRateValue(p, c.RadioID))}
+	if c.Band == "5 GHz" && c.SupportAC {
+		out = append(out, privateSetting(0x2b, mcsRateValue(p.AC, c.RadioID)))
+	}
+	if ap.HasCapability(70) {
+		out = append(out, privateSetting(0xa0, mcsRateValue(p.AX, c.RadioID)))
+	}
+	return out
+}
 func rateElements(p RatePolicy, ap cweng.APStatus) []capwap.Element {
 	var out []capwap.Element
 	for _, c := range ap.Capabilities {
-		out = append(out, privateSetting(0xa, legacyRateValue(p, c.RadioID)))
-		if c.SupportAC {
-			out = append(out, privateSetting(0x2b, mcsRateValue(p.AC, c.RadioID)))
-		}
-		if c.SupportAX && ap.HasCapability(70) {
-			out = append(out, privateSetting(0xa0, mcsRateValue(p.AX, c.RadioID)))
-		}
+		out = append(out, radioRateElements(p, ap, c)...)
 	}
 	return out
 }

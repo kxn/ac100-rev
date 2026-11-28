@@ -357,14 +357,17 @@ func TestBandNavigationModelFailuresCannotMasqueradeAsLegacySuccess(t *testing.T
 		{"busy", `{"error_code":-40109}`, false, true},
 		{"forbidden", `{"error_code":-40107}`, false, true},
 		{"bad-argument", `{"error_code":-40209}`, false, true},
-		{"empty-model", `{"error_code":0,"apmng_band_navigation":{"settings":{}}}`, false, true},
+		{"empty-model", `{"error_code":0,"apmng_band_navigation":{"settings":{}}}`, true, false},
 		{"timeout", "", false, true},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			m, e := testController(t)
 			e.RegisterRPCHandlers()
-			fake, ap := newDeferredAP(t, e)
-			ap.GeneralCapabilities = []uint32{1 << 3, 0, 1 << 6}
+			fake, ap := newDeferredAP(t, e, func(p *capwap.ParsedPacket) {
+				bits := binary.BigEndian.AppendUint32(nil, 1<<3)
+				bits = binary.BigEndian.AppendUint32(bits, 1<<17)
+				p.Elements = append(p.Elements, capwap.Element{Type: 0x32, Value: bits})
+			})
 			m.known[ap.ID] = ap
 			fake.mu.Lock()
 			fake.onCommand = func(packet *capwap.ParsedPacket) {

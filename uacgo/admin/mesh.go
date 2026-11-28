@@ -106,7 +106,8 @@ func meshPolicyElements(p *MeshConfig, ap cweng.APStatus, cfg Config) []capwap.E
 		pw := binary.BigEndian.AppendUint16(nil, uint16(len(p.WebPassword)))
 		pw = append(pw, p.WebPassword...)
 		rows = append(rows, capwap.VendorRecord{Type: 10, Value: bh}, capwap.VendorRecord{Type: 15, Value: pw}, capwap.VendorRecord{Type: 14, Value: []byte{boolean(p.AutoAdd), 1}})
-		if ap.SubCapabilities[44]&1 != 0 {
+		// mesh_pkt_bh_work_mode_send@53f248 selects main44/sub1.
+		if ap.SupportsMeshBackhaulMode() {
 			rows = append(rows, capwap.VendorRecord{Type: 23, Value: []byte{p.BackhaulMode}})
 		}
 	}

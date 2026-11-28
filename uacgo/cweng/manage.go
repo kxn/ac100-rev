@@ -351,16 +351,23 @@ func (s *Session) statusLocked() APStatus {
 		for key, val := range a.SubCapabilities {
 			v.SubCapabilities[key] = val
 		}
+		v.ExtWirePhys = a.ExtWirePhys
 		v.Features = map[string]bool{}
-		for name, bit := range map[string]int{"rf_mode_change": 92, "mesh": 44, "usb": 100, "storm_control": 14, "dhcp_defense": 15, "arp_defense": 16, "dhcpv6_defense": 30, "nd_defense": 31, "rssi_control": 1, "band_navigation": 3, "channel_optimization": 9, "fragmentation": 10, "ssid_rate_limit": 13, "new_security_format": 32, "frame_rate_control": 57, "edca": 61, "wifi6_features": 70, "multicast": 43, "multicast_per_ssid": 43, "band_steering": 21} {
+		for name, bit := range map[string]int{"rf_mode_change": 92, "mesh": 44, "usb": 100, "storm_control": 14, "dhcp_defense": 15, "arp_defense": 16, "dhcpv6_defense": 30, "nd_defense": 31, "rssi_control": 1, "band_navigation": 3, "channel_optimization": 9, "airtime": 10, "ssid_rate_limit": 13, "new_security_format": 32, "frame_rate_control": 57, "edca": 61, "wifi6_features": 70, "tdcp": 49, "multicast": 43, "multicast_per_ssid": 43, "band_steering": 21} {
 			v.Features[name] = a.HasCapability(bit)
 		}
-		v.Features["arp_scan"] = a.HasCapability(16) && a.SubCapabilities[16]&1 != 0
+		v.Features["arp_scan"] = v.SupportsARPScan()
+		v.Features["mesh_backhaul_mode"] = v.SupportsMeshBackhaulMode()
+		v.Features["port_vlan_extended"] = v.UsesExtendedPortVLAN()
+		v.Features["port_vlan"] = v.UsesExtendedPortVLAN() || a.ExtWirePhys >= 1 && a.ExtWirePhys <= 4
+		v.Features["port_enable"] = v.SupportsPortEnable()
+		v.Features["statistics_control"] = a.HasCapability(24)
 		v.Features["arp_defense_mode_scope"] = a.HasCapability(16) && a.SubCapabilities[16]&1 != 0
 		v.Features["mlo"] = a.SubCapabilities[0x5f]&2 != 0
 		v.Features["vlan_pool"] = a.HasCapability(98) && a.SubCapabilities[0x5f]&8 != 0
 		v.Features["multicast_to_unicast"] = a.HasCapability(99) && a.SubCapabilities[99]&1 != 0
-		v.Features["edca_mode"] = a.SubCapabilities[0x3d]&2 != 0
+		v.Features["multicast_mcs_rate"] = v.SupportsMulticastMCS()
+		v.Features["edca_mode"] = a.HasCapability(61) && a.SubCapabilities[0x3d]&2 != 0
 		v.Ports = append([]PortCapability{}, a.Ports...)
 		v.ExtWirePhys = a.ExtWirePhys
 		v.SupportTrunk = a.SupportTrunk

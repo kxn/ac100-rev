@@ -250,7 +250,11 @@ func TestLostACKRetriesWithoutReapplyingBatch(t *testing.T) {
 
 func TestTelemetrySubscriptionRetriesAfterFailure(t *testing.T) {
 	m, e := testController(t)
-	f, ap := newDeferredAP(t, e)
+	f, ap := newDeferredAP(t, e, func(p *capwap.ParsedPacket) {
+		bits := binary.BigEndian.AppendUint32(nil, 0)
+		bits = binary.BigEndian.AppendUint32(bits, 1<<17)
+		p.Elements = append(p.Elements, capwap.Element{Type: 0x32, Value: bits})
+	})
 	f.mu.Lock()
 	f.rejectPrivate = 0x83
 	f.rejectCount = 1

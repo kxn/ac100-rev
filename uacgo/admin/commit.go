@@ -71,8 +71,10 @@ func (m *Manager) commitAP(ctx context.Context, ap cweng.APStatus, cfg Config) {
 			m.settledVersions[ap.ID] = cfg.Version
 			m.event("configuration.settled", "ap_id", ap.ID, "session", ap.ConnectedAt, "config_version", cfg.Version, "meaning", "commit_ack_and_settlement_timer_elapsed; requesting fresh telemetry")
 			m.mu.Unlock()
-			_ = m.reportAction(ctx, ap.ID, "off", "stop_report")
-			_ = m.requestTelemetry(ctx, ap.ID)
+			if ap.SupportsTDCP() {
+				_ = m.reportAction(ctx, ap.ID, "off", "stop_report")
+				_ = m.requestTelemetry(ctx, ap.ID)
+			}
 		}
 		return
 	}

@@ -167,7 +167,7 @@ function renderMulticastSettings(view) {
     `<form id="multicast-settings-form" data-inline="1" data-kind="${view}" data-service-id="${esc(service.id)}" novalidate><div class="form-grid">
     ${select("multicast_service", "无线服务", options, service.id)}
     ${view === "query" ? `${ssid ? check("query", "组播查询", m.query) : ""}${global ? field("query_interval", "查询间隔", m.query_interval, "number", 'min="1" max="65535" required', "秒") : ""}${global ? field("max_response", "最大响应时间", m.max_response, "number", 'min="1" max="255" required', "秒") : ""}` : `${ssid ? check("snooping", "组播侦听", m.snooping) : ""}${global ? check("configure_global", "配置AP全局组播", m.configure_global) : ""}${global ? check("global_snooping", "AP全局组播侦听", m.global_snooping) : ""}${unicast ? check("to_unicast", "组播转单播", m.to_unicast) : ""}${global ? check("drop_unknown", "丢弃未知组播", m.drop_unknown) : ""}`}
-    </div><p class="help">本页设置对应无线服务的AP侧组播参数，与无线服务编辑页共用配置。</p>${editable ? formEnd("保存") : '<p class="help">所选无线服务的目标AP未声明此项组播能力，请调整绑定范围或查看AP能力详情。</p>'}</form>`,
+    ${view !== "query" && global ? multicastRateFields(m, targets.every((a) => a.features?.multicast_mcs_rate)) : ""}</div><p class="help">本页设置对应无线服务的AP侧组播参数，与无线服务编辑页共用配置。</p>${editable ? formEnd("保存") : '<p class="help">所选无线服务的目标AP未声明此项组播能力，请调整绑定范围或查看AP能力详情。</p>'}</form>`,
   );
 }
 document.addEventListener("change", (event) => {
@@ -203,6 +203,11 @@ document.addEventListener("submit", async (event) => {
     if (f.dataset.kind === "query")
       for (const key of ["query_interval", "max_response"])
         if (f.elements[key]) m[key] = Number(f.elements[key].value);
+    if (f.dataset.kind !== "query")
+      for (const band of [2, 5]) {
+        if (f.elements[`rate${band}`]) m[`rate_${band}g`] = Number(f.elements[`rate${band}`].value);
+        if (f.elements[`rate_type${band}`]) m[`rate_type_${band}g`] = Number(f.elements[`rate_type${band}`].value);
+      }
     await api("services", {
       ...service,
       has_password: undefined,

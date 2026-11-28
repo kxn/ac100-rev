@@ -47,7 +47,7 @@ func (m *Manager) refreshClientFacts(ctx context.Context, ap cweng.APStatus) {
 	if m.clients == nil {
 		return
 	}
-	if !ap.HasCapability(66) {
+	if !ap.SupportsTDCP() {
 		return
 	}
 	m.mu.Lock()
@@ -64,6 +64,10 @@ func (m *Manager) refreshClientFacts(ctx context.Context, ap cweng.APStatus) {
 	c, cancel := context.WithTimeout(cweng.PinAP(ctx, ap), 8*time.Second)
 	defer cancel()
 	started := time.Now()
+	var err error
+	defer func() {
+		m.event("client.native_snapshot", "ap_id", ap.ID, "session", ap.ConnectedAt, "started_at", started, "error", eventError(err))
+	}()
 	stations, err := m.engine.RequestJSON(c, ap.ID, json.RawMessage(`{"method":"get","wireless":{"table":"sta_list"}}`))
 	if err != nil {
 		return
@@ -72,7 +76,7 @@ func (m *Manager) refreshClientFacts(ctx context.Context, ap cweng.APStatus) {
 	if err != nil {
 		return
 	}
-	_ = m.mergeWirelessSnapshot(ap, started, stations, hosts)
+	err = m.mergeWirelessSnapshot(ap, started, stations, hosts)
 }
 
 // Only public wireless/host tables, over the authenticated AP session. This is

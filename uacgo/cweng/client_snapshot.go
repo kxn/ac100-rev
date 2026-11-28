@@ -26,6 +26,14 @@ func (t *ClientTable) WirelessSnapshot(ap string, connection, started time.Time,
 			continue
 		}
 		if ok && old.APID == ap && old.RadioID == ev.RadioID && old.WLANID == ev.WLANID && sameClientService(old, ev) {
+			// Membership/rate refreshes must not erase a signed CAPWAP signal,
+			// or turn that cached measurement into a fresh sample. Never carry
+			// it over a reconnect or a disconnected-to-connected transition.
+			if ev.RSSI == nil && old.State == "connected" && old.Connection.Equal(ev.Connection) {
+				ev.RSSI = old.RSSI
+				ev.RSSIAt = old.RSSIAt
+				ev.DisplayRSSI = old.DisplayRSSI
+			}
 			if ev.Statistics == nil {
 				ev.Statistics = old.Statistics
 			} else if old.Statistics != nil {

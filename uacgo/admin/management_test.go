@@ -209,6 +209,9 @@ func TestOfflineAPReplacementMovesBindingsAndRetiresOldIdentity(t *testing.T) {
 	_, target := newDeferredAP(t, e)
 	old := target
 	old.ID = "02:01:02:03:04:05"
+	// Original replacement compares model, allowing different HW revisions;
+	// migrated settings still undergo the target's capability validation.
+	old.HardwareVersion = "different-hardware-revision"
 	old.Online = false
 	old.State = "OFFLINE"
 	m.known[old.ID] = old

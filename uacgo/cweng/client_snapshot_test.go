@@ -69,3 +69,40 @@ func TestWirelessSnapshotRequiresExactSessionEvenForEmptyTable(t *testing.T) {
 		t.Fatal("current-session empty table was ignored")
 	}
 }
+
+func TestWirelessSnapshotNeverCarriesSignalAcrossIdentityOrReconnect(t *testing.T) {
+	at := time.Now()
+	connection := at.Add(-time.Minute)
+	for _, tc := range []string{"same", "radio", "wlan", "service", "session", "disconnected"} {
+		t.Run(tc, func(t *testing.T) {
+			table := NewClientTable()
+			signal := int8(-74)
+			mac := [6]byte{2, 1, 2, 3, 4, 5}
+			old := ClientEvent{MAC: mac, APID: "a", RadioID: 1, WLANID: 1, ServiceID: "office", Connection: connection, Kind: "associate", Seen: at, RSSI: &signal}
+			table.StationEvent(old)
+			if tc == "disconnected" {
+				table.StationEvent(ClientEvent{MAC: mac, APID: "a", RadioID: 1, WLANID: 1, Connection: connection, Kind: "disassociate", Seen: at.Add(time.Second)})
+			}
+			next := ClientEvent{MAC: mac, APID: "a", RadioID: 1, WLANID: 1, ServiceID: "office", Connection: connection}
+			switch tc {
+			case "radio":
+				next.RadioID = 2
+			case "wlan":
+				next.WLANID = 2
+			case "service":
+				next.ServiceID = "guest"
+			case "session":
+				next.Connection = connection.Add(time.Second)
+			}
+			table.WirelessSnapshot("a", next.Connection, at.Add(2*time.Second), []ClientEvent{next}, map[[6]byte]bool{mac: true})
+			got := table.All()[0]
+			if tc == "same" {
+				if got.RSSI == nil || *got.RSSI != -74 || !got.RSSIAt.Equal(at) {
+					t.Fatal("lost measurement or retimed it", got)
+				}
+			} else if got.RSSI != nil || !got.RSSIAt.IsZero() {
+				t.Fatal("carried old signal across connection identity", got)
+			}
+		})
+	}
+}

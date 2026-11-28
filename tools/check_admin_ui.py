@@ -210,16 +210,22 @@ with sync_playwright() as p:
                     for k in [
                         "rssi_control",
                         "channel_optimization",
-                        "fragmentation",
+                        "airtime",
                         "ssid_rate_limit",
                         "frame_rate_control",
                         "edca",
                         "edca_mode",
                         "wifi6_features",
+                        "tdcp",
+                        "statistics_control",
+                        "port_vlan",
+                        "port_vlan_extended",
+                        "port_enable",
                         "mlo",
                         "multicast",
                         "multicast_per_ssid",
                         "multicast_to_unicast",
+                        "multicast_mcs_rate",
                         "vlan_pool",
                         "band_steering",
                         "band_navigation",
@@ -244,6 +250,7 @@ with sync_playwright() as p:
                 "backhaul_mode": 1,
             }
             a["features"]["mesh"] = True
+            a["sub_capabilities"] = {**a.get("sub_capabilities", {}), "98": 2 | (1 << 14)}
             a["ports"] = [
                 {"id": 12, "uplink": True},
                 {"id": 103, "uplink": False, "lag": True},

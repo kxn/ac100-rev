@@ -120,6 +120,12 @@ func managementElements(o APOptions, ap cweng.APStatus) ([]capwap.Element, error
 			if !found {
 				return nil, fmt.Errorf("AP 未声明可配置下联端口 %d", p.ID)
 			}
+			if p.VLAN != nil && !ap.SupportsPortVLAN(p.ID) {
+				return nil, fmt.Errorf("AP 未声明端口 %d 的 VLAN 配置协议", p.ID)
+			}
+			if p.Enabled != nil && !ap.SupportsPortEnable() {
+				return nil, fmt.Errorf("AP 未声明端口启停控制能力")
+			}
 		}
 		vlan, enabled := []byte{}, []byte{}
 		nv, ne := byte(0), byte(0)
@@ -135,7 +141,24 @@ func managementElements(o APOptions, ap cweng.APStatus) ([]capwap.Element, error
 			}
 		}
 		if nv > 0 {
-			out = append(out, apExtraSetting(1, append([]byte{nv}, vlan...)))
+			if ap.UsesExtendedPortVLAN() {
+				out = append(out, apExtraSetting(1, append([]byte{nv}, vlan...)))
+			} else {
+				// The legacy command replaces the complete LAN VLAN vector.
+				// Unconfigured LANs use the original AC's default0 (no VLAN
+				// assignment), rather than invented native/extended commands.
+				var legacy capwap.PrivApWireVlan2
+				for _, p := range o.Ports {
+					if p.VLAN != nil {
+						legacy.Vlans[p.ID-1] = *p.VLAN
+					}
+				}
+				if ap.ExtWirePhys == 1 {
+					out = append(out, privateSetting(0x30, capwap.PrivApWireVlan(legacy.Vlans[0]).AssembleValue()))
+				} else {
+					out = append(out, privateSetting(0x43, legacy.AssembleValue()))
+				}
+			}
 		}
 		if ne > 0 {
 			out = append(out, apExtraSetting(16, append([]byte{ne}, enabled...)))

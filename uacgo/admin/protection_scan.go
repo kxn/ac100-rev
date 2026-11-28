@@ -17,7 +17,9 @@ func (m *Manager) protectionScanRoutes(mux *http.ServeMux) {
 				ap = &v
 			}
 		}
-		if ap == nil || !ap.HasCapability(16) || ap.SubCapabilities[16]&1 == 0 {
+		// V6 uac_arp_defend_do_scan@4c4db0 selects main16/sub1.
+		// Sub0 is the extended defense mode/scope, not the scan operation.
+		if ap == nil || !ap.SupportsARPScan() {
 			jsonReply(w, 409, map[string]string{"error": "AP 未在线或未声明 ARP 扫描子能力"})
 			return
 		}

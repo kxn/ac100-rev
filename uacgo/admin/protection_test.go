@@ -168,7 +168,7 @@ func TestStormProxyAndProtocolCapabilities(t *testing.T) {
 		t.Fatalf("protocol restrictions %x", raw)
 	}
 	ap.SubCapabilities = nil
-	if len(stormElements(s, ap)) != 1 {
+	if els, err := stormElements(s, ap); err != nil || len(els) != 1 {
 		t.Fatal("unsupported extensions sent")
 	}
 }
@@ -190,5 +190,16 @@ func TestAPMeshAndUSBOptions(t *testing.T) {
 	}
 	if _, err = managementElements(o, cweng.APStatus{}); err == nil {
 		t.Fatal("capability-less AP accepted")
+	}
+}
+
+func TestStormRejectsContradictoryProxyCapabilities(t *testing.T) {
+	ap := cweng.APStatus{GeneralCapabilities: []uint32{1 << 14}, SubCapabilities: map[uint16]uint32{14: 4}}
+	if els, err := stormElements(defaultStorm(), ap); err == nil || len(els) != 0 {
+		t.Fatal("orphan unicast bit encoded", els, err)
+	}
+	ap.SubCapabilities[14] = 8 // mDNS is independent of ARP/ND proxy.
+	if els, err := stormElements(defaultStorm(), ap); err != nil || len(els) != 2 {
+		t.Fatal(els, err)
 	}
 }

@@ -186,6 +186,9 @@ func validateAdvanced(r RadioSetting, ap cweng.APStatus, c cweng.RadioCapability
 	if a.GI < -1 || a.GI > 2 || a.PSC6G && !a.Enable6G {
 		return fmt.Errorf("GI 或 6 GHz 设置无效")
 	}
+	if a.GI > 0 && (!ap.HasCapability(70) || !radioControlFeatures(c)["twt"]) {
+		return fmt.Errorf("AP 未声明 GI 时长配置能力")
+	}
 	if d := a.DCS; d != nil {
 		if !ap.HasCapability(9) {
 			return fmt.Errorf("AP 不支持动态信道优化")
@@ -295,10 +298,8 @@ func advancedRadioElements(r RadioSetting, ap cweng.APStatus, c cweng.RadioCapab
 		}
 	}
 	priv(8, adv.AssembleValue())
-	priv(0x0a, legacyRateValue(defaultRatePolicy(), r.Radio))
-	if c.SupportAX {
-		priv(0xa0, mcsRateValue(defaultRatePolicy().AX, r.Radio))
-	}
+	c.RadioID = r.Radio
+	out = append(out, radioRateElements(defaultRatePolicy(), ap, c)...)
 	if ap.HasCapability(57) && a.ManagementRate != 1 {
 		priv(0x8e, []byte{r.Radio, 0, 1, 0, 0, 0, 0, byte(a.ManagementRate)})
 	}

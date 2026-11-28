@@ -37,6 +37,8 @@ type MulticastOptions struct {
 	DropUnknown     bool `json:"drop_unknown"`
 	Rate2G          int  `json:"rate_2g"`
 	Rate5G          int  `json:"rate_5g"`
+	RateType2G      int  `json:"rate_type_2g"` // original igmp_2g_rate_type: 0 Mbps, 1 MCS
+	RateType5G      int  `json:"rate_type_5g"`
 	Query           bool `json:"query"`
 	QueryInterval   int  `json:"query_interval"`
 	MaxResponse     int  `json:"max_response"`
@@ -94,7 +96,10 @@ func validateWirelessOptions(s Service) error {
 		}
 	}
 	if x := o.Multicast; x != nil {
-		if x.QueryInterval < 1 || x.QueryInterval > 65535 || x.MaxResponse < 1 || x.MaxResponse > 255 || x.MaxResponse > x.QueryInterval || !hasInt([]int{1, 2, 5, 6, 9, 11, 12, 18, 24, 36, 48, 54}, x.Rate2G) || !hasInt([]int{6, 9, 12, 18, 24, 36, 48, 54}, x.Rate5G) {
+		validRate := func(kind, value int, legacy []int) bool {
+			return kind == 0 && hasInt(legacy, value) || kind == 1 && value >= 0 && value <= 255
+		}
+		if x.QueryInterval < 1 || x.QueryInterval > 65535 || x.MaxResponse < 1 || x.MaxResponse > 255 || x.MaxResponse > x.QueryInterval || !validRate(x.RateType2G, x.Rate2G, []int{1, 2, 5, 6, 9, 11, 12, 18, 24, 36, 48, 54}) || !validRate(x.RateType5G, x.Rate5G, []int{6, 9, 12, 18, 24, 36, 48, 54}) {
 			return fmt.Errorf("组播速率或查询周期无效")
 		}
 	}
@@ -102,14 +107,6 @@ func validateWirelessOptions(s Service) error {
 	return nil
 }
 func validateServiceCapability(s Service, ap cweng.APStatus, radio uint8) error {
-	for _, c := range ap.Capabilities {
-		if c.RadioID != radio {
-			continue
-		}
-		if s.Security == "wpa2-wpa3-psk" && !c.SupportWPA3 {
-			return fmt.Errorf("radio %d 不支持 WPA3", radio)
-		}
-	}
 	o := serviceOptions(s)
 	if o.VLANPool != 0 && !supportsPool(ap) {
 		return fmt.Errorf("AP 不支持 VLAN 池")
@@ -131,17 +128,28 @@ func validateServiceCapability(s Service, ap cweng.APStatus, radio uint8) error 
 	return nil
 }
 func serviceCapabilityNote(s Service, ap cweng.APStatus) string {
+	var notes []string
+	if s.Security == "wpa2-wpa3-psk" {
+		for _, c := range ap.Capabilities {
+			if selectedServiceRadios(s, ap)[c.RadioID] && !c.SupportWPA3 {
+				notes = append(notes, fmt.Sprintf("射频 %d 未声明 WPA3，按原固件下发兼容 PSK 参数", c.RadioID))
+			}
+		}
+	}
 	x := serviceOptions(s).Multicast
 	if x == nil {
-		return ""
+		return strings.Join(notes, "；")
 	}
 	if !ap.HasCapability(43) && (x.ConfigureGlobal || x.Snooping || x.Query) {
-		return "AP 未上报组播配置能力；组播参数不适用，无线服务照常下发"
+		notes = append(notes, "AP 未上报组播配置能力；组播参数不适用，无线服务照常下发")
 	}
 	if x.ConfigureGlobal && x.ToUnicast && (!ap.HasCapability(99) || ap.SubCapabilities[99]&1 == 0) {
-		return "AP 未上报组播转单播能力；该扩展不适用，其余配置照常下发"
+		notes = append(notes, "AP 未上报组播转单播能力；该扩展不适用，其余配置照常下发")
 	}
-	return ""
+	if x.ConfigureGlobal && (x.RateType2G == 1 || x.RateType5G == 1) && !ap.SupportsMulticastMCS() {
+		notes = append(notes, "AP 未上报组播 MCS 速率能力；该速率扩展不适用，其余配置照常下发")
+	}
+	return strings.Join(notes, "；")
 }
 
 func serviceSecurity(s Service) (byte, []byte) {
@@ -167,6 +175,19 @@ func advancedWLANElements(s Service, radio uint8, ap cweng.APStatus) []capwap.El
 		o.VLAN = 5000 + int(o.VLANPool)
 		s.Options = &o
 	}
+	if s.Security == "wpa2-wpa3-psk" {
+		supported := false
+		for _, c := range ap.Capabilities {
+			supported = supported || c.RadioID == radio && c.SupportWPA3
+		}
+		if !supported {
+			// Original callback@6dbd74 downgrades encryption4 to1 when
+			// apdb_support_wpa3_by_id returns0; auth/cipher/key stay intact.
+			o := serviceOptions(s)
+			s.Options = &o
+			s.Security = "wpa2-psk"
+		}
+	}
 	out := wlanElements(s, radio)
 	if !s.Enabled {
 		return out
@@ -181,6 +202,10 @@ func advancedWLANElements(s Service, radio uint8, ap cweng.APStatus) []capwap.El
 		value = append(value, 3, boolean(o.Isolate), 0, 0, 1, mode)
 		value = append(value, tail...)
 		out[1] = capwap.Element{Type: 0x25, Value: capwap.VendorEnvelopeValue(0x12345678, 0x94, []capwap.PrivElementValue{{Type: 0x94, Value: value}})}
+	} else if !ap.HasCapability(32) {
+		// PSK/open fields are byte-identical in9 and63. Their RADIUS tails
+		// differ, but RADIUS is outside this program's supported settings.
+		out[1] = privateSetting(9, out[1].Value[10:])
 	}
 	return out
 }
@@ -225,20 +250,36 @@ func wirelessExtraElements(s Service, radio uint8, ap cweng.APStatus) []capwap.E
 	}
 	if x := o.Multicast; x != nil {
 		// Global multicast processing/rates, plus per-radio/WLAN snooping/query switches.
-		rate := x.Rate2G
+		rate, rateType := x.Rate2G, x.RateType2G
 		for _, c := range ap.Capabilities {
 			if c.RadioID == radio && c.Band == "5 GHz" {
-				rate = x.Rate5G
+				rate, rateType = x.Rate5G, x.RateType5G
 			}
 		}
 		if x.ConfigureGlobal && ap.HasCapability(43) {
-			add(0x70, []byte{boolean(x.GlobalSnooping), boolean(x.DropUnknown), 1, radio, byte(rate >> 8), byte(rate)})
+			legacy := []byte{boolean(x.GlobalSnooping), boolean(x.DropUnknown), 0}
+			if rateType == 0 {
+				legacy[2] = 1
+				legacy = append(legacy, radio, byte(rate>>8), byte(rate))
+			}
+			add(0x70, legacy)
 
 			add(0x72, []byte{byte(x.QueryInterval >> 8), byte(x.QueryInterval), byte(x.MaxResponse)})
 
-			// c9 radio extension: type 0 controls unknown multicast frames.
+			// V6 _uac_wserv_pkt_igmp_snooping_config_send@6ecd34:
+			// c9 count16 then type8/length8/value; type0 is to-unicast,
+			// type1 is count8 then radio8/MCS8. These subfeatures are independent.
+			extension := []byte{0, 0}
 			if ap.HasCapability(99) && ap.SubCapabilities[99]&1 != 0 {
-				add(0xc9, []byte{0, 1, 0, 1, boolean(x.ToUnicast)})
+				extension[1]++
+				extension = append(extension, 0, 1, boolean(x.ToUnicast))
+			}
+			if rateType == 1 && ap.SupportsMulticastMCS() {
+				extension[1]++
+				extension = append(extension, 1, 3, 1, radio, byte(rate))
+			}
+			if extension[1] != 0 {
+				add(0xc9, extension)
 			}
 		}
 		if ap.HasCapability(43) {

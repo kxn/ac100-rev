@@ -2,10 +2,68 @@ package cweng
 
 import (
 	"encoding/binary"
+	"encoding/json"
 	"os"
 	"testing"
 	"uacgo/capwap"
 )
+
+func TestReportedAndLibraryCapabilitiesShareAXControlGateAndDefaults(t *testing.T) {
+	reported, err := os.ReadFile("../testdata/v6-apdb-tl7ap5100.bin")
+	if err != nil {
+		t.Fatal(err)
+	}
+	var db APDB
+	if err = json.Unmarshal([]byte(`{"ap_list":[{"id":100,"ap_name":"Generic","models":[{"hwver":"1.0","radios":{"2.4G":{"max_ssid":8,"max_stations":64,"extend_capability":"3f00","support_11ax":true},"5.0G":{"max_ssid":8,"max_stations":64,"extend_capability":"0","support_11ax":true}}}]}]}`), &db); err != nil {
+		t.Fatal(err)
+	}
+	for _, library := range []bool{false, true} {
+		for _, ax := range []bool{false, true} {
+			bits := make([]byte, 12)
+			if ax {
+				binary.BigEndian.PutUint32(bits[8:], 1<<6)
+			}
+			p, _ := capwap.NewParsedPacket(3)
+			priv := []capwap.PrivElementValue{{Type: 0xb2, Value: []byte{99, 1, 1, 1, 1, 1, 2, 0, 0}}}
+			if !library {
+				priv = append(priv, capwap.PrivElementValue{Type: 0x51, Value: reported})
+			}
+			p.Elements = []capwap.Element{{Type: 0x32, Value: bits}, {Type: 0x25, Value: capwap.VendorEnvelopeValue(0, 0, priv)}}
+			ap, err := ParseAPEntry(p)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if library {
+				ap.ModelID = 100
+				ap.HardwareVersion = "1.0"
+				db.ResolveCapabilities(ap)
+			}
+			if len(ap.Capabilities) != 2 || !ap.Capabilities[0].Features["downlink_mumimo"] {
+				t.Fatal("fixture has no raw AX feature", library, ap.Capabilities)
+			}
+			for _, c := range ap.Capabilities {
+				if c.ControlFeatures["downlink_mumimo"] != ax {
+					t.Fatal("raw AX or secondary-radio flags bypassed general70", library, ax, c)
+				}
+				if ax && (c.AXDefaults == nil || c.AXDefaults.Reserved != 99 || c.AXDefaults.TWT != 1) {
+					t.Fatal("report defaults lost through library fallback", c)
+				}
+				if !ax && c.AXDefaults != nil {
+					t.Fatal("unsupported AX defaults became controls", c)
+				}
+			}
+		}
+	}
+}
+
+func TestWideSubCapabilityDoesNotDiscardFollowingKnownCapabilities(t *testing.T) {
+	p, _ := capwap.NewParsedPacket(3)
+	p.Elements = []capwap.Element{{Type: 0x25, Value: capwap.VendorEnvelopeValue(0, 0, []capwap.PrivElementValue{{Type: 0x8f, Value: []byte{0, 2, 0, 44, 0, 8, 0, 0, 0, 1, 0, 0, 0, 2, 0, 16, 0, 1, 2}}})}}
+	ap, err := ParseAPEntry(p)
+	if err != nil || ap.SubCapabilities[44] != 2 || ap.SubCapabilities[16] != 2 {
+		t.Fatal("wider native entry truncated the capability table", ap, err)
+	}
+}
 
 func TestPhysicalPowerSubtypesAndCapability38ShareOneUnitView(t *testing.T) {
 	for _, physical := range []bool{false, true} {
@@ -137,5 +195,22 @@ func TestV6FirstAXDefaultReportAppliesToAllRadios(t *testing.T) {
 		if c.AXDefaults == nil || c.AXDefaults.Reserved != 99 {
 			t.Fatal("first report's leading byte must not select a radio", c)
 		}
+	}
+}
+
+func TestAPCapabilityCountUsesPayloadBoundsNotArbitraryLimit(t *testing.T) {
+	b := make([]byte, 16)
+	binary.BigEndian.PutUint32(b[12:], 131)
+	for range 130 {
+		b = append(b, 250, 0)
+	} // Unknown, structurally valid future records.
+	b = append(b, 1, 7)
+	b = append(b, "Generic"...)
+	got, err := ParseAPCapabilities(b)
+	if err != nil || got.Model != "Generic" {
+		t.Fatal(got, err)
+	}
+	if _, err = ParseAPCapabilities(b[:len(b)-1]); err == nil {
+		t.Fatal("accepted truncated value")
 	}
 }

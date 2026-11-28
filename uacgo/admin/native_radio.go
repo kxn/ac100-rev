@@ -3,9 +3,12 @@ package admin
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"math"
+	"sort"
 	"strconv"
+	"strings"
 	"time"
 	"uacgo/cweng"
 )
@@ -17,7 +20,7 @@ func radioModel(b json.RawMessage, radio uint8) (map[string]string, error) {
 	var v struct {
 		Error    *int `json:"error_code"`
 		Wireless struct {
-			Rows []map[string]map[string]string `json:"radio_entry"`
+			Rows []map[string]map[string]json.RawMessage `json:"radio_entry"`
 		} `json:"wireless"`
 	}
 	if err := json.Unmarshal(b, &v); err != nil {
@@ -31,12 +34,16 @@ func radioModel(b json.RawMessage, radio uint8) (map[string]string, error) {
 	}
 	for _, row := range v.Wireless.Rows {
 		for _, r := range row {
-			if r["radio_id"] == strconv.Itoa(int(radio)) {
-				return r, nil
+			if nativeString(r, "radio_id") == strconv.Itoa(int(radio)) {
+				out := make(map[string]string, len(r))
+				for key := range r {
+					out[key] = nativeString(r, key)
+				}
+				return out, nil
 			}
 		}
 	}
-	return nil, fmt.Errorf("AP radio model unavailable")
+	return nil, errNativeModelUnavailable
 }
 func (m *Manager) readRadio(ctx context.Context, id string, radio uint8) (map[string]string, error) {
 	b, err := m.engine.RequestJSON(ctx, id, json.RawMessage(`{"method":"get","wireless":{"table":"radio_entry"}}`))
@@ -45,7 +52,7 @@ func (m *Manager) readRadio(ctx context.Context, id string, radio uint8) (map[st
 	}
 	return radioModel(b, radio)
 }
-func nativeParameters(r RadioSetting, c cweng.RadioCapability, current map[string]string) (map[string]string, error) {
+func nativeParameters(r RadioSetting, c cweng.RadioCapability, current map[string]string, ap cweng.APStatus) (map[string]string, error) {
 	p := map[string]string{}
 	put := func(k string, v int) { p[k] = strconv.Itoa(v) }
 	flag := func(k string, v bool) { put(k, int(boolean(v))) }
@@ -75,7 +82,13 @@ func nativeParameters(r RadioSetting, c cweng.RadioCapability, current map[strin
 		if a.Mode < 0 || a.Mode >= len(modes) || a.Bandwidth < 0 || a.Bandwidth >= len(bw) {
 			return nil, fmt.Errorf("radio model conversion out of range")
 		}
-		if a.DCS != nil || a.Reject != nil || a.EDCA != nil || a.Enable6G || a.PSC6G || a.DownlinkMUMIMO != a.UplinkMUMIMO || a.DownlinkOFDMA != a.UplinkOFDMA {
+		if ap.HasCapability(70) && (radioControlFeatures(c)["uplink_mumimo"] || radioControlFeatures(c)["uplink_ofdma"]) {
+			// Shared native downlink keys cannot deliver independent uplink
+			// controls, including an explicit disable. Send the complete CAPWAP
+			// extension instead; equality of requested directions proves nothing.
+			return nil, fmt.Errorf("uplink_mumimo/uplink_ofdma require CAPWAP extensions")
+		}
+		if a.DCS != nil || a.Reject != nil || a.EDCA != nil || radioControlFeatures(c)["enable_6g"] || a.Enable6G || a.PSC6G || a.DownlinkMUMIMO != a.UplinkMUMIMO || a.DownlinkOFDMA != a.UplinkOFDMA {
 			return nil, fmt.Errorf("radio requires CAPWAP extensions")
 		}
 		put("mode", modes[a.Mode])
@@ -86,63 +99,89 @@ func nativeParameters(r RadioSetting, c cweng.RadioCapability, current map[strin
 		put("dtim_period", a.DTIM)
 		put("frag_threshold", a.Fragmentation)
 		put("rts_threshold", a.RTS)
-		for k, v := range map[string]bool{"wmm": a.WMM, "short_gi": a.ShortGI, "brd_probe": a.BroadcastProbe, "rssi_weak_restrict": a.RSSIRestrict, "rssi_weak_kick": a.RSSIKick, "airtime": a.Airtime} {
+		for k, v := range map[string]bool{"wmm": a.WMM, "short_gi": a.ShortGI, "brd_probe": a.BroadcastProbe} {
 			flag(k, v)
 		}
-		put("rssi_weak_restrict_val", a.RSSIThreshold)
-		put("rssi_weak_kick_val", a.RSSIKickThreshold)
-		onoff("vhtmubfer", a.DownlinkMUMIMO)
-		onoff("ofdma", a.DownlinkOFDMA)
-		onoff("twt", a.TWT)
-		// The CAPWAP default/automatic selector encodes zero as well. Omitting
-		// it left a previous manual GI active while reporting the reset verified.
-		put("gi_mode", max(0, a.GI))
+		if ap.HasCapability(1) {
+			flag("rssi_weak_restrict", a.RSSIRestrict)
+			flag("rssi_weak_kick", a.RSSIKick)
+			put("rssi_weak_restrict_val", a.RSSIThreshold)
+			put("rssi_weak_kick_val", a.RSSIKickThreshold)
+		}
+		if ap.HasCapability(10) {
+			flag("airtime", a.Airtime)
+		}
+		if ap.HasCapability(70) {
+			onoff("vhtmubfer", a.DownlinkMUMIMO)
+			onoff("ofdma", a.DownlinkOFDMA)
+			onoff("twt", a.TWT)
+			// Match the independent CAPWAP capability70 tail, including reset0.
+			put("gi_mode", max(0, a.GI))
+		}
 		if a.ManagementRate != 1 {
 			put("mgnt_frame_rate", a.ManagementRate)
 		}
 	}
+	var missing []string
 	for k := range p {
 		if _, ok := current[k]; !ok {
-			return nil, fmt.Errorf("AP radio model lacks %s", k)
+			missing = append(missing, k)
 		}
+	}
+	if len(missing) > 0 {
+		sort.Strings(missing)
+		return nil, fmt.Errorf("AP radio model lacks %s", strings.Join(missing, ", "))
 	}
 	return p, nil
 }
-func (m *Manager) tryNativeRadio(ctx context.Context, ap cweng.APStatus, r RadioSetting, c cweng.RadioCapability) (bool, error) {
-	// Enum conversions are established for this model/hardware. A JSON table
-	// on another model does not prove that it uses the same enum ABI.
-	if !ap.HasCapability(70) || ap.Model != "TL-7AP5100HC-PoE/DC易展版" || ap.HardwareVersion != "1.0" {
-		return false, nil
+
+// Delivery and readback coverage are separate: a successful write must not
+// become a failure (or a verified configuration) merely because a model omits
+// a field on readback. Missing fields never imply a false/off value.
+type nativeRadioResult struct {
+	used     bool
+	verified bool
+	reason   string
+}
+
+func (m *Manager) tryNativeRadio(ctx context.Context, ap cweng.APStatus, r RadioSetting, c cweng.RadioCapability) (nativeRadioResult, error) {
+	// The DMS model is selected by TDCP capability and the fields it actually
+	// exposes, never by which model/hardware happened to be tested in the lab.
+	// Legacy devices retain the independent CAPWAP radio codecs.
+	if !ap.SupportsTDCP() {
+		return nativeRadioResult{}, nil
 	}
 	probe, cancel := context.WithTimeout(ctx, 3*time.Second)
 	current, err := m.readRadio(probe, ap.ID, r.Radio)
 	cancel()
 	if err != nil {
-		if unsupportedModel(err) {
-			return false, nil
+		if errors.Is(err, errNativeModelUnavailable) {
+			return nativeRadioResult{reason: "AP 未提供原生射频回读；使用 CAPWAP 下发，尚未验证"}, nil
 		}
-		return true, err
+		if unsupportedModel(err) {
+			return nativeRadioResult{reason: "AP 不支持原生射频模型；使用 CAPWAP 下发，尚未回读验证"}, nil
+		}
+		return nativeRadioResult{used: true}, err
 	}
-	p, err := nativeParameters(r, c, current)
+	p, err := nativeParameters(r, c, current, ap)
 	if err != nil {
-		return false, nil
+		return nativeRadioResult{reason: "使用完整 CAPWAP 射频配置下发，尚未回读验证：" + err.Error()}, nil
 	}
 	body, _ := json.Marshal(map[string]any{"method": "set", "wireless": map[string]any{"table": "radio_entry", "filter": []map[string]string{{"radio_id": strconv.Itoa(int(r.Radio))}}, "para": p}})
 	b, err := m.engine.RequestJSON(ctx, ap.ID, body)
 	if err != nil {
-		return true, err
+		return nativeRadioResult{used: true}, err
 	}
 	if err = modelResult(b); err != nil {
-		return true, err
+		return nativeRadioResult{used: true}, err
 	}
 	actual, err := m.readRadio(ctx, ap.ID, r.Radio)
 	if err != nil {
-		return true, err
-	}
-	for k, v := range p {
-		if actual[k] != v {
-			return true, fmt.Errorf("AP radio readback %s=%s, requested %s", k, actual[k], v)
+		if errors.Is(err, errNativeModelUnavailable) {
+			return nativeRadioResult{used: true, reason: "配置已下发，AP 尚未提供射频回读，尚未验证"}, nil
 		}
+		return nativeRadioResult{used: true}, err
 	}
-	return true, nil
+	missing, err := compareNativeParameters(p, actual)
+	return nativeRadioResult{used: true, verified: err == nil && len(missing) == 0, reason: nativeReadbackReason(missing)}, err
 }

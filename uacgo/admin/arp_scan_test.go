@@ -1,11 +1,41 @@
 package admin
 
 import (
+	"encoding/binary"
+	"fmt"
 	"net/http/httptest"
 	"testing"
 	"time"
 	"uacgo/capwap"
 )
+
+func TestARPScanSeparatesExtendedDefenseSub0FromScanSub1(t *testing.T) {
+	for _, sub := range []byte{0, 1, 2, 3} {
+		t.Run(fmt.Sprint(sub), func(t *testing.T) {
+			m, e := testController(t)
+			f, ap := newDeferredAP(t, e, func(p *capwap.ParsedPacket) {
+				bits := make([]byte, 4)
+				binary.BigEndian.PutUint32(bits, 1<<16)
+				p.Elements = append(p.Elements, capwap.Element{Type: 0x32, Value: bits}, privateSetting(0x8f, []byte{0, 1, 0, 16, 0, 1, sub}))
+			})
+			r := httptest.NewRecorder()
+			m.Handler().ServeHTTP(r, httptest.NewRequest("POST", "http://localhost/api/aps/"+ap.ID+"/arp-scan", nil))
+			want := 409
+			if sub&2 != 0 {
+				want = 202
+			}
+			if r.Code != want {
+				t.Fatal("wrong scan sub-capability", sub, r.Code, r.Body.String())
+			}
+			f.mu.Lock()
+			commands := f.commands
+			f.mu.Unlock()
+			if (commands != 0) != (sub&2 != 0) {
+				t.Fatal("wrong recipient", sub, commands)
+			}
+		})
+	}
+}
 
 func TestARPScanNeedsSubCapabilityAndAcceptsUDPReport(t *testing.T) {
 	m, e := testController(t)

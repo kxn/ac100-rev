@@ -94,14 +94,21 @@ const featureNames = {
   multicast: "组播管理",
   multicast_per_ssid: "每服务组播策略",
   multicast_to_unicast: "组播转单播",
+  multicast_mcs_rate: "组播 MCS 速率",
   vlan_pool: "VLAN 池",
   band_navigation: "双频优选",
   band_steering: "RSSI 频段引导",
+  tdcp: "TDCP 原生接口",
+  statistics_control: "统计订阅控制",
+  mesh_backhaul_mode: "Mesh 回传模式控制",
+  port_vlan: "下联端口 VLAN",
+  port_vlan_extended: "扩展端口 VLAN 协议",
+  port_enable: "端口启停控制",
   trunk: "下联 Trunk",
   edca_mode: "EDCA 模式",
   rssi_control: "弱信号接入与剔除",
   channel_optimization: "动态信道优化",
-  fragmentation: "公平调度",
+  airtime: "公平调度",
   ssid_rate_limit: "无线限速",
   new_security_format: "新版安全协议",
   frame_rate_control: "管理帧速率",
@@ -499,7 +506,7 @@ function renderClients(meshOnly = false) {
           <div>${esc(apName(c.ap_id))}</div>
           <small>${esc(ssid)} · ${esc(bandLabel)}${c.vlan_id ? " · VLAN " + esc(c.vlan_id) : ""}${c.mlo ? ' · <span class="tag tag-info">MLO</span>' : ""}</small>
         </td>
-        <td>${signalMeter(c.rssi_dbm)}</td>
+        <td>${signalMeter(c.rssi_dbm)}${c.rssi_dbm != null && c.rssi_at ? `<small>采样 ${ago(c.rssi_at)}</small>` : ""}${c.native_signal ? `<small title="wireless.sta_list.rssi：该接口的信号单位因 AP 实现而异，不作 dBm 换算，也不用于漫游计算。">原生信号：${esc(c.native_signal.value)}（单位未确认）</small>` : ""}</td>
         <td class="mono">${esc(c.ip || "—")}${ipExtra ? `<small class="mono">${esc(ipExtra)}</small>` : ""}</td>
         <td class="num">
           ${c.statistics ? esc(c.statistics.negotiated_mbps) + " Mbps" : "—"}
@@ -946,7 +953,7 @@ function renderAPDetail(id) {
         <button type="button" class="btn secondary sm" data-label="${esc(id)}">改名</button>
         <button type="button" class="btn secondary sm" data-ap-copy="${esc(id)}">复制配置</button>
         ${!ap.online ? `<button type="button" class="btn secondary sm" data-ap-replace="${esc(id)}">替换 AP</button>` : ""}
-        <button type="button" class="btn secondary sm" data-readback="${esc(id)}" ${ap.online ? "" : "disabled"}>刷新状态</button>
+        <button type="button" class="btn secondary sm" data-readback="${esc(id)}" ${ap.online && ap.features?.tdcp ? "" : 'disabled title="AP未上报TDCP能力"'}>刷新状态</button>
         <button type="button" class="btn secondary sm" data-led="${esc(id)}" ${ap.online ? "" : "disabled"}>LED 开</button>
         <button type="button" class="btn secondary sm" data-led-off="${esc(id)}" ${ap.online ? "" : "disabled"}>LED 关</button>
         <button type="button" class="btn secondary sm" data-ap-action="reboot" data-action-ap="${esc(id)}" ${ap.online ? "" : "disabled"}>重启</button>
@@ -1135,8 +1142,7 @@ function serviceEditor(s, showBindings = false) {
       ${check("mc_unicast", "组播转单播", m.to_unicast)}
       ${check("mc_drop", "丢弃未知组播", m.drop_unknown)}
       ${check("mc_query", "组播查询", m.query)}
-      ${select("rate2", "2.4G组播速率", Object.fromEntries([1, 2, 5, 6, 9, 11, 12, 18, 24, 36, 48, 54].map((n) => [n, n + " Mbps"])), m.rate_2g)}
-      ${select("rate5", "5G组播速率", Object.fromEntries([6, 9, 12, 18, 24, 36, 48, 54].map((n) => [n, n + " Mbps"])), m.rate_5g)}
+      ${multicastRateFields(m)}
       ${field("query_interval", "查询间隔", m.query_interval, "number", 'min="1" max="65535"', "秒")}
       ${field("max_response", "最大响应时间", m.max_response, "number", 'min="1" max="255"', "秒")}
     </div></div>`;
@@ -1279,36 +1285,18 @@ function updateSecurity() {
     ? data.aps.filter((a) => bindings.some((b) => b.dataset.bindingAp === a.id))
     : selectedAPs(picked);
 
-  const compatible = targets.every((a) =>
-    (a.capabilities || [])
-      .filter((c) =>
-        explicit
-          ? bindings.some(
-              (b) =>
-                b.dataset.bindingAp === a.id &&
-                Number(b.dataset.bindingRadio) === c.radio_id,
-            )
-          : f.elements.binding_mode.value === "freq"
-            ? frequencyRadioSelected(f, a, c)
-            : f.elements["radio_" + c.radio_id]?.checked,
-      )
-      .every((c) => c.support_wpa3),
-  );
-
-  const option = [...f.elements.security.options].find(
-    (o) => o.value === "wpa2-wpa3-psk",
-  );
-  if (option) option.disabled = !compatible;
-
   const mcGlobal = targets.every((a) => a.features?.multicast);
   const mcSSID = targets.every((a) => a.features?.multicast_per_ssid);
   const mcUnicast = targets.every((a) => a.features?.multicast_to_unicast);
+  const mcMCS = targets.every((a) => a.features?.multicast_mcs_rate);
   for (const name of [
     "mc_global",
     "mc_global_snoop",
     "mc_drop",
     "rate2",
     "rate5",
+    "rate_type2",
+    "rate_type5",
     "query_interval",
     "max_response",
     "mc_unicast",
@@ -1319,6 +1307,10 @@ function updateSecurity() {
     el.disabled = !ok;
     el.closest("label").classList.toggle("hidden", !ok);
     if (!ok && el.type === "checkbox") el.checked = false;
+  }
+  for (const name of ["rate_type2", "rate_type5"]) {
+    const mcs = f.elements[name]?.querySelector('option[value="1"]');
+    if (mcs) mcs.disabled = !mcMCS;
   }
   for (const name of ["mc_snoop", "mc_query"]) {
     const el = f.elements[name];
@@ -1340,9 +1332,17 @@ function updateSecurity() {
   $("#mlo-check").closest("label").classList.toggle("hidden", !mloOK);
   if (!mloOK) f.elements.mlo.checked = false;
 
-  $("#security-compat").textContent = compatible
-    ? ""
-    : "部分绑定设备不支持 WPA3，请调整绑定范围或使用 WPA2。";
+  const compatible = targets.every((a) =>
+    (a.capabilities || [])
+      .filter((c) => explicit
+        ? bindings.some((b) => b.dataset.bindingAp === a.id && Number(b.dataset.bindingRadio) === c.radio_id)
+        : f.elements.binding_mode.value === "freq"
+          ? frequencyRadioSelected(f, a, c)
+          : f.elements["radio_" + c.radio_id]?.checked)
+      .every((c) => c.support_wpa3));
+  $("#security-compat").textContent = sec === "wpa2-wpa3-psk" && !compatible
+    ? "部分射频未声明 WPA3，将按原固件下发兼容 PSK 参数；已声明的射频保留混合模式。"
+    : "";
 }
 
 function inheritedAPOptions(ap) {
@@ -1363,8 +1363,23 @@ function effectiveRadioEditorRow(ap, id) {
   return { ...inherited, ...direct };
 }
 
+function multicastRateFields(m, allowMCS = true) {
+  return [2, 5].map((band) => {
+    const type = m[`rate_type_${band}g`] || 0;
+    const types = { 0: "Mbps", ...(allowMCS || type === 1 ? { 1: allowMCS ? "MCS" : "MCS（目标 AP 未声明）" } : {}) };
+    return select(`rate_type${band}`, `${band === 2 ? "2.4" : "5"}G组播速率类型`, types, type) +
+      field(`rate${band}`, `${band === 2 ? "2.4" : "5"}G组播速率值`, m[`rate_${band}g`], "number", 'min="0" max="255"', "Mbps 或原生 MCS 编号");
+  }).join("");
+}
+
 function constrainedRadioCapability(ap, cap) {
-  if (cap) cap = { ...cap, features: cap.control_features || cap.features };
+  if (cap)
+    cap = {
+      ...cap,
+      features: ap.features?.wifi6_features
+        ? cap.control_features || cap.features
+        : {},
+    };
   if (!cap || !ap.radio_linkage?.rows?.length) return cap;
   const p = ap.radio_linkage;
   const rawRegion = inheritedAPOptions(ap).region_code ?? 0;
@@ -1460,7 +1475,7 @@ async function radioEditor(id, radio, reset = false) {
     ["wmm", "WMM", true],
     ["short_gi", "Short GI", true],
     ["broadcast_probe", "响应广播 Probe", true],
-    ["airtime", "公平调度", ap.features?.fragmentation],
+    ["airtime", "公平调度", ap.features?.airtime],
     ["rssi_restrict", "弱信号接入限制", ap.features?.rssi_control],
     ["rssi_kick", "弱信号终端剔除", ap.features?.rssi_control],
     ["downlink_mumimo", "下行 MU-MIMO", cap.features?.downlink_mumimo],
@@ -1480,7 +1495,7 @@ async function radioEditor(id, radio, reset = false) {
     .join("")}</div>
     <div class="form-grid">
       ${ap.features?.rssi_control ? field("rssi_threshold", "接入 RSSI 门限", a.rssi_threshold, "number", 'min="-100" max="0"', "dBm") + field("rssi_kick_threshold", "剔除 RSSI 门限", a.rssi_kick_threshold, "number", 'min="-100" max="0"', "dBm") : ""}
-      ${ap.features?.wifi6_features ? select("gi_mode", "Wi-Fi 6 GI", { "-1": "自动", 0: "默认", 1: "1.6 μs", 2: "3.2 μs" }, a.gi_mode) : ""}
+      ${ap.features?.wifi6_features && cap.features?.twt ? select("gi_mode", "Wi-Fi 6 GI", { "-1": "自动", 0: "默认", 1: "1.6 μs", 2: "3.2 μs" }, a.gi_mode) : ""}
     </div>`;
 
   if (ap.features?.channel_optimization) {
@@ -1590,6 +1605,8 @@ async function submitService(f) {
       drop_unknown: checked("mc_drop"),
       rate_2g: num("rate2"),
       rate_5g: num("rate5"),
+      rate_type_2g: num("rate_type2"),
+      rate_type_5g: num("rate_type5"),
       query: checked("mc_query"),
       query_interval: num("query_interval"),
       max_response: num("max_response"),

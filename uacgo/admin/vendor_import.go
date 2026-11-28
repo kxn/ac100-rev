@@ -354,7 +354,7 @@ func ConvertVendorBackup(input []byte, iface string, targetMode int) (*VendorCon
 			mode = "ssid"
 		}
 		o.RateLimit = &WirelessRateLimit{Enabled: r.on("bw_ctrl_enable"), Mode: mode, Upload: r.n("up_limit") * 8, Download: r.n("down_limit") * 8}
-		o.Multicast = &MulticastOptions{ConfigureGlobal: true, GlobalSnooping: r.on("igmp_snooping_enable"), Snooping: r.on("igmp_snooping_switch"), Query: r.on("igmp_query_switch"), DropUnknown: r.on("igmp_drop_unknown"), Rate2G: r.n("igmp_2g_rate"), Rate5G: r.n("igmp_5g_rate"), QueryInterval: r.n("igmp_query_interval"), MaxResponse: r.n("igmp_max_resp_time")}
+		o.Multicast = &MulticastOptions{ConfigureGlobal: true, GlobalSnooping: r.on("igmp_snooping_enable"), Snooping: r.on("igmp_snooping_switch"), Query: r.on("igmp_query_switch"), DropUnknown: r.on("igmp_drop_unknown"), Rate2G: r.n("igmp_2g_rate"), Rate5G: r.n("igmp_5g_rate"), RateType2G: r.n("igmp_2g_rate_type"), RateType5G: r.n("igmp_5g_rate_type"), QueryInterval: r.n("igmp_query_interval"), MaxResponse: r.n("igmp_max_resp_time")}
 		mask := uint16(r.n("default_bind_freq"))
 		if r.on("auto_bind") {
 			s.AutoBindFrequencies = &mask

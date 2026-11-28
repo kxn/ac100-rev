@@ -107,6 +107,7 @@ func (db *APDB) resolveModel(ap *APEntry, model APDBModel, source string) {
 		ap.Capabilities = radios
 		ap.SupportTrunk = model.SupportTrunk
 		ap.MeshDevice = model.MeshDevice
+		ap.finalizeRadioCapabilities()
 		return
 	}
 }

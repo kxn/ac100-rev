@@ -82,14 +82,20 @@ func TestUpgradeBatchRejectsWrongHardwareAndInterruptedJobs(t *testing.T) {
 	}
 }
 func TestUpgradeSequentialWireAndVersionConfirmation(t *testing.T) {
-	for _, large := range []bool{false, true} {
-		t.Run(fmt.Sprint(large), func(t *testing.T) {
+	for _, tc := range []struct {
+		name         string
+		size         int
+		large, cap81 bool
+	}{
+		{"ordinary", 4096, false, true},
+		{"extension81", (16 << 20) + 4096, true, true},
+		{"ordinary-over-16MiB-without81", (16 << 20) + 4096, false, false},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			large := tc.large
 			m, e := testController(t)
 			f, ap := newDeferredAP(t, e)
-			size := 4096
-			if large {
-				size = (16 << 20) + 4096
-			}
+			size := tc.size
 			image := upgradeFixture(size)
 			im, err := m.importImage(image)
 			if err != nil {
@@ -97,7 +103,9 @@ func TestUpgradeSequentialWireAndVersionConfirmation(t *testing.T) {
 			}
 			ap.HardwareID = im.HardwareIDs[0]
 			ap.GeneralCapabilities = make([]uint32, 3)
-			ap.GeneralCapabilities[2] = 1 << 17
+			if tc.cap81 {
+				ap.GeneralCapabilities[2] = 1 << 17
+			}
 			m.known[ap.ID] = ap
 			m.mu.Lock()
 			jobs, err := m.queueUpgrades(im.ID, []string{ap.ID}, time.Time{})

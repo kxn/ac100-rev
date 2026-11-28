@@ -3,7 +3,6 @@ package admin
 import (
 	"context"
 	"crypto/md5"
-	"encoding/binary"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -13,6 +12,9 @@ import (
 )
 
 func (m *Manager) applyTelemetry(ctx context.Context, ap cweng.APStatus) {
+	if !ap.SupportsTDCP() {
+		return
+	}
 	key := ap.ID + "/wireless-reporting"
 	version := ap.ConnectedAt.Format(time.RFC3339Nano)
 	m.mu.Lock()
@@ -36,21 +38,16 @@ func (m *Manager) applyTelemetry(ctx context.Context, ap cweng.APStatus) {
 }
 
 func (m *Manager) requestTelemetry(ctx context.Context, id string) error {
-	// Byte-exact V6 baseline frame70, passed directly over authenticated CAPWAP.
+	// V6 baseline frame70 action, sent through capability49 TDCP transport.
 	return m.reportAction(ctx, id, "on", "begin_report")
 }
 
 func (m *Manager) reportAction(ctx context.Context, id, enable, action string) error {
 	ctx = m.itemContext(ctx, "telemetry:"+action)
 	body := []byte(fmt.Sprintf(`{"method":"do","nms_report":{"nms_report_action":{"type":"all","enable":"%s","action":"%s"}}}`, enable, action))
-	value := binary.BigEndian.AppendUint32(nil, 1)
-	value = binary.BigEndian.AppendUint32(value, uint32(len(body)))
-	value = append(value, 0)
-	value = append(value, body...)
 	c, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
-	_, err := m.engine.Request(c, id, 7, []capwap.Element{{Type: 0x25, Value: capwap.VendorEnvelopeValue(0x12345678, 0x83, []capwap.PrivElementValue{{Type: 0x83, Value: value}})}})
-	return err
+	return m.engine.NotifyJSON(c, id, body)
 }
 
 func (m *Manager) refreshAPHTTP(w http.ResponseWriter, r *http.Request) {

@@ -120,4 +120,6 @@ passing fixture tests alone does not establish device interoperability.
 
 V4/V6 roaming policy review: [source mapping](docs/cross-version-mobility-review.md), [firmware quirks and intentional fixes](docs/firmware-mobility-quirks.md).
 
+AP capability and model restrictions: [firmware mapping, native readback, and signal semantics](docs/ap-capability-audit.md).
+
 漫游与射频优化可[按功能选择V4/V6策略](docs/component-strategy-versions.md)，两处选择互相独立。

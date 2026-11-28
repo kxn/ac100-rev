@@ -63,6 +63,10 @@ func (m *Manager) statisticsControl() capwap.PrivStatisticsControl {
 }
 
 func (m *Manager) applyReporting(ctx context.Context, ap cweng.APStatus, cfg Config) {
+	// V4/V6 _stats_ctl_pkt_send_cb selects general capability24.
+	if !ap.HasCapability(24) {
+		return
+	}
 	key := ap.ID + "/reporting"
 	value := reportingControl(cfg, ap.ID).AssembleValue()
 	version := configurationKey(value, ap.ConnectedAt)
@@ -108,12 +112,12 @@ func (m *Manager) reconcileRadio(ctx context.Context, ap cweng.APStatus, r Radio
 		}
 	}
 	var err error
-	native := false
+	var native nativeRadioResult
 	recovered := false
 	if err = validateAdvanced(r, ap, cap); err == nil {
 		m.dirtyAP(ap.ID)
 		native, err = m.tryNativeRadio(c, ap, r, cap)
-		if !native && err == nil {
+		if !native.used && err == nil {
 			if r.Advanced != nil && (r.Enabled == nil || *r.Enabled) {
 				// The vendor cycles the radio before applying advanced parameters.
 				off := false
@@ -163,8 +167,8 @@ func (m *Manager) reconcileRadio(ctx context.Context, ap cweng.APStatus, r Radio
 		}
 	}
 
-	state := ApplyStatus{AP: ap.ID, Service: "radio:" + strconv.Itoa(int(r.Radio)), State: "acknowledged", At: time.Now()}
-	if native && err == nil {
+	state := ApplyStatus{AP: ap.ID, Service: "radio:" + strconv.Itoa(int(r.Radio)), State: "acknowledged", Reason: native.reason, At: time.Now()}
+	if native.verified && err == nil {
 		state.State = "verified"
 	}
 	if err != nil {

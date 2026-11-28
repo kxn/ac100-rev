@@ -119,9 +119,6 @@ func (m *Manager) queueUpgrades(image string, aps []string, when time.Time) ([]U
 		if err := im.Compatible(ap.Model, ap.HardwareVersion, ap.HardwareID, ap.BlockedFirmware); err != nil {
 			return nil, fmt.Errorf("%s: %w", id, err)
 		}
-		if im.Size > 16<<20 && !ap.HasCapability(81) {
-			return nil, fmt.Errorf("AP %s 不支持大固件传输", id)
-		}
 		for _, j := range m.upgrades.Jobs {
 			if j.AP == id && upgradeBusy(j) {
 				return nil, fmt.Errorf("AP %s 已有升级任务", id)
@@ -234,7 +231,7 @@ func (m *Manager) confirmImageAction(ap string, conn time.Time, a capwap.PrivSub
 		// Keep that exact authorization retryable until the AP reconnects.
 		for _, j := range m.upgrades.Jobs {
 			im := m.upgrades.Images[j.Image]
-			if j.AP == ap && j.State == "waiting_reconnect" && j.Connection.Equal(conn) && time.Since(j.Updated) < 8*time.Minute && im.Size > 16<<20 && j.Bytes == im.Size && a.Type == 3 && a.SubType == 255 && a.Action == 0 {
+			if j.AP == ap && j.State == "waiting_reconnect" && j.Connection.Equal(conn) && time.Since(j.Updated) < 8*time.Minute && largeFirmwareTransport(m.known[ap], im.Size) && j.Bytes == im.Size && a.Type == 3 && a.SubType == 255 && a.Action == 0 {
 				return &capwap.PrivSubFirmwareAction{Type: 2, SubType: 255}, nil
 			}
 		}
@@ -343,6 +340,14 @@ func (m *Manager) upgradeStep(ctx context.Context, ap cweng.APStatus, cfg Config
 	}
 	return true
 }
+
+// The original ordinary image sender has no capability81 or 16MiB recipient
+// limit (@786f08); the AF/B0/B1 extension specifically requires81 (@794ce0).
+// 16MiB is Go's streaming piece size, not an AP/image compatibility limit.
+func largeFirmwareTransport(ap cweng.APStatus, size int) bool {
+	return size > 16<<20 && ap.HasCapability(81)
+}
+
 func (m *Manager) transferImage(ctx context.Context, ap cweng.APStatus, j UpgradeJob, im firmware.Image) error {
 	ctx, cancel := context.WithTimeout(cweng.PinAP(ctx, ap), 15*time.Minute)
 	defer cancel()
@@ -371,7 +376,7 @@ func (m *Manager) transferImage(ctx context.Context, ap cweng.APStatus, j Upgrad
 		_, err := m.engine.Request(ctx, ap.ID, kind, els)
 		return err
 	}
-	large := size > 16<<20
+	large := largeFirmwareTransport(ap, size)
 	if large {
 		if err = request(7, privateSetting(0xaf, (capwap.PrivLargeFirmwareInfo{Type: 1, TotalSize: uint32(size), SubImages: uint32((size + (16 << 20) - 1) / (16 << 20)), MD5: hash}).AssembleValue())); err != nil {
 			return err

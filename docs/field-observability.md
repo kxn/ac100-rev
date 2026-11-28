@@ -132,6 +132,11 @@ V4 中 `phase=stopped` 有排序遍历停止的含义，并不保证后面的每
 
 ### 不要把 RSSI 的几种数值混为一谈
 
+原生 `wireless.sta_list.rssi` 与 CAPWAP RSSI 属于不同接口。`client.native_signal` 保存 `raw_value`、`interface` 和 `unit=unspecified`；客户端 API 的 `native_signal` 也只表示原始值。正数不能直接取负、减100或当百分比；负数同样不自动证明单位是dBm。这些原生值不供漫游估算使用。
+
+`client.native_snapshot` 记录本次快照开始时间、AP会话与错误。快照没有可用RSSI时，只能保留同一连接位置已有的CAPWAP测量及其原采样时间；看 `/api/clients` 的 `rssi_at` 和页面“采样”年龄，不能把快照时间当成新信号时间。字段缺失后RSSI整列消失，或采样时间不断变新却没有CAPWAP报告，都应检查合并逻辑。
+
+
 BSSID 报告入口的 `roaming.rate_estimate` 同时给出 `raw_rssi` 和 `adjusted_rssi`。当前固件派生的预处理包括减 10 dB、下限钳位；`candidate_input.candidate.rssi` 已经是候选侧用于筛选的数值，不能再减一次。缓存入口不要照搬这一步。
 
 以下仅示范 **V4 同频段**、配置差值为 8 的比较：
@@ -155,6 +160,8 @@ BSSID 报告入口的 `roaming.rate_estimate` 同时给出 `raw_rssi` 和 `adjus
 - 当前传输最多尝试三次，每次等待一秒。先看最终 `completed`；早期重试后成功，不应继续报告成当前故障。
 - `configuration.settled` 仅说明提交 ACK 与等待期已经结束，并开始请求新遥测，不代表每个射频/WLAN 都已做硬件回读验证。
 - 只修改客户端名称等配置时，版本可以增加但不需要重发所有无线参数；不能单凭“版本变了却没发命令”判错。
+
+原生配置回读缺字段（例如 `vhtmubfer`）或缺少射频行，应显示“已下发、尚未验证”及缺失说明；缺失不等于关闭、不匹配或AP故障。实际返回相反值才是回读不一致；超时、禁止、格式错误仍为失败。TDCP发送以能力49筛选，不能用AX70、PMK66或实验型号代替。详细入口见[能力复核](ap-capability-audit.md)。
 
 反复出现“ACK 成功、状态不对”，优先查提交标记、整批提交顺序、缓存应用、缺失参数、Native/旧 CAPWAP 两条配置路径及回读格式；不要不断重发同一组未经核对的报文。
 

@@ -159,10 +159,13 @@ function managementOptions(o, ap) {
     ports
       .map((id) => {
         const p = o.ports?.find((p) => p.id === id);
-        return `<tr>
+        const extended = !!(ap?.sub_capabilities?.[98] & 2);
+        const vlanOK = !ap || extended || (ap.downlink_port_count >= 1 && ap.downlink_port_count <= 4 && id <= ap.downlink_port_count);
+        const enableOK = !ap || !!(ap.sub_capabilities?.[98] & (1 << 14));
+        return `<tr data-physical-port="${id}">
           <td class="num">端口 ${id}</td>
-          <td><input name="opt_port_${id}_vlan" data-physical-port="${id}" type="number" min="1" max="4094" value="${p?.vlan ?? ""}" aria-label="端口 ${id} VLAN" placeholder="保持"></td>
-          <td>${select("opt_port_" + id + "_enabled", "", { "": "保持", on: "启用", off: "停用" }, p?.enabled == null ? "" : p.enabled ? "on" : "off")}</td>
+          <td>${vlanOK ? `<input name="opt_port_${id}_vlan" type="number" min="0" max="4094" value="${p?.vlan ?? ""}" aria-label="端口 ${id} VLAN" placeholder="${ap && !extended ? "默认 0（不设置 VLAN）" : "保持"}">` : '<span class="muted">未声明 VLAN 配置协议</span>'}</td>
+          <td>${enableOK ? select("opt_port_" + id + "_enabled", "", { "": "保持", on: "启用", off: "停用" }, p?.enabled == null ? "" : p.enabled ? "on" : "off") : '<span class="muted">未声明启停能力</span>'}</td>
         </tr>`;
       })
       .join(""),
@@ -499,8 +502,7 @@ document.addEventListener("click", async (event) => {
           .filter(
             (a) =>
               a.id !== old.id &&
-              a.model === old.model &&
-              a.hardware_version === old.hardware_version,
+              a.model === old.model,
           )
           .map((a) => [a.id, apName(a.id)]),
       );

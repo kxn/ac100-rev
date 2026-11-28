@@ -15,7 +15,7 @@ import (
 // The TLV container and actual values are checked against the V6 AP Join.
 type RadioCapability struct {
 	AXDefaults       *RadioFeatureDefaults `json:"feature_defaults,omitempty"`
-	ControlFeatures  map[string]bool       `json:"control_features,omitempty"`
+	ControlFeatures  map[string]bool       `json:"control_features"`
 	Source           string                `json:"source"`
 	Alternate        *RadioCapability      `json:"alternate_band,omitempty"`
 	FunctionType     int                   `json:"function_type"`
@@ -83,9 +83,33 @@ func (a APStatus) HasCapability(bit int) bool {
 	return bit >= 0 && bit/32 < len(a.GeneralCapabilities) && a.GeneralCapabilities[bit/32]&(1<<uint(bit%32)) != 0
 }
 
+// V4 _send_tdcp_request_to_ap_by_id@50b9c0 and V6@58a0bc prepend
+// capability0x31 to apmngr_db_get_addr_by_capacity's variadic filter.
+// Capability70 controls the AX radio extension; 66 controls PMK handling.
+func (a APStatus) SupportsTDCP() bool { return a.HasCapability(49) }
+
+func (a APStatus) SupportsARPScan() bool {
+	return a.HasCapability(16) && a.SubCapabilities[16]&2 != 0
+}
+func (a APStatus) SupportsMeshBackhaulMode() bool {
+	return a.HasCapability(44) && a.SubCapabilities[44]&2 != 0
+}
+
+// V6 config-update@6119c4 and apmngr_ap_port_cfg_send@5ded4c read
+// sub98 bits1/14 directly. Without extended VLAN support the original full
+// configuration uses private30 for one LAN, or private43 for two to four.
+func (a APStatus) UsesExtendedPortVLAN() bool { return a.SubCapabilities[98]&2 != 0 }
+func (a APStatus) SupportsPortEnable() bool   { return a.SubCapabilities[98]&(1<<14) != 0 }
+func (a APStatus) SupportsMulticastMCS() bool {
+	return a.HasCapability(99) && a.SubCapabilities[99]&2 != 0
+}
+func (a APStatus) SupportsPortVLAN(id uint8) bool {
+	return a.UsesExtendedPortVLAN() || a.ExtWirePhys >= 1 && a.ExtWirePhys <= 4 && id >= 1 && int(id) <= a.ExtWirePhys
+}
+
 func parseByteTLVs(b []byte, count int, visit func(byte, []byte) error) error {
-	if count > 128 {
-		return fmt.Errorf("apdb: excessive subtype count")
+	if count < 0 || count > len(b)/2 {
+		return fmt.Errorf("apdb: subtype count exceeds payload")
 	}
 	for i := 0; i < count; i++ {
 		if len(b) < 2 {
@@ -112,8 +136,8 @@ func parseAPCapabilities(b []byte, depth int) (APCapabilities, error) {
 		return out, fmt.Errorf("apdb: short header")
 	}
 	count := binary.BigEndian.Uint32(b[12:16])
-	if count > 128 {
-		return out, fmt.Errorf("apdb: excessive item count")
+	if uint64(count) > uint64((len(b)-16)/2) {
+		return out, fmt.Errorf("apdb: item count exceeds payload")
 	}
 	err := parseByteTLVs(b[16:], int(count), func(typ byte, v []byte) error {
 		switch typ {
@@ -278,6 +302,31 @@ func effectiveRadioPower(c RadioCapability, physical bool) RadioCapability {
 		}
 	}
 	return c
+}
+
+// Apply the same controller-facing capability view to private51 reports and
+// model-library fallback. Raw per-radio features remain available separately.
+// V6@73d0f0/742e24/73ea84 uses radio1's bitmap and general70 for AX controls;
+// rrm_get_apdb_pwr@4ac8e4 switches to physical power under general38.
+func (a *APEntry) finalizeRadioCapabilities() {
+	first := map[string]bool{}
+	for _, c := range a.Capabilities {
+		if c.RadioID == 1 {
+			first = c.Features
+		}
+	}
+	for i := range a.Capabilities {
+		c := effectiveRadioPower(a.Capabilities[i], a.HasCapability(38))
+		c.ControlFeatures = map[string]bool{}
+		for name, value := range first {
+			c.ControlFeatures[name] = value && a.HasCapability(70)
+		}
+		if a.radioFeatureDefaults != nil && a.HasCapability(70) {
+			d := *a.radioFeatureDefaults
+			c.AXDefaults = &d
+		}
+		a.Capabilities[i] = c
+	}
 }
 
 func (e *Engine) UseAPDB(db *APDB) { e.apdb = db }

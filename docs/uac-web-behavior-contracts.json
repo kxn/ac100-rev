@@ -90,7 +90,7 @@
       "id": "ap-option-wire",
       "feature": "ap-management",
       "origin": "firmware",
-      "behavior": "全局/模板/分组/单 AP 继承保留显式 false，能力允许的设置下发；型号可选字段过滤、显式覆盖严格校验。",
+      "behavior": "全局/模板/分组/单 AP 继承保留显式 false，能力允许的设置下发；型号可选字段过滤、显式覆盖严格校验。 端口 VLAN/启停分别直接查 sub98 bit1/14；旧1–4 LAN使用30/43完整 VLAN 向量，0为未分配。",
       "sources": [
         {
           "kind": "lua",
@@ -105,6 +105,34 @@
           "entry": "do_settings",
           "path": "usr/lib/lua/luci/controller/admin/apmng_set.lua",
           "sha256": "032d8ae4a6c7667ac6a3e9427050ffae9ebd761d19dde4d2276ce69b8476a88b"
+        },
+        {
+          "kind": "uac",
+          "name": "apmngr_pkt_config_update_request_pkt_send",
+          "address": "0x006119c4",
+          "size": 3780,
+          "sha256": "0f4c6c9df78fe003f2ff502b4ce99486d3ef251a4cd78ce3865962875b196161"
+        },
+        {
+          "kind": "uac",
+          "name": "apmngr_ap_port_cfg_send",
+          "address": "0x005ded4c",
+          "size": 1068,
+          "sha256": "b2763ffd7fe8021f362b6090e72de6cf9eef9049e586f671e4967036875f2287"
+        },
+        {
+          "kind": "uac",
+          "name": "_apmngr_pkt_ap_port_vlan_create",
+          "address": "0x0060ecd0",
+          "size": 756,
+          "sha256": "c9c03f99e86ede0b071e737d3eb102a30cad4efb7c62ca0eab377b7b3a6f1e83"
+        },
+        {
+          "kind": "uac",
+          "name": "_apmngr_pkt_ap_port_enable_create",
+          "address": "0x0060efc4",
+          "size": 760,
+          "sha256": "25313ac9b9f0ed7493b3506197e8cd39e31017e525ded10b97c424e0045bd6f5"
         }
       ],
       "implementation": [
@@ -115,6 +143,14 @@
         {
           "path": "uacgo/admin/management.go",
           "symbol": "effectiveAPOptions"
+        },
+        {
+          "path": "uacgo/cweng/capabilities.go",
+          "symbol": "SupportsPortVLAN"
+        },
+        {
+          "path": "uacgo/cweng/capabilities.go",
+          "symbol": "SupportsPortEnable"
         }
       ],
       "tests": [
@@ -129,6 +165,18 @@
         {
           "path": "uacgo/admin/management_test.go",
           "name": "TestMixedAPInheritanceFiltersOptionalHardwareButDirectOverrideIsStrict"
+        },
+        {
+          "path": "uacgo/admin/ports_test.go",
+          "name": "TestPortVLANSelectsOriginalLegacyAndExtensionFormats"
+        },
+        {
+          "path": "uacgo/admin/ports_test.go",
+          "name": "TestInheritedPortsProjectCapabilitiesWithoutMutatingExplicitIntent"
+        },
+        {
+          "path": "uacgo/admin/ports_test.go",
+          "name": "TestPortSettingsUseReportedIdentitiesAndExcludeUplink"
         }
       ]
     },
@@ -232,7 +280,7 @@
       "id": "copy-replace-retire",
       "feature": "ap-management",
       "origin": "firmware",
-      "behavior": "AP 复制替换迁移绑定和策略，旧 AP 身份不得重新接管。",
+      "behavior": "AP 复制替换迁移绑定和策略，旧 AP 身份不得重新接管。 按原代码比较型号，不追加硬件版本相等门禁；迁移后的配置仍对目标能力校验。",
       "sources": [
         {
           "kind": "lua",
@@ -247,6 +295,13 @@
           "entry": "ap_list_data_copy",
           "path": "usr/lib/lua/luci/controller/admin/apmng_set.lua",
           "sha256": "032d8ae4a6c7667ac6a3e9427050ffae9ebd761d19dde4d2276ce69b8476a88b"
+        },
+        {
+          "kind": "uac",
+          "name": "apmngr_ap_edit_ap_replace",
+          "address": "0x005d87c0",
+          "size": 980,
+          "sha256": "cb40a5c514643e01aebde8f144f8e4bd30e9005025a4dbac9d33d8257f28995a"
         }
       ],
       "implementation": [
@@ -311,7 +366,7 @@
       "id": "upgrade-image-confirmation",
       "feature": "operations",
       "origin": "firmware",
-      "behavior": "AP 镜像型号/硬件匹配、分块顺序、会话及校验；最终传输 ACK 与重新上线版本确认分开。",
+      "behavior": "AP 镜像型号/硬件匹配、分块顺序、会话及校验；最终传输 ACK 与重新上线版本确认分开。 普通传输不以16MiB/能力81拒绝；仅AF/B0/B1扩展要求81。16MiB分片是Go流式传输参数，不是原机兼容性白名单。",
       "sources": [
         {
           "kind": "lua",
@@ -326,12 +381,30 @@
           "entry": "check_image_import",
           "path": "usr/lib/lua/luci/controller/admin/apmng_upgrade.lua",
           "sha256": "7ec3c71efa3f66ffc96e093773b6cdfeaf5018c5d489bd82d5e8508fb95de39b"
+        },
+        {
+          "kind": "uac",
+          "name": "apupd_update_wtp_image_request_send",
+          "address": "0x00786f08",
+          "size": 1012,
+          "sha256": "ec10449104d7e074e4ae04443b414cc5e314d6bc10046fca439370d92a4aae03"
+        },
+        {
+          "kind": "uac",
+          "name": "apupd_large_image_info_send_by_capwap",
+          "address": "0x00794ce0",
+          "size": 664,
+          "sha256": "dfe7ab49298ef19f70ab8e7ff33e280beefb766eb24b67b5a3af5c679e3b112b"
         }
       ],
       "implementation": [
         {
           "path": "uacgo/admin/upgrade.go",
           "symbol": "upgradeRoutes"
+        },
+        {
+          "path": "uacgo/admin/upgrade.go",
+          "symbol": "largeFirmwareTransport"
         }
       ],
       "tests": [
@@ -357,7 +430,7 @@
       "id": "wlan-source-bytes",
       "feature": "wlan",
       "origin": "firmware",
-      "behavior": "保留 Open/PSK/WPA2-WPA3 的协议字段、隐藏/隔离、限速单位、MLO、新旧报文；RADIUS/Portal 排除。",
+      "behavior": "保留 Open/PSK/WPA2-WPA3 的协议字段、隐藏/隔离、限速单位、MLO、新旧报文；RADIUS/Portal 排除。 参数格式按63→94、否则32→63、否则09选择；无WPA3射频按原代码仅将encryption4回退1，auth/cipher/key不改，不阻塞该射频基础WLAN。",
       "sources": [
         {
           "kind": "uac",
@@ -414,6 +487,14 @@
         {
           "path": "uacgo/admin/server_test.go",
           "name": "TestWLANMatchesCapturedVendorPacket"
+        },
+        {
+          "path": "uacgo/admin/service_wire_test.go",
+          "name": "TestWirelessServiceSelectsLegacy9New63AndEnable94"
+        },
+        {
+          "path": "uacgo/admin/service_wire_test.go",
+          "name": "TestWPA3MixedFallsBackPerRadioAsOriginalWithoutBlockingWLAN"
         }
       ]
     },
@@ -467,7 +548,7 @@
       "id": "vlan-multicast",
       "feature": "wlan",
       "origin": "firmware",
-      "behavior": "无线 VLAN 池、组播列表的参数、能力分支、移除报文；IGMP 独立按能力选择接收 AP，不阻断基础 WLAN。",
+      "behavior": "无线 VLAN 池、组播列表的参数、能力分支、移除报文；IGMP 独立按能力选择接收 AP，不阻断基础 WLAN。 main43组播；main99/sub0转单播，sub1独立MCS速率；MCS不混进旧Mbps列表。",
       "sources": [
         {
           "kind": "lua",
@@ -510,6 +591,20 @@
           "address": "0x006d9ef8",
           "size": 1212,
           "sha256": "6deb7fc2a0c47c472c8f4f0c3a3fca1151b2417068593d5529a7958006777cfb"
+        },
+        {
+          "kind": "uac",
+          "name": "_uac_wserv_pkt_igmp_snooping_config_send",
+          "address": "0x006ecd34",
+          "size": 1788,
+          "sha256": "794f92634193117d602354ed2bf64679e21964d9fd8a1214de39ec648effecfd"
+        },
+        {
+          "kind": "uac",
+          "name": "cw_priv_radio_config_extension_assemble",
+          "address": "0x0065cbec",
+          "size": 752,
+          "sha256": "d8ab1548c8b2d3d3c33845af6b87dce9abacf38e672885ce5ce12f677a1d9e9e"
         }
       ],
       "implementation": [
@@ -546,6 +641,10 @@
         {
           "path": "uacgo/admin/reconcile_integration_test.go",
           "name": "TestUnsupportedIGMPDoesNotBlockWirelessService"
+        },
+        {
+          "path": "uacgo/admin/service_wire_test.go",
+          "name": "TestMulticastMCSAndUnicastUseIndependentSubCapabilities"
         }
       ]
     },
@@ -811,7 +910,7 @@
       "id": "rate-bitmap-capability",
       "feature": "rates",
       "origin": "firmware",
-      "behavior": "a/b/g/n/ac/ax 速率表编码及能力边界，下发失败可重试。",
+      "behavior": "a/b/g/n/ac/ax 速率表编码及能力边界，下发失败可重试。 AX速率表在独立速率设置与高级射频批次都按main70下发，不用不同的逐射频AX附加门禁。 两条发送路径共用编码器；AC为5GHz且支持AC，补齐高级射频批次的AC表。",
       "sources": [
         {
           "kind": "lua",
@@ -826,12 +925,23 @@
           "entry": "do_rate",
           "path": "usr/lib/lua/luci/controller/admin/apmng_rate.lua",
           "sha256": "bd2f15ee5a09eadb208350f08a58f76d8ad611a009c83d9e3fdfd7254357a239"
+        },
+        {
+          "kind": "uac",
+          "name": "rdmngr_wtp_pkt_send",
+          "address": "0x0073ea84",
+          "size": 9272,
+          "sha256": "5e16b47f9cbbe11862c03c11f722e288597605bb2c39d101107e2743c563009a"
         }
       ],
       "implementation": [
         {
           "path": "uacgo/admin/rates.go",
           "symbol": "rateElements"
+        },
+        {
+          "path": "uacgo/admin/rates.go",
+          "symbol": "radioRateElements"
         }
       ],
       "tests": [
@@ -842,6 +952,10 @@
         {
           "path": "uacgo/admin/rates_test.go",
           "name": "TestRateCapabilitiesRetryAndRestore"
+        },
+        {
+          "path": "uacgo/admin/rates_test.go",
+          "name": "TestRateEncodersShareOriginalAXCapabilityGate"
         }
       ]
     },
@@ -981,7 +1095,7 @@
       "id": "native-recovery-session-boundary",
       "feature": "association",
       "origin": "standalone-go",
-      "behavior": "独立 Go 程序重启恢复：完整原生无线表与已提交服务唯一匹配；有线主机不生成站点，旧会话包括空表不得覆盖新会话。",
+      "behavior": "独立 Go 程序重启恢复：完整原生无线表与已提交服务唯一匹配；有线主机不生成站点，旧会话包括空表不得覆盖新会话。 原生 sta_list.rssi 单位未确认，原始值独立保存/记录，不折算成 dBm 或供策略使用；同一连接位置的缺 RSSI 快照保留 CAPWAP 采样和旧时间，不跨会话/断开继承。",
       "sources": [],
       "implementation": [
         {
@@ -1009,6 +1123,18 @@
         {
           "path": "uacgo/cweng/client_snapshot_test.go",
           "name": "TestWirelessSnapshotRequiresExactSessionEvenForEmptyTable"
+        },
+        {
+          "path": "uacgo/admin/client_state_test.go",
+          "name": "TestNativeClientRefreshUsesTDCPNotPMKOrAXCapability"
+        },
+        {
+          "path": "uacgo/admin/client_state_test.go",
+          "name": "TestNativeSignalNeverInventsDBMOrErasesCAPWAPSample"
+        },
+        {
+          "path": "uacgo/cweng/client_snapshot_test.go",
+          "name": "TestWirelessSnapshotNeverCarriesSignalAcrossIdentityOrReconnect"
         }
       ]
     },
@@ -1739,12 +1865,30 @@
           "address": "0x004e42f8",
           "size": 252,
           "sha256": "9ddfa22dcf40bc3b0f9efd31a3cee10f6119a9ee61a5a3598ab13539dbe8fb14"
+        },
+        {
+          "kind": "uac",
+          "name": "_stats_ctl_pkt_send_cb",
+          "address": "0x007b5ad8",
+          "size": 384,
+          "sha256": "a181cd708ce34cece13b75e74a6a1a63445c79381977487a035e613bd70198d1"
+        },
+        {
+          "kind": "uac",
+          "name": "stats_pkt_ctl_update_to_all_ap",
+          "address": "0x007b5c58",
+          "size": 276,
+          "sha256": "0e9e6c8e704f301acda7b78772cf404b7ed0aba16d759353c65948a1897c41d7"
         }
       ],
       "implementation": [
         {
           "path": "uacgo/admin/mobility.go",
           "symbol": "defaultMobility"
+        },
+        {
+          "path": "uacgo/admin/radio.go",
+          "symbol": "applyReporting"
         }
       ],
       "tests": [
@@ -1759,6 +1903,10 @@
         {
           "path": "uacgo/admin/mobility_mode_test.go",
           "name": "TestReportingDisabledAndLongIntervalsUseOriginalCeiling"
+        },
+        {
+          "path": "uacgo/admin/mobility_mode_test.go",
+          "name": "TestStatisticsControlRecipientsRequireCapability24"
         }
       ]
     },
@@ -2075,12 +2223,23 @@
           "entry": "add_mesh_ap",
           "path": "usr/lib/lua/luci/controller/admin/apmng_mesh.lua",
           "sha256": "618cf8ba53938f6a8b0e50a2146ff4d8d4ac70eb04257bbeb60a622bd43e887e"
+        },
+        {
+          "kind": "uac",
+          "name": "mesh_pkt_bh_work_mode_send",
+          "address": "0x0053f248",
+          "size": 724,
+          "sha256": "7077f045b5459e4780cadc296f48d2b2080a8662ab3da4e6ac07b3ce5409240a"
         }
       ],
       "implementation": [
         {
           "path": "uacgo/admin/mesh.go",
           "symbol": "meshRoutes"
+        },
+        {
+          "path": "uacgo/cweng/capabilities.go",
+          "symbol": "SupportsMeshBackhaulMode"
         }
       ],
       "tests": [
@@ -2137,7 +2296,7 @@
       "id": "dhcp-arp-nd-wire",
       "feature": "protection",
       "origin": "firmware",
-      "behavior": "AP 执行 DHCP/ARP/ND 防护，混合地址和新旧能力布尔位/扩展标志；表总量与每 AP 容量分开。",
+      "behavior": "AP 执行 DHCP/ARP/ND 防护，混合地址和新旧能力布尔位/扩展标志；表总量与每 AP 容量分开。 扫描为 main16/sub1，ARP和ND扩展范围均用sub16 bit0。",
       "sources": [
         {
           "kind": "lua",
@@ -2152,12 +2311,30 @@
           "entry": "do_settings",
           "path": "usr/lib/lua/luci/controller/admin/apmng_arpdefend.lua",
           "sha256": "c717b4d7681e5c864b8df694387f3aef160e8376e862026622f45a543a3aaa03"
+        },
+        {
+          "kind": "uac",
+          "name": "uac_arp_defend_do_scan",
+          "address": "0x004c4db0",
+          "size": 560,
+          "sha256": "2830a9b6103aba218769e958a42db6ee29b5aebb3e67733075d367d72f0c9e65"
+        },
+        {
+          "kind": "uac",
+          "name": "arp_defend_wtp_pkt_send",
+          "address": "0x004cacd8",
+          "size": 3824,
+          "sha256": "9a1e3ace17f82c18eb178ba38928f146ae9d4030095ef3e06a7f10b04ce9f79f"
         }
       ],
       "implementation": [
         {
           "path": "uacgo/admin/protection.go",
           "symbol": "protectionElements"
+        },
+        {
+          "path": "uacgo/cweng/capabilities.go",
+          "symbol": "SupportsARPScan"
         }
       ],
       "tests": [
@@ -2172,6 +2349,10 @@
         {
           "path": "uacgo/admin/protection_test.go",
           "name": "TestProtectionKeepsLibraryAndPerDeviceCapacityDistinct"
+        },
+        {
+          "path": "uacgo/admin/arp_scan_test.go",
+          "name": "TestARPScanSeparatesExtendedDefenseSub0FromScanSub1"
         }
       ]
     },
@@ -2194,6 +2375,34 @@
           "entry": "check_usb_settings",
           "path": "usr/lib/lua/luci/controller/admin/apmng_usb.lua",
           "sha256": "63d334ea4ebc9d3cd18956cfe543958120f69244f77c1a751fb4a567615dd546"
+        },
+        {
+          "kind": "uac",
+          "name": "_uac_bcast_storm_ctrl_pkt_send_to_wtp",
+          "address": "0x004afdcc",
+          "size": 1024,
+          "sha256": "a0f654d177f1f9f2e880d4e7f86d1112e9c9f6e82776dfc02e0221f1494f5c07"
+        },
+        {
+          "kind": "uac",
+          "name": "apmngr_db_is_ap_support_arp_nd_proxy_feature",
+          "address": "0x005c1180",
+          "size": 440,
+          "sha256": "d64b0004cdfde61724ac73a1b715145e90007cee0431215254e002bf7e81b1ef"
+        },
+        {
+          "kind": "uac",
+          "name": "apmngr_db_is_ap_support_arp_nd_proxy_to_unicast_feature",
+          "address": "0x005c1338",
+          "size": 440,
+          "sha256": "fca6b3be3c523356990f7f23e024e0b686ee401c94aaffc5563ff0ee46289626"
+        },
+        {
+          "kind": "uac",
+          "name": "apmngr_db_is_ap_support_mdns_proxy_feature",
+          "address": "0x005c14f0",
+          "size": 440,
+          "sha256": "1867a51dd7fcd657875b79f1c272401b62930f2c5777123a38afa2cab5382646"
         }
       ],
       "implementation": [
@@ -2204,6 +2413,10 @@
         {
           "path": "uacgo/admin/management_wire.go",
           "symbol": "managementElements"
+        },
+        {
+          "path": "uacgo/admin/storm.go",
+          "symbol": "stormElements"
         }
       ],
       "tests": [
@@ -2214,6 +2427,10 @@
         {
           "path": "uacgo/admin/protection_test.go",
           "name": "TestAPMeshAndUSBOptions"
+        },
+        {
+          "path": "uacgo/admin/protection_test.go",
+          "name": "TestStormRejectsContradictoryProxyCapabilities"
         }
       ]
     },
@@ -2555,7 +2772,7 @@
       "id": "ax-defaults-and-model-enums",
       "feature": "radio",
       "origin": "firmware",
-      "behavior": "11ax Join 未设值与 RUN 两阶段默认、显式零值保留；型号模式编号与 RF 数值分离；高级设置按能力生成。",
+      "behavior": "11ax Join 未设值与 RUN 两阶段默认、显式零值保留；型号模式编号与 RF 数值分离；高级设置按能力生成。 上报和型号库统一归一化；AX控制取radio1扩展bit8–13并受main70约束，GI受TWT位约束。更宽sub记录保留低32位并继续解析后续记录；不复制原边界缺陷。",
       "sources": [
         {
           "kind": "uac",
@@ -2591,12 +2808,23 @@
           "address": "0x00742e24",
           "size": 1008,
           "sha256": "5fe8143eee1b67130d0ab06786fd54fb737a1aba4b53a6972ba2f97952d2d49d"
+        },
+        {
+          "kind": "uac",
+          "name": "cw_priv_wtp_sub_capability_parse",
+          "address": "0x006ae860",
+          "size": 516,
+          "sha256": "17140bac3aece884cf066fbf93fc610e889f5f5b46fdf5399fceeb3e6fbfbb99"
         }
       ],
       "implementation": [
         {
           "path": "uacgo/admin/radio_advanced.go",
           "symbol": "defaultRadioAdvanced"
+        },
+        {
+          "path": "uacgo/cweng/capabilities.go",
+          "symbol": "finalizeRadioCapabilities"
         }
       ],
       "tests": [
@@ -2623,6 +2851,18 @@
         {
           "path": "uacgo/admin/radio_advanced_test.go",
           "name": "TestRadioModeWMMAndBandwidthCombinations"
+        },
+        {
+          "path": "uacgo/cweng/capabilities_test.go",
+          "name": "TestReportedAndLibraryCapabilitiesShareAXControlGateAndDefaults"
+        },
+        {
+          "path": "uacgo/cweng/capabilities_test.go",
+          "name": "TestWideSubCapabilityDoesNotDiscardFollowingKnownCapabilities"
+        },
+        {
+          "path": "uacgo/cweng/capabilities_test.go",
+          "name": "TestAPCapabilityCountUsesPayloadBoundsNotArbitraryLimit"
         }
       ]
     },
@@ -3151,7 +3391,7 @@
       "id": "model-fallback-error-classification",
       "feature": "band-steering",
       "origin": "standalone-go",
-      "behavior": "Go型号JSON适配和原3a配置codec分开；仅未声明JSON能力或明确不支持事件/操作/指令才回旧通道。繁忙/禁止/参数错误、缺enable不标成功，不吞错。",
+      "behavior": "TDCP 原生读写/遥测统一使用原 V4/V6 的通用能力49，不以 AX70、PMK66 或已测型号/HW筛选。模型缺失或明确不支持才回 CAPWAP；成功应答缺字段只标未验证；繁忙、禁止、参数错误、格式错误、超时仍失败。独立上行 MU/OFDMA 通过完整 CAPWAP 下发。枚举适配是 Go 的原生模型适配，不宣称原 AC 使用同一适配路径。",
       "sources": [
         {
           "kind": "file",
@@ -3164,6 +3404,36 @@
           "address": "0x00633400",
           "size": 528,
           "sha256": "51d8603b8ec290ed5fb41ba1df0ebf5f3098403cdcf2f60d0c16b370451d57e5"
+        },
+        {
+          "kind": "uac",
+          "name": "_send_tdcp_request_to_ap_by_id",
+          "address": "0x0058a0bc",
+          "size": 648,
+          "sha256": "bc34b1990e94cbeb87b99f691dcac98ef3d48505c0627ce20e398db5bc3843fe"
+        },
+        {
+          "kind": "uac",
+          "name": "apmngr_db_get_addr_by_capacity",
+          "address": "0x005b6af4",
+          "size": 1768,
+          "sha256": "0cf2d1649966a3aa2a7950efd8d041a911e12641d328186ff1b3a74ef0159f4b"
+        },
+        {
+          "kind": "v4-uac",
+          "name": "_send_tdcp_request_to_ap_by_id",
+          "address": "0x0050b9c0",
+          "size": 652,
+          "sha256": "aa1a5b9cf373883d7f1343a791dbaa241e9a63863bae2506d6d60d1072406ce1",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68"
+        },
+        {
+          "kind": "v4-uac",
+          "name": "apmngr_db_get_addr_by_capacity",
+          "address": "0x00536828",
+          "size": 1752,
+          "sha256": "5399ca7f899d92ff952bd9caf1bc61f746a5448f17b25c91b3e023bc6f946618",
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68"
         }
       ],
       "implementation": [
@@ -3182,6 +3452,18 @@
         {
           "path": "uacgo/admin/native_radio.go",
           "symbol": "tryNativeRadio"
+        },
+        {
+          "path": "uacgo/cweng/rpc.go",
+          "symbol": "requestJSON"
+        },
+        {
+          "path": "uacgo/cweng/rpc.go",
+          "symbol": "NotifyJSON"
+        },
+        {
+          "path": "uacgo/admin/model_result.go",
+          "symbol": "compareNativeParameters"
         }
       ],
       "tests": [
@@ -3192,6 +3474,42 @@
         {
           "path": "uacgo/admin/native_radio_test.go",
           "name": "TestNativeModelResponsesRequireExplicitSuccess"
+        },
+        {
+          "path": "uacgo/cweng/rpc_test.go",
+          "name": "TestTDCPTransportGatesBothReplyModesAndSharesTransactions"
+        },
+        {
+          "path": "uacgo/admin/native_radio_test.go",
+          "name": "TestNativeRadioUsesReportedModelNotTestedDeviceIdentity"
+        },
+        {
+          "path": "uacgo/admin/native_radio_test.go",
+          "name": "TestNativeRadioWithoutTDCPUsesCAPWAPDespiteAXAndPMK"
+        },
+        {
+          "path": "uacgo/admin/native_radio_test.go",
+          "name": "TestNativeRadioCannotReplaceUplinkCommandsWithDownlinkKeys"
+        },
+        {
+          "path": "uacgo/admin/native_radio_test.go",
+          "name": "TestNativeRadioBaseModelDoesNotWriteUnsupportedExtensions"
+        },
+        {
+          "path": "uacgo/admin/native_radio_test.go",
+          "name": "TestNativeRadioSparseReadbackIsUnverifiedNotOffOrFailure"
+        },
+        {
+          "path": "uacgo/admin/native_radio_test.go",
+          "name": "TestSparseNativeRadioFallsBackWithoutDroppingAdvancedSettings"
+        },
+        {
+          "path": "uacgo/admin/native_radio_test.go",
+          "name": "TestNativeRadioFailuresCannotMasqueradeAsLegacySuccess"
+        },
+        {
+          "path": "uacgo/admin/band_navigation_test.go",
+          "name": "TestBandNavigationSparseReadbackDoesNotInventMismatch"
         }
       ]
     },

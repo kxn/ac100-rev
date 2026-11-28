@@ -448,8 +448,11 @@ func (m *Manager) replaceAPHTTP(w http.ResponseWriter, r *http.Request) {
 			target = &aps[i]
 		}
 	}
-	if old == nil || target == nil || old.Online || old.Model != target.Model || old.HardwareVersion != target.HardwareVersion {
-		jsonReply(w, 400, map[string]string{"error": "原 AP 必须离线，替换设备须为相同型号/硬件"})
+	// apmngr_ap_edit_ap_replace@5d87c0 compares model identity, not HW
+	// revision. saveManagement still validates the migrated settings against
+	// the target's actual capabilities before persisting any replacement.
+	if old == nil || target == nil || old.Online || old.Model != target.Model {
+		jsonReply(w, 400, map[string]string{"error": "原 AP 必须离线，替换设备须为相同型号"})
 		return
 	}
 	m.mu.Lock()

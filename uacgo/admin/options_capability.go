@@ -60,7 +60,15 @@ func supportedInheritedOptions(o APOptions, ap cweng.APStatus) APOptions {
 		ports := []APPort{}
 		for _, p := range o.Ports {
 			if reportedDownlink(ap, p.ID) {
-				ports = append(ports, p)
+				if !ap.SupportsPortVLAN(p.ID) {
+					p.VLAN = nil
+				}
+				if !ap.SupportsPortEnable() {
+					p.Enabled = nil
+				}
+				if p.VLAN != nil || p.Enabled != nil {
+					ports = append(ports, p)
+				}
 			}
 		}
 		o.Ports = ports
@@ -129,7 +137,7 @@ func inheritedRadioOptions(o APOptions, ap cweng.APStatus) APOptions {
 				a.Enable6G = false
 				a.PSC6G = false
 			}
-			if !ap.HasCapability(70) {
+			if !ap.HasCapability(70) || !radioControlFeatures(*c)["twt"] {
 				a.GI = -1
 			}
 			r.Advanced = &a

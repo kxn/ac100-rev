@@ -13,7 +13,7 @@ func meshFixture() *MeshConfig {
 	return &MeshConfig{Enabled: true, SSID: "Backhaul", Key: "mesh-test-key", Token: "pair-token", WebPassword: "Mesh123456", AutoAdd: true, BackhaulMode: 2}
 }
 func TestMeshPolicyPackedAndCapabilityGated(t *testing.T) {
-	ap := cweng.APStatus{SubCapabilities: map[uint16]uint32{44: 1}}
+	ap := cweng.APStatus{GeneralCapabilities: []uint32{0, 1 << 12}, SubCapabilities: map[uint16]uint32{44: 2}}
 	p := meshFixture()
 	if err := validateMesh(p); err != nil {
 		t.Fatal(err)
@@ -32,6 +32,11 @@ func TestMeshPolicyPackedAndCapabilityGated(t *testing.T) {
 	rows, _ = capwap.ParseVendorList(meshPolicyElements(p, ap, Config{})[0].Value[10:])
 	if len(rows) != 4 {
 		t.Fatal("unsupported backhaul mode sent")
+	}
+	ap.SubCapabilities = map[uint16]uint32{44: 1}
+	rows, _ = capwap.ParseVendorList(meshPolicyElements(p, ap, Config{})[0].Value[10:])
+	if len(rows) != 4 {
+		t.Fatal("Mesh sub0 falsely enabled the sub1 backhaul control")
 	}
 	pub := publicMesh(p)
 	if pub.Key != "" || pub.Token != "" || pub.WebPassword != "" || !pub.HasKey || !pub.HasToken || !pub.HasWebPassword || p.Key == "" {

@@ -52,18 +52,19 @@ func stationStatistics(a capwap.StaStatisticsRecord) *ClientStatistics {
 }
 
 type ClientEvent struct {
-	DisplayRSSI *int8              `json:"-"` // firmware MLO missing-report sentinel; not a measured sample
-	Connection  time.Time          `json:"-"`
-	LinkStatus  []ClientLinkStatus `json:"radio_entries,omitempty"`
-	Device      *ClientDeviceInfo  `json:"device,omitempty"`
-	MLOPeer     bool               `json:"mlo_peer,omitempty"`
-	RSSIAt      time.Time
-	VLAN        *uint16
-	ServiceID   string
-	SSID        string
-	IPv6        []string
-	ConnectedAt time.Time
-	Statistics  *ClientStatistics
+	DisplayRSSI  *int8               `json:"-"` // firmware MLO missing-report sentinel; not a measured sample
+	NativeSignal *ClientNativeSignal `json:"native_signal,omitempty"`
+	Connection   time.Time           `json:"-"`
+	LinkStatus   []ClientLinkStatus  `json:"radio_entries,omitempty"`
+	Device       *ClientDeviceInfo   `json:"device,omitempty"`
+	MLOPeer      bool                `json:"mlo_peer,omitempty"`
+	RSSIAt       time.Time
+	VLAN         *uint16
+	ServiceID    string
+	SSID         string
+	IPv6         []string
+	ConnectedAt  time.Time
+	Statistics   *ClientStatistics
 
 	MLD      *[6]byte
 	MLOLinks []capwap.AssociationLink
@@ -77,6 +78,13 @@ type ClientEvent struct {
 	MAC      [6]byte
 	RadioID  uint8
 	A, B     uint32
+}
+
+// Native station models do not have a uniform signal unit. Keep their value
+// separate from the signed CAPWAP RSSI used by controller policy.
+type ClientNativeSignal struct {
+	Value string    `json:"value"`
+	At    time.Time `json:"at"`
 }
 
 // ClientSink receives station events parsed from WTP Event Requests.

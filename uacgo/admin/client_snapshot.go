@@ -104,9 +104,12 @@ func (m *Manager) mergeWirelessSnapshot(ap cweng.APStatus, started time.Time, st
 		if tx > 0 || rx > 0 {
 			ev.Statistics = &cweng.ClientStatistics{NegotiatedMbps: uint16(max(tx, rx)), Bandwidth: -1}
 		}
-		if n, e := strconv.ParseInt(nativeString(r, "rssi"), 10, 8); e == nil && n < 0 {
-			v := int8(n)
-			ev.RSSI = &v
+		if raw := nativeString(r, "rssi"); raw != "" {
+			// This field differs between AP implementations. A positive value
+			// is not a signed dBm byte, and even its sign does not establish a
+			// conversion contract. Preserve it as diagnostics, never policy RSSI.
+			ev.NativeSignal = &cweng.ClientNativeSignal{Value: raw, At: started}
+			m.event("client.native_signal", "ap_id", ap.ID, "session", ap.ConnectedAt, "client", eventMAC(id), "radio", radio, "interface", "wireless.sta_list.rssi", "raw_value", raw, "unit", "unspecified")
 		}
 		if n, e := strconv.ParseUint(nativeString(r, "connect_time"), 10, 32); e == nil {
 			ev.ConnectedAt = started.Add(-time.Duration(n) * time.Second)

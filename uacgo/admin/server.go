@@ -919,7 +919,7 @@ func (m *Manager) HandlerWithOptions(options HTTPOptions) http.Handler {
 			if !online[ev.APID] && state != "disconnected" {
 				state = "ap_offline"
 			}
-			rows = append(rows, map[string]any{"vlan_id": ev.VLAN, "ssid": ev.SSID, "service_id": ev.ServiceID, "name": label.Name, "note": label.Note, "mac": mac, "ip": ev.IP, "ipv6": ev.IPv6, "mlo": ev.MLD != nil, "ap_id": ev.APID, "radio_id": ev.RadioID, "wlan_id": ev.WLANID, "state": state, "rssi_dbm": ev.RSSI, "last_seen": ev.Seen, "statistics": ev.Statistics, "connected_at": ev.ConnectedAt, "mlo_links": ev.MLOLinks, "radio_entries": ev.LinkStatus, "device": ev.Device})
+			rows = append(rows, map[string]any{"vlan_id": ev.VLAN, "ssid": ev.SSID, "service_id": ev.ServiceID, "name": label.Name, "note": label.Note, "mac": mac, "ip": ev.IP, "ipv6": ev.IPv6, "mlo": ev.MLD != nil, "ap_id": ev.APID, "radio_id": ev.RadioID, "wlan_id": ev.WLANID, "state": state, "rssi_dbm": ev.RSSI, "rssi_at": ev.RSSIAt, "native_signal": ev.NativeSignal, "last_seen": ev.Seen, "statistics": ev.Statistics, "connected_at": ev.ConnectedAt, "mlo_links": ev.MLOLinks, "radio_entries": ev.LinkStatus, "device": ev.Device})
 		}
 		sort.Slice(rows, func(i, j int) bool { return rows[i]["mac"].(string) < rows[j]["mac"].(string) })
 		jsonReply(w, 200, rows)

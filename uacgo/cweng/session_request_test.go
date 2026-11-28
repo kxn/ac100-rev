@@ -17,6 +17,7 @@ func requestTestSession(t *testing.T) (*Engine, *Session, chan *capwap.ParsedPac
 	t.Cleanup(func() { e.Close() })
 	s := newSession(&net.UDPAddr{IP: net.IPv4(192, 0, 2, 1), Port: 12000}, e.acData)
 	s.State = StateRun
+	s.apEntry = &APEntry{GeneralCapabilities: []uint32{0, 1 << 17}}
 	e.sessions[s.Addr.String()] = s
 	sent := make(chan *capwap.ParsedPacket, 8)
 	e.sendToForTest = func(_ *net.UDPAddr, b []byte) error {

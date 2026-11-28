@@ -229,7 +229,7 @@ func validateAPOptions(o APOptions) error {
 	}
 	seen := map[uint8]bool{}
 	for _, p := range o.Ports {
-		if p.ID == 0 || seen[p.ID] || p.VLAN != nil && (*p.VLAN < 1 || *p.VLAN > 4094) {
+		if p.ID == 0 || seen[p.ID] || p.VLAN != nil && *p.VLAN > 4094 {
 			return fmt.Errorf("AP 端口或 VLAN 无效")
 		}
 		seen[p.ID] = true

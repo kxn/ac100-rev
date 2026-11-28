@@ -22,7 +22,7 @@ func TestV6ModeIsCompatibilityAndLegacyModesCannotBeConfigured(t *testing.T) {
 func TestMobilityModeAndRSSIStatisticsActuallyReachAP(t *testing.T) {
 	m, e := testController(t)
 	f, ap := newDeferredAP(t, e)
-	ap.GeneralCapabilities = []uint32{1 << 25, 0, 1 << 8}
+	ap.GeneralCapabilities = []uint32{1<<24 | 1<<25, 0, 1 << 8}
 	p := defaultMobility()
 	p.NetworkMode = 2
 	p.Default.Statistics = true
@@ -61,5 +61,27 @@ func TestReportingDisabledAndLongIntervalsUseOriginalCeiling(t *testing.T) {
 	p.Default.StatisticsInterval = 3600
 	if got := reportingControl(cfg, "a"); got.B != 1 || got.E != 120 {
 		t.Fatal(got)
+	}
+}
+
+func TestStatisticsControlRecipientsRequireCapability24(t *testing.T) {
+	for _, supported := range []bool{false, true} {
+		m, e := testController(t)
+		f, ap := newDeferredAP(t, e)
+		ap.GeneralCapabilities = []uint32{1 << 25}
+		if supported {
+			ap.GeneralCapabilities[0] |= 1 << 24
+		}
+		m.applyReporting(context.Background(), ap, Config{})
+		f.mu.Lock()
+		commands := f.commands
+		f.mu.Unlock()
+		want := 0
+		if supported {
+			want = 1
+		}
+		if commands != want {
+			t.Fatal("roaming capability cannot stand in for statistics", supported, commands)
+		}
 	}
 }

@@ -3,6 +3,7 @@ package admin
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -36,7 +37,7 @@ func bandModel(b json.RawMessage) (map[string]string, error) {
 	var v struct {
 		Error  *int `json:"error_code"`
 		Module struct {
-			Settings map[string]string `json:"settings"`
+			Settings map[string]json.RawMessage `json:"settings"`
 		} `json:"apmng_band_navigation"`
 	}
 	if err := json.Unmarshal(b, &v); err != nil {
@@ -48,13 +49,17 @@ func bandModel(b json.RawMessage) (map[string]string, error) {
 	if *v.Error != 0 {
 		return nil, modelError{*v.Error}
 	}
-	if v.Module.Settings == nil {
-		return nil, fmt.Errorf("AP 未提供频段引导配置回读")
+	if _, ok := v.Module.Settings["enable"]; !ok {
+		return nil, errNativeModelUnavailable
 	}
-	if v.Module.Settings["enable"] != "on" && v.Module.Settings["enable"] != "off" {
+	out := make(map[string]string, len(v.Module.Settings))
+	for key := range v.Module.Settings {
+		out[key] = nativeString(v.Module.Settings, key)
+	}
+	if out["enable"] != "on" && out["enable"] != "off" {
 		return nil, fmt.Errorf("AP 频段引导回复缺少有效 enable")
 	}
-	return v.Module.Settings, nil
+	return out, nil
 }
 func (m *Manager) applyBandNavigation(ctx context.Context, ap cweng.APStatus, b *BandNavigation) {
 	if b == nil || !ap.HasCapability(3) {
@@ -75,14 +80,15 @@ func (m *Manager) applyBandNavigation(ctx context.Context, ap cweng.APStatus, b 
 	var raw json.RawMessage
 	var probeErr error
 	var modelErr error
-	if ap.HasCapability(70) {
+	if ap.SupportsTDCP() {
 		raw, probeErr = m.readBandNavigation(c, ap.ID)
 		if probeErr == nil {
 			_, modelErr = bandModel(raw)
 		}
 	}
 	var err error
-	if ap.HasCapability(70) && probeErr == nil && modelErr == nil {
+	verified := false
+	if ap.SupportsTDCP() && probeErr == nil && modelErr == nil {
 		enabled := "off"
 		if b.Enabled {
 			enabled = "on"
@@ -100,26 +106,31 @@ func (m *Manager) applyBandNavigation(ctx context.Context, ap cweng.APStatus, b 
 				var actual map[string]string
 				actual, err = bandModel(raw)
 				if err == nil {
-					for k, v := range para {
-						if actual[k] != v {
-							err = fmt.Errorf("频段引导 %s 回读不一致", k)
-							break
-						}
-					}
+					var missing []string
+					missing, err = compareNativeParameters(para, actual)
+					verified = err == nil && len(missing) == 0
+					state.Reason = nativeReadbackReason(missing)
+				} else if errors.Is(err, errNativeModelUnavailable) {
+					err = nil
+					state.Reason = "配置已下发，AP 未提供频段引导回读，尚未验证"
 				}
 			}
 		}
-		if err == nil {
+		if err == nil && verified {
 			state.State = "verified"
 		}
 	} else if probeErr != nil {
 		err = probeErr
 	} else {
-		// Only an explicit unsupported-model response permits the legacy path.
-		if ap.HasCapability(70) && !unsupportedModel(modelErr) {
+		// Explicit unsupported or successful-but-unavailable readback uses the
+		// independent CAPWAP command. Malformed/denied/transport failures don't.
+		if ap.SupportsTDCP() && !unsupportedModel(modelErr) && !errors.Is(modelErr, errNativeModelUnavailable) {
 			err = modelErr
 		} else {
 			_, err = m.engine.Request(c, ap.ID, 7, []capwap.Element{b.element()})
+			if ap.SupportsTDCP() {
+				state.Reason = "AP 未提供可用的原生频段引导回读；使用 CAPWAP 下发，尚未验证"
+			}
 		}
 	}
 	if err != nil {

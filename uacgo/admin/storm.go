@@ -5,6 +5,7 @@ import (
 	"encoding/binary"
 	"fmt"
 	"net/http"
+	"time"
 	"uacgo/capwap"
 	"uacgo/cweng"
 )
@@ -57,12 +58,17 @@ func defaultStorm() StormConfig {
 	}
 	return s
 }
-func stormElements(s StormConfig, ap cweng.APStatus) []capwap.Element {
+func stormElements(s StormConfig, ap cweng.APStatus) ([]capwap.Element, error) {
 	if !ap.HasCapability(14) {
-		return nil
+		return nil, nil
 	}
 	els := []capwap.Element{privateSetting(0x46, binary.BigEndian.AppendUint32([]byte{boolean(s.Enabled)}, s.Rate))}
 	caps := ap.SubCapabilities[14]
+	// _uac_bcast_storm_ctrl_pkt_send_to_wtp@4afdcc rejects this
+	// contradictory advertisement instead of encoding an empty proxy block.
+	if caps&4 != 0 && caps&1 == 0 {
+		return nil, fmt.Errorf("AP reports proxy-to-unicast without ARP/ND proxy capability")
+	}
 	var mask uint16
 	if caps&1 != 0 {
 		if s.ARP.Enabled {
@@ -90,7 +96,7 @@ func stormElements(s StormConfig, ap cweng.APStatus) []capwap.Element {
 			mask |= 0x200
 		}
 	}
-	if caps&13 != 0 {
+	if caps&9 != 0 {
 		els = append(els, privateSetting(0xcb, binary.BigEndian.AppendUint16(binary.BigEndian.AppendUint16(nil, mask), 0)))
 	}
 	if caps&2 != 0 {
@@ -103,7 +109,7 @@ func stormElements(s StormConfig, ap cweng.APStatus) []capwap.Element {
 		}
 		els = append(els, privateSetting(0xcc, body))
 	}
-	return els
+	return els, nil
 }
 func (m *Manager) applyStorm(ctx context.Context, ap cweng.APStatus, cfg Config) {
 	if cfg.Storm == nil && !m.policyOwned(ap.ID, "storm") {
@@ -113,7 +119,14 @@ func (m *Manager) applyStorm(ctx context.Context, ap cweng.APStatus, cfg Config)
 	if cfg.Storm != nil {
 		s = *cfg.Storm
 	}
-	if els := stormElements(s, ap); len(els) > 0 {
+	els, err := stormElements(s, ap)
+	if err != nil {
+		m.mu.Lock()
+		m.status[ap.ID+"/storm"] = ApplyStatus{AP: ap.ID, Service: "storm", State: "blocked", Error: err.Error(), At: time.Now()}
+		m.mu.Unlock()
+		return
+	}
+	if len(els) > 0 {
 		m.applyPolicy(ctx, ap, "storm", s, els)
 	}
 }
