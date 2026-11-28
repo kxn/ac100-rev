@@ -420,7 +420,7 @@ function renderClients(meshOnly = false) {
       c.device?.device_name,
       c.device?.hostname,
       c.device?.brand,
-      c.device?.system,
+      c.device?.brand_label,      c.device?.system,
       apName(c.ap_id),
     ];
     return hay.some((v) =>
@@ -472,7 +472,10 @@ function renderClients(meshOnly = false) {
       );
       const title =
         c.name || c.device?.device_name || c.device?.hostname || c.mac;
-      const meta = [c.device?.brand, c.device?.system]
+      const manufacturerTitle = (c.device?.recognition?.manufacturer_matches || [])
+        .map(m => `${m.organization} · ${m.prefix}/${m.prefix_bits}${m.translation_source?.includes("machine") ? "（中文为机器参考译名）" : ""}`)
+        .join("\n");
+      const meta = [c.device?.brand_label || c.device?.brand, c.device?.system]
         .filter(Boolean)
         .join(" · ");
       const ssid =
@@ -503,7 +506,7 @@ function renderClients(meshOnly = false) {
         <td>
           <strong class="${title === c.mac ? "mono" : ""}">${esc(title)}</strong>
           ${macLine ? `<small class="mono">${esc(macLine)}</small>` : ""}
-          ${meta ? `<small>${esc(meta)}</small>` : ""}
+          ${meta ? `<small title="${esc(manufacturerTitle)}">${esc(meta)}</small>` : ""}
         </td>
         <td>
           <span class="pill ${c.state === "connected" ? "online" : ""}">${esc(stateLabel)}</span>

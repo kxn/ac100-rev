@@ -1,0 +1,333 @@
+{
+  "ASUS": [
+    "ASUSTek COMPUTER INC."
+  ],
+  "Acer": [
+    "ACER NETXUS INC.",
+    "ACER PERIPHERALS, INC.",
+    "ACER TECHNOLOGIES CORP.",
+    "Acer Computer(Shanghai) Limited.",
+    "Acer Connect",
+    "Acer Inc.",
+    "Acer Incorporated"
+  ],
+  "Amazon": [
+    "Amazon Robotics MTAC Matrix NPI",
+    "Amazon Technologies Inc.",
+    "Amazon.com, LLC",
+    "Blink by Amazon "
+  ],
+  "Apple": [
+    "Apple, Inc."
+  ],
+  "AzureWave": [
+    "AzureWave Technologies (Shanghai) Inc.",
+    "AzureWave Technology Inc."
+  ],
+  "Broadcom": [
+    "Broadcom",
+    "Broadcom Corporation",
+    "Broadcom Inc.",
+    "Broadcom Limited",
+    "Broadcom Technologies"
+  ],
+  "Cisco": [
+    "Cisco Meraki",
+    "Cisco SPVTG",
+    "Cisco Systems Inc",
+    "Cisco Systems, Inc",
+    "Cisco-Linksys, LLC"
+  ],
+  "Compal": [
+    "COMPAL ELECTRONICS, INC.",
+    "COMPAL INFORMATION (KUNSHAN) CO., LTD. ",
+    "COMPAL INFORMATION(KUNSHAN)CO.,LTD.",
+    "Compal Broadband Networks, Inc.",
+    "Compal Communications, Inc.",
+    "Compal Electronics INC."
+  ],
+  "DJI": [
+    "DJI BAIWANG TECHNOLOGY CO LTD",
+    "DJI Osmo Technology Co., Ltd.",
+    "SZ DJI Ronin Technology Co., Ltd.",
+    "SZ DJI TECHNOLOGY CO.,LTD"
+  ],
+  "Dahua": [
+    "ZHEJIANG DAHUA TECHNOLOGYCO.,LTD",
+    "ZHEJIANG DAHUA ZHILIAN CO.,LTD",
+    "Zhejiang Dahua Technology Co., Ltd."
+  ],
+  "Dell": [
+    "Dell",
+    "Dell EMC",
+    "Dell Inc.",
+    "Dell Technologies",
+    "Dell'Orto S.P.A."
+  ],
+  "Espressif": [
+    "Espressif Inc.",
+    "Espressif Systems (Singapore) Pte. Ltd"
+  ],
+  "Foxconn": [
+    "FOXCONN",
+    "FOXCONN INTERCONNECT TECHNOLOGY",
+    "FOXCONN INTERCONNECT TECHNOLOGY ",
+    "Foxconn 4Tech",
+    "Foxconn Brasil Industria e Comercio Ltda",
+    "Foxconn Technology Co., Ltd.",
+    "Foxconn(NanJing) Communication Co.,Ltd.",
+    "HON HAI-CCPBG  PRECISION IND.CO.,LTD.",
+    "Hon Hai Precision IND.CO.,LTD",
+    "Hon Hai Precision Ind. CO.,Ltd.",
+    "Hon Hai Precision Ind. Co.,Ltd.",
+    "Hon Hai Precision Industry Co., Ltd.",
+    "Hon Hai Precision Industry Co.,LTD"
+  ],
+  "Google": [
+    "Google, Inc."
+  ],
+  "H3C": [
+    "Hangzhou H3C Technologies Co., Limited",
+    "New H3C Intelligence Terminal Co., Ltd.",
+    "New H3C Technologies Co., Ltd"
+  ],
+  "HP": [
+    "HP Inc.",
+    "Hewlett Packard"
+  ],
+  "HPE": [
+    "Hewlett Packard Enterprise",
+    "Hewlett Packard Enterprise "
+  ],
+  "Hikvision": [
+    "Hangzhou Hikvision Digital Technology Co.,Ltd."
+  ],
+  "Honor": [
+    "Honor Device Co., Ltd."
+  ],
+  "Huawei": [
+    "HUAWEI TECHNOLOGIES CO.,LTD",
+    "Huawei Device Co., Ltd.",
+    "Huawei Technologies Co., Ltd."
+  ],
+  "Intel": [
+    " Intel – GE Care Innovations LLC",
+    "Intel Corporate",
+    "Intel Corporation",
+    "Intel Wireless Network Group"
+  ],
+  "LG": [
+    "LG ELECTRONICS",
+    "LG ELECTRONICS INC",
+    "LG Electronics",
+    "LG Electronics (Mobile Communications)",
+    "LG Electronics Inc.",
+    "LG Electronics NV",
+    "LG Innotek"
+  ],
+  "Lenovo": [
+    "LENOVO(BEIJING)CO., LTD.",
+    "Lenovo",
+    "Lenovo (Beijing) Co., Ltd.",
+    "Lenovo (Beijing) Limited.",
+    "Lenovo Data Center Group",
+    "Lenovo Future Communication Technology (Chongqing) Company Limited",
+    "Lenovo Image(Tianjin) Technology Ltd.",
+    "Lenovo India Private Limited",
+    "Lenovo Information Products (Shenzhen)Co.,Ltd",
+    "Lenovo Mobile Communication (Wuhan) Company Limited",
+    "Lenovo Mobile Communication Technology Ltd."
+  ],
+  "Lite-On": [
+    "LITE-ON CLEAN ENERGY TECHNOLOGY CORP.",
+    "LITE-ON COMMUNICATIONS, INC.",
+    "LITE-ON Communications, Inc.",
+    "LITE-ON IT Corporation",
+    "LITE-ON Technology Corp.",
+    "Lite-On Network Communication (Dongguan) Limited",
+    "Lite-On Technogy Corp."
+  ],
+  "MediaTek": [
+    "MediaTek Inc"
+  ],
+  "Microsoft": [
+    "MICROSOFT CORP.",
+    "Microsoft",
+    "Microsoft Corp.",
+    "Microsoft Corporation",
+    "Microsoft Mobile Oy",
+    "Microsoft Research",
+    "Microsoft XCG"
+  ],
+  "Motorola": [
+    "Motorola Mobility LLC, a Lenovo Company"
+  ],
+  "Murata": [
+    "MURATA MACHINERY, LTD.",
+    "Murata Manufacturing CO., Ltd.",
+    "Murata Manufacturing Co., Ltd."
+  ],
+  "NETGEAR": [
+    "NETGEAR"
+  ],
+  "Nintendo": [
+    "Nintendo Co., Ltd.",
+    "Nintendo Co.,Ltd"
+  ],
+  "Nokia": [
+    "NOKIA MULTIMEDIA TERMINALS",
+    "NOKIA WIRELESS BUSINESS COMMUN",
+    "Nokia",
+    "Nokia Bell Labs",
+    "Nokia Bell N.V.",
+    "Nokia Corporation",
+    "Nokia Danmark A/S",
+    "Nokia NET Product Operations",
+    "Nokia Shanghai Bell Co., Ltd.",
+    "Nokia Siemens Networks GmbH & Co. KG.",
+    "Nokia Solutions (Shanghai) Co.,Ltd.",
+    "Nokia Solutions and Network India Private Limited",
+    "Nokia Solutions and Networks GmbH & Co. KG",
+    "Nokia Solutions and Networks India Private Limited"
+  ],
+  "OPPO": [
+    "GUANGDONG OPPO MOBILE TELECOMMUNICATIONS CORP.,LTD",
+    "OPPO Digital, Inc."
+  ],
+  "OnePlus": [
+    "OnePlus Electronics (Shenzhen) Co., Ltd.",
+    "OnePlus Tech (Shenzhen) Ltd",
+    "OnePlus Technology (Shenzhen) Co., Ltd"
+  ],
+  "Panasonic": [
+    "MATSUSHITA ELECTRIC IND. CO",
+    "Matsushita Electric Industrial Co.,Ltd.",
+    "PANASONIC AUTOMOTIVE SYSTEM MALAYSIA",
+    "PANASONIC LIFE SOLUTIONS ELEKTR?K SANAY? VE T?CARE",
+    "PANASONIC TECHNOLOGIES, INC./MIECO-US",
+    "Panasonic Appliances Company",
+    "Panasonic Appliances Marketing Asia Pacific",
+    "Panasonic Automotive Systems",
+    "Panasonic Automotive Systems Asia Pacific(Thailand)Co.,Ltd.",
+    "Panasonic Automotive Systems Co.,Ltd",
+    "Panasonic Automotive Systems Company of America",
+    "Panasonic Communications Co., Ltd.",
+    "Panasonic Connect Co., Ltd.",
+    "Panasonic Corporation",
+    "Panasonic Corporation AVC Networks Company",
+    "Panasonic Corporation of North America",
+    "Panasonic Ecology Systems",
+    "Panasonic Electric Works Automation Controls Techno Co.,Ltd.",
+    "Panasonic Electric Works Co., Ltd.",
+    "Panasonic Electric Works Networks Co., Ltd.",
+    "Panasonic Enterprise Solutions Company",
+    "Panasonic Entertainment & Communication Co., Ltd.",
+    "Panasonic Europe Ltd.",
+    "Panasonic India Private limited",
+    "Panasonic India Pvt. Ltd.",
+    "Panasonic Industrial Devices Europe GmbH",
+    "Panasonic Marketing Middle East & Africa FZE",
+    "Panasonic Mobile Communications Co.,Ltd.",
+    "Panasonic System Solutions Europe",
+    "Panasonic Taiwan Co.,Ltd.",
+    "Panasonic do Brasil Limitada"
+  ],
+  "Qualcomm": [
+    "QUALCOMM Incorporated",
+    "Qualcomm Inc."
+  ],
+  "Raspberry Pi": [
+    "Raspberry Pi (Trading) Ltd",
+    "Raspberry Pi Foundation",
+    "Raspberry Pi Trading Ltd"
+  ],
+  "Ruijie": [
+    "Ruijie Networks Co.,LTD"
+  ],
+  "Samsung": [
+    "SAMSUNG ELECTRO MECHANICS CO., LTD.",
+    "SAMSUNG ELECTRO-MECHANICS(THAILAND)",
+    "SAMSUNG ELECTRONICS",
+    "SAMSUNG Electronics Co.,Ltd.(LED Division)",
+    "SAMSUNG Electronics. Co. LTD",
+    "Samsung Electronics",
+    "Samsung Electronics Co., Ltd",
+    "Samsung Electronics Co., Ltd.",
+    "Samsung Electronics Co., Ltd. ARTIK",
+    "Samsung Electronics Co., Ltd., Memory Division",
+    "Samsung Electronics Co.,Ltd",
+    "Samsung Electronics.,LTD"
+  ],
+  "Sonos": [
+    "SONOS Co., Ltd.",
+    "Sonos Inc.",
+    "Sonos, Inc."
+  ],
+  "Sony": [
+    "SONY TEKTRONIX CORP.",
+    "SONY Visual Products Inc.",
+    "Sony Computer Entertainment America",
+    "Sony Corporation",
+    "Sony Home Entertainment&Sound Products Inc",
+    "Sony Honda Mobility Inc.",
+    "Sony Imaging Products & Solutions Inc.",
+    "Sony Interactive Entertainment Inc.",
+    "Sony Video & Sound Products Inc."
+  ],
+  "TCL": [
+    "TCL INCORPORATED",
+    "TCL King Electrical Appliances (Huizhou) Co., Ltd",
+    "TCL King Electrical Appliances(Huizhou)Co.,Ltd",
+    "TCL MOKA International Limited",
+    "TCL Networks Equipment Co., Ltd.",
+    "TCL OPERATIONS POLSKA SP. Z O.O.",
+    "TCL Technoly Electronics (Huizhou) Co., Ltd.",
+    "TCL Yuxin Zhixing Technology (Huizhou) Co.,Ltd",
+    "TCT mobile ltd"
+  ],
+  "TP-Link": [
+    "TP-LINK TECHNOLOGIES CO.,LTD.",
+    "TP-Link Systems Inc",
+    "TP-Link Systems Inc."
+  ],
+  "Tesla": [
+    "Tesla Inc",
+    "Tesla,Inc."
+  ],
+  "Tuya": [
+    "Tuya Smart Inc."
+  ],
+  "Ubiquiti": [
+    "Ubiquiti Inc"
+  ],
+  "Wistron": [
+    "Wistron (ChongQing)",
+    "Wistron Corporation",
+    "Wistron INFOCOMM (Zhongshan) CORPORATION",
+    "Wistron InfoComm(Chongqing)Co.,Ltd.",
+    "Wistron InfoComm(Kunshan)Co.,Ltd.",
+    "Wistron InfoComn (Kunshan) Co., Ltd.",
+    "Wistron Infocomm (Zhongshan) Corporation",
+    "Wistron InforComm (Zhongshan) Corporation",
+    "Wistron Mexico SA de CV",
+    "Wistron Service(Kunshan) Co., Ltd."
+  ],
+  "Xiaomi": [
+    "Beijing Xiaomi Electronics Co., Ltd.",
+    "Beijing Xiaomi Electronics Co.,Ltd",
+    "Beijing Xiaomi Mobile Software Co., Ltd",
+    "XIAOMI Electronics,CO.,LTD",
+    "Xiaomi Communications Co Ltd",
+    "Xiaomi EV Technology Co., Ltd."
+  ],
+  "ZTE": [
+    "zte corporation"
+  ],
+  "realme": [
+    "Realme Chongqing Mobile Telecommunications Corp.,Ltd.",
+    "Realme Chongqing MobileTelecommunications Corp Ltd"
+  ],
+  "vivo": [
+    "vivo Mobile Communication Co., Ltd."
+  ]
+}

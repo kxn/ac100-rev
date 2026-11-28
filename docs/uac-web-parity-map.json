@@ -284,7 +284,10 @@
         "uacgo/cweng/wireless_statistics.go",
         "uacgo/cweng/wsta.go",
         "uacgo/terminal/recognition.go",
-        "uacgo/terminal/tables_generated.go"
+        "uacgo/terminal/tables_generated.go",
+        "uacgo/data/oui.go",
+        "uacgo/ouidb/default.go",
+        "uacgo/ouidb/registry.go"
       ],
       "regressions": [
         "uacgo/admin/admission_test.go",
@@ -295,7 +298,8 @@
         "uacgo/cweng/association_audit_test.go",
         "uacgo/cweng/client_snapshot_test.go",
         "uacgo/cweng/station_policy_test.go",
-        "uacgo/terminal/recognition_test.go"
+        "uacgo/terminal/recognition_test.go",
+        "uacgo/ouidb/registry_test.go"
       ],
       "basis": "74a4b0/744b70/749290/7498c0：原返回码和监听顺序；统计不能创建关联。52/53/54/c6/bd 结构、计量单位、终端识别和 MLO peer/根展示分离。",
       "evidence_contracts": [
@@ -304,7 +308,8 @@
         "native-recovery-session-boundary",
         "terminal-recognition",
         "v6-event-order-and-mlo",
-        "typed-statistics-bssid"
+        "typed-statistics-bssid",
+        "ieee-oui-manufacturer"
       ]
     },
     {

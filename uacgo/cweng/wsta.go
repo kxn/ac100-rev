@@ -439,7 +439,8 @@ func (t *ClientTable) StationEvent(ev ClientEvent) {
 				ev.Device = &ClientDeviceInfo{}
 			}
 			ev.Device.Recognition = &r
-			ev.Device.Brand, ev.Device.System = r.BrandName(), r.SystemName()
+			ev.Device.Brand, ev.Device.System = r.ManufacturerName(), r.SystemName()
+			ev.Device.BrandLabel = r.BrandLabel()
 		}
 		t.m[ev.MAC] = ev
 		t.recordTransition(old, known, ev)

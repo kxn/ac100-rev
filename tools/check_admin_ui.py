@@ -47,6 +47,7 @@ clients = [
         "state": "connected",
         "rssi_dbm": -52,
         "native_signal": {"value": "52", "at": "2026-11-27T17:10:00Z"},
+        "device": {"brand": "Example company", "brand_label": "示例机构", "recognition": {"manufacturer_matches": [{"organization":"Example company", "prefix":"001122", "prefix_bits":24,"translation_source":"machine-unreviewed"}]}},
         "ip": "192.0.2.20",
         "connected_at": "2026-11-27T11:00:00Z",
         "last_seen": "2026-11-27T17:10:00Z",
@@ -896,6 +897,8 @@ with sync_playwright() as p:
         page.locator('#mesh-form [name="web_password"]').fill("test-admin")
         assert submit("#mesh-form")["path"] == "mesh"
         visit("clients")
+        assert page.get_by_text("示例机构", exact=True).first.is_visible()
+        assert "Example company" in page.get_by_text("示例机构", exact=True).first.get_attribute("title")
         client_table = page.locator("#content")
         assert "协商 1201 Mbps" in client_table.inner_text()
         assert "协商 未上报" in client_table.inner_text()

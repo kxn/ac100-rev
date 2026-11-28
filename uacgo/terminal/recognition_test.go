@@ -52,3 +52,34 @@ func TestFirmwareUnknownCaseAndTruncation(t *testing.T) {
 		t.Fatal("text beyond the firmware input length matched", r)
 	}
 }
+
+func TestIEEEManufacturerReplacesSmallTableWithoutChangingOtherInputs(t *testing.T) {
+	r := New([6]byte{0x24, 0x6f, 0x28, 0, 0, 1})
+	if r.ManufacturerName() != "Espressif" || r.BrandLabel() != "乐鑫" || len(r.Manufacturers) != 1 || r.Manufacturers[0].Organization == "" {
+		t.Fatal(r)
+	}
+	r = r.Observe(Input{Type: 1, Text: "iPhone"})
+	if r.BrandName() != "apple" || r.BrandSource != 2 || r.BrandLabel() != "苹果" {
+		t.Fatal("hostname priority was lost", r)
+	}
+	r = r.Observe(Input{Type: 2, Text: "android-dhcp"})
+	if r.SystemName() != "android" {
+		t.Fatal("DHCP Class classifier replaced", r)
+	}
+	// An OUI hint has only24 bits; use the public MA-L entry without fabricating a full MAC.
+	r = New([6]byte{2, 0, 0, 0, 0, 1}).Observe(Input{Type: 0, OUIs: [][3]byte{{0x24, 0x6f, 0x28}}})
+	if r.BrandLabel() != "乐鑫" || r.ManufacturerSource != "reported_oui" || r.Manufacturers[0].Bits != 24 {
+		t.Fatal(r)
+	}
+}
+
+func TestIEEEAmbiguousAndRandomIdentityDoNotInventBrand(t *testing.T) {
+	r := New([6]byte{8, 0, 0x30, 0, 0, 1})
+	if len(r.Manufacturers) != 3 || r.BrandLabel() != "登记机构有歧义" {
+		t.Fatal(r)
+	}
+	r = New([6]byte{2, 0, 0x30, 0, 0, 1})
+	if len(r.Manufacturers) != 0 || r.BrandLabel() != "" {
+		t.Fatal("random/local MAC acquired a factory brand", r)
+	}
+}

@@ -1,0 +1,108 @@
+{
+  "schema": 1,
+  "downloaded_on": "2026-11-28",
+  "source": "IEEE Registration Authority public MA-L/MA-M/MA-S/IAB listings",
+  "sources": [
+    {
+      "url": "https://standards-oui.ieee.org/oui/oui.csv",
+      "sha256": "7666a5bb9936e99b6e7027083e468154344f991e27c0ff30ac2917fbe6dc0c34",
+      "rows": 40565,
+      "bytes": 3881973
+    },
+    {
+      "url": "https://standards-oui.ieee.org/oui28/mam.csv",
+      "sha256": "e3168ecffacb250034233b13450f0d8b85190a19853f92d5a202b0951ddb0aa4",
+      "rows": 6704,
+      "bytes": 766278
+    },
+    {
+      "url": "https://standards-oui.ieee.org/oui36/oui36.csv",
+      "sha256": "b5d7bd23fb31db84c0835cc910893956443136b2147e364a336f90997889e91b",
+      "rows": 7306,
+      "bytes": 679306
+    },
+    {
+      "url": "https://standards-oui.ieee.org/iab/iab.csv",
+      "sha256": "6e71aa3d47f00f19d09cb3b31ce1038de1834703420f0ce4ce111da586f1a533",
+      "rows": 4575,
+      "bytes": 381117
+    }
+  ],
+  "assignments": 59150,
+  "organizations": 34119,
+  "brands": 50,
+  "brand_assignment_counts": {
+    "Nokia": 409,
+    "Cisco": 1389,
+    "ZTE": 508,
+    "Huawei": 2117,
+    "HP": 195,
+    "H3C": 178,
+    "Honor": 64,
+    "Intel": 687,
+    "Espressif": 378,
+    "Nintendo": 111,
+    "Xiaomi": 351,
+    "AzureWave": 83,
+    "Apple": 1593,
+    "Hikvision": 84,
+    "OPPO": 193,
+    "OnePlus": 21,
+    "Amazon": 216,
+    "Motorola": 132,
+    "Samsung": 971,
+    "Panasonic": 54,
+    "Murata": 81,
+    "Dell": 197,
+    "Foxconn": 165,
+    "Ubiquiti": 49,
+    "Sony": 141,
+    "Ruijie": 34,
+    "vivo": 170,
+    "Raspberry Pi": 10,
+    "Microsoft": 134,
+    "TCL": 77,
+    "realme": 64,
+    "Lenovo": 30,
+    "Google": 114,
+    "Tuya": 44,
+    "LG": 176,
+    "Compal": 43,
+    "Broadcom": 35,
+    "ASUS": 94,
+    "TP-Link": 269,
+    "Dahua": 33,
+    "Wistron": 31,
+    "Qualcomm": 5,
+    "NETGEAR": 77,
+    "Lite-On": 7,
+    "Sonos": 16,
+    "Acer": 7,
+    "DJI": 17,
+    "HPE": 183,
+    "Tesla": 7,
+    "MediaTek": 4
+  },
+  "artifact_sha256": "80a48fa83be6cffb2a13d55857659c9f61f4800b4aa239a49fd0510b01216c42",
+  "artifact_bytes": 1046827,
+  "chinese_names": {
+    "cache_sha256": "cb027c779f663b437a81195e1a9dfd067c84d2bd83a5097353b7786bc253bfb7",
+    "overrides_sha256": "93a05bcf48b339c99230c4f7a6af843a0a590d44585324a4eadcc3a5ad240ace",
+    "model": {
+      "name": "Argos Translate en_zh 1.9",
+      "package_sha256": "433e7c4f034d87fbe2353161e05f18646d7999452f801a4e1f0378522b9850ab",
+      "url": "https://data.argosopentech.com/argospm/v1/translate-en_zh-1_9.argosmodel",
+      "engine": "CTranslate2 int8 CPU, beam2",
+      "weights_committed": false
+    },
+    "with_chinese_reference": 34019,
+    "source_counts": {
+      "curated-reference": 3,
+      "glossary+machine": 228,
+      "machine-unreviewed": 33778,
+      "original-han": 9,
+      "registry-meaning": 1,
+      "untranslated": 100
+    }
+  }
+}

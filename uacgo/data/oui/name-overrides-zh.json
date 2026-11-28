@@ -1,0 +1,18 @@
+{
+  "Private": {
+    "name_zh": "未公开机构",
+    "source": "registry-meaning"
+  },
+  "ROYAL MELBOURNE INST OF TECH": {
+    "name_zh": "皇家墨尔本理工大学",
+    "source": "curated-reference"
+  },
+  "CERN": {
+    "name_zh": "欧洲核子研究组织",
+    "source": "curated-reference"
+  },
+  "IEEE Registration Authority": {
+    "name_zh": "IEEE注册管理机构",
+    "source": "curated-reference"
+  }
+}

@@ -30,6 +30,7 @@ import (
 	"uacgo/controllercfg"
 	"uacgo/dhcpserver"
 	"uacgo/internal/eventlog"
+	"uacgo/ouidb"
 
 	"uacgo/capwap"
 	"uacgo/cweng"
@@ -159,6 +160,9 @@ func main() {
 	e.RegisterAttachHandlers(fileIdentity{id: id, port: uint16(*port), engine: e})
 	e.RegisterV6Compatibility()
 	e.UseStore(&cweng.SQLiteAPStore{Cfg: apStore.DB(), Run: apStore.DB()})
+	// Preload the offline IEEE registry before the first client association.
+	registry := ouidb.Default()
+	events.Event("terminal.registry_loaded", "assignments", registry.Count(), "sources", registry.Sources())
 	clients := cweng.NewClientTable()
 	e.RegisterWstaHandlers(clients)
 	e.RegisterObservationHandlers()

@@ -4,6 +4,9 @@
 uacgo/data/**
 !uacgo/data/identity.json
 !uacgo/data/apdb.json
+!uacgo/data/oui.go
+!uacgo/data/oui/
+!uacgo/data/oui/registry.json.gz
 uacgo/acd
 uacgo/acd.exe
 uacgo/**/*.test

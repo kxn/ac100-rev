@@ -134,3 +134,5 @@ AP reporting differences: [official firmware comparison for signal and client ra
 
 
 AP首次接入与型号模板的来源、重连及失败分支见[接入核对](docs/ap-onboarding-review.md)。
+
+客户端厂商显示使用完整IEEE地址分配库，优先显示中文参考名；数据范围、翻译来源与更新方式见[OUI与终端识别](docs/oui-registry.md)。

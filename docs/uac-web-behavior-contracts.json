@@ -1162,7 +1162,7 @@
       "id": "terminal-recognition",
       "feature": "association",
       "origin": "firmware",
-      "behavior": "设备名称/特征识别和 MAC OUI 使用固件表及原优先级。",
+      "behavior": "主机名、DHCP Class、HTTP UA特征及已知品牌/系统的来源优先级沿用固件；两条OUI查询按用户要求由完整IEEE库合同替换。",
       "sources": [
         {
           "kind": "uac",
@@ -1177,13 +1177,6 @@
           "address": "0x00751d24",
           "size": 472,
           "sha256": "abfe5514195e7b043c244f63aabd6a2778da56dc206363ccd1cc522a56d5a92a"
-        },
-        {
-          "kind": "uac",
-          "name": "wsta_db_match_mac_oui_value",
-          "address": "0x0074d704",
-          "size": 312,
-          "sha256": "8955aaf3a04002ca953b526e34a3bb6e10f08bcabce8443b37f46abae8e73f5a"
         },
         {
           "kind": "uac",
@@ -6307,6 +6300,53 @@
           "name": "TestJoinPrechecksRunBeforeRegistrationAndDuplicateDoesNotReinitialize"
         }
       ]
+    },
+    {
+      "id": "ieee-oui-manufacturer",
+      "feature": "association",
+      "origin": "standalone-go",
+      "behavior": "用户要求完整IEEE替代原厂OUI小表；MAC按最长前缀、AP三字节提示只查MA-L；保留历史歧义、原始登记名和中文参考名，无译名回退英文。其余来源优先级独立保留，不用于漫游/认证。",
+      "sources": [],
+      "implementation": [
+        {
+          "path": "uacgo/ouidb/registry.go",
+          "symbol": "Lookup"
+        },
+        {
+          "path": "uacgo/ouidb/default.go",
+          "symbol": "LookupOUI"
+        },
+        {
+          "path": "uacgo/terminal/recognition.go",
+          "symbol": "ManufacturerName"
+        },
+        {
+          "path": "uacgo/terminal/recognition.go",
+          "symbol": "BrandLabel"
+        }
+      ],
+      "tests": [
+        {
+          "path": "uacgo/ouidb/registry_test.go",
+          "name": "TestLongestAssignmentAndHistoricalAmbiguity"
+        },
+        {
+          "path": "uacgo/ouidb/registry_test.go",
+          "name": "TestPreparedSnapshotKeepsEveryPublicAssignment"
+        },
+        {
+          "path": "uacgo/ouidb/registry_test.go",
+          "name": "TestDefaultRegistryUsesCompleteSnapshotAndChineseReference"
+        },
+        {
+          "path": "uacgo/terminal/recognition_test.go",
+          "name": "TestIEEEManufacturerReplacesSmallTableWithoutChangingOtherInputs"
+        },
+        {
+          "path": "uacgo/terminal/recognition_test.go",
+          "name": "TestIEEEAmbiguousAndRandomIdentityDoNotInventBrand"
+        }
+      ]
     }
   ],
   "reference_or_inactive_functions": [
@@ -6396,6 +6436,14 @@
       "size": 892,
       "sha256": "22cbbe2696b8e5d6539a373a6107528353a8cb533a46db741e56e5050da4458b",
       "reason": "0x9c入口先检查ACS process state；V6模式2不启动旧智能ACS。Go仅保留原始扫描展示，不作为客户端候选回退。"
+    },
+    {
+      "kind": "uac",
+      "name": "wsta_db_match_mac_oui_value",
+      "address": "0x0074d704",
+      "size": 312,
+      "sha256": "8955aaf3a04002ca953b526e34a3bb6e10f08bcabce8443b37f46abae8e73f5a",
+      "reason": "Original small OUI-table matcher intentionally replaced by complete IEEE MA-L/MA-M/MA-S/IAB lookup at user request; not an active policy-equivalence claim."
     }
   ]
 }

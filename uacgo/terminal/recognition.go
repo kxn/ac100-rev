@@ -2,7 +2,11 @@
 // Recognition-based authentication and kicking are intentionally excluded.
 package terminal
 
-import "strings"
+import (
+	"net"
+	"strings"
+	"uacgo/ouidb"
+)
 
 type feature struct {
 	text   string
@@ -14,17 +18,22 @@ type Input struct {
 	OUIs [][3]byte
 }
 type Result struct {
-	Flags        byte `json:"reported_flags"`
-	Brand        byte `json:"brand_code"`
-	System       byte `json:"system_code"`
-	BrandSource  byte `json:"brand_source"`
-	SystemSource byte `json:"system_source"`
+	Manufacturers      []ouidb.Match `json:"manufacturer_matches,omitempty"`
+	ManufacturerSource string        `json:"manufacturer_source,omitempty"`
+	Flags              byte          `json:"reported_flags"`
+	Brand              byte          `json:"brand_code"`
+	System             byte          `json:"system_code"`
+	BrandSource        byte          `json:"brand_source"`
+	SystemSource       byte          `json:"system_source"`
 }
 
 func New(mac [6]byte) Result {
 	r := Result{Flags: 1, Brand: 255, System: 255}
-	if b, ok := factoryOUI[[3]byte{mac[0], mac[1], mac[2]}]; ok {
-		r.Brand = b
+	matches := ouidb.Default().Lookup(net.HardwareAddr(mac[:]))
+	if len(matches) > 0 {
+		r.Brand = manufacturerCode(matches)
+		r.Manufacturers = matches
+		r.ManufacturerSource = "client_mac"
 	}
 	return r
 }
@@ -77,15 +86,17 @@ func (r Result) Observe(in Input) Result {
 	case 0:
 		source = 1
 		for _, oui := range in.OUIs {
-			if b, ok := factoryOUI[oui]; ok {
-				value = b
-				break
+			matches := ouidb.Default().LookupOUI(oui)
+			if len(matches) == 0 {
+				continue
 			}
-			// The original lookup resets the result for each OUI.
-			value = 255
-			if b, ok := vendorOUI[oui]; ok {
-				value = b
+			value = manufacturerCode(matches)
+			chosen, chosenSource := choose(r.Brand, r.BrandSource, value, source, brandPriority[:])
+			if chosen == value && chosenSource == source {
+				r.Manufacturers = matches
+				r.ManufacturerSource = "reported_oui"
 			}
+			break
 		}
 	case 1:
 		source = 2
@@ -112,4 +123,45 @@ func (r Result) Observe(in Input) Result {
 		r.System = 0
 	}
 	return r
+}
+
+// The firmware enum/priorities remain applicable to its known hostname brands.
+// Other IEEE registrants use the generic slot without discarding their names.
+func manufacturerCode(matches []ouidb.Match) byte {
+	if len(matches) == 1 {
+		for i, name := range brandNames {
+			if strings.EqualFold(name, matches[0].Brand) {
+				return byte(i)
+			}
+		}
+	}
+	return 0
+}
+func (r Result) ManufacturerName() string {
+	if r.BrandSource <= 1 && len(r.Manufacturers) == 1 {
+		m := r.Manufacturers[0]
+		if m.Brand != "" {
+			return m.Brand
+		}
+		return m.Organization
+	}
+	return r.BrandName()
+}
+func (r Result) BrandLabel() string {
+	if r.BrandSource <= 1 && len(r.Manufacturers) > 0 {
+		if len(r.Manufacturers) > 1 {
+			return "登记机构有歧义"
+		}
+		m := r.Manufacturers[0]
+		for _, name := range []string{m.BrandZH, m.OrganizationZH, m.Brand, m.Organization} {
+			if name != "" {
+				return name
+			}
+		}
+	}
+	labels := []string{"其他", "苹果", "三星", "微软", "诺基亚", "华为", "维沃", "OPPO", "小米", "荣耀"}
+	if int(r.Brand) < len(labels) {
+		return labels[r.Brand]
+	}
+	return ""
 }

@@ -4,11 +4,13 @@ import (
 	"strings"
 	"time"
 	"uacgo/capwap"
+	"uacgo/ouidb"
 	"uacgo/terminal"
 )
 
 type ClientDeviceInfo struct {
 	Recognition *terminal.Result `json:"recognition,omitempty"`
+	BrandLabel  string           `json:"brand_label,omitempty"`
 	Brand       string           `json:"brand,omitempty"`
 	System      string           `json:"system,omitempty"`
 	Inputs      []terminal.Input `json:"-"`
@@ -209,6 +211,7 @@ func cloneDevice(in *ClientDeviceInfo) *ClientDeviceInfo {
 	v := *in
 	if in.Recognition != nil {
 		r := *in.Recognition
+		r.Manufacturers = append([]ouidb.Match(nil), r.Manufacturers...)
 		v.Recognition = &r
 	}
 	v.Inputs = nil
@@ -251,7 +254,8 @@ func mergeDevice(old, next *ClientDeviceInfo) *ClientDeviceInfo {
 		for _, in := range next.Inputs {
 			*v.Recognition = v.Recognition.Observe(in)
 		}
-		v.Brand, v.System = v.Recognition.BrandName(), v.Recognition.SystemName()
+		v.Brand, v.System = v.Recognition.ManufacturerName(), v.Recognition.SystemName()
+		v.BrandLabel = v.Recognition.BrandLabel()
 	}
 	return v
 }
