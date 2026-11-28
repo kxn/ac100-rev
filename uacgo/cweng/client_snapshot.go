@@ -34,14 +34,10 @@ func (t *ClientTable) WirelessSnapshot(ap string, connection, started time.Time,
 				ev.RSSIAt = old.RSSIAt
 				ev.DisplayRSSI = old.DisplayRSSI
 			}
-			if ev.Statistics == nil {
+			// This membership snapshot carries native rates separately, and
+			// cannot replace typed CAPWAP negotiation, traffic or bandwidth.
+			if old.State == "connected" && old.Connection.Equal(ev.Connection) {
 				ev.Statistics = old.Statistics
-			} else if old.Statistics != nil {
-				// Native sta_list contains negotiated rate, but no CAPWAP traffic
-				// counters or bandwidth. Preserve the last actual counter report.
-				merged := *old.Statistics
-				merged.NegotiatedMbps = ev.Statistics.NegotiatedMbps
-				ev.Statistics = &merged
 			}
 			// This native table has no MLO grouping/device fields. Absence of
 			// such fields cannot erase the richer typed CAPWAP facts.

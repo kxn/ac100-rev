@@ -42,10 +42,10 @@ func TestNativeWirelessSnapshotRetainsAPTrafficCounters(t *testing.T) {
 	up := uint32(1234)
 	table.StationEvent(ClientEvent{MAC: mac, APID: "a", RadioID: 1, WLANID: 1, Kind: "associate", Seen: at})
 	table.StationEvent(ClientEvent{MAC: mac, APID: "a", RadioID: 1, WLANID: 1, State: "connected", Kind: "statistics", Seen: at, Statistics: &ClientStatistics{NegotiatedMbps: 100, Bandwidth: 3, UpstreamKbps: &up}})
-	ev := ClientEvent{MAC: mac, APID: "a", RadioID: 1, WLANID: 1, Statistics: &ClientStatistics{NegotiatedMbps: 1200, Bandwidth: -1}}
+	ev := ClientEvent{MAC: mac, APID: "a", RadioID: 1, WLANID: 1, NativeRates: &ClientNativeRates{TX: "1200", RX: "0", At: at.Add(time.Second)}}
 	table.WirelessSnapshot("a", time.Time{}, at.Add(time.Second), []ClientEvent{ev}, map[[6]byte]bool{mac: true})
 	got := table.All()[0].Statistics
-	if got.NegotiatedMbps != 1200 || got.Bandwidth != 3 || got.UpstreamKbps == nil || *got.UpstreamKbps != up {
+	if got.NegotiatedMbps != 100 || got.Bandwidth != 3 || got.UpstreamKbps == nil || *got.UpstreamKbps != up {
 		t.Fatal("snapshot erased CAPWAP counters", got)
 	}
 }
@@ -78,7 +78,7 @@ func TestWirelessSnapshotNeverCarriesSignalAcrossIdentityOrReconnect(t *testing.
 			table := NewClientTable()
 			signal := int8(-74)
 			mac := [6]byte{2, 1, 2, 3, 4, 5}
-			old := ClientEvent{MAC: mac, APID: "a", RadioID: 1, WLANID: 1, ServiceID: "office", Connection: connection, Kind: "associate", Seen: at, RSSI: &signal}
+			old := ClientEvent{MAC: mac, APID: "a", RadioID: 1, WLANID: 1, ServiceID: "office", Connection: connection, Kind: "associate", Seen: at, RSSI: &signal, Statistics: &ClientStatistics{NegotiatedMbps: 1201}}
 			table.StationEvent(old)
 			if tc == "disconnected" {
 				table.StationEvent(ClientEvent{MAC: mac, APID: "a", RadioID: 1, WLANID: 1, Connection: connection, Kind: "disassociate", Seen: at.Add(time.Second)})
@@ -100,7 +100,10 @@ func TestWirelessSnapshotNeverCarriesSignalAcrossIdentityOrReconnect(t *testing.
 				if got.RSSI == nil || *got.RSSI != -74 || !got.RSSIAt.Equal(at) {
 					t.Fatal("lost measurement or retimed it", got)
 				}
-			} else if got.RSSI != nil || !got.RSSIAt.IsZero() {
+				if got.Statistics == nil || got.Statistics.NegotiatedMbps != 1201 {
+					t.Fatal("lost typed statistics", got)
+				}
+			} else if got.RSSI != nil || !got.RSSIAt.IsZero() || got.Statistics != nil {
 				t.Fatal("carried old signal across connection identity", got)
 			}
 		})

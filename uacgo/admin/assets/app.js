@@ -383,6 +383,13 @@ function render() {
   renderContent(true);
 }
 
+// Zero in private52 is an unavailable negotiation value on some firmware.
+function negotiatedRateLabel(statistics) {
+  return statistics?.negotiated_mbps > 0
+    ? statistics.negotiated_mbps + " Mbps"
+    : "未上报";
+}
+
 function renderClients(meshOnly = false) {
   const apsById = Object.fromEntries(data.aps.map((a) => [a.id, a]));
   const filtered = data.clients.filter((c) => {
@@ -484,7 +491,7 @@ function renderClients(meshOnly = false) {
       const mloRows = (c.radio_entries || [])
         .map(
           (r) =>
-            `<small class="num">MLO 射频 ${esc(r.radio_id)} · ${r.statistics ? esc(r.statistics.negotiated_mbps) + " Mbps" : "—"} · ${r.rssi_dbm == null ? "—" : esc(r.rssi_dbm) + " dBm"}</small>`,
+            `<small class="num">MLO 射频 ${esc(r.radio_id)} · ${esc(negotiatedRateLabel(r.statistics))} · ${r.rssi_dbm == null ? "—" : esc(r.rssi_dbm) + " dBm"}</small>`,
         )
         .join("");
 
@@ -509,8 +516,9 @@ function renderClients(meshOnly = false) {
         <td>${signalMeter(c.rssi_dbm)}${c.rssi_dbm != null && c.rssi_at ? `<small>采样 ${ago(c.rssi_at)}</small>` : ""}${c.native_signal ? `<small title="wireless.sta_list.rssi：该接口的信号单位因 AP 实现而异，不作 dBm 换算，也不用于漫游计算。">原生信号：${esc(c.native_signal.value)}（单位未确认）</small>` : ""}</td>
         <td class="mono">${esc(c.ip || "—")}${ipExtra ? `<small class="mono">${esc(ipExtra)}</small>` : ""}</td>
         <td class="num">
-          ${c.statistics ? esc(c.statistics.negotiated_mbps) + " Mbps" : "—"}
+          协商 ${esc(negotiatedRateLabel(c.statistics))}
           <small>↑ ${c.statistics?.upstream_kbps ?? "—"} / ↓ ${c.statistics?.downstream_kbps ?? "—"} kbps</small>
+          ${c.native_rates ? `<small title="wireless.sta_list 的原始 TX/RX 字段；部分固件表示实时流量速率，不能当成协商 Mbps。">原生 TX/RX：${esc(c.native_rates.tx || "—")} / ${esc(c.native_rates.rx || "—")}（接口原值）</small>` : ""}
           ${mloRows}
         </td>
         <td>

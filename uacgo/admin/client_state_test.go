@@ -108,6 +108,36 @@ func TestNativeSignalNeverInventsDBMOrErasesCAPWAPSample(t *testing.T) {
 	}
 }
 
+func TestNativeRatesCannotReplaceCAPWAPNegotiation(t *testing.T) {
+	for _, negotiated := range []uint16{0, 1201} {
+		for _, raw := range [][2]string{{"0", "0"}, {"1", "3"}, {"213857", "4294967295"}} {
+			t.Run(fmt.Sprintf("%d/%s/%s", negotiated, raw[0], raw[1]), func(t *testing.T) {
+				m, _ := testController(t)
+				m.config.Services = []Service{{ID: "svc", SSID: "Office", Enabled: true, Radios: []uint8{2}}}
+				m.assignments["a"] = map[string]map[uint8]uint8{"svc": {2: 1}}
+				at := time.Now().Add(-time.Minute)
+				connection := at.Add(-time.Minute)
+				mac := [6]byte{2, 1, 2, 3, 4, 5}
+				m.clients.StationEvent(cweng.ClientEvent{MAC: mac, APID: "a", RadioID: 2, WLANID: 1, ServiceID: "svc", Connection: connection, Kind: "associate", Seen: at})
+				up := uint32(128)
+				m.clients.StationEvent(cweng.ClientEvent{MAC: mac, APID: "a", RadioID: 2, WLANID: 1, Connection: connection, Kind: "statistics", Seen: at, Statistics: &cweng.ClientStatistics{NegotiatedMbps: negotiated, Bandwidth: 3, UpstreamKbps: &up}})
+				stations := json.RawMessage(fmt.Sprintf(`{"error_code":0,"wireless":{"sta_list":[{"row":{"mac":"02-01-02-03-04-05","radio_id":"2","ssid":"Office","tx_rate":%q,"rx_rate":%q}}]}}`, raw[0], raw[1]))
+				started := at.Add(30 * time.Second)
+				if err := m.mergeWirelessSnapshot(cweng.APStatus{ID: "a", ConnectedAt: connection}, started, stations, json.RawMessage(`{"error_code":0,"hosts_info":{"host_info":[]}}`)); err != nil {
+					t.Fatal(err)
+				}
+				got := m.clients.All()[0]
+				if got.Statistics == nil || got.Statistics.NegotiatedMbps != negotiated || got.Statistics.Bandwidth != 3 || got.Statistics.UpstreamKbps == nil || *got.Statistics.UpstreamKbps != 128 {
+					t.Fatal("native throughput replaced CAPWAP facts", got)
+				}
+				if got.NativeRates == nil || got.NativeRates.TX != raw[0] || got.NativeRates.RX != raw[1] || !got.NativeRates.At.Equal(started) {
+					t.Fatal("native rate changed or overflowed", got.NativeRates)
+				}
+			})
+		}
+	}
+}
+
 func TestAuthoritativeWirelessSnapshotMapsSSIDAndNeverAddsWiredHosts(t *testing.T) {
 	m, _ := testController(t)
 	ap := cweng.APStatus{ID: "a"}

@@ -18,7 +18,7 @@ import (
 
 // ClientEvent is one observed station add/remove.
 type ClientStatistics struct {
-	NegotiatedMbps uint16  `json:"negotiated_mbps"`
+	NegotiatedMbps uint16  `json:"negotiated_mbps"` // private52: zero means not supplied, not a measured 0Mbps link.
 	Bandwidth      int8    `json:"bandwidth_code"`
 	UpstreamKbps   *uint32 `json:"upstream_kbps,omitempty"`
 	DownstreamKbps *uint32 `json:"downstream_kbps,omitempty"`
@@ -54,6 +54,7 @@ func stationStatistics(a capwap.StaStatisticsRecord) *ClientStatistics {
 type ClientEvent struct {
 	DisplayRSSI  *int8               `json:"-"` // firmware MLO missing-report sentinel; not a measured sample
 	NativeSignal *ClientNativeSignal `json:"native_signal,omitempty"`
+	NativeRates  *ClientNativeRates  `json:"native_rates,omitempty"`
 	Connection   time.Time           `json:"-"`
 	LinkStatus   []ClientLinkStatus  `json:"radio_entries,omitempty"`
 	Device       *ClientDeviceInfo   `json:"device,omitempty"`
@@ -85,6 +86,15 @@ type ClientEvent struct {
 type ClientNativeSignal struct {
 	Value string    `json:"value"`
 	At    time.Time `json:"at"`
+}
+
+// Native station-table rates may describe traffic rather than PHY link rate.
+// Preserve both directions without assigning a universal unit or truncating
+// them to private52's uint16 negotiated-Mbps field.
+type ClientNativeRates struct {
+	TX string    `json:"tx"`
+	RX string    `json:"rx"`
+	At time.Time `json:"at"`
 }
 
 // ClientSink receives station events parsed from WTP Event Requests.

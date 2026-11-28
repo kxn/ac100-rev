@@ -122,4 +122,6 @@ V4/V6 roaming policy review: [source mapping](docs/cross-version-mobility-review
 
 AP capability and model restrictions: [firmware mapping, native readback, and signal semantics](docs/ap-capability-audit.md).
 
+AP reporting differences: [official firmware comparison for signal and client rates](docs/ap-reporting-review.md).
+
 漫游与射频优化可[按功能选择V4/V6策略](docs/component-strategy-versions.md)，两处选择互相独立。

@@ -56,6 +56,14 @@ clients = [
         },
     }
 ]
+# Native throughput is not the link's negotiated PHY rate. Keep a zero-link
+# fixture alongside the Wi-Fi7-style positive rate to exercise both labels.
+clients.append({
+    **clients[0],
+    "mac": "02:03:04:05:06:08",
+    "native_rates": {"tx": "0", "rx": "213857", "at": "2026-11-27T17:10:00Z"},
+    "statistics": {"negotiated_mbps": 0, "upstream_kbps": 0, "downstream_kbps": 3},
+})
 rates = live("rates")
 mobility = live("mobility")
 mobility["network_mode"] = 2
@@ -844,6 +852,11 @@ with sync_playwright() as p:
         page.locator('#mesh-form [name="web_password"]').fill("test-admin")
         assert submit("#mesh-form")["path"] == "mesh"
         visit("clients")
+        client_table = page.locator("#content")
+        assert "协商 1201 Mbps" in client_table.inner_text()
+        assert "协商 未上报" in client_table.inner_text()
+        assert "0 Mbps" not in client_table.inner_text()
+        assert "原生 TX/RX：0 / 213857（接口原值）" in client_table.inner_text()
         page.locator("[data-client-label]").first.click()
         page.locator('#client-label-form [name="name"]').fill("UI tablet")
         result = submit("#client-label-form")

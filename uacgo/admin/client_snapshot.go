@@ -99,10 +99,13 @@ func (m *Manager) mergeWirelessSnapshot(ap cweng.APStatus, started time.Time, st
 		if ip := net.ParseIP(ev.IP); ip == nil || ip.IsUnspecified() || ip.IsMulticast() {
 			ev.IP = ""
 		}
-		tx, _ := strconv.ParseUint(nativeString(r, "tx_rate"), 10, 16)
-		rx, _ := strconv.ParseUint(nativeString(r, "rx_rate"), 10, 16)
-		if tx > 0 || rx > 0 {
-			ev.Statistics = &cweng.ClientStatistics{NegotiatedMbps: uint16(max(tx, rx)), Bandwidth: -1}
+		tx, rx := nativeString(r, "tx_rate"), nativeString(r, "rx_rate")
+		if tx != "" || rx != "" {
+			// XAP3007's fields come from periodically measured traffic kbps,
+			// not PHY negotiation. Keep native values separate from private52;
+			// other AP implementations need not share their unit or meaning.
+			ev.NativeRates = &cweng.ClientNativeRates{TX: tx, RX: rx, At: started}
+			m.event("client.native_rates", "ap_id", ap.ID, "session", ap.ConnectedAt, "client", eventMAC(id), "radio", radio, "interface", "wireless.sta_list", "tx_rate", tx, "rx_rate", rx, "unit", "unspecified")
 		}
 		if raw := nativeString(r, "rssi"); raw != "" {
 			// This field differs between AP implementations. A positive value

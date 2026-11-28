@@ -1,0 +1,221 @@
+{
+  "scope": "Read-only official AP firmware reporting cross-check; hashes anchor reviewed code, not an exhaustive semantic proof.",
+  "downloads": [
+    {
+      "model": "TL-XAP3007GC-PoE/DC易展版 V1.0",
+      "version": "1.0.12 Build 20220530 Rel.37773",
+      "page": "https://smb.tp-link.com.cn/service/detail_download_9922.html",
+      "url": "https://service.tp-link.com.cn/download/20226/TL-XAP3007GC-PoE_DC%20%E6%98%93%E5%B1%95%E7%89%88%20V1.0%E5%8D%87%E7%BA%A7%E8%BD%AF%E4%BB%B620220530_1.0.12.zip",
+      "path": ".local/ac100/ap-report-review/downloads/tl-xap3007gc-v1-1.0.12.zip",
+      "sha256": "6fe207c22bceaeaf299ef5a97516ea7c931df47e3d2ef2172db8b0080714c2d2",
+      "image_filename": "TL-XAP3007GC-PoEDC 易展版 V1.0_1.0.12_Build_20220530_Rel.37773.bin",
+      "image_sha256": "48f63f86ca1eca4713d73485cc1c127193496acd46989256ec0befb88795ea04",
+      "squashfs_offset": 2570524
+    },
+    {
+      "model": "TL-7AP5100HC-PoE/DC易展版 V1.0",
+      "version": "1.0.18 Build 20250317 Rel.43192",
+      "page": "https://resource.tp-link.com.cn/pc/docCenter/showDoc?id=1752493533549681",
+      "url": "https://media.tp-link.com.cn/software/TL-7AP5100HC-PoE_DC%E6%98%93%E5%B1%95%E7%89%88%20V1.0%E5%8D%87%E7%BA%A7%E8%BD%AF%E4%BB%B620250317_1.0.18.zip",
+      "path": ".local/ac100/ap-report-review/downloads/tl-7ap5100hc-v1-1.0.18.zip",
+      "sha256": "99e163c3526903059f7ad7c6d30c47fbc248ae5d2c3dbd89a1a6cb3374d14979",
+      "image_filename": "TL-7AP5100HC-PoE_DC易展版 V1.0_1.0.18_Build_20250317_Rel.43192.bin",
+      "image_sha256": "1da564e60eb3402a3e9cd5f67515c7de00890448a5373dc77fae9302e49ec92a",
+      "squashfs_offset": 9962496
+    }
+  ],
+  "binaries": [
+    {
+      "id": "xap3007-dms",
+      "path": ".local/ac100/ap-report-review/xap3007-rootfs/bin/dms",
+      "sha256": "18a94b5513a50f71151c6a95b8871125fa2b641000f9b14c0a95690dee75ff51",
+      "functions": [
+        {
+          "name": "wlanStaListReadJson",
+          "size": 1544,
+          "sha256": "19d2c445cc1c18809c04d0166e85cbdf16e284392651cd4d182569105880ada8",
+          "reviewed_behavior": "rssi直接格式化无符号驱动量；独立输出tx_rate/rx_rate，不说明其为协商Mbps。",
+          "address": "0x25fdcc"
+        },
+        {
+          "name": "native_station_table_collect (unnamed)",
+          "size": 1680,
+          "sha256": "7051cf94acd340ef4a9aa6574b1ab049bf1f491541f31708a01c9c5c3325c8cc",
+          "reviewed_behavior": "记录0x90为驱动记录0x0c的u8；0x98/0x9c来自驱动记录0x28/0x2c的实时速率。",
+          "address": "0x25f73c"
+        },
+        {
+          "name": "GetPrivStaStatistics",
+          "size": 2764,
+          "sha256": "7f66b1394eb30652d35f76423fd646f87e6deba8b1ff98286b461cfb64e4f64a",
+          "reviewed_behavior": "无条件将每客户端CAPWAP协商速率字段置0。",
+          "address": "0xa0184"
+        },
+        {
+          "name": "CWAssembleStaStatisticsMsg",
+          "size": 576,
+          "sha256": "ec5e15954a4f05bf6a3d699a7588d7dbccdeafb6ac64a350ec14e8e400cd2918",
+          "reviewed_behavior": "私有52的38字节记录：RSSI偏移10，协商速率BE16偏移12。",
+          "address": "0x8cb40"
+        },
+        {
+          "name": "wlan_ioctl_get_sta_info_ext",
+          "size": 124,
+          "sha256": "1bb921e53dfb7d9f82a9afa13fd8844e77333d716fdca85ec4a0abdb6af3933a",
+          "reviewed_behavior": "通过0x807及fill_sta_list读取原生驱动记录。",
+          "address": "0x30a804"
+        },
+        {
+          "name": "fill_sta_list",
+          "size": 168,
+          "sha256": "8b7cd2b1bea7274d2399e2993add5df8e7bcc98609461c0df92e84c9f4a04489",
+          "reviewed_behavior": "仅复制0x38字节驱动记录，不改变信号或速率单位。",
+          "address": "0x305388"
+        }
+      ],
+      "string_references": [
+        {
+          "literal": "0x2603ac",
+          "pc": "0x2601dc",
+          "value": "rssi"
+        },
+        {
+          "literal": "0x2603b0",
+          "pc": "0x2601fc",
+          "value": "connect_time"
+        },
+        {
+          "literal": "0x2603b4",
+          "pc": "0x260220",
+          "value": "tx_rate"
+        },
+        {
+          "literal": "0x2603b8",
+          "pc": "0x260244",
+          "value": "rx_rate"
+        }
+      ]
+    },
+    {
+      "id": "xap3007-umac",
+      "path": ".local/ac100/ap-report-review/xap3007-rootfs/lib/modules/4.4.60/umac.ko",
+      "sha256": "48fc8df4621a0b234cdbff85cea49f01c7672c488869b02ea69ed7c09cc71ce9",
+      "functions": [
+        {
+          "name": "get_station_info",
+          "size": 380,
+          "sha256": "3fb7a5545d4a8e854a156658f23ad92202102ccd63392b1b44df2453796f03d3",
+          "reviewed_behavior": "输出原生信号和wlan_node_gettxdatarate/getrxdatarate到0x38字节记录。",
+          "section": ".text",
+          "offset": "0x374"
+        },
+        {
+          "name": "get_station_stat",
+          "size": 1256,
+          "sha256": "16be7ba9b90993a36209e88412c25ffeff33823c86c91acfef68c0abff71c94e",
+          "reviewed_behavior": "统计信号读取wlan_node_getsnr后减95并限制上界0；协商PHY速率另行调用wlan_node_txrate_info。",
+          "section": ".text",
+          "offset": "0x4f0"
+        },
+        {
+          "name": "update_txrx_ratekbps_iter_cb",
+          "size": 168,
+          "sha256": "76f970708be7180983dc58a89f00510cf97647ea60eb528aec643677d87c2cdf",
+          "reviewed_behavior": "以收发字节计数差右移8更新实时流量速率；没有流量时为0。",
+          "section": ".text",
+          "offset": "0x327cc"
+        },
+        {
+          "name": "ic_calc_txdatarate_timeout",
+          "size": 68,
+          "sha256": "17db41fc3c3258a5afc045eee542135fd950fdb0f0a5c7d80a7bb94f375a8e93",
+          "reviewed_behavior": "周期运行速率更新回调。",
+          "section": ".text",
+          "offset": "0x347b8"
+        },
+        {
+          "name": "wlan_node_gettxdatarate",
+          "size": 8,
+          "sha256": "4d243ae9c6ec9804c212845b431b26c5883bd65a3773606ceba325f364c9d037",
+          "reviewed_behavior": "读取周期计算的实时发送速率。",
+          "section": ".text",
+          "offset": "0x370bc"
+        },
+        {
+          "name": "wlan_node_getrxdatarate",
+          "size": 8,
+          "sha256": "3bcdf724d95ff9913adc40ca38fcec46ec2e7aadab567ce7d12f760b47924693",
+          "reviewed_behavior": "读取周期计算的实时接收速率。",
+          "section": ".text",
+          "offset": "0x370c4"
+        },
+        {
+          "name": "node_getsnr",
+          "section": ".text",
+          "offset": "0x3270c",
+          "size": 8,
+          "sha256": "f72d7df96f3dd98d38d1d0a1972e46a63c9ac194a81f3d26023b36a9b62a9eda",
+          "reviewed_behavior": "读取节点偏移0x36c的无符号SNR字节；get_station_info将同一字节输出为原生rssi。"
+        }
+      ],
+      "string_references": []
+    },
+    {
+      "id": "7ap5100-dms",
+      "path": ".local/ac100/ap-firmware/rootfs/bin/dms",
+      "sha256": "a4bbe07741ea0eaceb890466aba21bd0d74670e72388addd188c50c92ec08b71",
+      "functions": [
+        {
+          "name": "wlanStaListReadJson",
+          "size": 1544,
+          "sha256": "8773f8e6b790bf85b7c10ac50b7e9c1993c77c2b798b3fb798584cc20dfc67e2",
+          "reviewed_behavior": "rssi输出前减95，与XAP3007原生接口不同。",
+          "address": "0x2f6830"
+        },
+        {
+          "name": "native_station_table_collect (unnamed)",
+          "size": 1520,
+          "sha256": "a317de74eea980f3b78d46e5b18a09166be7a343ff88bc703da5105b3df1cb37",
+          "reviewed_behavior": "从该机型驱动格式采集原生字段，不借用XAP的0x38记录格式。",
+          "address": "0x2f6240"
+        },
+        {
+          "name": "GetPrivStaStatistics",
+          "size": 2592,
+          "sha256": "72c423890d05e788e5d720bea89348113de262466f7c3cde2f59c4cee5a84f21",
+          "reviewed_behavior": "CAPWAP协商速率复制已采集值，未像XAP3007无条件置0。",
+          "address": "0xe0e08"
+        },
+        {
+          "name": "CWAssembleStaStatisticsMsg",
+          "size": 568,
+          "sha256": "30ca1b3a9766d851a1387e1caf413619f6197ec10bd57fa7ef19ecc0a728debd",
+          "reviewed_behavior": "同一私有52线格式输出协商速率。",
+          "address": "0xcc734"
+        }
+      ],
+      "string_references": [
+        {
+          "literal": "0x2f6e20",
+          "pc": "0x2f6cd8",
+          "value": "rssi"
+        },
+        {
+          "literal": "0x2f6e24",
+          "pc": "0x2f6cf8",
+          "value": "connect_time"
+        },
+        {
+          "literal": "0x2f6e28",
+          "pc": "0x2f6d1c",
+          "value": "tx_rate"
+        },
+        {
+          "literal": "0x2f6e2c",
+          "pc": "0x2f6d40",
+          "value": "rx_rate"
+        }
+      ]
+    }
+  ]
+}

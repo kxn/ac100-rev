@@ -134,6 +134,8 @@ V4 中 `phase=stopped` 有排序遍历停止的含义，并不保证后面的每
 
 原生 `wireless.sta_list.rssi` 与 CAPWAP RSSI 属于不同接口。`client.native_signal` 保存 `raw_value`、`interface` 和 `unit=unspecified`；客户端 API 的 `native_signal` 也只表示原始值。正数不能直接取负、减100或当百分比；负数同样不自动证明单位是dBm。这些原生值不供漫游估算使用。
 
+`client.native_rates` 记录 `wireless.sta_list` 的 `tx_rate/rx_rate` 原值，API使用独立的 `native_rates`。3007对应固件由驱动流量差分产生这些速率，空闲为0；不能把它们当作协商Mbps。该固件的CAPWAP协商字段又被明确置0，因此“协商未上报”和“实时流量0”必须分开。Wi-Fi7的CAPWAP会提供正协商值。正负信号及速率来源的逐函数说明见[AP上报交叉核查](ap-reporting-review.md)。
+
 `client.native_snapshot` 记录本次快照开始时间、AP会话与错误。快照没有可用RSSI时，只能保留同一连接位置已有的CAPWAP测量及其原采样时间；看 `/api/clients` 的 `rssi_at` 和页面“采样”年龄，不能把快照时间当成新信号时间。字段缺失后RSSI整列消失，或采样时间不断变新却没有CAPWAP报告，都应检查合并逻辑。
 
 
