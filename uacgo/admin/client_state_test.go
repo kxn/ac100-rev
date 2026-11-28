@@ -39,6 +39,38 @@ func TestNativeClientRefreshUsesTDCPNotPMKOrAXCapability(t *testing.T) {
 	}
 }
 
+// The AP's JSON may encode measurements as strings or JSON numbers. Exercise
+// UDP -> TDCP reply -> nativeRows/nativeString -> client table, preserving the
+// sign and magnitude at every application parsing stage.
+func TestNativeClientSignalPreservesAPJSONValueOverTDCP(t *testing.T) {
+	stations := json.RawMessage(`{"error_code":0,"wireless":{"count":{"sta_list":4},"sta_list":[
+		{"s1":{"mac":"02-01-02-03-04-01","radio_id":"2","ssid":"Office","rssi":"45"}},
+		{"s2":{"mac":"02-01-02-03-04-02","radio_id":"2","ssid":"Office","rssi":"-74"}},
+		{"s3":{"mac":"02-01-02-03-04-03","radio_id":2,"ssid":"Office","rssi":45}},
+		{"s4":{"mac":"02-01-02-03-04-04","radio_id":2,"ssid":"Office","rssi":-74}}
+	]}}`)
+	m, _, ap := nativeModelAP(t, func(body json.RawMessage) json.RawMessage {
+		if strings.Contains(string(body), `"sta_list"`) {
+			return stations
+		}
+		return json.RawMessage(`{"error_code":0,"hosts_info":{"host_info":[]}}`)
+	})
+	m.config.Services = []Service{{ID: "svc", SSID: "Office", Enabled: true, Radios: []uint8{2}}}
+	m.assignments[ap.ID] = map[string]map[uint8]uint8{"svc": {2: 1}}
+	m.refreshClientFacts(context.Background(), ap)
+	rows := m.clients.All()
+	if len(rows) != 4 {
+		t.Fatal("station reply was not fully parsed", len(rows))
+	}
+	want := map[byte]string{1: "45", 2: "-74", 3: "45", 4: "-74"}
+	for _, row := range rows {
+		value, ok := want[row.MAC[5]]
+		if !ok || row.NativeSignal == nil || row.NativeSignal.Value != value {
+			t.Fatalf("AP JSON sign or magnitude changed: client=%x signal=%+v expected=%s", row.MAC, row.NativeSignal, value)
+		}
+	}
+}
+
 func TestNativeSignalNeverInventsDBMOrErasesCAPWAPSample(t *testing.T) {
 	for _, raw := range []string{"52", "-52", "0", "200", ""} {
 		t.Run(raw, func(t *testing.T) {

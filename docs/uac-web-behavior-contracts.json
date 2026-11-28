@@ -1095,7 +1095,7 @@
       "id": "native-recovery-session-boundary",
       "feature": "association",
       "origin": "standalone-go",
-      "behavior": "独立 Go 程序重启恢复：完整原生无线表与已提交服务唯一匹配；有线主机不生成站点，旧会话包括空表不得覆盖新会话。 原生 sta_list.rssi 单位未确认，原始值独立保存/记录，不折算成 dBm 或供策略使用；同一连接位置的缺 RSSI 快照保留 CAPWAP 采样和旧时间，不跨会话/断开继承。",
+      "behavior": "独立 Go 程序重启恢复：完整原生无线表与已提交服务唯一匹配；有线主机不生成站点，旧会话包括空表不得覆盖新会话。 原生 sta_list.rssi 单位未确认，原始值独立保存/记录，不折算成 dBm 或供策略使用；同一连接位置的缺 RSSI 快照保留 CAPWAP 采样和旧时间，不跨会话/断开继承。 UDP端到端保留原生正/负字符串和JSON数值的符号、数值；分片重组保留完整回复字节。",
       "sources": [],
       "implementation": [
         {
@@ -1135,6 +1135,14 @@
         {
           "path": "uacgo/cweng/client_snapshot_test.go",
           "name": "TestWirelessSnapshotNeverCarriesSignalAcrossIdentityOrReconnect"
+        },
+        {
+          "path": "uacgo/admin/client_state_test.go",
+          "name": "TestNativeClientSignalPreservesAPJSONValueOverTDCP"
+        },
+        {
+          "path": "uacgo/cweng/rpc_test.go",
+          "name": "TestJSONReplyReassemblesRealSizedAPFragments"
         }
       ]
     },

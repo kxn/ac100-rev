@@ -58,7 +58,7 @@ func TestJSONReplyReassemblesRealSizedAPFragments(t *testing.T) {
 	done := make(chan json.RawMessage, 1)
 	errs := make(chan error, 1)
 	go func() {
-		v, err := e.RequestJSON(ctx, e.APs()[0].ID, json.RawMessage(`{"method":"get","wireless":{"table":"radio_entry"}}`))
+		v, err := e.RequestJSON(ctx, e.APs()[0].ID, json.RawMessage(`{"method":"get","wireless":{"table":"sta_list"}}`))
 		done <- v
 		errs <- err
 	}()
@@ -80,7 +80,10 @@ func TestJSONReplyReassemblesRealSizedAPFragments(t *testing.T) {
 	ack.Elements = []capwap.Element{{Type: 0x21, Value: []byte{0, 0, 0, 0}}}
 	c.Write(ack.Assemble())
 	// Device sends JSON separately from the command ACK, in 1400-byte chunks.
-	body, _ := json.Marshal(map[string]string{"value": strings.Repeat("x", 1800)})
+	body := []byte(`{"error_code":0,"wireless":{"sta_list":[
+		{"s1":{"rssi":"45"}},{"s2":{"rssi":"-74"}},
+		{"s3":{"rssi":45}},{"s4":{"rssi":-74}}
+	]},"padding":"` + strings.Repeat("x", 1800) + `"}`)
 	v := binary.BigEndian.AppendUint32(nil, id)
 	v = binary.BigEndian.AppendUint32(v, uint32(len(body)))
 	v = append(v, 0)
