@@ -396,3 +396,16 @@ AP 专用 DHCP 与 AP 侧 DHCP/ARP 防护是不同功能。可选 DHCP JSON 的 
 
 
 首次登记可查看 `ap.registration`：`first`区分新建与已有记录，`model_id`是原厂模板查找键，`initial_template`为空表示未使用型号默认模板，`group`是Join后的结果。`ap.registration_failed`表示持久化或初始化失败，不能同时当作已成功接管。见[首次接入核对](ap-onboarding-review.md)。
+
+
+## 候选是否缺AP的只读检查
+
+```sh
+python3 tools/audit_roaming_candidates.py /path/controller.jsonl.1 /path/controller.jsonl --details .local/candidate-audit.json
+```
+
+工具按`run_id + decision_id`拼接候选输入，不依赖客户端MAC全文搜索；缺少输入的部分日志单列，避免把grep遗漏当成候选缺失。摘要不输出设备身份，详细文件含身份，必须留在私有目录。
+
+`source_ap_only`只表示候选的AP ID均为来源AP。候选按BSS/射频记录，来源AP的另一频段也可以是正常目标；不要把它误认为当前BSS。进一步对照`raw_source_ap_only`、`reported_other_ap`和`unresolved_bssid_owner`：前者说明原邻居输入没有其他已识别AP，后两者需要继续查BSSID映射、AP会话在线与统计就绪、估速及选择步骤。
+
+审计工具使用保留的VAP统计帮助归属BSSID；历史归属不能证明该时刻已经就绪，更不能单凭“邻居少”认定AP固件有bug。控制器不能为补齐数量凭空把所有在线AP加入候选。

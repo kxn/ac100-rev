@@ -195,3 +195,32 @@ func TestAPReportedFeatureDefaults(t *testing.T) {
 		t.Fatal("RUN fallback MU-MIMO default missing", a)
 	}
 }
+
+func TestAXPHYModeDoesNotRequireExtendedRadioInterface(t *testing.T) {
+	c := cweng.RadioCapability{RadioID: 1, Band: "2.4 GHz", SupportAX: true, MaxClients: 128, MinPower: 3, MaxPower: 24, Modes: []int{6, 10}, Bandwidths: []int{0, 2}, Channels: []int{1, 6, 11}, Features: map[string]bool{"twt": true}, ControlFeatures: map[string]bool{}}
+	ap := cweng.APStatus{Capabilities: []cweng.RadioCapability{c}}
+	a := defaultRadioAdvanced(c)
+	r := RadioSetting{Radio: 1, Advanced: &a}
+	if ap.HasCapability(70) || !c.SupportAX || a.Mode != 10 {
+		t.Fatal("invalid PHY/interface fixture")
+	}
+	if err := validateAdvanced(r, ap, c); err != nil {
+		t.Fatal("AX mode was gated on the extended interface", err)
+	}
+	found := false
+	for _, el := range advancedRadioElements(r, ap, c) {
+		if el.Type == 0x25 && len(el.Value) >= 10 && el.Value[6] == 0 && el.Value[7] == 8 {
+			if el.Value[11] != 10 {
+				t.Fatal("AX mode not sent in base radio parameters", el.Value)
+			}
+			found = true
+		}
+	}
+	if !found {
+		t.Fatal("base radio configuration missing")
+	}
+	a.TWT = true
+	if validateAdvanced(r, ap, c) == nil {
+		t.Fatal("hardware AX flag bypassed missing extended control interface")
+	}
+}

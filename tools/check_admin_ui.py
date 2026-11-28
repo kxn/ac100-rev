@@ -637,6 +637,9 @@ with sync_playwright() as p:
         page.locator('#drawer-body [data-editor-tab="ap-raw"]').click()
         raw = json.loads(page.locator("#drawer-body pre.raw").inner_text())
         assert raw["general_capabilities"] == profile[0]["general_capabilities"]
+        assert raw.get("reported_name") == profile[0].get("reported_name")
+        assert raw.get("reported_location") == profile[0].get("reported_location")
+        assert raw["identity_source"]["name_element"] == "0x002d"
         assert not any(
             k in raw
             for k in ["account", "key", "passphrase", "pmk", "wireless_telemetry"]

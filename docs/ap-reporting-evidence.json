@@ -134,6 +134,34 @@
           "size": 148,
           "sha256": "37ca1b033d4162075e360940b7b84d7714cbb623d9e513c7d9641b5deed94b05",
           "reviewed_behavior": "将AP位置写入LocationData元素。"
+        },
+        {
+          "name": "CWWTPGetName",
+          "address": "0x763a4",
+          "size": 16,
+          "sha256": "b94b9eac5effb5363a830e61b0764e60b305d304c21dbad4e15dc5d610ee12d2",
+          "reviewed_behavior": "CAPWAP名称getter返回AP固件内的固定示例字符串。"
+        },
+        {
+          "name": "CWWTPGetLocation",
+          "address": "0x763b4",
+          "size": 16,
+          "sha256": "b17682e6792be60e6da34760760f77db55d6606323fe67f7c28846ba8e8ed3f0",
+          "reviewed_behavior": "CAPWAP位置getter返回AP固件内的固定示例字符串。"
+        },
+        {
+          "name": "CWAssembleMsgElemWTPName",
+          "address": "0x7e50c",
+          "size": 148,
+          "sha256": "0be1e9e2703bbb53bf902998f8aa5e47fc4ecbb697c005049f674faa83cbf3f7",
+          "reviewed_behavior": "通过getter构造WTP Name元素0x002d。"
+        },
+        {
+          "name": "CWAssembleMsgElemLocationData",
+          "address": "0x7de6c",
+          "size": 148,
+          "sha256": "37ca1b033d4162075e360940b7b84d7714cbb623d9e513c7d9641b5deed94b05",
+          "reviewed_behavior": "通过getter构造Location Data元素0x001c。"
         }
       ],
       "string_references": [
@@ -156,6 +184,16 @@
           "literal": "0x2603b8",
           "pc": "0x260244",
           "value": "rx_rate"
+        },
+        {
+          "literal": "0x763b0",
+          "pc": "0x763b0",
+          "value": "My WTP 1"
+        },
+        {
+          "literal": "0x763c0",
+          "pc": "0x763c0",
+          "value": "Next to Fridge"
         }
       ]
     },

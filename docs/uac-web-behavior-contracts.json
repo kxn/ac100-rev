@@ -2910,6 +2910,10 @@
         {
           "path": "uacgo/cweng/capabilities_test.go",
           "name": "TestAPCapabilityCountUsesPayloadBoundsNotArbitraryLimit"
+        },
+        {
+          "path": "uacgo/admin/radio_advanced_test.go",
+          "name": "TestAXPHYModeDoesNotRequireExtendedRadioInterface"
         }
       ]
     },

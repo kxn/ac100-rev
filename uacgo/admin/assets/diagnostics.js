@@ -14,6 +14,8 @@ function capabilitySource(source) {
 function renderRadioCapabilityDetail(c) {
   const rows = [
     ["能力来源", capabilitySource(c.source)],
+    ["802.11ax（Wi-Fi 6）", c.support_11ax ? "支持" : "未声明"],
+    ["802.11be（Wi-Fi 7）", c.support_11be ? "支持" : "未声明"],
     ["射频 / 频段", c.radio_id + " / " + c.band],
     ["无线模式", (c.modes || []).map((n) => modes[n] || n).join("、")],
     ["带宽", (c.bandwidths || []).map((n) => widths[n] || n).join("、")],
@@ -36,9 +38,18 @@ function renderRadioCapabilityDetail(c) {
   return `<dl class="detail-grid">${rows.map(([k, v]) => `<div><dt>${esc(k)}</dt><dd>${esc(v || "未上报")}</dd></div>`).join("")}</dl>`;
 }
 function apCapabilitySnapshot(ap) {
-  // Explicit capability-only export; telemetry, accounts and key material never
+  // Explicit identity/capability export; telemetry, accounts and key material never
   // enter the diagnostic JSON or clipboard.
   return {
+    reported_name: ap.reported_name,
+    reported_location: ap.reported_location,
+    identity_source: {
+      protocol: "CAPWAP",
+      message: "Join Request (3)",
+      name_element: "0x002d",
+      location_element: "0x001c",
+      session_started_at: ap.connected_at,
+    },
     model: ap.model,
     hardware_version: ap.hardware_version,
     general_capabilities: ap.general_capabilities,
@@ -67,8 +78,8 @@ function renderAPCapabilities(ap) {
     .join("");
   return (
     panel(
-      "AP 上报标识",
-      `<dl class="detail-grid"><div><dt>上报名称（非配置）</dt><dd>${esc(ap.reported_name || "未上报")}</dd></div><div><dt>上报位置（非安装位置配置）</dt><dd>${esc(ap.reported_location || "未上报")}</dd></div></dl>`,
+      "CAPWAP Join 上报标识",
+      `<dl class="detail-grid"><div><dt>协议名称（0x002d）</dt><dd>${esc(ap.reported_name || "未上报")}</dd></div><div><dt>协议位置（0x001c）</dt><dd>${esc(ap.reported_location || "未上报")}</dd></div></dl><p class="help">来源为 AP 接入时的 CAPWAP Join，不是 TDCP 原生配置，也不是能力位字段。部分固件会发送默认样例值；这里保留协议原值，不作为 AP 名称或安装位置配置。接入与能力详情中包含这两个字段及来源。</p>`,
     ) +
     panel(
       "功能能力",
@@ -77,7 +88,7 @@ function renderAPCapabilities(ap) {
         features
           .map(
             ([k, v]) =>
-              `<tr><td>${esc(featureNames[k] || k)}</td><td class="mono">${esc(k)}</td><td>${v ? "支持" : "未声明 / 不支持"}</td></tr>`,
+              `<tr><td>${esc(featureNames[k] || k)}</td><td class="mono">${esc(k)}</td><td>${v ? "支持" : "未声明"}</td></tr>`,
           )
           .join(""),
       ),

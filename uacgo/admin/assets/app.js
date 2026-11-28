@@ -113,7 +113,7 @@ const featureNames = {
   new_security_format: "新版安全协议",
   frame_rate_control: "管理帧速率",
   edca: "EDCA 队列",
-  wifi6_features: "Wi-Fi 6 特性",
+  wifi6_features: "扩展射频参数接口（能力位70）",
 };
 
 async function parseAPIResponse(r) {
@@ -930,7 +930,7 @@ function renderAPDetail(id) {
     ["ap-basic", "AP信息"],
     ["ap-radio", "射频信息"],
     ["ap-cap", "能力与调试"],
-    ["ap-raw", "原始上报"],
+    ["ap-raw", "接入与能力详情"],
   ])}
     ${pane(
       "ap-basic",
@@ -981,7 +981,7 @@ function renderAPDetail(id) {
     )}
     ${pane("ap-radio", panel("射频状态", table(["频段", "信道 / 带宽", "功率", "信道负载", "设置"], radioRows)) + panel("无线服务", table(["SSID", "射频 / 带宽", "BSSID"], vapRows)))}
     ${pane("ap-cap", renderAPCapabilities(ap) + `<details class="advanced-section" ${hasSyncProblem ? "open" : ""}><summary>配置同步 (${settings.length})</summary>${table(["配置项", "状态", "说明"], syncRows)}</details>`)}
-    ${pane("ap-raw", `<div class="page-toolbar"><button type="button" class="btn secondary" data-capability-copy="${esc(id)}">复制JSON</button></div><pre class="raw">${esc(JSON.stringify(apCapabilitySnapshot(ap), null, 2))}</pre>`)}`;
+    ${pane("ap-raw", `<div class="page-toolbar"><button type="button" class="btn secondary" data-capability-copy="${esc(id)}">复制解析详情</button></div><p class="help">这是从接入报文中选取的解析结果，不是完整报文转储。CAPWAP 标识与射频能力分别列出。</p><pre class="raw">${esc(JSON.stringify(apCapabilitySnapshot(ap), null, 2))}</pre>`)}`;
 
   const sub = `${ap.model || "AP"} · ${ap.local_ip === "0.0.0.0" ? ap.address : ap.local_ip || ap.address} · ${ap.mac}`;
   if (dialogKind === "ap" && $("#drawer").open) {
