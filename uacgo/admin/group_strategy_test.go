@@ -32,6 +32,9 @@ func TestGroupJoinUsesControlAddressAndOriginalSnapshot(t *testing.T) {
 	pre := ap
 	pre.Online = false
 	m.known[ap.ID] = pre
+	if err := m.registerAPJoin(ap, false); err != nil {
+		t.Fatal(err)
+	}
 	m.observeAPState(ap)
 	// Original foreach compares both callbacks against old. The later old
 	// rule sees the AP outside its range and writes group0 after new matched.
@@ -46,6 +49,9 @@ func TestGroupJoinUsesControlAddressAndOriginalSnapshot(t *testing.T) {
 	}
 	m.config.Groups[0], m.config.Groups[1] = m.config.Groups[1], m.config.Groups[0]
 	ap.ConnectedAt = ap.ConnectedAt.Add(time.Second)
+	if err := m.registerAPJoin(ap, false); err != nil {
+		t.Fatal(err)
+	}
 	m.observeAPState(ap)
 	if apGroup(m.config, "ap") != "new" {
 		t.Fatal("lost insertion order or control peer IP")
@@ -89,7 +95,11 @@ func TestMeshJoinInheritsParentBeforeIPStrategy(t *testing.T) {
 		m.config.Groups = []APGroup{ipGroup("ip", "192.0.2.1", "192.0.2.10"), {ID: "parent-group", Name: "Parent"}}
 		m.config.APProfiles = []APProfile{{AP: "parent", Group: "parent-group"}}
 		m.known["parent"] = cweng.APStatus{ID: "parent"}
-		m.observeAPState(cweng.APStatus{ID: "new", MeshParent: "parent", Encapsulated: encapsulated, Address: "192.0.2.5:5246", ConnectedAt: time.Now(), Online: true})
+		ap := cweng.APStatus{ID: "new", MeshParent: "parent", Encapsulated: encapsulated, Address: "192.0.2.5:5246", ConnectedAt: time.Now(), Online: true}
+		if err := m.registerAPJoin(ap, true); err != nil {
+			t.Fatal(err)
+		}
+		m.observeAPState(ap)
 		if apGroup(m.config, "new") != "parent-group" {
 			t.Fatal("IP rule overrode initial Mesh parent group", encapsulated, m.config.APProfiles)
 		}

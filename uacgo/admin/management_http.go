@@ -120,6 +120,7 @@ func (m *Manager) managementRoutes(mux *http.ServeMux) {
 			return
 		}
 		p.AP = r.PathValue("id")
+		p.InitialTemplate = ""
 		aps := m.APs()
 		m.mu.Lock()
 		defer m.mu.Unlock()
@@ -130,7 +131,12 @@ func (m *Manager) managementRoutes(mux *http.ServeMux) {
 			if old.AP == p.AP {
 				idx = i
 				p.Options = keepAccount(p.Options, old.Options)
+				p.InitialTemplate = old.InitialTemplate
 			}
+		}
+		if !validAPName(p.Name) && (idx < 0 || p.Name != next.APProfiles[idx].Name) {
+			jsonReply(w, 400, map[string]string{"error": "AP名称最多50个字符"})
+			return
 		}
 		if idx < 0 {
 			next.APProfiles = append(next.APProfiles, p)
@@ -309,7 +315,7 @@ func (m *Manager) copyAPHTTP(w http.ResponseWriter, r *http.Request) {
 		p.AP = id
 		p.Name = ""
 		p.Location = ""
-		p.Group, p.Template = "", ""
+		p.Group, p.Template, p.InitialTemplate = "", "", ""
 		p.Options = sourceOptions
 		if !request.Radios {
 			p.Options.Radios = nil
@@ -322,7 +328,7 @@ func (m *Manager) copyAPHTTP(w http.ResponseWriter, r *http.Request) {
 				idx = i
 				p.Name = old.Name
 				p.Location = old.Location
-				p.Group, p.Template = old.Group, old.Template
+				p.Group, p.Template, p.InitialTemplate = old.Group, old.Template, old.InitialTemplate
 				if !request.Radios {
 					p.Options.Radios = old.Options.Radios
 					p.Options.RFMode = old.Options.RFMode

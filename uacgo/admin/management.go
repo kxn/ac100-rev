@@ -49,12 +49,13 @@ type APLAG struct {
 	Ports   RadioList `json:"ports"`
 }
 type APProfile struct {
-	AP       string    `json:"ap_id"`
-	Name     string    `json:"name"`
-	Location string    `json:"location"`
-	Group    string    `json:"group_id"`
-	Template string    `json:"template_id"`
-	Options  APOptions `json:"options"`
+	AP              string    `json:"ap_id"`
+	Name            string    `json:"name"`
+	Location        string    `json:"location"`
+	Group           string    `json:"group_id"`
+	Template        string    `json:"template_id"`
+	InitialTemplate string    `json:"initial_template_id,omitempty"`
+	Options         APOptions `json:"options"`
 }
 type APGroup struct {
 	ID       string           `json:"id"`
@@ -63,11 +64,16 @@ type APGroup struct {
 	Strategy *APGroupStrategy `json:"strategy,omitempty"`
 }
 type APTemplate struct {
-	ID       string    `json:"id"`
-	Name     string    `json:"name"`
-	Model    string    `json:"model"`
-	Hardware string    `json:"hardware_version"`
-	Options  APOptions `json:"options"`
+	ID       string `json:"id"`
+	Name     string `json:"name"`
+	Model    string `json:"model"`
+	Hardware string `json:"hardware_version"`
+	// Model defaults are a separate role from manually assigned templates and
+	// imported per-AP snapshots. Original template_get is keyed by model ID.
+	ApplyOnJoin bool      `json:"apply_on_join,omitempty"`
+	ModelID     uint32    `json:"model_id,omitempty"`
+	Group       string    `json:"group_id,omitempty"`
+	Options     APOptions `json:"options"`
 }
 
 // Standalone startup choices for settings whose factory values lived in the
@@ -257,6 +263,7 @@ func validateManagement(cfg Config) error {
 	}
 	groups, templates, aps := map[string]bool{}, map[string]bool{}, map[string]bool{}
 	groupNames, templateNames := map[string]bool{}, map[string]bool{}
+	modelDefaults := map[uint32]bool{}
 	for _, g := range cfg.Groups {
 		if g.ID == "" || groups[g.ID] || !validLabel(g.Name, 52) || strings.TrimSpace(g.Name) == "" || groupNames[g.Name] {
 			return fmt.Errorf("AP 分组编号/名称无效或重复")
@@ -276,9 +283,18 @@ func validateManagement(cfg Config) error {
 		if err := validateAPOptions(t.Options); err != nil {
 			return err
 		}
+		if t.ApplyOnJoin {
+			if t.ModelID == 0 || t.Group != "" && !groups[t.Group] {
+				return fmt.Errorf("新 AP 型号模板需要型号 ID 和有效分组")
+			}
+			if modelDefaults[t.ModelID] {
+				return fmt.Errorf("同一型号只能有一个新 AP 默认模板")
+			}
+			modelDefaults[t.ModelID] = true
+		}
 	}
 	for _, p := range cfg.APProfiles {
-		if p.AP == "" || aps[p.AP] || !validAPName(p.Name) || !validLabel(p.Location, 200) || p.Group != "" && !groups[p.Group] || p.Template != "" && !templates[p.Template] {
+		if p.AP == "" || aps[p.AP] || !validStoredAPName(p.Name) || !validLabel(p.Location, 200) || p.Group != "" && !groups[p.Group] || p.Template != "" && !templates[p.Template] {
 			return fmt.Errorf("AP 设置引用无效或重复")
 		}
 		aps[p.AP] = true

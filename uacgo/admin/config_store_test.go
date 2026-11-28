@@ -64,6 +64,9 @@ func TestAPJoinGroupAssignmentIsNotBlockedByWebRRMGuard(t *testing.T) {
 	m.config.Groups = next.Groups
 	m.mu.Unlock()
 	ap := cweng.APStatus{ID: "new-ap", Address: "192.0.2.10:5246", ConnectedAt: time.Now(), Online: true}
+	if err := m.registerAPJoin(ap, true); err != nil {
+		t.Fatal(err)
+	}
 	m.observeAPState(ap)
 	if apGroup(m.config, ap.ID) != "floor" {
 		t.Fatal("AP lifecycle was incorrectly treated as Web RF edit")

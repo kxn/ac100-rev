@@ -287,8 +287,8 @@ func (s *Session) fsmJoinFinish(ev *Event) error {
 		}
 		return fmt.Errorf("JOIN_FINISH: invalid timeout timer %d", ev.Timer)
 	case EventRecvPktCheck:
-		// join_finish_recv_pkt_check @0x59f328: accepts Image Req(15), Cfg Status(5)
-		if ev.MsgType == MsgImageDataRequest || ev.MsgType == MsgConfigStatus {
+		// join_finish_recv_pkt_check @0x59f328: accepts Join(3), Image Req(15), Cfg Status(5)
+		if ev.MsgType == MsgJoin || ev.MsgType == MsgImageDataRequest || ev.MsgType == MsgConfigStatus {
 			return nil
 		}
 		return fmt.Errorf("JOIN_FINISH: check rejects msg %d", ev.MsgType)
@@ -314,8 +314,8 @@ func (s *Session) fsmConfigure(ev *Event) error {
 		}
 		return fmt.Errorf("CONFIGURE: invalid timeout timer %d", ev.Timer)
 	case EventRecvPktCheck:
-		// configure_recv_pkt_check @0x59d918: accepts Change State Event(11)
-		if ev.MsgType == MsgChangeStateEvent {
+		// configure_recv_pkt_check @0x59d918: accepts Config Status(5), Change State Event(11)
+		if ev.MsgType == MsgConfigStatus || ev.MsgType == MsgChangeStateEvent {
 			return nil
 		}
 		return fmt.Errorf("CONFIGURE: check rejects msg %d", ev.MsgType)
@@ -326,15 +326,41 @@ func (s *Session) fsmConfigure(ev *Event) error {
 	}
 }
 
-// fsmImageData mirrors cw_fsm_ac_image_data @0x59edec (gate-only state;
-// timeouts of IMAGE_DATA_XMIT drop to error handling — port when upgrade flow
-// is implemented; upgrades are not exercised in the attach path).
+// fsmImageData follows the original image-state receive/failure/timer branches.
+// Firmware transfer itself is handled by the upgrade component.
 func (s *Session) fsmImageData(ev *Event) error {
 	switch ev.ID {
-	case EventRecvPktCheck, EventCheckFailed, EventCheckPassed:
+	case EventRecvPktCheck:
+		if ev.MsgType == 15 || ev.MsgType == 16 || ev.MsgType == 13 {
+			return nil
+		}
+		return fmt.Errorf("IMAGE_DATA: check rejects msg %d", ev.MsgType)
+	case EventCheckFailed:
+		s.enterReset()
+		s.delete()
+		return nil
+	case EventCheckPassed:
+		switch ev.MsgType {
+		case 15:
+			return nil
+		case 13:
+			s.setTimer(TimerEchoInterval)
+		case 16:
+		default:
+			return fmt.Errorf("IMAGE_DATA: unexpected msg %d", ev.MsgType)
+		}
+		s.setState(StateImageData)
 		return nil
 	case EventImageFinished:
+		s.setState(StateReset)
 		return nil
+	case EventTimeout:
+		if ev.Timer == TimerEchoInterval || ev.Timer == TimerRetransmit {
+			s.clearTimers()
+			s.teardown()
+			return nil
+		}
+		return fmt.Errorf("IMAGE_DATA: invalid timeout timer %d", ev.Timer)
 	default:
 		return fmt.Errorf("IMAGE_DATA: invalid event %d", ev.ID)
 	}
@@ -357,13 +383,32 @@ func (s *Session) fsmDataCheck(ev *Event) error {
 	switch ev.ID {
 	case EventTimeout:
 		if ev.Timer == TimerDataCheck {
+			s.acData.DataCheckTimeout.Add(1)
 			s.clearTimers()
+			s.setState(StateDTLSTeardown)
 			s.teardown()
 			return nil
 		}
 		return fmt.Errorf("DATE_CHECK: invalid timeout timer %d", ev.Timer)
-	case EventRecvPktCheck, EventCheckFailed, EventCheckPassed:
+	case EventRecvPktCheck:
+		if ev.MsgType == 9 || ev.MsgType == 11 || ev.MsgType == 13 {
+			return nil
+		}
+		return fmt.Errorf("DATA_CHECK: check rejects msg %d", ev.MsgType)
+	case EventCheckFailed:
+		s.teardown()
 		return nil
+	case EventCheckPassed:
+		switch ev.MsgType {
+		case 9, 13:
+			s.setTimer(TimerEchoInterval)
+			s.setState(StateRun)
+			s.acData.RunCount.Add(1)
+			return s.enterRun()
+		case 11:
+			return nil
+		}
+		return fmt.Errorf("DATA_CHECK: unexpected msg %d", ev.MsgType)
 	default:
 		return fmt.Errorf("DATE_CHECK: invalid event %d", ev.ID)
 	}

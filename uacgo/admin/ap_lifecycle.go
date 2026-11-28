@@ -32,9 +32,8 @@ func (m *Manager) observeAPState(ap cweng.APStatus) {
 	}
 	if ap.Online && (!exists || !old.Online || old.ConnectedAt != ap.ConnectedAt) {
 		next := m.config
-		groupChanged := m.groupAPJoined(&next, ap)
 		next, edcaChanged := m.compileEDCARules(next)
-		if groupChanged || edcaChanged {
+		if edcaChanged {
 			if err := m.saveAPEventConfig(next); err != nil {
 				m.status[ap.ID+"/group-strategy"] = ApplyStatus{AP: ap.ID, Service: "group-strategy", State: "failed", Error: err.Error(), At: time.Now()}
 			}

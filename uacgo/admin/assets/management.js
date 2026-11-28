@@ -38,14 +38,15 @@ function renderManagement(view) {
     return panel(
       "AP 模板",
       table(
-        ["模板名称", "适用型号", "硬件版本", "操作"],
+        ["模板名称", "适用型号", "硬件版本", "新 AP 接入", "操作"],
         templates
           .map(
             (t) =>
               `<tr>
                 <td><strong>${esc(t.name)}</strong></td>
-                <td>${esc(t.model || "通用")}</td>
+                <td>${esc(t.model || (t.model_id ? "型号 ID " + t.model_id : "通用"))}</td>
                 <td>${esc(t.hardware_version || "全部版本")}</td>
+                <td>${t.apply_on_join ? "首次登记时复制" : "仅手动关联"}</td>
                 <td>
                   <div class="actions">
                     <button type="button" class="text-button" data-template-edit="${esc(t.id)}">编辑</button>
@@ -226,7 +227,8 @@ function managementEditor(kind, item) {
     identity = `<div class="form-grid">
       ${field("management_name", kind === "group" ? "分组名称" : "模板名称", item?.name || "", "text", 'required maxlength="52"')}
       ${kind === "template" ? field("management_model", "适用 AP 型号", item?.model || "", "text", 'placeholder="留空为通用"') + field("management_hardware", "硬件版本", item?.hardware_version || "", "text", 'placeholder="留空为全部版本"') : ""}
-    </div>`;
+      ${kind === "template" ? toggle("management_apply_on_join", "新 AP 按型号自动使用", item?.apply_on_join || false) + field("management_model_id", "型号 ID", item?.model_id || "", "number", 'min="1" max="4294967295"', "按 AP 上报的型号 ID 精确匹配，与名称或测试机型无关。") + select("management_template_group", "新 AP 初始分组", { "": "未分组", ...Object.fromEntries((cfg.groups || []).map((g) => [g.id, g.name])) }, item?.group_id || "") : ""}
+    </div>${kind === "template" ? '<p class="help">自动模板只在首次登记时复制参数，已有 AP 和重连设备不会重新套用。型号 ID 是匹配键；硬件版本用于手动关联校验。备份中的单台 AP 快照默认仅供手动关联。</p>' : ""}`;
   }
   if (kind === "group") {
     const strategy = item?.strategy;
@@ -597,6 +599,9 @@ document.addEventListener("submit", async (event) => {
           name: value("management_name"),
           model: value("management_model"),
           hardware_version: value("management_hardware"),
+          model_id: Number(value("management_model_id")) || 0,
+          apply_on_join: f.elements.management_apply_on_join.checked,
+          group_id: value("management_template_group"),
           options,
         });
     } else if (f.id === "management-copy-form") {

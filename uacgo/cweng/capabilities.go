@@ -352,3 +352,36 @@ func (db *APDB) ResolveCapabilities(ap *APEntry) {
 		}
 	}
 }
+
+// Model ID zero follows the original Join fallback: existing inventory first
+// (restored by APStore), otherwise exact model name and hardware in APDB.
+// A current reported capability tree is never replaced by this identity lookup.
+func (db *APDB) ResolveIdentity(ap *APEntry) {
+	if ap.ModelID != 0 || ap.Model == "" {
+		return
+	}
+	match := func(model APDBModel) bool {
+		if model.APName != ap.Model {
+			return false
+		}
+		for _, hw := range model.Models {
+			if hw.HWVer == ap.HardwareVersion {
+				ap.ModelID = uint32(model.ID)
+				return true
+			}
+		}
+		return false
+	}
+	for _, model := range db.Models() {
+		if match(model) {
+			return
+		}
+	}
+	for _, entry := range db.Negotiated {
+		for _, model := range entry.APList {
+			if match(model) {
+				return
+			}
+		}
+	}
+}

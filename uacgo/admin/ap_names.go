@@ -16,6 +16,12 @@ func validAPName(name string) bool {
 	return validLabel(name, 200) && utf8.RuneCountInString(name) <= 50
 }
 
+// Original UAC also creates names internally using a154-byte C buffer.
+// Those stored names are not Web rename input and may exceed50 characters.
+func validStoredAPName(name string) bool {
+	return validAPName(name) || validLabel(name, 153)
+}
+
 func setAPName(cfg *Config, id, name string) {
 	cfg.APProfiles = append([]APProfile{}, cfg.APProfiles...)
 	for i := range cfg.APProfiles {

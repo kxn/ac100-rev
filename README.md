@@ -131,3 +131,6 @@ AP capability and model restrictions: [firmware mapping, native readback, and si
 AP reporting differences: [official firmware comparison for signal and client rates](docs/ap-reporting-review.md).
 
 漫游与射频优化可[按功能选择V4/V6策略](docs/component-strategy-versions.md)，两处选择互相独立。
+
+
+AP首次接入与型号模板的来源、重连及失败分支见[接入核对](docs/ap-onboarding-review.md)。

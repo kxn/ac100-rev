@@ -91,3 +91,22 @@ func TestNegotiatedModelSelectionUsesFirmwareAndHardwareIdentity(t *testing.T) {
 		t.Fatal("cache replaced current AP report")
 	}
 }
+
+func TestZeroModelIdentityUsesExactNameAndHardwareWithoutReplacingReport(t *testing.T) {
+	db, err := LoadAPDB("../data/apdb.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+	model := db.Models()[0]
+	ap := &APEntry{Model: model.APName, HardwareVersion: model.Models[0].HWVer, Capabilities: []RadioCapability{{RadioID: 1, Source: "ap-report", MaxSSID: 3}}}
+	db.ResolveIdentity(ap)
+	db.ResolveCapabilities(ap)
+	if ap.ModelID != uint32(model.ID) || ap.Capabilities[0].MaxSSID != 3 || ap.Capabilities[0].Source != "ap-report" {
+		t.Fatal(ap)
+	}
+	bad := &APEntry{Model: model.APName, HardwareVersion: "unknown-revision"}
+	db.ResolveIdentity(bad)
+	if bad.ModelID != 0 {
+		t.Fatal("borrowed model identity across hardware", bad)
+	}
+}

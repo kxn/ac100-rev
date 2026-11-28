@@ -129,10 +129,13 @@ func TestEngineApLifecycle(t *testing.T) {
 		t.Fatalf("session state = %v (want JOIN_FINISH)", st)
 	}
 
-	// retransmitted join in JOIN_FINISH: the binary's gate
-	// (join_finish_recv_pkt_check @0x59f328 accepts only {15,5}) drops it.
+	// Both firmware gates accept a repeated Join in JOIN_FINISH. The stored
+	// response is resent without re-running registration/listeners.
 	c.Write(withSeq(t, "cw_join_req_0074f150.bin", 2))
-	expectNoReply(t)
+	repeated, err := capwap.ParsePacket(read(t))
+	if err != nil || repeated.Control.MsgType != capwap.MsgJoinResponse || repeated.Control.SeqNum != 2 {
+		t.Fatal("Join retry not answered", repeated, err)
+	}
 
 	// --- config status (seq 3): JOIN_FINISH→CONFIGURE ---
 	c.Write(withSeq(t, "cw_cfg_req_0074ef5c.bin", 3))
@@ -142,6 +145,12 @@ func TestEngineApLifecycle(t *testing.T) {
 	}
 	if st := lockedState(s); st != StateConfigure {
 		t.Fatalf("state = %s (want CONFIGURE)", StateNames[st])
+	}
+
+	c.Write(withSeq(t, "cw_cfg_req_0074ef5c.bin", 3))
+	repeated, err = capwap.ParsePacket(read(t))
+	if err != nil || repeated.Control.MsgType != capwap.MsgConfigurationStatusResponse || lockedState(s) != StateConfigure {
+		t.Fatal("Config retry not answered", repeated, err)
 	}
 
 	// --- change state event (seq 4): CONFIGURE→RUN + ent-1 listeners fired ---

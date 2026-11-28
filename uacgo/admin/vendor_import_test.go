@@ -61,6 +61,9 @@ func vendorTestDatabase(t *testing.T, schema string) []byte {
 }
 
 func vendorTestExport(t *testing.T, mode int, modeOptions ...string) []byte {
+	return vendorTestExportFiles(t, mode, nil, modeOptions...)
+}
+func vendorTestExportFiles(t *testing.T, mode int, overrides map[string][]byte, modeOptions ...string) []byte {
 	t.Helper()
 	// All identities, credentials and database rows below are synthetic.
 	// Do not replace them with an export from a deployed controller.
@@ -75,6 +78,9 @@ INSERT INTO wserv_tbl VALUES(0,4,3,2,86400,'Example中文',1,'Example123','on',1
 INSERT INTO wserv_tbl VALUES(3,1,2,2,86400,'Specific',1,'Example456','on',1,'test',0,0,'off',771,0,1,0,0,'on','on','off',1,6,60,10);`),
 		"wserv_rd.db":  vendorTestDatabase(t, `CREATE TABLE bind_tbl(radio_id INTEGER,wserv1 INTEGER,vlan1 INTEGER,wserv2 INTEGER,vlan2 INTEGER);INSERT INTO bind_tbl VALUES(17,3,0,0,200);`),
 		"auth_user.db": vendorTestDatabase(t, `CREATE TABLE userNameTable(name TEXT,mac TEXT,key INTEGER);INSERT INTO userNameTable VALUES('Example tablet','02-11-22-33-44-55',1);CREATE TABLE authUserTable(username TEXT,password TEXT);INSERT INTO authUserTable VALUES('EXCLUDED-ACCOUNT','EXCLUDED-PASSWORD');`),
+	}
+	for name, data := range overrides {
+		app[name] = data
 	}
 	var files = map[string][]byte{}
 	for n, b := range app {
@@ -230,5 +236,30 @@ func TestVendorConversionNeverSilentlyChangesLegacyMode(t *testing.T) {
 	}
 	if !got.Config.Mobility.Default.R || !got.Config.Mobility.Default.K || !got.Config.Mobility.Default.V {
 		t.Fatal("mode choice discarded independent roaming settings")
+	}
+}
+
+func TestVendorModelDefaultsComeFromTemplateTableNotAPSnapshots(t *testing.T) {
+	apdb := vendorTestDatabase(t, `CREATE TABLE Group_table(group_id INTEGER,name TEXT); INSERT INTO Group_table VALUES(0,'Default group');
+ CREATE TABLE ApEntryCfg_table(entry_id INTEGER,group_id INTEGER,mac TEXT,entry_name TEXT,model_id INTEGER,hardware_ver TEXT,led INTEGER);
+ INSERT INTO ApEntryCfg_table VALUES(1,0,'02-00-00-00-00-01','Specific AP',123,'1.0',0);
+ CREATE TABLE ApTemplate_table(entry_id INTEGER,group_id INTEGER,entry_name TEXT,model_id INTEGER,hardware_ver TEXT,led INTEGER,client_idle INTEGER);
+ INSERT INTO ApTemplate_table VALUES(10,0,'Model default',123,'1.0',1,600);`)
+	radios := vendorTestDatabase(t, `CREATE TABLE rdmngrTable(rf_id INTEGER,freq_band INTEGER,mode INTEGER,bandwidth INTEGER,channel INTEGER,power_level INTEGER,max_usr INTEGER,antenna INTEGER,frag_thr INTEGER,rts_thr INTEGER,bcn_intvl INTEGER,dtim_prd INTEGER,manage_frame_rate INTEGER,wmm TEXT,rf_state TEXT,gi_mode INTEGER,rf_check_circle INTEGER,rf_chnl_occup_threshold INTEGER,rf_chnl_tolerance INTEGER,reject_limit INTEGER,reject_diff INTEGER);
+ INSERT INTO rdmngrTable VALUES(17,0,6,2,6,6,100,0,2346,2346,100,1,11,'on','on',-1,8,50,20,-60,6);
+ INSERT INTO rdmngrTable VALUES(161,0,6,2,11,8,80,0,2346,2346,100,1,11,'on','on',-1,8,50,20,-60,6);`)
+	out, err := ConvertVendorBackup(vendorTestExportFiles(t, 2, map[string][]byte{"apmngr.db": apdb, "rdmngr.db": radios}), "", -1)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(out.Config.Templates) != 2 {
+		t.Fatal(out.Config.Templates)
+	}
+	source, snapshot := out.Config.Templates[0], out.Config.Templates[1]
+	if !source.ApplyOnJoin || source.ModelID != 123 || source.Options.LED == nil || !*source.Options.LED || source.Options.ClientIdle == nil || *source.Options.ClientIdle != 600 || len(source.Options.Radios) != 1 || source.Options.Radios[0].AP != "" || *source.Options.Radios[0].Channel != 11 {
+		t.Fatal(source)
+	}
+	if snapshot.ApplyOnJoin || snapshot.Options.LED == nil || *snapshot.Options.LED || out.Config.APProfiles[0].Template != snapshot.ID {
+		t.Fatal("per-AP snapshot promoted to model default", snapshot)
 	}
 }

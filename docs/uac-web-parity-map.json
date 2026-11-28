@@ -62,7 +62,8 @@
       "basis": "CAPWAP/FSM 与型号能力；FIFO 提交和 ACK 分开，会话 epoch 防止旧事件覆盖。设备固定容量/主机告警不移植。",
       "evidence_contracts": [
         "session-fsm",
-        "command-session-isolation"
+        "command-session-isolation",
+        "ap-attach-retry-gates"
       ]
     },
     {
@@ -86,7 +87,8 @@
         "uacgo/cweng/ports.go",
         "uacgo/cweng/radio_modes.go",
         "uacgo/admin/ap_names.go",
-        "uacgo/admin/assets/diagnostics.js"
+        "uacgo/admin/assets/diagnostics.js",
+        "uacgo/admin/ap_registration.go"
       ],
       "regressions": [
         "uacgo/admin/ap_export_test.go",
@@ -94,7 +96,8 @@
         "uacgo/admin/management_copy_test.go",
         "uacgo/admin/management_test.go",
         "uacgo/admin/policy_retarget_test.go",
-        "uacgo/admin/ports_test.go"
+        "uacgo/admin/ports_test.go",
+        "uacgo/admin/ap_registration_test.go"
       ],
       "basis": "5da88c/5da518 Join、5f70f0 分组编辑；有序快照、包含端点、禁用范围仍占用、Mesh 父子分支和升级跳过。calibrate_load 是批量命名，不是 RF 算法。",
       "evidence_contracts": [
@@ -102,7 +105,8 @@
         "group-join-and-edit",
         "copy-replace-retire",
         "ap-name-import",
-        "ap-metadata-report-separation"
+        "ap-metadata-report-separation",
+        "ap-first-registration"
       ]
     },
     {

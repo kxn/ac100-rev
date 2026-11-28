@@ -199,6 +199,19 @@ func ConvertVendorBackup(input []byte, iface string, targetMode int) (*VendorCon
 	}); err != nil {
 		return nil, err
 	}
+	sourceTemplates := map[int]int{}
+	if err := rd.table("apmngr.db", "ApTemplate_table", []string{"bluetooth_enable", "cloud_config_id", "telnet_status", "firmware_id", "ssid_mlo_support"}, func(r vendorRow) error {
+		options, err := vendorAPOptions(r)
+		if err != nil {
+			return err
+		}
+		id := r.n("entry_id")
+		sourceTemplates[id] = len(cfg.Templates)
+		cfg.Templates = append(cfg.Templates, APTemplate{ID: importID("model-template", id), Name: r.s("entry_name"), ModelID: uint32(r.n("model_id")), Hardware: r.s("hardware_ver"), Group: groups[r.n("group_id")], ApplyOnJoin: true, Options: options})
+		return nil
+	}); err != nil {
+		return nil, err
+	}
 	if err := rd.table("apmngr.db", "ApEntryCfg_table", []string{"ap_role", "cap_id", "hdap_peer_id", "bluetooth_enable", "cloud_config_id", "telnet_status", "firmware_id", "ssid_mlo_support"}, func(r vendorRow) error {
 		mac, err := vendorMAC(r.s("mac"))
 		if err != nil {
@@ -207,98 +220,24 @@ func ConvertVendorBackup(input []byte, iface string, targetMode int) (*VendorCon
 		aps[r.n("entry_id")] = mac
 		modelIDs[mac], hardware[mac] = uint32(r.n("model_id")), r.s("hardware_ver")
 		p := APProfile{AP: mac, Name: r.s("entry_name"), Group: groups[r.n("group_id")]}
-		o := &p.Options
-		// ap_keep_alive is encoded as echo interval, independently from
-		// client keepalive and idle. Preserve absence separately from zero.
-		if r.has("ap_keep_alive") {
-			n := uint8(r.n("ap_keep_alive"))
-			o.EchoSeconds = &n
-		}
-		if r.has("client_keep_alive") {
-			n := uint32(r.n("client_keep_alive"))
-			o.ClientKeepAlive = &n
-		}
-		if r.has("client_idle") {
-			n := uint32(r.n("client_idle"))
-			o.ClientIdle = &n
-		}
-		for key, dst := range map[string]**bool{"offline_selfmanage": &o.OfflineSelfManage, "led": &o.LED, "led_wifi_sync": &o.LEDWiFiSync, "ap_trunk": &o.Trunk, "fit_fat_button_status": &o.FitFatButton, "ap_mesh_switch": &o.Mesh} {
-			if r.has(key) && r.s(key) != "" && r.data[key] != "null" && r.data[key] != "255" && r.data[key] != "-1" {
-				b := r.on(key)
-				*dst = &b
-			}
-		}
-		if r.has("new_ap_trunk") {
-			value := r.n("new_ap_trunk")
-			if value == 0 || value == 1 {
-				b := value == 1
-				o.Trunk = &b
-			}
-		}
-		if r.has("region_code") && r.n("region_code") >= 0 && r.n("region_code") < 255 {
-			n := uint8(r.n("region_code"))
-			o.RegionCode = &n
-		}
-		user, password := r.s("account_username"), r.s("account_password")
-		legacyUser, legacyPassword := r.s("username"), r.s("password")
-		if password == "" {
-			user, password = legacyUser, legacyPassword
-		}
-		if user != "" && password != "" {
-			o.Account = &APAccount{Username: user, Password: password}
-		}
-		for i := 1; i <= 4; i++ {
-			key := fmt.Sprintf("phy_wire_vlan_%d", i)
-			if r.has(key) {
-				n := r.n(key)
-				if n > 0 && n <= 4094 {
-					vlan := uint16(n)
-					o.Ports = append(o.Ports, APPort{ID: uint8(i), VLAN: &vlan})
-				}
-			}
-		}
-		if r.on("led_timer_enable") {
-			o.LEDSchedule, err = vendorLEDSchedule(r)
-			if err != nil {
-				return err
-			}
-		} else {
-			for _, k := range []string{"led_close_date", "led_close_time", "led_open_date", "led_open_time"} {
-				r.s(k)
-			}
-		}
-		if r.has("lag_mode") {
-			lag := &APLAG{Enabled: r.on("lag_mode")}
-			r.n("lag_phy_num")
-			for _, port := range strings.FieldsFunc(r.s("lag_phy_list"), func(c rune) bool { return c == ',' || c == ' ' }) {
-				n, e := strconv.Atoi(port)
-				if e != nil {
-					return e
-				}
-				if n > 0 {
-					lag.Ports = append(lag.Ports, uint8(n))
-				}
-			}
-			if lag.Enabled || len(lag.Ports) > 0 {
-				o.LAG = lag
-			}
-		}
-		if r.has("radio_role_table_idx") && r.n("radio_role_table_idx") > 0 {
-			o.RFMode = &APRFMode{Enabled: true, ID: uint8(r.n("radio_role_table_idx"))}
+		p.Options, err = vendorAPOptions(r)
+		if err != nil {
+			return err
 		}
 		cfg.APProfiles = append(cfg.APProfiles, p)
 		return nil
 	}); err != nil {
 		return nil, err
 	}
-	if len(aps) == 0 {
+	if len(aps) == 0 && len(sourceTemplates) == 0 {
 		return nil, fmt.Errorf("backup has no supported AP records")
 	}
 	if err := rd.table("rdmngr.db", "rdmngrTable", []string{"rf_name", "freq_band", "chLock", "pwrLock", "scanMode", "scanType", "scanIntvl", "chErrFrameRatio"}, func(r vendorRow) error {
 		id := r.n("rf_id")
 		ap, exists := aps[id>>4]
-		if !exists {
-			return fmt.Errorf("unknown AP for radio %d", id)
+		templateIndex, templateExists := sourceTemplates[id>>4]
+		if !exists && !templateExists {
+			return fmt.Errorf("unknown AP or model template for radio %d", id)
 		}
 		enabled, channel, level := r.on("rf_state"), r.n("channel"), r.n("power_level")
 		setting := RadioSetting{AP: ap, Radio: uint8(id & 15), Enabled: &enabled, Channel: &channel, PowerLevel: &level}
@@ -316,7 +255,12 @@ func ConvertVendorBackup(input []byte, iface string, targetMode int) (*VendorCon
 			a.UplinkMUMIMO = a.Mode >= 10
 		}
 		setting.Advanced = &a
-		cfg.Radios = append(cfg.Radios, setting)
+		if templateExists {
+			setting.AP = ""
+			cfg.Templates[templateIndex].Options.Radios = append(cfg.Templates[templateIndex].Options.Radios, setting)
+		} else {
+			cfg.Radios = append(cfg.Radios, setting)
+		}
 		return nil
 	}); err != nil {
 		return nil, err
@@ -607,4 +551,90 @@ func compileVendorTemplates(cfg *Config, modelIDs map[string]uint32, hardware ma
 		p.Options = APOptions{}
 	}
 	return nil
+}
+
+// Shared conversion of the same settings columns in AP rows and model templates.
+func vendorAPOptions(r vendorRow) (APOptions, error) {
+	var options APOptions
+	o := &options
+	var err error
+	// ap_keep_alive is encoded as echo interval, independently from
+	// client keepalive and idle. Preserve absence separately from zero.
+	if r.has("ap_keep_alive") {
+		n := uint8(r.n("ap_keep_alive"))
+		o.EchoSeconds = &n
+	}
+	if r.has("client_keep_alive") {
+		n := uint32(r.n("client_keep_alive"))
+		o.ClientKeepAlive = &n
+	}
+	if r.has("client_idle") {
+		n := uint32(r.n("client_idle"))
+		o.ClientIdle = &n
+	}
+	for key, dst := range map[string]**bool{"offline_selfmanage": &o.OfflineSelfManage, "led": &o.LED, "led_wifi_sync": &o.LEDWiFiSync, "ap_trunk": &o.Trunk, "fit_fat_button_status": &o.FitFatButton, "ap_mesh_switch": &o.Mesh} {
+		if r.has(key) && r.s(key) != "" && r.data[key] != "null" && r.data[key] != "255" && r.data[key] != "-1" {
+			b := r.on(key)
+			*dst = &b
+		}
+	}
+	if r.has("new_ap_trunk") {
+		value := r.n("new_ap_trunk")
+		if value == 0 || value == 1 {
+			b := value == 1
+			o.Trunk = &b
+		}
+	}
+	if r.has("region_code") && r.n("region_code") >= 0 && r.n("region_code") < 255 {
+		n := uint8(r.n("region_code"))
+		o.RegionCode = &n
+	}
+	user, password := r.s("account_username"), r.s("account_password")
+	legacyUser, legacyPassword := r.s("username"), r.s("password")
+	if password == "" {
+		user, password = legacyUser, legacyPassword
+	}
+	if user != "" && password != "" {
+		o.Account = &APAccount{Username: user, Password: password}
+	}
+	for i := 1; i <= 4; i++ {
+		key := fmt.Sprintf("phy_wire_vlan_%d", i)
+		if r.has(key) {
+			n := r.n(key)
+			if n > 0 && n <= 4094 {
+				vlan := uint16(n)
+				o.Ports = append(o.Ports, APPort{ID: uint8(i), VLAN: &vlan})
+			}
+		}
+	}
+	if r.on("led_timer_enable") {
+		o.LEDSchedule, err = vendorLEDSchedule(r)
+		if err != nil {
+			return APOptions{}, err
+		}
+	} else {
+		for _, k := range []string{"led_close_date", "led_close_time", "led_open_date", "led_open_time"} {
+			r.s(k)
+		}
+	}
+	if r.has("lag_mode") {
+		lag := &APLAG{Enabled: r.on("lag_mode")}
+		r.n("lag_phy_num")
+		for _, port := range strings.FieldsFunc(r.s("lag_phy_list"), func(c rune) bool { return c == ',' || c == ' ' }) {
+			n, e := strconv.Atoi(port)
+			if e != nil {
+				return APOptions{}, e
+			}
+			if n > 0 {
+				lag.Ports = append(lag.Ports, uint8(n))
+			}
+		}
+		if lag.Enabled || len(lag.Ports) > 0 {
+			o.LAG = lag
+		}
+	}
+	if r.has("radio_role_table_idx") && r.n("radio_role_table_idx") > 0 {
+		o.RFMode = &APRFMode{Enabled: true, ID: uint8(r.n("radio_role_table_idx"))}
+	}
+	return options, nil
 }

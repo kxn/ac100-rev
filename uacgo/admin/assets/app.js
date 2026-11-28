@@ -935,6 +935,7 @@ function renderAPDetail(id) {
       ${[
         ["AP名称", apName(id)],
         ["型号", ap.model],
+        ["型号 ID", ap.model_id ?? "—"],
         ["MAC地址", ap.mac],
         [
           "IP地址",
@@ -942,6 +943,7 @@ function renderAPDetail(id) {
         ],
         ["所属分组", group],
         ["模板", template],
+        ["首次登记模板", (data.config.templates || []).find(t => t.id === profile?.initial_template_id)?.name || profile?.initial_template_id || "未使用型号模板"],
         ["安装位置", (profile ? profile.location : ap.location) || "未设置"],
         ["Mesh 配置状态", ap.mesh_policy_enabled == null ? "未取得" : ap.mesh_policy_enabled ? "允许组网（控制器配置）" : "停用（控制器配置）"],
         ["序列号", ap.serial],

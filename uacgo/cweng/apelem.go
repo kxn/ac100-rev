@@ -223,6 +223,9 @@ func ParseAPEntry(req *capwap.ParsedPacket) (*APEntry, error) {
 			}
 			e.Serial = strings.TrimRight(SerialNumber(subs), "\x00")
 			for _, sub := range subs {
+				if sub.Type == 9 && len(sub.Value) > 0 && len(sub.Value) <= 65 && e.Model == "" {
+					e.Model = strings.TrimRight(string(sub.Value), "\x00")
+				}
 				if sub.Type == 4 && len(sub.Value) == 6 {
 					e.MAC = net.HardwareAddr(sub.Value).String()
 				}

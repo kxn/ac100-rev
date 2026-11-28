@@ -393,3 +393,6 @@ AP 专用 DHCP 与 AP 侧 DHCP/ARP 防护是不同功能。可选 DHCP JSON 的 
 | 可选 AP DHCP、持续观察 | `uacgo/dhcpserver/server.go`、`tools/monitor_controller.py` |
 
 公开文档和提交只能包含脱敏案例、合成测试数据及代码。真实 MAC/IP、SSID、客户端别名、原 AC 备份、完整运行目录、日志、trace、pcap、密钥、证书私钥和 Native 原始响应留在本地。事件日志虽然避开密钥，仍包含网络身份信息，不能直接当成“可公开日志”。
+
+
+首次登记可查看 `ap.registration`：`first`区分新建与已有记录，`model_id`是原厂模板查找键，`initial_template`为空表示未使用型号默认模板，`group`是Join后的结果。`ap.registration_failed`表示持久化或初始化失败，不能同时当作已成功接管。见[首次接入核对](ap-onboarding-review.md)。

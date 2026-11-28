@@ -60,6 +60,9 @@ type Engine struct {
 	OnEntRun   func(*Session) error
 	OnDelete   func(*Session)
 	OnAPState  func(APStatus)
+	// Called during Join with the session lock held, before a success response.
+	// first is determined by persistent inventory, not transient online state.
+	OnAPJoin func(ap APStatus, first bool) error
 	// Set before Run. Nil retains protocol-only operation for engine users.
 	ObserveAssociation func(ap string, radio, wlan uint8, mac [6]byte) bool
 	AdmitStation       func(ap string, radio, wlan uint8) bool
@@ -112,6 +115,15 @@ func NewEngine(port uint16) (*Engine, error) {
 	}
 	r := controllercfg.Defaults()
 	e.SetResourceLimits(r.MaxAPSessions, r.CommandQueueDepth)
+	// apmngr's original Join listener runs at priority120, after upgrade/RF
+	// prechecks. Registration must not precede those validation callbacks.
+	e.Register(3, 120, "apmngr_registration", func(ctx *Ctx, _, _ *capwap.ParsedPacket) bool {
+		if err := e.registerAPJoin(ctx.Session); err != nil {
+			e.Events.Event("ap.registration_failed", "ap_id", sessionID(ctx.Session), "error", err.Error())
+			return false
+		}
+		return true
+	})
 	return e, nil
 }
 
@@ -423,13 +435,6 @@ func (e *Engine) handlePlainDatagram(raw []byte, addr *net.UDPAddr) {
 			s.mu.Unlock()
 			return // capwap_ac_session_exceed_max_num: "just ignore it"
 		}
-		// The binary creates the AP entry inside the join listener
-		// (_apmngr_try_create_ap_entry_by_template_or_db), not at RUN.
-		if e.apStore != nil {
-			if err := e.apStore.UpsertAP(ap); err != nil {
-				log.Printf("apmngr store: %v", err)
-			}
-		}
 	}
 
 	e.handleSessionPacket(s, req, raw)
@@ -521,7 +526,7 @@ func (e *Engine) handleSessionPacket(s *Session, req *capwap.ParsedPacket, raw [
 	e.Events.Event("command.acknowledgement", "ap_id", sessionID(s), "session", s.Created, "message_type", msgType, "sequence", seq, "accepted", accepted, "reason", reason)
 	ctx := &Ctx{Session: s}
 	ok := e.reg.handleMsg(ctx, msgType, req, nil)
-	_ = s.recvResult(0, ok)
+	_ = s.recvResult(msgType, ok)
 }
 
 // handleDiscovery mirrors capwap_ac_discovery_handle @0x591ae4:

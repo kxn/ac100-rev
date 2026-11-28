@@ -180,7 +180,7 @@ with sync_playwright() as p:
     signal_queries = []
 
     for full in (False, True):
-        profile = copy.deepcopy(aps)
+        profile = copy.deepcopy(aps[:1])
         conf = copy.deepcopy(cfg)
         rf_defaults = copy.deepcopy(defaults)
         conf["config"]["protection"] = {
@@ -221,6 +221,16 @@ with sync_playwright() as p:
                 "options": {},
             }
         ]
+        # The limited synthetic profile must not inherit optional features
+        # from whichever live AP supplied the base fixture.
+        if not full:
+            for ap in profile:
+                for bit in (43, 98, 99):
+                    words = ap.get("general_capabilities", [])
+                    if len(words) > bit // 32:
+                        words[bit // 32] &= ~(1 << (bit % 32))
+                for feature in ("multicast", "multicast_per_ssid", "multicast_to_unicast", "multicast_mcs_rate", "vlan_pool"):
+                    ap.setdefault("features", {})[feature] = False
         if full:
             a = profile[0]
             a["general_capabilities"] = [4294967295] * 4
@@ -686,7 +696,12 @@ with sync_playwright() as p:
         visit("templates")
         page.locator('[data-template-new="1"]').click()
         page.locator('#management-form [name="management_name"]').fill("UI template")
-        assert submit("#management-form")["path"] == "templates"
+        page.locator('#management-form [name="management_apply_on_join"]').check()
+        page.locator('#management-form [name="management_model_id"]').fill("123")
+        template_write = submit("#management-form")
+        assert template_write["path"] == "templates"
+        assert template_write["body"]["apply_on_join"] is True
+        assert template_write["body"]["model_id"] == 123
         visit("apdefaults")
         expand("#management-form")
         assert submit("#management-form")["path"] == "ap-defaults"
@@ -704,7 +719,7 @@ with sync_playwright() as p:
         page.locator('#service-form [name="description"]').fill("V4 layout")
         expand("#service-form")
         assert not page.locator('#service-form [name="radius_ip"]').count()
-        assert page.locator('#service-form [name="mc_global"]').is_visible() == full
+        assert page.locator('#service-form [name="mc_global"]').is_visible() == full, (full, page.evaluate("data.aps.map(a=>({id:a.id,mc:a.features?.multicast}))"))
         if full:
             page.locator('#service-form [name="vlan_pool"]').select_option("1")
         page.locator('#service-form [name="band_preset"]').select_option("custom")

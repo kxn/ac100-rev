@@ -5881,6 +5881,432 @@
           "name": "TestEmptyConfiguredAPLocationDoesNotInheritFirmwareSample"
         }
       ]
+    },
+    {
+      "id": "ap-first-registration",
+      "feature": "ap-management",
+      "origin": "firmware",
+      "behavior": "首次 Join 按型号 ID 查原厂模板并复制一次；单台 AP 快照不参与自动匹配。重连保留设备设置，Join 阶段分组；直接与 Mesh 封装接入共享持久化及失败边界。型号0按已有记录或精确名称/硬件回退。",
+      "sources": [
+        {
+          "kind": "comparison-uac",
+          "version": "v4",
+          "name": "_apmngr_pkt_join_req_listen@v4",
+          "address": "0x00555d80",
+          "size": 8544,
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "sha256": "d34de9704987eee846c3179cb559244c7720b477231753256e3e23f577a2d96b"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v4",
+          "name": "apmngr_ap_add@v4",
+          "address": "0x0052cf4c",
+          "size": 1092,
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "sha256": "7f376e2590269905c961a14bec95b498664f10cae431d0cdec1d46ff02014eb9"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v4",
+          "name": "apmngr_db_sqlite_ap_cfg_restore@v4",
+          "address": "0x00534db4",
+          "size": 3076,
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "sha256": "502c31b5cc8d2753efb2bd4dc1eb8cd00a2fbca887bf31ef039f34a7c7eff588"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v4",
+          "name": "apmngr_db_sqlite_template_restore@v4",
+          "address": "0x005359b8",
+          "size": 2116,
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "sha256": "73da4af25b7522871f9712e540bdb25b9c32a79a2bf41cbeaf639081e012cef4"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v4",
+          "name": "apmngr_db_template_get@v4",
+          "address": "0x00540b20",
+          "size": 136,
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "sha256": "331ef14d011fed6ff7fc909c9dd884d66b4dd7c94fe6eb6ec5861cee280bd898"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v4",
+          "name": "rdmngr_api_for_apmngr_inherit@v4",
+          "address": "0x006123f0",
+          "size": 592,
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "sha256": "44452c4f6f84d7f621b2d8872e5e903ea8725c00c75049a091df29a0bd8ef52b"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v4",
+          "name": "rdmngr_db_rd_inherit@v4",
+          "address": "0x0061c77c",
+          "size": 844,
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "sha256": "d6d7b59a938d17656e301943e6ce4a32a72d3bd74c275b56f50181bbc3828a22"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v6",
+          "name": "_apmngr_pkt_join_req_listen@v6",
+          "address": "0x0060b040",
+          "size": 10420,
+          "binary_sha256": "b12d1584fcafda2a71aa9038b41b7e1c5b893b350f3e6edf5105e445d024a912",
+          "sha256": "a536395d68c775387feef4e9c3cddd3bad9b6324a413f2c1c6edf3445e8ecea8"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v6",
+          "name": "apmngr_ap_add@v6",
+          "address": "0x005d59e8",
+          "size": 1252,
+          "binary_sha256": "b12d1584fcafda2a71aa9038b41b7e1c5b893b350f3e6edf5105e445d024a912",
+          "sha256": "37a0796239823487e7ce47c38e4b9766427f6cc339c793101d0fd0e436310735"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v6",
+          "name": "apmngr_db_sqlite_ap_cfg_restore@v6",
+          "address": "0x005bd33c",
+          "size": 3680,
+          "binary_sha256": "b12d1584fcafda2a71aa9038b41b7e1c5b893b350f3e6edf5105e445d024a912",
+          "sha256": "88792f56ed22a60c8448430a31b666ab5e08359cffe5b1c38ef32703f7ade31b"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v6",
+          "name": "apmngr_db_sqlite_template_restore@v6",
+          "address": "0x005b5500",
+          "size": 2332,
+          "binary_sha256": "b12d1584fcafda2a71aa9038b41b7e1c5b893b350f3e6edf5105e445d024a912",
+          "sha256": "8cfd7e6a6a7159e81a81df2b9b4d4628786db19e15002d1f795a7aa6cce0242c"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v6",
+          "name": "apmngr_db_template_get@v6",
+          "address": "0x005c6030",
+          "size": 132,
+          "binary_sha256": "b12d1584fcafda2a71aa9038b41b7e1c5b893b350f3e6edf5105e445d024a912",
+          "sha256": "a21b344c49120c1a2b1e9f007adc8f1cfa2346a76588a644fdac381130d9c08f"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v6",
+          "name": "rdmngr_api_for_apmngr_inherit@v6",
+          "address": "0x0073c5a8",
+          "size": 596,
+          "binary_sha256": "b12d1584fcafda2a71aa9038b41b7e1c5b893b350f3e6edf5105e445d024a912",
+          "sha256": "2e138fa1816647541c40dc066385f7e3856a064d14fc9876a3c3843978246bd7"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v6",
+          "name": "rdmngr_db_rd_inherit@v6",
+          "address": "0x0072b3bc",
+          "size": 836,
+          "binary_sha256": "b12d1584fcafda2a71aa9038b41b7e1c5b893b350f3e6edf5105e445d024a912",
+          "sha256": "3d504b17379f2451728ea6056396b0cd094af03a53da5188dd264917c74d4de3"
+        }
+      ],
+      "implementation": [
+        {
+          "path": "uacgo/admin/ap_registration.go",
+          "symbol": "registerAPJoin"
+        },
+        {
+          "path": "uacgo/admin/vendor_import.go",
+          "symbol": "ConvertVendorBackup"
+        },
+        {
+          "path": "uacgo/cweng/apstore.go",
+          "symbol": "registerAPJoin"
+        },
+        {
+          "path": "uacgo/cweng/capabilities.go",
+          "symbol": "ResolveIdentity"
+        }
+      ],
+      "tests": [
+        {
+          "path": "uacgo/admin/ap_registration_test.go",
+          "name": "TestNewAPCopiesOnlyExplicitModelDefaultDuringJoin"
+        },
+        {
+          "path": "uacgo/admin/ap_registration_test.go",
+          "name": "TestModelDefaultNeverReappliesToExistingOrImportedAP"
+        },
+        {
+          "path": "uacgo/admin/ap_registration_test.go",
+          "name": "TestModelDefaultIsFrozenEvenWhenNoTemplateMatched"
+        },
+        {
+          "path": "uacgo/admin/ap_registration_test.go",
+          "name": "TestModelDefaultValidationAndCreationExclusions"
+        },
+        {
+          "path": "uacgo/admin/vendor_import_test.go",
+          "name": "TestVendorModelDefaultsComeFromTemplateTableNotAPSnapshots"
+        },
+        {
+          "path": "uacgo/cweng/mesh_transport_test.go",
+          "name": "TestMeshChildLifecycleCommandsAndParentIsolation"
+        },
+        {
+          "path": "uacgo/cweng/apstore_test.go",
+          "name": "TestInventoryInitializationFailureDoesNotAcknowledgeJoin"
+        },
+        {
+          "path": "uacgo/cweng/apstore_test.go",
+          "name": "TestStoredIdentityPrecedesZeroModelNameFallback"
+        },
+        {
+          "path": "uacgo/cweng/model_database_test.go",
+          "name": "TestZeroModelIdentityUsesExactNameAndHardwareWithoutReplacingReport"
+        },
+        {
+          "path": "uacgo/admin/ap_registration_test.go",
+          "name": "TestFirstRegistrationNameAndMeshChildRegionFollowOriginal"
+        },
+        {
+          "path": "uacgo/cweng/apstore_test.go",
+          "name": "TestJoinPrechecksRunBeforeRegistrationAndDuplicateDoesNotReinitialize"
+        },
+        {
+          "path": "uacgo/admin/ap_registration_test.go",
+          "name": "TestGeneratedAPNameDoesNotUseWebRenameLimit"
+        }
+      ]
+    },
+    {
+      "id": "ap-attach-retry-gates",
+      "feature": "transport",
+      "origin": "firmware",
+      "behavior": "两版接入状态报文门禁完整允许集合，Join/Config重复请求重发而非重初始化；恢复状态的RUN/失败/超时边界与删除会话的取消语义。",
+      "sources": [
+        {
+          "kind": "comparison-uac",
+          "version": "v4",
+          "name": "cw_fsm_ac_configure_recv_pkt_check@v4",
+          "address": "0x0059d918",
+          "size": 280,
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "sha256": "8be969cc73b27db4e842e4d747e5dfe9c09b4a2ae3d578fb3c26e2950ac9fe3b"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v4",
+          "name": "cw_fsm_ac_data_check@v4",
+          "address": "0x0059e094",
+          "size": 660,
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "sha256": "9aea9e9a1d7d6ae17322e5f6522265e5042ad14f81593875d5ab6dfe0fd059a3"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v4",
+          "name": "cw_fsm_ac_data_check_recv_pkt@v4",
+          "address": "0x0059dcd0",
+          "size": 676,
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "sha256": "f5e70250d31fe7897aff74761e902f9c9593b760e5ca20d33ca920d47b0adfbd"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v4",
+          "name": "cw_fsm_ac_data_check_recv_pkt_check@v4",
+          "address": "0x0059df74",
+          "size": 288,
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "sha256": "df645adce3af1b7106ebad3ae92273d4805a17e2257d4d02b1098cbfa67e52dc"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v4",
+          "name": "cw_fsm_ac_image_data@v4",
+          "address": "0x0059edec",
+          "size": 684,
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "sha256": "d448eaefaac358cfb1cca839cecfdd5d13d6082f9acf989480ab457dd1393c40"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v4",
+          "name": "cw_fsm_ac_image_data_finished_notify@v4",
+          "address": "0x0059ed1c",
+          "size": 208,
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "sha256": "fa154fb49b57e291a38c0df4819edf8c738f19ef6f837e58436a8e12580f631e"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v4",
+          "name": "cw_fsm_ac_image_data_recv_pkt@v4",
+          "address": "0x0059e980",
+          "size": 636,
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "sha256": "dd2c5684252118a51fd5403bceb95639a67f601288e07858f0f16352c604b7f5"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v4",
+          "name": "cw_fsm_ac_image_data_recv_pkt_check@v4",
+          "address": "0x0059ebfc",
+          "size": 288,
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "sha256": "1c814ca21e5c2aed041b5db74f75fd6daa0c2df2688d08501dd0b797ac68daf0"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v4",
+          "name": "cw_fsm_ac_join_finish_recv_pkt_check@v4",
+          "address": "0x0059f328",
+          "size": 288,
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "sha256": "b0b761c1d72abeff15bc14286e396e5e605fd04955058ccb6ebb34146654fd93"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v4",
+          "name": "cw_fsm_ac_join_wait_recv_pkt_check@v4",
+          "address": "0x0059f6e0",
+          "size": 368,
+          "binary_sha256": "ddc30fd8aa14e206eaa119e403a4ada64584bef84020c825b8c579bfa4153c68",
+          "sha256": "7ff433219264f52f88523410b520b480c0b64a8f080836f982d32489c12323ce"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v6",
+          "name": "cw_fsm_ac_configure_recv_pkt_check@v6",
+          "address": "0x006b96fc",
+          "size": 276,
+          "binary_sha256": "b12d1584fcafda2a71aa9038b41b7e1c5b893b350f3e6edf5105e445d024a912",
+          "sha256": "32c83c310c933b242b01c4d66bfa67b033f120fe5aa0380a1fc79dda5598dcd1"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v6",
+          "name": "cw_fsm_ac_data_check@v6",
+          "address": "0x006ba518",
+          "size": 628,
+          "binary_sha256": "b12d1584fcafda2a71aa9038b41b7e1c5b893b350f3e6edf5105e445d024a912",
+          "sha256": "53eb8c98cec962a1c16702f442d3f31efeb3a64a1ff07f276de9edc62cd8e6bb"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v6",
+          "name": "cw_fsm_ac_data_check_recv_pkt@v6",
+          "address": "0x006ba170",
+          "size": 652,
+          "binary_sha256": "b12d1584fcafda2a71aa9038b41b7e1c5b893b350f3e6edf5105e445d024a912",
+          "sha256": "9c41d56fdfa17f0733aa92a4375eec485f523835413363af40536721b31fc4f2"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v6",
+          "name": "cw_fsm_ac_data_check_recv_pkt_check@v6",
+          "address": "0x006ba3fc",
+          "size": 284,
+          "binary_sha256": "b12d1584fcafda2a71aa9038b41b7e1c5b893b350f3e6edf5105e445d024a912",
+          "sha256": "c8b84661e4af317cf800789622e8dc1b9ac59e8d4e5b44bc7ac7995e71203e8d"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v6",
+          "name": "cw_fsm_ac_image_data@v6",
+          "address": "0x006b9edc",
+          "size": 652,
+          "binary_sha256": "b12d1584fcafda2a71aa9038b41b7e1c5b893b350f3e6edf5105e445d024a912",
+          "sha256": "26b541ef703e4eb71fb00e543df305ba3b32d616b8ca87cde335b6c38121c178"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v6",
+          "name": "cw_fsm_ac_image_data_finished_notify@v6",
+          "address": "0x006b9e10",
+          "size": 204,
+          "binary_sha256": "b12d1584fcafda2a71aa9038b41b7e1c5b893b350f3e6edf5105e445d024a912",
+          "sha256": "25cc323ff6c18e6c71bdffbc394d8cdee6e94910e6c86173fa22d200ccddd5ce"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v6",
+          "name": "cw_fsm_ac_image_data_recv_pkt@v6",
+          "address": "0x006b9a90",
+          "size": 612,
+          "binary_sha256": "b12d1584fcafda2a71aa9038b41b7e1c5b893b350f3e6edf5105e445d024a912",
+          "sha256": "13045c345b90b8c6717f6e3b044f9e12ac0df2af9c6af6e470f9f4ce091121bb"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v6",
+          "name": "cw_fsm_ac_image_data_recv_pkt_check@v6",
+          "address": "0x006b9cf4",
+          "size": 284,
+          "binary_sha256": "b12d1584fcafda2a71aa9038b41b7e1c5b893b350f3e6edf5105e445d024a912",
+          "sha256": "668106219879c653193e090e74c8184a7196b2da5056a2661e61a971e5e363b5"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v6",
+          "name": "cw_fsm_ac_join_finish_recv_pkt_check@v6",
+          "address": "0x006bbdd4",
+          "size": 284,
+          "binary_sha256": "b12d1584fcafda2a71aa9038b41b7e1c5b893b350f3e6edf5105e445d024a912",
+          "sha256": "9f36608709ff516b4b84a0ab80de9d2b60ca77da1c65a2cecdffeaf3041a840d"
+        },
+        {
+          "kind": "comparison-uac",
+          "version": "v6",
+          "name": "cw_fsm_ac_join_wait_recv_pkt_check@v6",
+          "address": "0x006723c0",
+          "size": 352,
+          "binary_sha256": "b12d1584fcafda2a71aa9038b41b7e1c5b893b350f3e6edf5105e445d024a912",
+          "sha256": "2f5d029d63a11ea992c8719af239014dddaa926da4bc013d5d4e055c08f465e7"
+        }
+      ],
+      "implementation": [
+        {
+          "path": "uacgo/cweng/fsm.go",
+          "symbol": "fsmJoinFinish"
+        },
+        {
+          "path": "uacgo/cweng/fsm.go",
+          "symbol": "fsmConfigure"
+        },
+        {
+          "path": "uacgo/cweng/fsm.go",
+          "symbol": "fsmImageData"
+        },
+        {
+          "path": "uacgo/cweng/fsm.go",
+          "symbol": "fsmDataCheck"
+        },
+        {
+          "path": "uacgo/cweng/session.go",
+          "symbol": "delete"
+        }
+      ],
+      "tests": [
+        {
+          "path": "uacgo/cweng/apstore_test.go",
+          "name": "TestAttachGateSetsMatchBothFirmwareVersions"
+        },
+        {
+          "path": "uacgo/cweng/apstore_test.go",
+          "name": "TestAttachFailureAndRecoveryStatesFollowFirmware"
+        },
+        {
+          "path": "uacgo/cweng/apstore_test.go",
+          "name": "TestJoinPrechecksRunBeforeRegistrationAndDuplicateDoesNotReinitialize"
+        }
+      ]
     }
   ],
   "reference_or_inactive_functions": [

@@ -260,6 +260,7 @@ func New(engine *cweng.Engine, clients *cweng.ClientTable, dataDir string) (*Man
 	engine.ObserveAssociation = m.observeAssociation
 	engine.CheckAssociation = m.checkAssociation
 	engine.OnAPState = m.observeAPState
+	engine.OnAPJoin = m.registerAPJoin
 	engine.OnRoamingTrigger = m.queueRoaming
 	engine.OnStationDiscovery = m.observeBalanceProbe
 	engine.OnStationPMK = m.handlePMK

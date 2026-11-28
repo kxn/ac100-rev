@@ -13,8 +13,9 @@ import (
 )
 
 type APStatus struct {
-	ProductType         uint8 `json:"product_type"`
-	MeshDevice          bool  `json:"mesh_device"`
+	ModelID             uint32 `json:"model_id"`
+	ProductType         uint8  `json:"product_type"`
+	MeshDevice          bool   `json:"mesh_device"`
 	liveSession         *Session
 	EntryID             uint32                   `json:"entry_id"`
 	VAPStatistics       []capwap.APVAPStatistics `json:"vap_statistics"`
@@ -336,6 +337,7 @@ func (s *Session) statusLocked() APStatus {
 	sort.Slice(v.RadioStatistics, func(i, j int) bool { return v.RadioStatistics[i].Radio < v.RadioStatistics[j].Radio })
 	v.ReportedSSIDs = append([]ReportedSSID{}, s.reportedSSIDs...)
 	if a := s.apEntry; a != nil {
+		v.ModelID = a.ModelID
 		v.ProductType, v.MeshDevice = a.ProductType, a.MeshDevice
 		if v.MeshParent == "" {
 			v.MeshParent = a.MeshParent

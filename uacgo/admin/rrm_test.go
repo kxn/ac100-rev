@@ -47,6 +47,7 @@ func TestRRMMeasuredGraphSeparatesChannelsAndBoundsPower(t *testing.T) {
 }
 func TestRRMScanCommandsAndPersistentConfigPlan(t *testing.T) {
 	m, e, f, a, b := rrmPair(t)
+	baseVersion := m.config.Version
 	r := rrmTestRule()
 	r.ID = "r"
 	r.Name = "Rule"
@@ -104,7 +105,7 @@ func TestRRMScanCommandsAndPersistentConfigPlan(t *testing.T) {
 	}
 	m.observeRRMReport(b.ID, b.ConnectedAt, capwap.PrivRrmNeighsList{A: 1, Neighs: b.RRMReports[0].Neighbors})
 	m.tickRRM(time.Now())
-	if j := m.rrmJobs[job.ID]; j.State != "applying" || len(j.Changes) != 2 || m.config.Version != 1 || len(m.config.Radios) != 2 {
+	if j := m.rrmJobs[job.ID]; j.State != "applying" || len(j.Changes) != 2 || m.config.Version != baseVersion+1 || len(m.config.Radios) != 2 {
 		t.Fatal(j, m.config)
 	}
 	restored, err := New(e, cweng.NewClientTable(), filepath.Dir(m.path))

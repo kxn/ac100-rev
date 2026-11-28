@@ -22,6 +22,10 @@ func wrapMeshTest(t *testing.T, id string, p *capwap.ParsedPacket) []byte {
 }
 func TestMeshChildLifecycleCommandsAndParentIsolation(t *testing.T) {
 	e, parent, sent := requestTestSession(t)
+	inventory := &joinTestStore{}
+	e.UseStore(inventory)
+	registered := false
+	e.OnAPJoin = func(ap APStatus, first bool) error { registered = first && ap.Encapsulated; return nil }
 	parent.apEntry = &APEntry{MAC: "02:00:00:00:00:01", GeneralCapabilities: []uint32{0, 1 << 12}}
 	childID := "02:00:00:00:00:09"
 	e.RegisterMeshControl(nil, func(_ string, _ time.Time, id string, _ uint8) bool { return id == childID })
@@ -59,6 +63,9 @@ func TestMeshChildLifecycleCommandsAndParentIsolation(t *testing.T) {
 		case <-time.After(time.Second):
 			t.Fatalf("child lifecycle response missing at phase %d", i)
 		}
+	}
+	if inventory.calls != 1 || len(inventory.seen) != 1 || inventory.seen[0] != childID || !registered {
+		t.Fatal("Mesh child skipped inventory/initialization", inventory, registered)
 	}
 	child := e.findAP(childID)
 	if child == nil || child.State != StateRun {

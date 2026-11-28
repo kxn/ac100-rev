@@ -37,12 +37,13 @@ type Event struct {
 // (ac_data+0x5c join count, +0x60 run count, +0x68 join fail, +0x6c csp fail —
 // cw_fsm_ac_join_wait/finish/configure increment sites).
 type AcDataCounters struct {
-	JoinCount      atomic.Uint32 // ac_data+0x5c
-	RunCount       atomic.Uint32 // ac_data+0x60
-	JoinFailCount  atomic.Uint32 // ac_data+0x68
-	CSPFailCount   atomic.Uint32 // ac_data+0x6c
-	EchoTimeout    atomic.Uint32 // ac_data+0x74 (cw_fsm_ac_run RUN ECHO exhaustion)
-	RetransTimeout atomic.Uint32 // ac_data+0x78 (RUN retransmit exhaustion)
+	JoinCount        atomic.Uint32 // ac_data+0x5c
+	RunCount         atomic.Uint32 // ac_data+0x60
+	JoinFailCount    atomic.Uint32 // ac_data+0x68
+	DataCheckTimeout atomic.Uint32 // ac_data+0x70
+	CSPFailCount     atomic.Uint32 // ac_data+0x6c
+	EchoTimeout      atomic.Uint32 // ac_data+0x74 (cw_fsm_ac_run RUN ECHO exhaustion)
+	RetransTimeout   atomic.Uint32 // ac_data+0x78 (RUN retransmit exhaustion)
 }
 
 // Session is the per-AP control session. Layout mirrors the binary's session
@@ -200,6 +201,8 @@ func (s *Session) enterReset() error {
 
 // delete removes the session from the engine's session table.
 func (s *Session) delete() {
+	// Deletion must close the session epoch as well as remove its lookup row.
+	s.teardown()
 	if s.onDelete != nil {
 		s.onDelete(s)
 	}
