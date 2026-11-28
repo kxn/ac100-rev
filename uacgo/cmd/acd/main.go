@@ -52,7 +52,7 @@ func main() {
 	tracePath := flag.String("trace", "", "write private wire and decrypted CAPWAP trace JSONL")
 	httpAddress := flag.String("http", "127.0.0.1:8090", "management HTTP listen address")
 	httpAllowRemote := flag.Bool("http-allow-remote", false, "explicitly allow management HTTP on a non-loopback address (trusted management networks only)")
-	dhcpConfig := flag.String("ap-dhcp", "", "opt-in AP-only DHCP JSON configuration (Linux)")
+	dhcpConfig := flag.String("ap-dhcp", "", "AP DHCP seed JSON; web saves to data/ap-dhcp.json; off forbids this service")
 	flag.Parse()
 	if *port < 1 || *port > 65535 {
 		log.Fatal("port must be between 1 and 65535")
@@ -76,29 +76,6 @@ func main() {
 		if b, err := os.ReadFile(*dataDir + "/controller.json"); err == nil && json.Unmarshal(b, &saved) == nil {
 			*interfaceName = saved.Interface
 		}
-	}
-	if *dhcpConfig != "" {
-		b, err := os.ReadFile(*dhcpConfig)
-		if err != nil {
-			log.Fatal(err)
-		}
-		var cfg dhcpserver.Config
-		if err = json.Unmarshal(b, &cfg); err != nil {
-			log.Fatal(err)
-		}
-		if cfg.Interface != *interfaceName {
-			log.Fatal("DHCP interface must match controller binding")
-		}
-		dhcp, err := dhcpserver.New(cfg)
-		if err != nil {
-			log.Fatal(err)
-		}
-		dhcp.Events = events
-		go func() {
-			if err := dhcp.Serve(ctx); err != nil {
-				log.Fatalf("AP-only DHCP: %v", err)
-			}
-		}()
 	}
 	if *debug {
 		os.Setenv("UACGO_DEBUG", "1")
@@ -191,6 +168,14 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	var dhcp *dhcpserver.Runtime
+	if *dhcpConfig != "off" {
+		dhcp, err = dhcpserver.NewRuntimeFrom(ctx, filepath.Join(*dataDir, "ap-dhcp.json"), *dhcpConfig, e.BoundInterface(), events)
+		if err != nil {
+			log.Fatalf("AP-only DHCP: %v", err)
+		}
+		manager.SetDHCPRuntime(dhcp)
+	}
 	go manager.Run(ctx)
 	go func() { <-ctx.Done(); _ = e.Close() }()
 	if *httpAddress != "" {
@@ -212,7 +197,7 @@ func main() {
 	}
 	log.Printf("acd (uac-go) listening on :%d, max_sessions=%d, ac=%s, apdb=%s (%d static, %d negotiated models)",
 		*port, e.MaxAPSessions(), id.ACName, apdb.Version, len(apdb.Models()), len(apdb.Negotiated))
-	events.Event("controller.ready", "control_ip", net.IP(e.ControlIP[:]).String(), "interface", e.BoundInterface(), "http", *httpAddress, "dhcp", *dhcpConfig != "")
+	events.Event("controller.ready", "control_ip", net.IP(e.ControlIP[:]).String(), "interface", e.BoundInterface(), "http", *httpAddress, "dhcp", dhcp != nil && dhcp.Status().Running)
 	if err := e.Run(); err != nil && ctx.Err() == nil {
 		log.Fatalf("engine: %v", err)
 	}

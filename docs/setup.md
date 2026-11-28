@@ -141,7 +141,7 @@ python3 tools/qemu_harness.py relay
 `ap_link.py` 要求 NetworkManager、systemd 和 sudo 权限，并核验该接口确为 USB 网卡、
 不是网桥成员或默认路由接口。它新增独立的 `ac100-ap-direct` 连接，固定
 `192.168.70.1/24`，不添加默认网关。临时 systemd 服务 `ac100-ap-dhcp` 仅在 USB 网卡上
-提供 `192.168.70.50–60` DHCP，Option 43 `01 04 c0 a8 46 01` 指向测试 AC，关闭 DNS 和默认网关下发。
+提供 `192.168.70.50–60` DHCP，以 Option60 `TP-LINK` 和 Option138 指向测试 AC，关闭 DNS 和默认网关下发。此前使用的 Option43 子TLV没有原厂代码依据，已移除；AP选优依据见[DHCP协议复核](ap-dhcp-review.md)。
 中继监听 `0.0.0.0:5246` 以接收广播发现，但仅处理 `192.168.70.0/24` 来源。
 USB 配置写入工作目录 `ap-direct/link.env`，再次 source 环境脚本会自动加载。
 不改主网桥、防火墙或系统 IP 转发配置。NetworkManager 连接会保留，DHCP 服务和 QEMU 在主机重启后需重新启动。

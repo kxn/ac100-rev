@@ -68,7 +68,8 @@ dhcp-authoritative
 dhcp-range=192.168.70.50,192.168.70.60,255.255.255.0,1h
 dhcp-option=3
 dhcp-option=6
-dhcp-option-force=43,01:04:c0:a8:46:01
+dhcp-option-force=60,TP-LINK
+dhcp-option-force=138,192.168.70.1
 dhcp-leasefile={config_dir / 'dhcp.leases'}
 user={user}
 log-dhcp
@@ -92,7 +93,7 @@ log-facility=-
     subprocess.run(["sudo", "-n", "systemctl", "reset-failed", UNIT], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     run("sudo", "-n", "systemd-run", f"--unit={UNIT}", "--collect", "--property=Restart=on-failure",
         binary, "--keep-in-foreground", f"--conf-file={config}")
-    print("AP link ready:", args.iface, ADDRESS, "DHCP 192.168.70.50-60, option 43 -> 192.168.70.1")
+    print("AP link ready:", args.iface, ADDRESS, "DHCP 192.168.70.50-60, option 60 TP-LINK, option 138 -> 192.168.70.1")
 
 
 if __name__ == "__main__":

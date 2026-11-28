@@ -5,8 +5,13 @@ package dhcpserver
 import (
 	"context"
 	"fmt"
+	"net"
 )
 
-func (s *Server) Serve(ctx context.Context) error {
+func checkDHCPBinding(cfg Config) error {
 	return fmt.Errorf("AP-only DHCP requires Linux interface binding")
+}
+
+func listenDHCP(ctx context.Context, cfg Config) (net.PacketConn, error) {
+	return nil, checkDHCPBinding(cfg)
 }

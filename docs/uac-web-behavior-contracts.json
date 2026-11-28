@@ -2274,6 +2274,10 @@
         {
           "path": "uacgo/admin/mesh_test.go",
           "name": "TestMeshMembershipIsPersistentPolicyNotTopologyQuery"
+        },
+        {
+          "path": "uacgo/admin/vendor_import_test.go",
+          "name": "TestImportedGlobalMeshSwitchCannotOverrideDisabledAP"
         }
       ]
     },
@@ -2458,7 +2462,7 @@
       "id": "dhcp-exact-vendor",
       "feature": "selective-dhcp",
       "origin": "firmware",
-      "behavior": "仅精确 TP-LINK 标识响应；Mesh Detect 只响应 Discover，Request 不分配租约；普通终端静默。",
+      "behavior": "请求精确厂商筛选；正常OFFER/ACK回应Option60 TP-LINK和138；Mesh Detect只Discover且应答AC_DETECT_RESULT；不发无原厂依据的43子TLV。",
       "sources": [
         {
           "kind": "dhcpd",
@@ -2475,6 +2479,32 @@
           "address": "0x004137b0",
           "anchor_size": 32,
           "anchor_sha256": "c76e6548348b3a9bf4d1918d547a8c098c5005aa731df108fee8e68afda515bc"
+        },
+        {
+          "kind": "v4-file",
+          "path": "usr/lib/lua/dhcp_server/dhcp_load.lua",
+          "sha256": "2c2fe664c4753cdffb84fe9374ac7c767c69070dc4758e9ff8bb68a7adcef2cb"
+        },
+        {
+          "kind": "v4-library",
+          "path": "usr/sbin/dhcpd",
+          "binary_sha256": "58573223a6576edf87e1e7d3e1ccd17e285e5d5d4458278c7c70bf879c749d46",
+          "address": "0x410bf0",
+          "size": 12432,
+          "sha256": "285b41e746c38006fba94192f273a5e81d022356b7947309642911d095d2e902"
+        },
+        {
+          "kind": "file",
+          "path": "usr/lib/lua/dhcp_server/dhcp_load.lua",
+          "sha256": "c43faa230b33e22260fcd2ef3cdb1a81147553bf962c976f63556e9862dc6ec8"
+        },
+        {
+          "kind": "dhcpd",
+          "path": "usr/sbin/dhcpd",
+          "binary_sha256": "24bb123cf6233ca58eee39e625f7d0a68435c933f9fe3abac80851f14d17c46f",
+          "address": "0x40ff78",
+          "anchor_size": 12216,
+          "anchor_sha256": "5d971fb84ac3b624fa34281e4265347cc4e8fb89c98a4069cfebcbcba4c42fbb"
         }
       ],
       "implementation": [
@@ -2503,6 +2533,10 @@
         {
           "path": "uacgo/dhcpserver/server_test.go",
           "name": "TestDiscoverRequestRenewAndRestart"
+        },
+        {
+          "path": "uacgo/dhcpserver/server_test.go",
+          "name": "TestRepliesCarryOriginalACVendorAndDiscoveryOptions"
         }
       ]
     },
@@ -5799,6 +5833,52 @@
         {
           "path": "uacgo/admin/rrm_v4_test.go",
           "name": "TestHighPerformanceNetworkRejectsIncompatibleRRMVersionsAndPowerOnly"
+        }
+      ]
+    },
+    {
+      "id": "ap-dhcp-runtime-management",
+      "feature": "selective-dhcp",
+      "origin": "standalone-go",
+      "behavior": "AP DHCP独立运行和网页启停/池/预留；只读种子初始化，保存至数据目录，不重启CAPWAP，不修改WLAN配置。",
+      "sources": [],
+      "implementation": [
+        {
+          "path": "uacgo/dhcpserver/runtime.go",
+          "symbol": "Update"
+        },
+        {
+          "path": "uacgo/admin/ap_dhcp.go",
+          "symbol": "apDHCPRoutes"
+        }
+      ],
+      "tests": [
+        {
+          "path": "uacgo/dhcpserver/runtime_test.go",
+          "name": "TestRuntimePersistsDisabledPoolAndPreservesReadonlySeed"
+        },
+        {
+          "path": "uacgo/admin/ap_dhcp_test.go",
+          "name": "TestAPDHCPManagementSavesPoolWithoutChangingControllerConfiguration"
+        }
+      ]
+    },
+    {
+      "id": "ap-metadata-report-separation",
+      "feature": "ap-management",
+      "origin": "standalone-go",
+      "behavior": "控制器安装位置保持显式空值；原生位置与名称单独标注，不用AP固件示例字段回填配置。",
+      "sources": [],
+      "implementation": [
+        {
+          "path": "uacgo/admin/server.go",
+          "symbol": "APs"
+        }
+      ],
+      "tests": [
+        {
+          "path": "uacgo/admin/ap_export_test.go",
+          "name": "TestEmptyConfiguredAPLocationDoesNotInheritFirmwareSample"
         }
       ]
     }

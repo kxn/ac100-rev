@@ -67,6 +67,10 @@ function renderAPCapabilities(ap) {
     .join("");
   return (
     panel(
+      "AP 上报标识",
+      `<dl class="detail-grid"><div><dt>上报名称（非配置）</dt><dd>${esc(ap.reported_name || "未上报")}</dd></div><div><dt>上报位置（非安装位置配置）</dt><dd>${esc(ap.reported_location || "未上报")}</dd></div></dl>`,
+    ) +
+    panel(
       "功能能力",
       table(
         ["功能", "能力标识", "解析结果"],

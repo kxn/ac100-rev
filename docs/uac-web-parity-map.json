@@ -101,7 +101,8 @@
         "ap-option-wire",
         "group-join-and-edit",
         "copy-replace-retire",
-        "ap-name-import"
+        "ap-name-import",
+        "ap-metadata-report-separation"
       ]
     },
     {
@@ -517,16 +518,23 @@
         "uacgo/admin/controller_identity.go",
         "uacgo/dhcpserver/serve_linux.go",
         "uacgo/dhcpserver/serve_other.go",
-        "uacgo/dhcpserver/server.go"
+        "uacgo/dhcpserver/server.go",
+        "uacgo/admin/ap_dhcp.go",
+        "uacgo/admin/assets/ap-dhcp.js",
+        "uacgo/dhcpserver/runtime.go",
+        "uacgo/dhcpserver/packets.go"
       ],
       "regressions": [
         "uacgo/admin/server_test.go",
         "uacgo/dhcpserver/network_test.go",
-        "uacgo/dhcpserver/server_test.go"
+        "uacgo/dhcpserver/server_test.go",
+        "uacgo/admin/ap_dhcp_test.go",
+        "uacgo/dhcpserver/runtime_test.go"
       ],
-      "basis": "用户明确保留 AP-only 服务；精确 Option60、Mesh Discover 特例与普通客户端静默；普通 DHCP/DNS/NAT 仅实验工具。",
+      "basis": "请求精确Option60、应答厂商优选标识及Option138、Mesh Discover特例；AP DHCP独立网页管理和运行时；普通客户端DHCP/DNS/NAT不进入此服务。",
       "evidence_contracts": [
-        "dhcp-exact-vendor"
+        "dhcp-exact-vendor",
+        "ap-dhcp-runtime-management"
       ]
     },
     {

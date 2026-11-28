@@ -53,6 +53,9 @@ type APStatus struct {
 	LocalIP             string                   `json:"local_ip"`
 	Serial              string                   `json:"serial"`
 	Location            string                   `json:"location"`
+	ReportedName        string                   `json:"reported_name,omitempty"`
+	ReportedLocation    string                   `json:"reported_location,omitempty"`
+	MeshPolicyEnabled   bool                     `json:"mesh_policy_enabled"`
 	State               string                   `json:"state"`
 	Online              bool                     `json:"online"`
 	Radios              int                      `json:"radios"`

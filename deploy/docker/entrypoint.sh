@@ -53,7 +53,7 @@ set -- /usr/local/bin/acd --data "$AC_DATA_DIR" --interface "$AC_INTERFACE" \
     --dtls-cert "$AC_DTLS_CERT" --dtls-key "$AC_DTLS_KEY" "$@"
 case "$AC_DHCP_ENABLED" in
     1) set -- "$@" --ap-dhcp "$AC_DHCP_CONFIG" ;;
-    0) ;;
+    0) set -- "$@" --ap-dhcp off ;;
     *) echo "AC_DHCP_ENABLED must be 0 or 1" >&2; exit 1 ;;
 esac
 exec "$@"

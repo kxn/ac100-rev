@@ -72,3 +72,17 @@ func TestLegacyAPNamesMigrateWithoutOverridingProfile(t *testing.T) {
 		t.Fatal("name migration is not idempotent")
 	}
 }
+
+func TestEmptyConfiguredAPLocationDoesNotInheritFirmwareSample(t *testing.T) {
+	m, _ := testController(t)
+	m.known["a"] = cweng.APStatus{ID: "a", Name: "Firmware name", Location: "Firmware sample location"}
+	m.config.APProfiles = []APProfile{{AP: "a", Name: "Configured name", Location: ""}}
+	row := m.APs()[0]
+	if row.Location != "" || row.Name != "Configured name" || row.ReportedLocation != "Firmware sample location" || row.ReportedName != "Firmware name" {
+		t.Fatal("reported placeholders replaced imported metadata", row)
+	}
+	m.config.APProfiles[0].Location = "Meeting room"
+	if row = m.APs()[0]; row.Location != "Meeting room" || row.ReportedLocation != "Firmware sample location" {
+		t.Fatal("configured and reported locations were not kept separate", row)
+	}
+}

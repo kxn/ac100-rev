@@ -24,6 +24,7 @@ import (
 	"uacgo/capwap"
 	"uacgo/controllercfg"
 	"uacgo/cweng"
+	"uacgo/dhcpserver"
 	"uacgo/mobility"
 	"unicode/utf8"
 )
@@ -94,6 +95,7 @@ type ApplyStatus struct {
 	At               time.Time `json:"at"`
 }
 type Manager struct {
+	dhcp                 *dhcpserver.Runtime
 	eventSequence        uint64
 	diagnostics          diagnosticState
 	highPerformance      highPerformanceState
@@ -358,14 +360,18 @@ func (m *Manager) APs() []cweng.APStatus {
 			}
 		}
 		v.ProtectionLimits = protectionLimits(v)
+		// CAPWAP identity strings can be firmware sample defaults. Keep them
+		// observable, but a controller location is metadata owned by the config;
+		// an empty imported/cleared location must stay empty.
+		v.ReportedName, v.ReportedLocation = v.Name, v.Location
+		v.Location = ""
+		v.MeshPolicyEnabled = meshPolicyEnabled(m.config.Mesh, v, m.config)
 		for _, p := range m.config.APProfiles {
 			if p.AP == v.ID {
 				if p.Name != "" {
 					v.Name = p.Name
 				}
-				if p.Location != "" {
-					v.Location = p.Location
-				}
+				v.Location = p.Location
 			}
 		}
 		out = append(out, v)
@@ -963,6 +969,7 @@ func (m *Manager) HandlerWithOptions(options HTTPOptions) http.Handler {
 	m.rrmRoutes(mux)
 	m.edcaRoutes(mux)
 	m.resourceRoutes(mux)
+	m.apDHCPRoutes(mux)
 	mux.HandleFunc("POST /api/vlan-pools", m.poolHTTP)
 	mux.HandleFunc("DELETE /api/vlan-pools/{id}", m.poolHTTP)
 	mux.HandleFunc("GET /api/radios/defaults", m.radioDefaultsHTTP)

@@ -357,10 +357,12 @@ AP 专用 DHCP 与 AP 侧 DHCP/ARP 防护是不同功能。可选 DHCP JSON 的 
 日志判读时：
 
 - `dhcp.ap_reply.message_type=2` 是 OFFER，`5` 是 ACK；看到保留地址的 OFFER 不证明 AP 最后使用了它。
+- `dhcp.ap_reply`只表示构造完成；`dhcp.reply_sent`才表示UDP发送成功。`dhcp.other_server_selected`记录AP选中了其他服务。还须核查应答Option60：Fit AP的优选回调需要厂商标识，只有请求侧过滤和Option138并不够，详见[DHCP协议复核](ap-dhcp-review.md)。
 - 核对同一 MAC、transaction、REQUEST 的 `selected_server`、最终 ACK、租约及 AP 实际上报地址。另一个 DHCP 服务或旧租约可能让实际地址与本程序保留地址不同。
 - 精确的 Mesh Detect 身份有 V6 Discover-only 特例：可以看到 OFFER，却不能按此身份完成 REQUEST 租约；不能把它当成完整 AP 获取地址。
 - 普通客户端在过滤前就被静默忽略，没有对应事件。不能用“日志没有普通终端”证明网络内没有普通 DHCP 请求。
 - 迁移 AC 时保留 AP 地址、掩码、网关、DNS、租期，但 DHCP server 和 Option 138 中的 AC 地址应指向新程序。
+- DHCP服务配置入口是“AP管理 → AP DHCP服务”；启停/池/预留只改变DHCP运行时，不重启AC。控制器安装位置与`reported_location`分开；Mesh全局开关、AP有效开关及`mesh_device`能力元数据也要分别核对，不能把它们当成同一个开启状态。
 - 单个 AP 不接入时，先查发现地址、接口和旧 AC 缓存；不要为了调试 AP，把生产网的普通 DHCP 一并停掉。
 
 ## 10. 留给下一位维护者的最小报告

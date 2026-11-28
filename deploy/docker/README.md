@@ -9,6 +9,8 @@
 
 DHCP 版仍然**只响应精确 TP-LINK AP 标识**，含原 Mesh Discover 特例；不提供普通 Wi-Fi 客户端的 DHCP、DNS、NAT。AP 执行的 DHCP/ARP 防护两版都有。镜像没有原 UAC、QEMU、固件、运行配置或私钥。
 
+DHCP 版可在“AP管理 → AP DHCP服务”启停服务、编辑地址池和固定预留、查看租约。只读挂载的JSON作为初始配置；页面保存到数据卷 `/data/ap-dhcp.json`，后续启动优先使用它。修改不重启AC或AP。无DHCP版显式使用 `--ap-dhcp off`，不会因复用数据卷中有启用配置而打开端口67；需要启用时选择带DHCP权限的版本。
+
 ## 构建及离线归档
 
 在仓库根目录运行，需要 Docker + Buildx。默认构建 Linux arm64 的两种镜像，同时加载到本机 Docker 并导出单平台 Docker save 归档及 SHA-256：
@@ -176,15 +178,16 @@ RouterOS 不执行 Compose，使用已有的单平台 Docker save `.tar`，通�
 
 先确保旧 AC 已退出同一批 AP 的接管。AP/容器同一广播域时可以使用广播发现；如果 AP 保存了旧 AC 地址，需要在 AP 上调整绑定或另行恢复配置，不能仅凭容器运行正常就认为已接管。
 
-也可让 RouterOS DHCP 对 AP 下发控制器地址。Go 自带 DHCP 的 Option43 编码在本项目中为 `01 04 + AC IPv4`，另发 Option138 原始 IPv4。本例 `.2` 的 Option43 为 `0x0104c0a85802`。可在 RouterOS 定义后只分配给 AP 的静态租约，避免覆盖其它设备的厂商选项：
+也可让 RouterOS DHCP 对 AP 下发控制器地址。核对两版原AC与两款AP后，Go使用 Option60 ASCII `TP-LINK` 供Fit AP识别厂商优先应答，Option138为原始AC IPv4列表；此前的Option43子TLV示例错误，已移除。本例容器 `.2` 的发现地址编码为 `0xc0a85802`。只分配给AP静态租约：
 
 ```routeros
-/ip/dhcp-server/option/add name=go-ac43 code=43 value=0x0104c0a85802
+/ip/dhcp-server/option/add name=go-ac-vendor code=60 value=0x54502d4c494e4b force=yes
+/ip/dhcp-server/option/add name=go-ac138 code=138 value=0xc0a85802 force=yes
 # 先把对应 AP 的已有租约设为静态；下行只是指定 MAC 的示例，执行前替换。
-# /ip/dhcp-server/lease/set [find mac-address="AP-MAC"] dhcp-option=go-ac43
+# /ip/dhcp-server/lease/set [find mac-address="AP-MAC"] dhcp-option=go-ac-vendor,go-ac138
 ```
 
-已有 `dhcp-option` 列表时保留其中其它项；AP 需要重新获取/续租后才收到新值。该编码是按本项目兼容实现给出的配置，并非所有厂商 AP 通用编码。
+已有 `dhcp-option` 列表时保留其中其它项；AP 需要重新获取/续租后才收到新值。这是已核对TP-Link固件的字段契约，不是其他厂商通用编码。`force=yes` 用于客户端未请求该选项时也发送，支持版本与选项配置见[MikroTik DHCP文档](https://help.mikrotik.com/docs/spaces/ROS/pages/24805500/DHCP#DHCP-DHCPOptions)。
 
 检查：
 

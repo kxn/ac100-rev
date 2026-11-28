@@ -591,6 +591,7 @@ function renderContent(background = false) {
     storm: renderProtection,
     arp: renderProtection,
     "dhcp-servers": renderProtection,
+    "ap-dhcp": renderAPDHCP,
     "arp-bindings": renderProtection,
     aps: renderAPInventory,
     management: () => renderManagement("management"),
@@ -685,6 +686,8 @@ async function refresh() {
     if (tab === "interfaces") interfaces = await api("interfaces");
     if (tab === "resources")
       controllerResources = await api("controller/resources");
+    if (tab === "ap-dhcp" && !$("#ap-dhcp-form[data-dirty='1']"))
+      apDHCPState = await api("ap-dhcp");
     if (["mobility", "balance", "networkmode", "rrm"].includes(tab)) {
       const [st, mob] = await Promise.all([
         api("mobility/status"),
@@ -939,7 +942,8 @@ function renderAPDetail(id) {
         ],
         ["所属分组", group],
         ["模板", template],
-        ["安装位置", profile?.location || ap.location],
+        ["安装位置", (profile ? profile.location : ap.location) || "未设置"],
+        ["Mesh 配置状态", ap.mesh_policy_enabled == null ? "未取得" : ap.mesh_policy_enabled ? "允许组网（控制器配置）" : "停用（控制器配置）"],
         ["序列号", ap.serial],
         ["硬件版本", ap.hardware_version],
         [

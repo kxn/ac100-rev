@@ -66,6 +66,12 @@ profile. Program capacities have Go defaults and can be edited live on the
 AP capabilities, wire constraints and firmware roaming/RRM policies remain
 separate from these budgets.
 
+The optional AP DHCP service is managed under **AP管理 → AP DHCP服务**:
+enable/disable, pool, reservations and leases. Settings are saved separately in
+`data/ap-dhcp.json`; an explicit `--ap-dhcp` file is a seed until the first web
+save. Fresh installations start disabled. See the [firmware protocol review](docs/ap-dhcp-review.md)
+for the AP's option60 acceptance check and option138 controller discovery.
+
 
 ## Field logs and handover
 

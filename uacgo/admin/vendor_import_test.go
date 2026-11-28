@@ -13,6 +13,7 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
+	"uacgo/capwap"
 	"uacgo/cweng"
 )
 
@@ -65,8 +66,8 @@ func vendorTestExport(t *testing.T, mode int, modeOptions ...string) []byte {
 	// Do not replace them with an export from a deployed controller.
 	app := map[string][]byte{
 		"apmngr.db": vendorTestDatabase(t, `CREATE TABLE Group_table(group_id INTEGER,name TEXT); INSERT INTO Group_table VALUES(0,'Example group');
-CREATE TABLE ApEntryCfg_table(entry_id INTEGER,group_id INTEGER,mac TEXT,entry_name TEXT,ap_keep_alive INTEGER,client_keep_alive INTEGER,client_idle INTEGER,offline_selfmanage TEXT,ap_trunk INTEGER,new_ap_trunk INTEGER,region_code INTEGER,radio_role_table_idx INTEGER,phy_wire_vlan_1 INTEGER,username TEXT,password TEXT);
-INSERT INTO ApEntryCfg_table VALUES(1,0,'02-00-00-00-00-01','Example AP',30,300,3600,'on',-1,255,255,0,0,'admin','Example123');`),
+CREATE TABLE ApEntryCfg_table(entry_id INTEGER,group_id INTEGER,mac TEXT,entry_name TEXT,ap_keep_alive INTEGER,client_keep_alive INTEGER,client_idle INTEGER,offline_selfmanage TEXT,ap_trunk INTEGER,new_ap_trunk INTEGER,region_code INTEGER,radio_role_table_idx INTEGER,phy_wire_vlan_1 INTEGER,username TEXT,password TEXT,ap_mesh_switch INTEGER);
+INSERT INTO ApEntryCfg_table VALUES(1,0,'02-00-00-00-00-01','Example AP',30,300,3600,'on',-1,255,255,0,0,'admin','Example123',0);`),
 		"rdmngr.db": vendorTestDatabase(t, `CREATE TABLE rdmngrTable(rf_id INTEGER,freq_band INTEGER,mode INTEGER,bandwidth INTEGER,channel INTEGER,power_level INTEGER,max_usr INTEGER,antenna INTEGER,frag_thr INTEGER,rts_thr INTEGER,bcn_intvl INTEGER,dtim_prd INTEGER,manage_frame_rate INTEGER,wmm TEXT,rf_state TEXT,gi_mode INTEGER,rf_check_circle INTEGER,rf_chnl_occup_threshold INTEGER,rf_chnl_tolerance INTEGER,reject_limit INTEGER,reject_diff INTEGER);
 INSERT INTO rdmngrTable VALUES(17,0,6,2,6,6,100,0,2346,2346,100,1,11,'on','on',-1,8,50,20,-60,6);`),
 		"wserv.db": vendorTestDatabase(t, `CREATE TABLE wserv_tbl(serv_id INTEGER,encryption INTEGER,auth INTEGER,cipher INTEGER,key_update_intv INTEGER,ssid TEXT,ssid_code_type INTEGER,key TEXT,enable TEXT,ssidbrd INTEGER,desc TEXT,isolate INTEGER,default_bind_vlan INTEGER,auto_bind TEXT,default_bind_freq INTEGER,bw_ctrl_enable INTEGER,bw_ctrl_mode INTEGER,up_limit INTEGER,down_limit INTEGER,igmp_snooping_enable TEXT,igmp_snooping_switch TEXT,igmp_query_switch TEXT,igmp_2g_rate INTEGER,igmp_5g_rate INTEGER,igmp_query_interval INTEGER,igmp_max_resp_time INTEGER);
@@ -82,6 +83,8 @@ INSERT INTO wserv_tbl VALUES(3,1,2,2,86400,'Specific',1,'Example456','on',1,'tes
 		files["tmp/etc/userconfig/dbs.md5/"+n+".md5"] = []byte(hex.EncodeToString(sum[:]) + "\n")
 	}
 	uci := map[string][]byte{"tmp/backup/uc_conf/apmng_roam": []byte("config global 'roam'\noption 11k_switch 'on'\noption 11v_switch 'on'\noption 11r_switch 'on'\nconfig global 'wireless_network_mode'\noption wireless_network_mode '" + string(rune('0'+mode)) + "'\n"), "tmp/backup/uc_conf/apmng_set": []byte("config global 'settings'\noption auto_firm 'on'\n")}
+	uci["tmp/backup/uc_conf/apmng_mesh"] = []byte("config global 'settings'\noption enable 'on'\noption re_auto_switch 'on'\noption backhaul_ssid 'Example-Mesh'\noption backhaul_key 'Example-Key'\noption backhaul_token 'example-token'\n")
+	uci["tmp/backup/uc_conf/webpasswd"] = []byte("config userinfo 'userinfo'\noption password 'Example123'\n")
 	for _, option := range modeOptions {
 		uci["tmp/backup/uc_conf/apmng_roam"] = append(uci["tmp/backup/uc_conf/apmng_roam"], []byte(option+"\n")...)
 	}
@@ -184,6 +187,23 @@ func TestVendorConversionKeepsBindingsNamesAndWireUnits(t *testing.T) {
 	}
 	if len(m.config.ClientLabels) != 1 || len(m.config.Services) != 2 {
 		t.Fatal("restore lost imported application state")
+	}
+}
+
+func TestImportedGlobalMeshSwitchCannotOverrideDisabledAP(t *testing.T) {
+	converted, err := ConvertVendorBackup(vendorTestExport(t, 2), "", -1)
+	if err != nil {
+		t.Fatal(err)
+	}
+	cfg := converted.Config
+	ap := cweng.APStatus{ID: "02:00:00:00:00:01", GeneralCapabilities: []uint32{0, 1 << 12}}
+	o, err := effectiveAPOptions(cfg, ap)
+	if err != nil || cfg.Mesh == nil || !cfg.Mesh.Enabled || o.Mesh == nil || *o.Mesh {
+		t.Fatal("global and AP-level source switches were collapsed", err)
+	}
+	rows, err := capwap.ParseVendorList(meshPolicyElements(cfg.Mesh, ap, cfg)[0].Value[10:])
+	if err != nil || len(rows) != 1 || rows[0].Type != 21 || !bytes.Equal(rows[0].Value, []byte{0, 0}) {
+		t.Fatal("imported disabled AP received enabled Mesh policy", rows, err)
 	}
 }
 

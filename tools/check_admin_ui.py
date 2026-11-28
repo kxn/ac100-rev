@@ -67,6 +67,16 @@ clients.append({
     "native_rates": {"tx": "0", "rx": "213857", "at": "2026-11-27T17:10:00Z"},
     "statistics": {"negotiated_mbps": 0, "upstream_kbps": 0, "downstream_kbps": 3},
 })
+ap_dhcp = {
+    "settings": {
+        "enabled": True, "interface": "lab", "server": "192.0.2.1",
+        "start": "192.0.2.250", "end": "192.0.2.253", "netmask": "255.255.255.0",
+        "gateway": "192.0.2.254", "dns": ["192.0.2.10"], "ac": ["192.0.2.1"],
+        "lease_seconds": 172800, "reservations": {"02:00:00:00:00:01": "192.0.2.250"},
+    },
+    "running": True,
+    "leases": [{"mac": "020000000001", "ip": "192.0.2.250", "bound": True, "expires": "2026-11-30T12:00:00Z"}],
+}
 rates = live("rates")
 mobility = live("mobility")
 mobility["network_mode"] = 2
@@ -480,6 +490,8 @@ with sync_playwright() as p:
                 if path == "upgrades"
                 else {"config": conf["config"].get("mesh"), "jobs": {}}
                 if path == "mesh"
+                else ap_dhcp
+                if path == "ap-dhcp"
                 else {
                     "configured_mode": 2,
                     "actual_mode": 2,
@@ -543,6 +555,7 @@ with sync_playwright() as p:
         ).all_text_contents()
         assert ap_links == [
             "AP设置",
+            "AP DHCP服务",
             "AP升级",
             "负载均衡",
             "智能漫游",
@@ -564,6 +577,7 @@ with sync_playwright() as p:
             "apsettings",
             "templates",
             "apdefaults",
+            "ap-dhcp",
             "upgrades",
             "balance",
             "mobility",
@@ -849,6 +863,18 @@ with sync_playwright() as p:
             assert rule["servers"] == ["srv"] and rule["bindings"] == ["bind"]
         visit("storm")
         assert submit("#storm-form")["path"] == "storm"
+        visit("ap-dhcp")
+        assert "已确认 ACK" in page.locator("#content").inner_text()
+        page.locator('#ap-dhcp-form [name="enabled"]').uncheck()
+        page.locator('#ap-dhcp-form [name="start"]').fill("192.0.2.240")
+        page.locator("[data-dhcp-add]").click()
+        page.locator('[name="reservation_mac"]').last.fill("02:00:00:00:00:02")
+        page.locator('[name="reservation_ip"]').last.fill("192.0.2.251")
+        result = submit("#ap-dhcp-form")
+        assert result["path"] == "ap-dhcp"
+        assert result["body"]["enabled"] is False
+        assert result["body"]["start"] == "192.0.2.240"
+        assert len(result["body"]["reservations"]) == 2
         visit("mesh-settings")
         page.locator('#mesh-form [name="ssid"]').fill("UI mesh")
         page.locator('#mesh-form [name="key"]').fill("test-mesh-key")

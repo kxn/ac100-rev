@@ -99,6 +99,35 @@ func TestDiscoverRequestRenewAndRestart(t *testing.T) {
 	}
 }
 
+// The AP OFFER callbacks compare reply option60 against the device vendor;
+// request-side filtering alone does not satisfy their acceptance condition.
+func TestRepliesCarryOriginalACVendorAndDiscoveryOptions(t *testing.T) {
+	for _, typ := range []byte{1, 3} {
+		s := testServer(t)
+		p := request(typ, "TP-LINK", 1)
+		if typ == 3 {
+			p = request(typ, "TP-LINK", 1, 50, 4, 192, 0, 2, 50, 54, 4, 192, 0, 2, 1)
+		}
+		reply, err := s.Handle(p)
+		if err != nil || reply == nil {
+			t.Fatal("missing reply", typ, err)
+		}
+		o, _ := options(reply[240:])
+		if string(o[60]) != "TP-LINK" || len(o[60]) != 7 || !bytes.Equal(o[138], []byte{192, 0, 2, 1}) || o[43] != nil {
+			t.Fatal("reply differs from AC vendor-class and capwap-ac-v4 contract", o)
+		}
+	}
+	s := testServer(t)
+	reply, err := s.Handle(request(1, "TP-LINK MESH DETECT 1.0", 1))
+	if err != nil || reply == nil {
+		t.Fatal(err)
+	}
+	o, _ := options(reply[240:])
+	if string(o[60]) != "AC_DETECT_RESULT" {
+		t.Fatal("probe response must use AC detection marker", o)
+	}
+}
+
 func TestMeshDetectDiscoverOnlyMatchesV6Branch(t *testing.T) {
 	s := testServer(t)
 	for _, vendor := range []string{"TP-LINK MESH DETECT 1.0-extra", "TP-LINK MESH DETECT 1.0\x00", "tp-link MESH DETECT 1.0"} {

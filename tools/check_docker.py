@@ -107,6 +107,18 @@ def main():
                 udp = docker('exec', cid, 'cat', '/proc/net/udp')
                 dhcp_bound = any(line.split()[1].endswith(':0043') for line in udp.splitlines()[1:])
                 assert dhcp_bound == (flavor == 'dhcp'), (flavor, udp)
+                dhcp_status = api('ap-dhcp')
+                if flavor == 'dhcp':
+                    assert dhcp_status['running'] and dhcp_status['settings']['enabled']
+                    settings = dhcp_status['settings']
+                    settings['enabled'] = False
+                    assert not api('ap-dhcp', settings)['running'], 'Web disable did not close DHCP socket'
+                    settings['enabled'] = True
+                    settings['reservations'] = {'02:00:00:00:00:21': lo}
+                    assert api('ap-dhcp', settings)['running'], 'Web enable failed with read-only seed mount'
+                    assert json.loads(docker('exec', cid, 'cat', '/etc/go-ac/ap-dhcp.json')) == json.loads(dhcp.read_text()), 'Web save changed read-only seed'
+                else:
+                    assert dhcp_status['available'] is False, 'No-DHCP profile allowed saved service to activate'
                 with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
                     sock.settimeout(3)
                     sock.sendto((ROOT / 'uacgo/testdata/cw_dis_req_0074f340.bin').read_bytes(), (address, 5246))
@@ -164,6 +176,8 @@ def main():
                 api('controller/resources', {'max_ap_sessions': 1025})
                 docker('restart', cid)
                 assert api('controller/resources', wait=True)['settings']['max_ap_sessions'] == 1025, 'Restart lost saved config'
+                if flavor == 'dhcp':
+                    assert api('ap-dhcp')['settings']['reservations'] == settings['reservations'], 'Restart lost web DHCP configuration'
                 docker('stop', cid)
                 assert json.loads(docker('inspect', cid))[0]['State']['ExitCode'] == 0, 'Ungraceful SIGTERM shutdown'
                 docker('rm', cid)

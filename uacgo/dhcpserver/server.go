@@ -247,9 +247,10 @@ func (s *Server) Handle(b []byte) ([]byte, error) {
 		return nil, nil
 	}
 	mac := hex.EncodeToString(b[28:34])
-	s.Events.Event("dhcp.ap_request", "mac", net.HardwareAddr(b[28:34]).String(), "message_type", typ, "transaction", binary.BigEndian.Uint32(b[4:8]), "ciaddr", net.IP(b[12:16]).String(), "selected_server", net.IP(opts[54]).String(), "mesh_detect", meshDetect)
+	s.Events.Event("dhcp.ap_request", "mac", net.HardwareAddr(b[28:34]).String(), "message_type", typ, "transaction", binary.BigEndian.Uint32(b[4:8]), "ciaddr", net.IP(b[12:16]).String(), "requested_ip", net.IP(opts[50]).String(), "selected_server", net.IP(opts[54]).String(), "mesh_detect", meshDetect)
 	server := net.ParseIP(s.cfg.Server).To4()
 	if v := opts[54]; v != nil && (len(v) != 4 || !bytes.Equal(v, server)) {
+		s.Events.Event("dhcp.other_server_selected", "mac", net.HardwareAddr(b[28:34]).String(), "selected_server", net.IP(v).String(), "requested_ip", net.IP(opts[50]).String())
 		return nil, nil
 	}
 	key := "mac:" + hex.EncodeToString(b[28:34])
@@ -344,6 +345,15 @@ func (s *Server) Handle(b []byte) ([]byte, error) {
 	add := func(code byte, v []byte) { out = append(out, code, byte(len(v))); out = append(out, v...) }
 	add(53, []byte{response})
 	add(54, server)
+	// Both AC versions' dhcp_load.lua emits vendor-class-identifier. Fit
+	// APs inspect this reply option in their OFFER callback before accepting
+	// an ordinary server. It is independent of our request-side vendor filter.
+	vendor := []byte("TP-LINK")
+	if meshDetect {
+		// Original V6 dhcpd reply builder @40ff78 replaces option60 for this probe.
+		vendor = []byte("AC_DETECT_RESULT")
+	}
+	add(60, vendor)
 	add(1, net.ParseIP(s.cfg.Netmask).To4())
 	if typ != 8 {
 		add(51, binary.BigEndian.AppendUint32(nil, s.cfg.LeaseSeconds))
@@ -365,7 +375,8 @@ func (s *Server) Handle(b []byte) ([]byte, error) {
 		ac = append(ac, net.ParseIP(ip).To4()...)
 	}
 	add(138, ac)
-	add(43, append([]byte{1, byte(len(ac))}, ac...))
+	// The original AC config advertises capwap-ac-v4 (138). Do not invent
+	// option43 sub-TLVs: these APs' legacy fallback reads a raw IPv4 there.
 	out = append(out, 255)
 	for len(out) < 300 {
 		out = append(out, 0)

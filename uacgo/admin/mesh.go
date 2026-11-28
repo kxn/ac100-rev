@@ -86,15 +86,7 @@ func meshSetting(rows ...capwap.VendorRecord) capwap.Element {
 	return privateSetting(0x76, capwap.AssembleVendorList(rows))
 }
 func meshPolicyElements(p *MeshConfig, ap cweng.APStatus, cfg Config) []capwap.Element {
-	enabled := p != nil && p.Enabled
-	for _, id := range cfg.RetiredAPs {
-		if id == ap.ID {
-			enabled = false
-		}
-	}
-	if o, err := effectiveAPOptions(cfg, ap); err == nil && o.Mesh != nil {
-		enabled = enabled && *o.Mesh
-	}
+	enabled := meshPolicyEnabled(p, ap, cfg)
 	rows := []capwap.VendorRecord{}
 	if enabled {
 		bh := make([]byte, 32)
@@ -113,6 +105,22 @@ func meshPolicyElements(p *MeshConfig, ap cweng.APStatus, cfg Config) []capwap.E
 	}
 	rows = append(rows, capwap.VendorRecord{Type: 21, Value: []byte{0, boolean(enabled)}})
 	return []capwap.Element{meshSetting(rows...)}
+}
+
+// The global switch, inherited AP switch and product capability are distinct.
+// Share the policy computation with inventory instead of labelling capability
+// metadata (MeshDevice) as an enabled configuration.
+func meshPolicyEnabled(p *MeshConfig, ap cweng.APStatus, cfg Config) bool {
+	enabled := p != nil && p.Enabled
+	for _, id := range cfg.RetiredAPs {
+		if id == ap.ID {
+			enabled = false
+		}
+	}
+	if o, err := effectiveAPOptions(cfg, ap); err == nil && o.Mesh != nil {
+		enabled = enabled && *o.Mesh
+	}
+	return enabled
 }
 func (m *Manager) meshConfigure(ap cweng.APStatus) []capwap.Element {
 	m.mu.Lock()

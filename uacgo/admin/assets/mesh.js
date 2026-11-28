@@ -20,7 +20,7 @@ function renderMesh() {
     .filter((a) => a.features?.mesh)
     .map(
       (a) => `<tr>
-        <td><strong>${esc(apName(a.id))}</strong><small>${a.online ? "在线" : "离线"}</small></td>
+        <td><strong>${esc(apName(a.id))}</strong><small>${a.online ? "在线" : "离线"}${a.mesh_policy_enabled == null ? "" : a.mesh_policy_enabled ? " · 允许组网" : " · 配置停用"}</small></td>
         <td>${(a.mesh?.discoveries || []).map((n) => `<div class="mono">${esc(n.mac)} · ${esc(n.model)} · ${n.rssi} dBm</div>`).join("") || '<span class="muted">无</span>'}</td>
         <td>${(a.mesh?.nodes || []).map((n) => `<div class="mono">${esc(n.mac)} · ${esc(n.ipv4)} · ${n.wireless ? "无线" : "有线"} · 父 ${esc(n.parent)}</div>`).join("") || '<span class="muted">无</span>'}</td>
         <td><button type="button" class="text-button" data-mesh-ap="${esc(a.id)}" ${p.enabled && a.online ? "" : "disabled"}>管理节点</button></td>
@@ -185,7 +185,7 @@ function renderMeshSettings() {
   };
   return panel(
     "高级设置",
-    `<form id="mesh-form" data-inline="1" novalidate><div class="form-grid">${meshSettingsFields(p)}</div>${formEnd("保存")}</form>`,
+    `<form id="mesh-form" data-inline="1" novalidate><div class="form-grid">${meshSettingsFields(p)}</div><p class="help">全局开关与单台 AP 的开关共同生效；AP 模板、分组或单台设置停用时，该 AP 不启用组网。支持易展能力不代表已启用。</p>${formEnd("保存")}</form>`,
   );
 }
 function renderMeshTopology() {
